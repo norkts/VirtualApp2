@@ -13,6 +13,8 @@
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.ContentProvider
+-keep public class * extends android.content.ContentProvider
+-keep class com.xdja.multi.unitepin.jar.*
 
 # Parcelable
 -keep class * implements android.os.Parcelable {
@@ -30,6 +32,7 @@
 -keep class android.**{
     *;
 }
+
 
 #-repackageclass z1
 
@@ -94,16 +97,16 @@
 }
 
 #-keepattributes Exceptions, InnerClasses, ...
--keep class andhook.lib.xposed.XC_MethodHook
--keepclassmembers class andhook.lib.xposed.XC_MethodHook {
+-keep class andhook.lib.XC_MethodHook
+-keepclassmembers class andhook.lib.XC_MethodHook {
    *;
 }
 -keep class andhook.lib.xposed.XC_MethodHook$*
 -keepclassmembers class andhook.lib.xposed.XC_MethodHook$* {
    *;
 }
--keep class * extends andhook.lib.xposed.XC_MethodHook
--keepclassmembers class * extends andhook.lib.xposed.XC_MethodHook {
+-keep class * extends andhook.lib.XC_MethodHook
+-keepclassmembers class * extends andhook.lib.XC_MethodHook {
    public *;
    protected *;
 }

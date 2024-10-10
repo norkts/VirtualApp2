@@ -1,7 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply from: 'VAConfig.gradle'
 apply from: 'AppConfig.gradle'
-
+allprojects {
+    repositories {
+        maven {
+            allowInsecureProtocol = true
+            url 'http://maven.xdja.com:8081/nexus3/repository/releases/'
+        }
+        maven {
+            allowInsecureProtocol = true
+            url 'http://maven.xdja.com:8081/nexus3/repository/xdja/'
+        }
+    }
+}
 buildscript {
     repositories {
         jcenter()

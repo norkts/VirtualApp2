@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.util.Pair;
 
+import androidx.annotation.Keep;
+
 import com.lody.virtual.helper.utils.VLog;
 import com.xdja.SafeKey.JNIAPI;
 import com.xdja.multi.unitepin.jar.MultiChipUnitePinManager;
@@ -20,7 +22,6 @@ import java.util.List;
 /**
  * Created by wxudong on 17-12-16.
  */
-
 public class VSafekeyManagerService extends IVSafekey.Stub {
 
     private static final String TAG = VSafekeyManagerService.class.getSimpleName();

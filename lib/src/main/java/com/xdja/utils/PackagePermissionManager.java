@@ -2,7 +2,7 @@ package com.xdja.utils;
 
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.xdja.zs.VAppPermissionManager;

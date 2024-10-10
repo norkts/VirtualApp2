@@ -7,69 +7,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:titleTextStyle">@style/actionBarTitle</item> <!--设置titleTextStyle-->
     </style>
-
-    <style name="VATheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowDisablePreview">true</item>
-    </style>
-
-    <style name="WindowBackgroundTheme" parent="VATheme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@style/notAnimation</item>
-    </style>
-
-    <style name="notAnimation">
-        <item name="android:activityOpenEnterAnimation">@null</item>
-        <item name="android:activityOpenExitAnimation">@null</item>
-        <item name="android:activityCloseEnterAnimation">@null</item>
-        <item name="android:activityCloseExitAnimation">@null</item>
-        <item name="android:taskOpenEnterAnimation">@null</item>
-        <item name="android:taskOpenExitAnimation">@null</item>
-        <item name="android:taskCloseEnterAnimation">@null</item>
-        <item name="android:taskCloseExitAnimation">@null</item>
-        <item name="android:taskToFrontEnterAnimation">@null</item>
-        <item name="android:taskToFrontExitAnimation">@null</item>
-        <item name="android:taskToBackEnterAnimation">@null</item>
-        <item name="android:taskToBackExitAnimation">@null</item>
-    </style>
-
-
-    <!-- Base application theme. -->
-<!--    <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
-        <item name="colorPrimary">#03a9f4</item>
-        <item name="colorAccent">#03a9f4</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="myActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">#54BA42</item>
-        <item name="android:backgroundStacked">#54BA42</item>
-        <item name="android:titleTextStyle">@style/actionBarTitle</item> --><!--设置titleTextStyle-->
-<!--    </style>-->
-
-    <style name="actionBarTitle">
-        <item name="android:textColor">#FFFFFF</item>
-        <item name="android:textSize">20sp</item>
-    </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <style name="UITheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#03a9f4</item>
@@ -113,39 +51,4 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
-    <!--实现BottomSheetDialog圆角效果-->
-    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/bottomSheetStyleWrapper</item>
-    </style>
-    <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@android:color/transparent</item>
-    </style>
-    <declare-styleable name="LabelView">
-
-        <attr format="string" name="lv_text"/>
-
-        <attr format="color" name="lv_text_color"/>
-
-        <attr format="dimension" name="lv_text_size"/>
-
-        <attr format="boolean" name="lv_text_bold"/>
-
-        <attr format="boolean" name="lv_text_all_caps"/>
-
-        <attr format="color" name="lv_background_color"/>
-
-        <attr format="dimension" name="lv_min_size"/>
-
-        <attr format="dimension" name="lv_padding"/>
-
-        <attr format="enum" name="lv_gravity">
-            <enum name="TOP_LEFT" value="51"/>
-            <enum name="TOP_RIGHT" value="53"/>
-            <enum name="BOTTOM_LEFT" value="83"/>
-            <enum name="BOTTOM_RIGHT" value="85"/>
-        </attr>
-
-        <attr format="boolean" name="lv_fill_triangle"/>
-
-    </declare-styleable>
 </resources>

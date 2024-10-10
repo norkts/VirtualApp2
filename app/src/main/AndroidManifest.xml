@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.carlos">
-    <!--外部存储的写权限-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--外部存储的读权限-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <!-- SandHook -->
-    <uses-sdk tools:overrideLibrary="com.swift.sandhook.lib, com.swift.sandhook.xposedcompat"/>
+    package="io.virtualapp">
 
     <uses-permission android:name="${PACKAGE_NAME_32BIT}.permission.SAFE_ACCESS" />
     <!-- 通话记录 -->
@@ -29,34 +22,26 @@
     <uses-permission android:name="com.google.android.googleapps.permission.GOOGLE_AUTH.OTHER_SERVICES" />
     <uses-permission android:name="com.google.android.googleapps.permission.GOOGLE_AUTH.YouTubeUser" />
     <!-- google app end -->
-
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-
     <application
-        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-        android:requestLegacyExternalStorage="true"
-        android:networkSecurityConfig="@xml/network_security"
         android:resizeableActivity="true"
-        android:name="com.carlos.common.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:largeHeap="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning,HardcodedDebugMode">
         <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="77f19c1a1debd7687c396a196a88195b" />
+            android:name="TencentMapSDK"
+            android:value="4HPBZ-2QWC6-H47SR-M6PZY-MTZB5-N2F4F" />
+
         <meta-data
-            android:name="ScorpionSDK"
-            android:value="zxc77848" />
+            android:name="com.xdja.engine.provider"
+            android:value="content://${applicationId}" />
 
         <activity
-            android:name="com.carlos.splash.splashActivity"
-            android:exported="true"
+            android:name=".splash.SplashActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,31 +49,51 @@
             </intent-filter>
         </activity>
 
-
         <activity
-            android:name="com.carlos.home.HomeActivity"
+            android:name=".home.HomeActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/UITheme" />
 
         <activity
-            android:name="com.carlos.home.ListAppActivity"
+            android:name=".home.ListAppActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/UITheme" />
 
+        <activity
+            android:name=".home.location.LocationSettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/UITheme" />
+        <activity
+            android:name=".home.location.ChooseLocationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/UITheme" />
 
         <activity
-            android:name="com.carlos.home.PermissionRequestActivity"
+            android:name=".home.device.DeviceDetailActiivty"
+            android:screenOrientation="portrait"
+            android:theme="@style/UITheme" />
+        <activity
+            android:name=".home.device.DeviceSettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/UITheme" />
+
+        <activity
+            android:name=".home.PermissionRequestActivity"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name="com.carlos.home.AppSettingActivity"
+            android:name=".home.BackHomeActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".home.AppSettingActivity"
             android:theme="@style/UITheme.HasActionBar" />
-
-        <activity android:name="com.carlos.home.XposedManager.XposedManagerActivity"
-            android:label="Xposed Manager"
-            android:theme="@style/UITheme" />
+        <provider
+            android:name=".provider.SafetyProvider"
+            android:authorities="${applicationId}"
+            android:exported="true" />
         <!-- va的x进程处理 -->
         <receiver
-            android:name="com.carlos.PackageReceiver"
-            android:exported="true"
+            android:name=".PackageReceiver"
             android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
@@ -98,24 +103,6 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
-
-
-        <!--<provider
-            android:name=".sandxposed.SandHookConfigProvider"
-            android:authorities="io.virtualapp.sandvxposed:x"
-            android:exported="false"
-            android:process=":x" />-->
     </application>
 
 
