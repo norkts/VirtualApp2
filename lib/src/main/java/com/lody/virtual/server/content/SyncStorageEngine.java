@@ -1785,7 +1785,7 @@ public class SyncStorageEngine extends Handler {
         } catch (XmlPullParserException e) {
             Log.w(TAG, "Error reading accounts", e);
             return;
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             if (fis == null) Log.i(TAG, "No initial accounts");
             else Log.w(TAG, "Error reading accounts", e);
             return;
@@ -1794,7 +1794,7 @@ public class SyncStorageEngine extends Handler {
             if (fis != null) {
                 try {
                     fis.close();
-                } catch (java.io.IOException e1) {
+                } catch (IOException e1) {
                 }
             }
         }
@@ -2081,7 +2081,7 @@ public class SyncStorageEngine extends Handler {
             out.endTag(null, "accounts");
             out.endDocument();
             mAccountInfoFile.finishWrite(fos);
-        } catch (java.io.IOException e1) {
+        } catch (IOException e1) {
             Log.w(TAG, "Error writing accounts", e1);
             if (fos != null) {
                 mAccountInfoFile.failWrite(fos);
@@ -2256,7 +2256,7 @@ public class SyncStorageEngine extends Handler {
                     break;
                 }
             }
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             Log.i(TAG, "No initial status");
         }
     }
@@ -2286,7 +2286,7 @@ public class SyncStorageEngine extends Handler {
             out.recycle();
 
             mStatusFile.finishWrite(fos);
-        } catch (java.io.IOException e1) {
+        } catch (IOException e1) {
             Log.w(TAG, "Error writing status", e1);
             if (fos != null) {
                 mStatusFile.failWrite(fos);
@@ -2333,7 +2333,7 @@ public class SyncStorageEngine extends Handler {
                             if (versionString == null ||
                                     Integer.parseInt(versionString) != PENDING_OPERATION_VERSION) {
                                 Log.w(TAG, "Unknown pending operation version " + versionString);
-                                throw new java.io.IOException("Unknown version.");
+                                throw new IOException("Unknown version.");
                             }
                             int authorityId = Integer.valueOf(parser.getAttributeValue(
                                     null, XML_ATTR_AUTHORITYID));
@@ -2381,7 +2381,7 @@ public class SyncStorageEngine extends Handler {
                 }
                 eventType = parser.next();
             } while (eventType != XmlPullParser.END_DOCUMENT);
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             Log.w(TAG_FILE, "Error reading pending data.", e);
         } catch (XmlPullParserException e) {
             if (true) {
@@ -2391,7 +2391,7 @@ public class SyncStorageEngine extends Handler {
             if (fis != null) {
                 try {
                     fis.close();
-                } catch (java.io.IOException e1) {
+                } catch (IOException e1) {
                 }
             }
         }
@@ -2430,7 +2430,7 @@ public class SyncStorageEngine extends Handler {
             }
             out.endDocument();
             mPendingFile.finishWrite(fos);
-        } catch (java.io.IOException e1) {
+        } catch (IOException e1) {
             Log.w(TAG, "Error writing pending operations", e1);
             if (fos != null) {
                 mPendingFile.failWrite(fos);
@@ -2467,7 +2467,7 @@ public class SyncStorageEngine extends Handler {
         FileOutputStream fos = null;
         try {
             fos = mPendingFile.openAppend();
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             if (true) {
                 Log.v(TAG, "Failed append; writing full file");
             }
@@ -2481,7 +2481,7 @@ public class SyncStorageEngine extends Handler {
             writePendingOperationLocked(op, out);
             out.endDocument();
             mPendingFile.finishWrite(fos);
-        } catch (java.io.IOException e1) {
+        } catch (IOException e1) {
             Log.w(TAG, "Error writing appending operation", e1);
             mPendingFile.failWrite(fos);
         } finally {
@@ -2521,7 +2521,7 @@ public class SyncStorageEngine extends Handler {
         return bundle;
     }
 
-    private void extrasToXml(XmlSerializer out, Bundle extras) throws java.io.IOException {
+    private void extrasToXml(XmlSerializer out, Bundle extras) throws IOException {
         for (String key : extras.keySet()) {
             out.startTag(null, "extra");
             out.attribute(null, "name", key);
@@ -2604,7 +2604,7 @@ public class SyncStorageEngine extends Handler {
                     break;
                 }
             }
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             Log.i(TAG, "No initial statistics");
         }
     }
@@ -2641,7 +2641,7 @@ public class SyncStorageEngine extends Handler {
             out.recycle();
 
             mStatisticsFile.finishWrite(fos);
-        } catch (java.io.IOException e1) {
+        } catch (IOException e1) {
             Log.w(TAG, "Error writing stats", e1);
             if (fos != null) {
                 mStatisticsFile.failWrite(fos);

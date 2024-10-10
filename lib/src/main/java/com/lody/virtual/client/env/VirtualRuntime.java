@@ -71,7 +71,7 @@ public class VirtualRuntime {
 
     public static void exit() {
         VLog.d(VirtualRuntime.class.getSimpleName(), "Exit process : %s (%s).", getProcessName(), VirtualCore.get().getProcessName());
-        Process.killProcess(android.os.Process.myPid());
+        Process.killProcess(Process.myPid());
     }
 
 

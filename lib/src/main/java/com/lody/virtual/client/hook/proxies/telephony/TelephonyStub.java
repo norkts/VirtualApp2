@@ -19,7 +19,7 @@ import mirror.com.android.internal.telephony.ITelephony;
 
 /**
  * @author Lody
- * @see android.telephony.TelephonyManager
+ * @see TelephonyManager
  */
 @Inject(MethodProxies.class)
 public class TelephonyStub extends BinderInvocationProxy {

@@ -41,14 +41,14 @@
 #http://tools.android.com/tech-docs/support-annotations
 -dontskipnonpubliclibraryclassmembers
 -printconfiguration
--keep,allowobfuscation @interface android.support.annotation.Keep
+-keep,allowobfuscation @interface androidx.annotation.Keep
 
--keep @android.support.annotation.Keep class * {
+-keep @androidx.annotation.Keep class * {
 *;
 }
 
 -keepclassmembers class * {
-    @android.support.annotation.Keep *;
+    @androidx.annotation.Keep *;
 }
 #手动启用Component注解
 #http://tools.android.com/tech-docs/support-annotations

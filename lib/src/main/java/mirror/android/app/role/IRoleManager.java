@@ -11,7 +11,7 @@ public class IRoleManager {
     public static Class<?> TYPE = RefClass.load(IRoleManager.class, "android.app.role.IRoleManager");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(IRoleManager.Stub.class, "android.app.role.IRoleManager$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "android.app.role.IRoleManager$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

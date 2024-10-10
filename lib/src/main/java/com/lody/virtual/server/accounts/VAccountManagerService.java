@@ -1316,7 +1316,7 @@ public class VAccountManagerService extends IAccountManager.Stub {
     }
 
     private abstract class Session extends IAccountAuthenticatorResponse.Stub
-            implements IBinder.DeathRecipient, ServiceConnection {
+            implements DeathRecipient, ServiceConnection {
         final int mUserId;
         final AuthenticatorInfo mAuthenticatorInfo;
         private final boolean mStripAuthTokenFromResult;

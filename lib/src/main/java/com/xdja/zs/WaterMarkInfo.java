@@ -177,7 +177,7 @@ public class WaterMarkInfo implements Parcelable {
         this.rotate = in.readInt();
     }
 
-    public static final Parcelable.Creator<WaterMarkInfo> CREATOR = new Parcelable.Creator<WaterMarkInfo>() {
+    public static final Creator<WaterMarkInfo> CREATOR = new Creator<WaterMarkInfo>() {
         @Override
         public WaterMarkInfo createFromParcel(Parcel source) {
             return new WaterMarkInfo(source);

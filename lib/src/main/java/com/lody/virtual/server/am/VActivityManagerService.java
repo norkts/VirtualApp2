@@ -429,7 +429,7 @@ public class VActivityManagerService extends IActivityManager.Stub {
             return false;
         }
         try {
-            clientBinder.linkToDeath(new IBinder.DeathRecipient() {
+            clientBinder.linkToDeath(new DeathRecipient() {
                 @Override
                 public void binderDied() {
                     clientBinder.unlinkToDeath(this, 0);

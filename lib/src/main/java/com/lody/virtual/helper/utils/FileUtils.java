@@ -494,7 +494,7 @@ public class FileUtils {
 
                     StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
                     String cardRootPath = "";
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         List<StorageVolume> list = mStorageManager.getStorageVolumes();
                        if (list.size() > 0) {
                            for (StorageVolume storageVolume : list) {

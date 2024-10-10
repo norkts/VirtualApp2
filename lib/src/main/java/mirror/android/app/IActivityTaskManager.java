@@ -11,7 +11,7 @@ public class IActivityTaskManager {
     public static Class<?> TYPE = RefClass.load(IActivityTaskManager.class, "android.app.IActivityTaskManager");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(IActivityTaskManager.Stub.class, "android.app.IActivityTaskManager$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "android.app.IActivityTaskManager$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

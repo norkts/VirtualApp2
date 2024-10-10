@@ -159,7 +159,7 @@ public class PackageSetting implements Parcelable {
     }
 
 
-    public static final Parcelable.Creator<PackageSetting> CREATOR = new Parcelable.Creator<PackageSetting>() {
+    public static final Creator<PackageSetting> CREATOR = new Creator<PackageSetting>() {
         @Override
         public PackageSetting createFromParcel(Parcel source) {
             return new PackageSetting(CURRENT_VERSION, source);

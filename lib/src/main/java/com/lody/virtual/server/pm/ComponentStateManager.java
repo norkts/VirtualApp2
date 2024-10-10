@@ -105,7 +105,7 @@ public class ComponentStateManager extends PersistenceLayer {
             in.readMap(states, ComponentState.class.getClassLoader());
         }
 
-        public static final Parcelable.Creator<UserComponentState> CREATOR = new Parcelable.Creator<UserComponentState>() {
+        public static final Creator<UserComponentState> CREATOR = new Creator<UserComponentState>() {
             @Override
             public UserComponentState createFromParcel(Parcel source) {
                 return new UserComponentState(source);

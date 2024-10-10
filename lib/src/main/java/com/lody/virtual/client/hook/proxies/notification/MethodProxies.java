@@ -108,7 +108,7 @@ class MethodProxies {
         public Object call(Object who, Method method, Object... args) throws Throwable {
             Object ret = super.call(who, method, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
-            List<NotificationChannelGroup> list = slice ? ParceledListSlice.getList.call(ret)
+            List<NotificationChannelGroup> list = slice ? (List)ParceledListSlice.getList.call(ret)
                     : (List) ret;
             if (list != null) {
                 for (int i = list.size() - 1; i >= 0; i--) {
@@ -144,7 +144,7 @@ class MethodProxies {
         @Override
         public boolean beforeCall(Object who, Method method, Object... args) {
             if (args.length > 1 && ParceledListSliceCompat.isParceledListSlice(args[1])) {
-                List<NotificationChannel> list = (List<NotificationChannel>) ParceledListSlice.getList.call(args[1]);
+                List<NotificationChannel> list = (List<NotificationChannel>) (List)ParceledListSlice.getList.call(args[1]);
                 List<NotificationChannel> newList = new ArrayList<>();
                 for (NotificationChannel old : list) {
                     String id = VNotificationManager.get().dealNotificationChannel(old.getId(), getAppPkg(), getAppUserId());
@@ -189,7 +189,7 @@ class MethodProxies {
         public Object call(Object who, Method method, Object... args) throws Throwable {
             Object result = super.call(who, method, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
-            List<NotificationChannel> list = slice ? ParceledListSlice.getList.call(result)
+            List<NotificationChannel> list = slice ? (List)ParceledListSlice.getList.call(result)
                     : (List) result;
             if (list != null) {
                 for (int i = list.size() - 1; i >= 0; i--) {
@@ -439,7 +439,7 @@ class MethodProxies {
             }
             Object list = super.call(who, method, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
-            List<StatusBarNotification> resultList = slice ? ParceledListSlice.getList.call(list)
+            List<StatusBarNotification> resultList = slice ? (List)ParceledListSlice.getList.call(list)
                     : (List) list;
             if (resultList != null) {
                 for (int i = resultList.size() - 1; i >= 0; i--) {
@@ -467,7 +467,7 @@ class MethodProxies {
         if (mirror.android.service.notification.StatusBarNotification.opPkg != null) {
             mirror.android.service.notification.StatusBarNotification.opPkg.set(value, packageName);
         }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             if (mirror.android.service.notification.StatusBarNotification.id != null) {
                 int id = VNotificationManager.get().dealNotificationId(value.getId(), packageName, value.getTag(), userId);
                 mirror.android.service.notification.StatusBarNotification.id.set(value, id);
@@ -478,14 +478,14 @@ class MethodProxies {
             }
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             Notification notification = value.getNotification();
             fixRealNotification(notification, packageName, userId);
         }
     }
 
     private static void fixRealNotification(Notification notification, String packageName, int userId) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (mirror.android.app.NotificationO.mChannelId != null) {
                 String channel = VNotificationManager.get().getRealNotificationChannel(notification.getChannelId(), packageName, userId);
                 mirror.android.app.NotificationO.mChannelId.set(notification, channel);
@@ -516,7 +516,7 @@ class MethodProxies {
     }
 
     private static void fixRealNotificationChannel(NotificationChannel channel, String packageName, int userId) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (mirror.android.app.NotificationChannel.mId != null) {
                 String id = VNotificationManager.get().getRealNotificationChannel(channel.getId(), packageName, userId);
                 mirror.android.app.NotificationChannel.mId.set(channel, id);

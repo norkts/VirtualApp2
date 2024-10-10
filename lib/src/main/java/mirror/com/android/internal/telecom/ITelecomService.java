@@ -11,7 +11,7 @@ public class ITelecomService {
     public static Class<?> TYPE = RefClass.load(ITelecomService.class, "com.android.internal.telecom.ITelecomService");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(ITelecomService.Stub.class, "com.android.internal.telecom.ITelecomService$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "com.android.internal.telecom.ITelecomService$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

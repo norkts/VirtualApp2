@@ -18,5 +18,8 @@
     <color name="dialogColorPrimary2">#50607191</color>
 
     <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryRavel">#ffffff</color>
+    <color name="colorPrimaryRavel2">#ffffff</color>
+    <color name="holo_blue_dark">#33cccc</color>
 
 </resources>

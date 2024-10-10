@@ -15,7 +15,7 @@ import mirror.com.android.internal.app.IAppOpsService;
  * @author Lody
  * <p>
  * Fuck the AppOpsService.
- * @see android.app.AppOpsManager
+ * @see AppOpsManager
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 @Inject(MethodProxies.class)

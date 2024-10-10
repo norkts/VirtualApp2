@@ -382,7 +382,7 @@ public class ContentProviderProxy extends ContentProvider {
         {
             Uri a = getFileUri(uri);
             if (a != null) {
-                return ParcelFileDescriptor.open(new java.io.File(a.getPath()), modeToMode(mode));
+                return ParcelFileDescriptor.open(new File(a.getPath()), modeToMode(mode));
             }
         }
         TargetProviderInfo info = getProviderProviderInfo(uri);

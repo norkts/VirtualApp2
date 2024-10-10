@@ -11,7 +11,7 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.RemoteException;
 import android.provider.CallLog;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 
 import com.lody.virtual.client.core.VirtualCore;

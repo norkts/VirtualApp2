@@ -39,7 +39,7 @@ public class VJobWorkItem implements Parcelable {
         this.item = in.readParcelable(JobWorkItem.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<VJobWorkItem> CREATOR = new Parcelable.Creator<VJobWorkItem>() {
+    public static final Creator<VJobWorkItem> CREATOR = new Creator<VJobWorkItem>() {
         @Override
         public VJobWorkItem createFromParcel(Parcel source) {
             return new VJobWorkItem(source);

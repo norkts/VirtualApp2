@@ -16,7 +16,7 @@ import mirror.android.app.IAlarmManager;
 
 /**
  * @author Lody
- * @see android.app.AlarmManager
+ * @see AlarmManager
  */
 public class AlarmManagerStub extends BinderInvocationProxy {
 

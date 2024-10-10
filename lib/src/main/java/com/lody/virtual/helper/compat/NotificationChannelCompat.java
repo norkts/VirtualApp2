@@ -54,8 +54,8 @@ public class NotificationChannelCompat {
     public static final String GROUP_DAEMON = Constants.NOTIFICATION_GROUP_DAEMON;
 
     public static boolean enable(){
-        if(android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
-            return VirtualCore.get().getTargetSdkVersion() >= android.os.Build.VERSION_CODES.O;
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+            return VirtualCore.get().getTargetSdkVersion() >= Build.VERSION_CODES.O;
         }
         return false;
     }
@@ -66,7 +66,7 @@ public class NotificationChannelCompat {
 
     @TargetApi(Build.VERSION_CODES.O)
     public static void checkOrCreateGroup(Context context, String groupId, String name) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager manager = (NotificationManager) context.getSystemService(
                     Context.NOTIFICATION_SERVICE);
             List<NotificationChannelGroup> groups = manager.getNotificationChannelGroups();
@@ -92,7 +92,7 @@ public class NotificationChannelCompat {
 
     @TargetApi(Build.VERSION_CODES.O)
     public static void checkOrCreateChannel(Context context, String channelId, String name) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager manager = (NotificationManager) context.getSystemService(
                     Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = manager.getNotificationChannel(channelId);
@@ -175,8 +175,8 @@ public class NotificationChannelCompat {
     }
 
     public static Notification.Builder createBuilder(Context context, String channelId){
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                 && VirtualCore.get().getTargetSdkVersion() >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                 && VirtualCore.get().getTargetSdkVersion() >= Build.VERSION_CODES.O) {
             return new Notification.Builder(context, channelId);
         }else{
             return new Notification.Builder(context);

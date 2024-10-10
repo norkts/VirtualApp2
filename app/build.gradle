@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    //compileSdkVersion 29
-    //buildToolsVersion '29.0.1'
+    compileSdk 30
+    buildToolsVersion '30.0.3'
 
     signingConfigs {
         release {
@@ -98,6 +98,7 @@ android {
        // exclude 'META-INF/metadata.jvm.kotlin_module'
         //exclude 'META-INF/*.kotlin_module' // 也可以尝试排除所有相关的kotlin_module文件
     }
+    ndkVersion '28.0.12433566 rc1'
 }
 
 
@@ -109,8 +110,11 @@ repositories {
 
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation(name:'lib-release', ext:'aar')
+    implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
+//    implementation(name:'lib-release', ext:'aar')
+    implementation project(':lib')
+    implementation project(':libsandhook')
+
     //Android Lib
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -155,5 +159,4 @@ dependencies {
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation files('libs/pinyin4j-2.5.0.jar')
-
 }

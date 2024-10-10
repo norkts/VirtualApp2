@@ -71,7 +71,7 @@ public final class BinderProvider extends ContentProvider {
         }
         Context context = getContext();
         if (context != null) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannelCompat.checkOrCreateGroup(context, NotificationChannelCompat.GROUP_DAEMON, "daemon");
                 NotificationChannelCompat.checkOrCreateGroup(context, NotificationChannelCompat.GROUP_SYSTEM, "system");
                 NotificationChannelCompat.checkOrCreateGroup(context, NotificationChannelCompat.GROUP_APP, "app");
@@ -154,7 +154,7 @@ public final class BinderProvider extends ContentProvider {
     }
 
     private void clearOldTask(Context context) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             List<ActivityManager.AppTask> list = null;
             try {

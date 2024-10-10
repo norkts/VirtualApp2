@@ -89,11 +89,11 @@ public class PermissionCompat {
     }
 
     public static boolean isCheckPermissionRequired(int targetSdkVersion) {
-        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M
-                || VirtualCore.get().getTargetSdkVersion() < android.os.Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                || VirtualCore.get().getTargetSdkVersion() < Build.VERSION_CODES.M) {
             return false;
         }
-        return targetSdkVersion < android.os.Build.VERSION_CODES.M;
+        return targetSdkVersion < Build.VERSION_CODES.M;
     }
 
     public static boolean checkPermissions(String[] permissions, boolean is64Bit) {

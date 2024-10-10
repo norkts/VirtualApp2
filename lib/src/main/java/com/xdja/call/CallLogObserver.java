@@ -14,7 +14,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import android.telecom.TelecomManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;

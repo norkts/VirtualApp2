@@ -48,7 +48,7 @@ public class BroadcastIntentData implements Parcelable {
         this.type = in.readByte();
     }
 
-    public static final Parcelable.Creator<BroadcastIntentData> CREATOR = new Parcelable.Creator<BroadcastIntentData>() {
+    public static final Creator<BroadcastIntentData> CREATOR = new Creator<BroadcastIntentData>() {
         @Override
         public BroadcastIntentData createFromParcel(Parcel source) {
             return new BroadcastIntentData(source);

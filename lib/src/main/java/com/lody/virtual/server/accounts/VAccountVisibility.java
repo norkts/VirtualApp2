@@ -56,7 +56,7 @@ public class VAccountVisibility implements Parcelable {
         }
     }
 
-    public static final Parcelable.Creator<VAccountVisibility> CREATOR = new Parcelable.Creator<VAccountVisibility>() {
+    public static final Creator<VAccountVisibility> CREATOR = new Creator<VAccountVisibility>() {
         @Override
         public VAccountVisibility createFromParcel(Parcel source) {
             return new VAccountVisibility(source);

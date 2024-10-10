@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Carlos</string>
 
-    <string name="server_process_name" >:va_core</string>
     <string name="start_app_failed">启动 %1$s 失败</string>
     <string name="tip_add_apps">正在添加中</string>
 
@@ -11,4 +10,23 @@
     <string name="new_user">新的用户</string>
     <string name="add_app">添加App</string>
     <string name="desktop">桌面</string>
+    <string name="clean_data">清理数据</string>
+    <string name="tip_search_keyword">搜索非当前城市区域，请用:“城市名@关键词”</string>
+    <string name="title_input_activate_code">激活码</string>
+    <string name="permission_tip_title">重要提示：</string>
+    <string name="label_lat">经度:</string>
+    <string name="label_lng">纬度:</string>
+    <string name="unknown_location">未知位置</string>
+    <string name="no_mock">No mock</string>
+    <string name="preparing">正在打开App，请稍等…</string>
+    <string name="title_input_location">手动输入位置</string>
+    <string name="title_input_wifi_info">输入Wifi信息</string>
+    <string name="title_input_wifi_mac">mac 地址</string>
+    <string name="title_input_wifi_ssid">Wifi 名字</string>
+    <string name="title_mirror_manager">Mirror App Manager</string>
+    <string name="hint_lat">经度</string>
+    <string name="hint_lng">纬度</string>
+    <string name="search">搜索</string>
+    <string name="clear">清除</string>
+
 </resources>

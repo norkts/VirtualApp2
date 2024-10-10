@@ -61,7 +61,7 @@ public class IntentSenderExtData implements Parcelable {
         this.flagsValues = in.readInt();
     }
 
-    public static final Parcelable.Creator<IntentSenderExtData> CREATOR = new Parcelable.Creator<IntentSenderExtData>() {
+    public static final Creator<IntentSenderExtData> CREATOR = new Creator<IntentSenderExtData>() {
         @Override
         public IntentSenderExtData createFromParcel(Parcel source) {
             return new IntentSenderExtData(source);

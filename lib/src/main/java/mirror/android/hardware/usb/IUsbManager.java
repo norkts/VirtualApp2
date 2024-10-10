@@ -11,7 +11,7 @@ public class IUsbManager {
     public static Class<?> TYPE = RefClass.load(IUsbManager.class, "android.hardware.usb.IUsbManager");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(IUsbManager.Stub.class, "android.hardware.usb.IUsbManager$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "android.hardware.usb.IUsbManager$Stub");
 
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;

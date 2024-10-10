@@ -46,7 +46,7 @@ import mirror.android.app.NotificationO;
         }
         Context appContext = getAppContext(packageName);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (VirtualCore.get().getTargetSdkVersion() >= android.os.Build.VERSION_CODES.O) {
+            if (VirtualCore.get().getTargetSdkVersion() >= Build.VERSION_CODES.O) {
                 if (TextUtils.isEmpty(notification.getChannelId())) {
                     if (NotificationO.mChannelId != null) {
                         //安通＋, 安全邮件, 短信, 使用声音和呼吸灯

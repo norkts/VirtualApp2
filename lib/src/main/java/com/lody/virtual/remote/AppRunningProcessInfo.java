@@ -50,7 +50,7 @@ public class AppRunningProcessInfo implements Parcelable {
         }
     }
 
-    public static final Parcelable.Creator<AppRunningProcessInfo> CREATOR = new Parcelable.Creator<AppRunningProcessInfo>() {
+    public static final Creator<AppRunningProcessInfo> CREATOR = new Creator<AppRunningProcessInfo>() {
         @Override
         public AppRunningProcessInfo createFromParcel(Parcel source) {
             return new AppRunningProcessInfo(source);

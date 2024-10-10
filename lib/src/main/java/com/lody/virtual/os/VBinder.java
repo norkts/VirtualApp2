@@ -23,7 +23,7 @@ public class VBinder {
     }
 
     /**
-     * @see com.lody.virtual.os.VUserHandle#getCallingUserHandle
+     * @see VUserHandle#getCallingUserHandle
      * @deprecated
      */
     public static VUserHandle getCallingUserHandle() {

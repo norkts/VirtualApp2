@@ -146,7 +146,7 @@ class MethodProxies {
             Object _infos = method.invoke(who, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
             //noinspection unchecked
-            List<ActivityManager.RecentTaskInfo> infos = slice ? ParceledListSlice.getList.call(_infos)
+            List<ActivityManager.RecentTaskInfo> infos = slice ? (List)ParceledListSlice.getList.call(_infos)
                     : (List) _infos;
             Iterator<ActivityManager.RecentTaskInfo> it = infos.iterator();
             while (it.hasNext()){
@@ -1085,7 +1085,7 @@ class MethodProxies {
                     e.printStackTrace();
                 }
 
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     Icon icon = Icon.createWithResource(appContext.getPackageName(), appContext.getApplicationInfo().icon);
                     Reflect.on(notification).call("setSmallIcon", icon);
                 }

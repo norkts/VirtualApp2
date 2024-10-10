@@ -2,7 +2,6 @@ package com.carlos.utils;
 
 
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.lody.virtual.helper.utils.Reflect;
@@ -40,7 +39,7 @@ public class IBinderTool {
             } else {
                 try {
                     Log.i(tag, "srv=" + srv + "@" + service.getInterfaceDescriptor());
-                } catch (RemoteException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

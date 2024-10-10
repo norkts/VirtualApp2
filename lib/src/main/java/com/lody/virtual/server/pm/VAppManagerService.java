@@ -329,7 +329,7 @@ public class VAppManagerService extends IAppManager.Stub {
             res = installPackageImpl(path, options);
         }
         if (receiver != null) {
-            android.os.Bundle data = new Bundle();
+            Bundle data = new Bundle();
             data.putParcelable("result", res);
             receiver.send(0, data);
         }

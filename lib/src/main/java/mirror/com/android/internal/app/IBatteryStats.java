@@ -11,7 +11,7 @@ public class IBatteryStats {
     public static Class<?> TYPE = RefClass.load(IBatteryStats.class, "com.android.internal.app.IBatteryStats");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(IBatteryStats.Stub.class, "com.android.internal.app.IBatteryStats$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "com.android.internal.app.IBatteryStats$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

@@ -71,7 +71,7 @@ public class SettingRuleInfo implements Parcelable {
         this.regex = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<SettingRuleInfo> CREATOR = new Parcelable.Creator<SettingRuleInfo>() {
+    public static final Creator<SettingRuleInfo> CREATOR = new Creator<SettingRuleInfo>() {
         @Override
         public SettingRuleInfo createFromParcel(Parcel source) {
             return new SettingRuleInfo(source);

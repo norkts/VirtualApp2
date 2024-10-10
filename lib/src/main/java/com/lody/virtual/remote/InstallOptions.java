@@ -80,7 +80,7 @@ public class InstallOptions implements Parcelable {
         this.updateStrategy = tmpUpdateStrategy == -1 ? null : UpdateStrategy.values()[tmpUpdateStrategy];
     }
 
-    public static final Parcelable.Creator<InstallOptions> CREATOR = new Parcelable.Creator<InstallOptions>() {
+    public static final Creator<InstallOptions> CREATOR = new Creator<InstallOptions>() {
         @Override
         public InstallOptions createFromParcel(Parcel source) {
             return new InstallOptions(source);

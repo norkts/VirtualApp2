@@ -223,7 +223,7 @@ public final class VContentService extends IContentService.Stub {
     }
 
     /**
-     * Request a sync with a generic {@link android.content.SyncRequest} object. This will be
+     * Request a sync with a generic {@link SyncRequest} object. This will be
      * either:
      * periodic OR one-off sync.
      * and
@@ -586,7 +586,7 @@ public final class VContentService extends IContentService.Stub {
      * @hide
      */
     public static final class ObserverNode {
-        private class ObserverEntry implements IBinder.DeathRecipient {
+        private class ObserverEntry implements DeathRecipient {
             public final IContentObserver observer;
             public final int uid;
             public final int pid;

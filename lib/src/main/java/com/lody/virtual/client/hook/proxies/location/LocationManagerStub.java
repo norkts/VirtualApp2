@@ -26,7 +26,7 @@ import mirror.android.os.ServiceManager;
 
 /**
  * @author Lody
- * @see android.location.LocationManager
+ * @see LocationManager
  */
 @Inject(MethodProxies.class)
 public class LocationManagerStub extends MethodInvocationProxy<BinderInvocationStub> {

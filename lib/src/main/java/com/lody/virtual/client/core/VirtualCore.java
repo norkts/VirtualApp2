@@ -435,7 +435,7 @@ public final class VirtualCore {
     public List<ActivityManager.RecentTaskInfo> getAppTasksEx() {
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.AppTask> list = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //TODO V64BitHelper.getgetAppTasks64
             list = new ArrayList<>(am.getAppTasks());
             List<ActivityManager.RecentTaskInfo> recentTaskInfoList = new ArrayList<>();
@@ -484,7 +484,7 @@ public final class VirtualCore {
             }
             @Override
             public void onActivityStarted(Activity activity) {
-                ActivityCounterManager.get().activityCountAdd(activity.getPackageName(),activity.getClass().getName(),android.os.Process.myPid());
+                ActivityCounterManager.get().activityCountAdd(activity.getPackageName(),activity.getClass().getName(), Process.myPid());
             }
             @Override
             public void onActivityResumed(Activity activity) {}
@@ -492,7 +492,7 @@ public final class VirtualCore {
             public void onActivityPaused(Activity activity) {}
             @Override
             public void onActivityStopped(Activity activity) {
-                ActivityCounterManager.get().activityCountReduce(activity.getPackageName(),activity.getClass().getName(),android.os.Process.myPid());
+                ActivityCounterManager.get().activityCountReduce(activity.getPackageName(),activity.getClass().getName(), Process.myPid());
             }
             @Override
             public void onActivitySaveInstanceState(Activity activity, Bundle outState) { }

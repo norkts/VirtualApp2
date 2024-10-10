@@ -9,10 +9,14 @@
     <dimen name="dp30">30dp</dimen>
     <dimen name="dp8">8dp</dimen>
     <dimen name="dp10">10dp</dimen>
+    <dimen name="dp_10">10dp</dimen>
     <dimen name="dp80">80dp</dimen>
+    <dimen name="dp_80">80dp</dimen>
     <dimen name="card_radius">5dp</dimen>
     <dimen name="dp16">16dp</dimen>
     <dimen name="dp24">24dp</dimen>
+    <dimen name="dp_35">35dp</dimen>
+    <dimen name="dp_20">20dp</dimen>
 
 
     <dimen name="dsrv_defaultHotspotHeight">56dp</dimen>
@@ -20,4 +24,8 @@
 
     <dimen name="map_menu_size">38dp</dimen>
     <dimen name="menu_icon_m">50dp</dimen>
+    <dimen name="dp_15">15dp</dimen>
+    <dimen name="dp_144">144dp</dimen>
+    <dimen name="dp_42">42dp</dimen>
+
 </resources>

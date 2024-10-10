@@ -120,4 +120,32 @@
     <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+    <declare-styleable name="LabelView">
+
+        <attr format="string" name="lv_text"/>
+
+        <attr format="color" name="lv_text_color"/>
+
+        <attr format="dimension" name="lv_text_size"/>
+
+        <attr format="boolean" name="lv_text_bold"/>
+
+        <attr format="boolean" name="lv_text_all_caps"/>
+
+        <attr format="color" name="lv_background_color"/>
+
+        <attr format="dimension" name="lv_min_size"/>
+
+        <attr format="dimension" name="lv_padding"/>
+
+        <attr format="enum" name="lv_gravity">
+            <enum name="TOP_LEFT" value="51"/>
+            <enum name="TOP_RIGHT" value="53"/>
+            <enum name="BOTTOM_LEFT" value="83"/>
+            <enum name="BOTTOM_RIGHT" value="85"/>
+        </attr>
+
+        <attr format="boolean" name="lv_fill_triangle"/>
+
+    </declare-styleable>
 </resources>

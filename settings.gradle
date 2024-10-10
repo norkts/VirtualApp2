@@ -1,4 +1,6 @@
 include ':xposedcompat'
-include ':hooklib'
+//include ':hooklib'
 include ':annotation'
+include ':lib'
+include ':libsandhook'
 include ':app'

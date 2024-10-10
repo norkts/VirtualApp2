@@ -11,7 +11,7 @@ public class IFlymePermissionService {
     public static Class<?> TYPE = RefClass.load(IFlymePermissionService.class, "meizu.security.IFlymePermissionService");
 
     public static class Stub {
-        public static Class<?> TYPE = RefClass.load(IFlymePermissionService.Stub.class, "meizu.security.IFlymePermissionService$Stub");
+        public static Class<?> TYPE = RefClass.load(Stub.class, "meizu.security.IFlymePermissionService$Stub");
         @MethodParams({IBinder.class})
         public static RefStaticMethod<IInterface> asInterface;
     }

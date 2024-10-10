@@ -426,7 +426,7 @@ public final class VClient extends IVClient.Stub {
             mirror.android.os.Message.updateCheckRecycle.call(targetSdkVersion);
         }
         AlarmManager alarmManager = (AlarmManager) VirtualCore.get().getContext().getSystemService(Context.ALARM_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (mirror.android.app.AlarmManager.mTargetSdkVersion != null) {
                 try {
                     mirror.android.app.AlarmManager.mTargetSdkVersion.set(alarmManager, targetSdkVersion);
@@ -494,14 +494,14 @@ public final class VClient extends IVClient.Stub {
         }
         applicationInfo.nativeLibraryDir = data.appInfo.nativeLibraryDir;
         Object thread = VirtualCore.mainThread();
-        Object boundApp = mirror.android.app.ActivityThread.mBoundApplication.get(thread);
-        mirror.android.app.ActivityThread.AppBindData.appInfo.set(boundApp, data.appInfo);
-        mirror.android.app.ActivityThread.AppBindData.processName.set(boundApp, data.processName);
-        mirror.android.app.ActivityThread.AppBindData.instrumentationName.set(
+        Object boundApp = ActivityThread.mBoundApplication.get(thread);
+        ActivityThread.AppBindData.appInfo.set(boundApp, data.appInfo);
+        ActivityThread.AppBindData.processName.set(boundApp, data.processName);
+        ActivityThread.AppBindData.instrumentationName.set(
                 boundApp,
                 new ComponentName(data.appInfo.packageName, Instrumentation.class.getName())
         );
-        mirror.android.app.ActivityThread.AppBindData.info.set(boundApp, data.info);
+        ActivityThread.AppBindData.info.set(boundApp, data.info);
         ActivityThread.AppBindData.providers.set(boundApp, data.providers);
         if (LoadedApk.mSecurityViolation != null) {
             LoadedApk.mSecurityViolation.set(mBoundApplication.info, false);
@@ -567,7 +567,7 @@ public final class VClient extends IVClient.Stub {
             throw new RuntimeException("Unable to makeApplication", e);
         }
         Log.e("kk", data.info+" mInitialApplication set  " + LoadedApk.mApplication.get(data.info));
-        mirror.android.app.ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
+        ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
         ContextFixer.fixContext(mInitialApplication);
         if (Build.VERSION.SDK_INT >= 24 && "com.tencent.mm:recovery".equals(processName)) {
             fixWeChatRecovery(mInitialApplication);
@@ -628,7 +628,7 @@ public final class VClient extends IVClient.Stub {
             public void onActivityCreated(Activity activity, Bundle bundle) { }
             @Override
             public void onActivityStarted(Activity activity) {
-                ActivityCounterManager.get().activityCountAdd(activity.getPackageName(),activity.getClass().getName(), android.os.Process.myPid());
+                ActivityCounterManager.get().activityCountAdd(activity.getPackageName(),activity.getClass().getName(), Process.myPid());
                 countOfActivity++;
             }
             @Override
@@ -646,7 +646,7 @@ public final class VClient extends IVClient.Stub {
             public void onActivityPaused(Activity activity) { }
             @Override
             public void onActivityStopped(Activity activity) {
-                ActivityCounterManager.get().activityCountReduce(activity.getPackageName(),activity.getClass().getName(),android.os.Process.myPid());
+                ActivityCounterManager.get().activityCountReduce(activity.getPackageName(),activity.getClass().getName(), Process.myPid());
                 countOfActivity--;
             }
             @Override
