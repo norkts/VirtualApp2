@@ -3,6 +3,7 @@ import java.text.SimpleDateFormat
 ext {
 
     PACKAGE_NAME                = "com.carlos.multiapp"
+    PACKAGE_NAME_32BIT                = "com.carlos.multiapp"
     EXT_PACKAGE_NAME            = "com.carlos.multiapp.ext"
 
 
@@ -11,7 +12,11 @@ ext {
     VA_AUTHORITY_PREFIX         = "com.carlos.multiapp"
     VA_EXT_AUTHORITY_PREFIX     = "com.carlos.multiapp"
     VA_VERSION                  = '2.3.2'
+    VERSION                     = '' + rootProject.ext.VA_VERSION
+
     VA_VERSION_CODE             = 23202
+    VERSION_CODE             = 23202
+
     VA_FULL_EXT                 = true //如果这个是true ,那么将32里面的一些代码都会打包到插件apk 里面来
 
     signing_storeFile           = "${rootDir}/security/scorpion.jks"

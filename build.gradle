@@ -23,6 +23,14 @@ allprojects {
         google()
         mavenCentral()
         jcenter()
+        maven {
+            allowInsecureProtocol = true
+            url 'http://maven.xdja.com:8081/nexus3/repository/releases/'
+        }
+        maven {
+            allowInsecureProtocol = true
+            url 'http://maven.xdja.com:8081/nexus3/repository/xdja/'
+        }
     }
 }
 

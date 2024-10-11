@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 
 android {
-    compileSdkVersion 26
+    compileSdk 30
     defaultConfig {
         minSdkVersion 19
         //noinspection ExpiredTargetSdkVersion
@@ -45,6 +45,8 @@ android {
         abortOnError false
         warning 'NewApi', 'OnClick', 'EllipsizeMaxLines'
     }
+    buildToolsVersion '30.0.3'
+    ndkVersion '28.0.12433566 rc1'
 }
 gradle.taskGraph.afterTask { task ->
     def TASK_NAME = "transformNativeLibsWithStripDebugSymbolFor"
