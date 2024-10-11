@@ -15,7 +15,7 @@ ext {
     VERSION                     = '' + rootProject.ext.VA_VERSION
 
     VA_VERSION_CODE             = 23202
-    VERSION_CODE             = 23202
+    VERSION_CODE                = 23202
 
     VA_FULL_EXT                 = true //如果这个是true ,那么将32里面的一些代码都会打包到插件apk 里面来
 

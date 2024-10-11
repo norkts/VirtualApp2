@@ -22,7 +22,7 @@ import android.os.IInterface;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;

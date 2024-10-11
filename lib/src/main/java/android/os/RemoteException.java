@@ -19,7 +19,7 @@ public class RemoteException extends AndroidException {
     /** @hide */
     public RemoteException(String message, Throwable cause, boolean enableSuppression,
                            boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+        super();
     }
 
     /** @hide */
@@ -58,7 +58,7 @@ public class RemoteException extends AndroidException {
     @NonNull
     public RuntimeException rethrowFromSystemServer() {
         if (this instanceof DeadObjectException) {
-            throw new DeadSystemRuntimeException();
+            throw new RuntimeException("DeadObjectException");
         } else {
             throw new RuntimeException(this);
         }

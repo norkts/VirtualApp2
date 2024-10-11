@@ -9,6 +9,7 @@ android {
         targetSdkVersion 22
 
         buildConfigField 'String', 'VA_VERSION_NAME', '"V' + rootProject.ext.VERSION + '"'
+        buildConfigField 'int', 'VERSION_CODE', '' + rootProject.ext.VERSION_CODE
 
         if (project.hasProperty('commit')) {
             buildConfigField 'String', 'commit', '"' + commit + '"'

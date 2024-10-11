@@ -108,7 +108,7 @@ class MethodProxies {
         public Object call(Object who, Method method, Object... args) throws Throwable {
             Object ret = super.call(who, method, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
-            List<NotificationChannelGroup> list = slice ? ParceledListSlice.getList.call(ret)
+            List<NotificationChannelGroup> list = slice ? (List)ParceledListSlice.getList.call(ret)
                     : (List) ret;
             if (list != null) {
                 for (int i = list.size() - 1; i >= 0; i--) {
@@ -189,7 +189,7 @@ class MethodProxies {
         public Object call(Object who, Method method, Object... args) throws Throwable {
             Object result = super.call(who, method, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
-            List<NotificationChannel> list = slice ? ParceledListSlice.getList.call(result)
+            List<NotificationChannel> list = slice ? (List)ParceledListSlice.getList.call(result)
                     : (List) result;
             if (list != null) {
                 for (int i = list.size() - 1; i >= 0; i--) {
@@ -439,7 +439,7 @@ class MethodProxies {
             }
             Object list = super.call(who, method, args);
             boolean slice = ParceledListSliceCompat.isReturnParceledListSlice(method);
-            List<StatusBarNotification> resultList = slice ? ParceledListSlice.getList.call(list)
+            List<StatusBarNotification> resultList = slice ? (List)ParceledListSlice.getList.call(list)
                     : (List) list;
             if (resultList != null) {
                 for (int i = resultList.size() - 1; i >= 0; i--) {

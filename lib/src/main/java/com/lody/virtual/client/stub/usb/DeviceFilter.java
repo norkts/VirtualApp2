@@ -4,7 +4,7 @@ package com.lody.virtual.client.stub.usb;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

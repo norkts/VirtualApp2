@@ -3,7 +3,7 @@ package com.xdja.zs;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.lody.virtual.client.core.VirtualCore;
