@@ -25,8 +25,15 @@ android {
 
 }
 
+repositories {
+    flatDir {
+        dirs 'sdk'
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
-    compileOnly project(':hooklib')
+//    implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
+    compileOnly(name:'lib-release', ext:'aar')
+    implementation project(':hooklib')
 }

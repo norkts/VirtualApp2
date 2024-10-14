@@ -6,8 +6,10 @@ message(STATUS "===================CMAKE==================== ${ANDROID_ABI}"+"  
 #设置生成的so动态库最后输出的路径
 if(${ANDROID_ABI} STREQUAL "arm64-v8a")
     project(sandhook_64)
+    project(sandhook)
     #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../jniLibs/armeabi-v7a/)
 else()
+    project(sandhook_64)
     project(sandhook)
     #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../jniLibs/${ANDROID_ABI})
 endif()

@@ -111,6 +111,7 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation(name:'lib-release', ext:'aar')
+    implementation project(":xposedcompat")
     //Android Lib
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
