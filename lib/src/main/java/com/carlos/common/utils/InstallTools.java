@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 public class InstallTools {
-   public static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DX0VBgNmHiAoKhY2DW8FOAM="));
+   public static String TAG = "VA-InstallTools";
 
    public static long getInstallTimeByApk(Context context) {
       try {
@@ -51,7 +51,7 @@ public class InstallTools {
       long timeStemp = 0L;
 
       try {
-         SimpleDateFormat sf = new SimpleDateFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAcYJ2lSEg1oCl0wKBhSVg==")));
+         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
          d = sf.parse(timers);
       } catch (ParseException var6) {
          ParseException e = var6;
@@ -68,16 +68,16 @@ public class InstallTools {
 
    public static void install(Context context, File file) {
       try {
-         Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xIBZmDzxF")));
+         Intent intent = new Intent("android.intent.action.VIEW");
          intent.addFlags(268435456);
          intent.addFlags(1);
          Uri uri;
          if (VERSION.SDK_INT >= 24) {
-            uri = FileProvider.getUriForFile(context, context.getPackageName().concat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06KmowOC9iHjAq"))), file);
-            intent.setDataAndType(uri, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGoFAil9AQozKi0XDWUVMCx1NzgbLgcMKWMKESllHiQsKghbIWsJEjNvJzA/JQg6LA==")));
+            uri = FileProvider.getUriForFile(context, context.getPackageName().concat(".provider"), file);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
          } else {
             uri = Uri.fromFile(file);
-            intent.setDataAndType(uri, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGoFAil9AQozKi0XDWUVMCx1NzgbLgcMKWMKESllHiQsKghbIWsJEjNvJzA/JQg6LA==")));
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
          }
 
          context.startActivity(intent);

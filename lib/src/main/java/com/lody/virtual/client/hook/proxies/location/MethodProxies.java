@@ -39,17 +39,17 @@ class MethodProxies {
 
    private static class RegisterLocationListener extends ReplaceSequencePkgMethodProxy {
       public RegisterLocationListener() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwOKi0qOWUzLCVlNQIaKT0qJ2AwLDU=")), 2);
+         super("registerLocationListener", 2);
       }
 
       public Object call(Object obj, Method method, Object... args) throws Throwable {
-         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OG8jNC1jASggKAguU28FAjdvER4cLCwEI2EjFiBsNAo7ODpXVg==")));
+         VLog.d("VA-", "   registerLocationListener  ");
          if (isFakeLocationEnable()) {
             VLocationManager.get().requestLocationUpdates(args);
             return 0;
          } else {
-            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+KW8zAj5iAVRF")).equals(args[0])) {
-               args[0] = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ=="));
+            if ("passive".equals(args[0])) {
+               args[0] = "gps";
             }
 
             LocationRequest locationRequest = (LocationRequest)args[1];
@@ -65,20 +65,20 @@ class MethodProxies {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgAOWsaMC9gJFkfLwdbCG4VQSlqJSQaLC4YD2MaLC8="));
+         return "locationCallbackFinished";
       }
    }
 
    static class getProviderProperties extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFiVmNAYwKAguDGoVNAJrDgo/IxguDw=="));
+         return "getProviderProperties";
       }
 
       public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
          if (isFakeLocationEnable()) {
             try {
-               Reflect.on(result).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwUMM28aNC9hNDApIj0MLmUFNARqJ1RF")), false);
-               Reflect.on(result).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwUMM28aNC9hNDApJy0MCG8zSFo=")), false);
+               Reflect.on(result).set("mRequiresNetwork", false);
+               Reflect.on(result).set("mRequiresCell", false);
             } catch (Throwable var6) {
                Throwable e = var6;
                e.printStackTrace();
@@ -93,7 +93,7 @@ class MethodProxies {
 
    static class sendExtraCommand extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLNDBmESw7Jy1fD28jQSZrEVRF"));
+         return "sendExtraCommand";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -104,35 +104,35 @@ class MethodProxies {
    @SkipInject
    static class RegisterGnssStatusCallback extends AddGpsStatusListener {
       public RegisterGnssStatusCallback() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwTKj4qL2IKBjdvHig6JT4+KGAaMCRpJAJF")));
+         super("registerGnssStatusCallback");
       }
    }
 
    @SkipInject
    static class UnregisterGnssStatusCallback extends RemoveGpsStatusListener {
       public UnregisterGnssStatusCallback() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcKmgVPC9hJwo/Izs6DmoKAl5vETg/Khc2H30KTTdpNCQsKghSVg==")));
+         super("unregisterGnssStatusCallback");
       }
    }
 
    @SkipInject
    static class RemoveUpdatesPI extends RemoveUpdates {
       public RemoveUpdatesPI() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtuASQwLwg2PWoITQk=")));
+         super("removeUpdatesPI");
       }
    }
 
    @SkipInject
    static class RequestLocationUpdatesPI extends RequestLocationUpdates {
       public RequestLocationUpdatesPI() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uL2wVNANmHFE1Ly0iLmwjNCZnDjwvLRcqJ2EhOBY=")));
+         super("requestLocationUpdatesPI");
       }
    }
 
    @SkipInject
    static class RemoveGpsStatusListener extends ReplaceLastPkgMethodProxy {
       public RemoveGpsStatusListener() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtqJyQpOy42OWUwGgN9ER46KgguKmIFMFo=")));
+         super("removeGpsStatusListener");
       }
 
       public RemoveGpsStatusListener(String name) {
@@ -152,28 +152,28 @@ class MethodProxies {
    @SkipInject
    static class GetBestProvider extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMjNANmHyQqKi4+MWkzGgQ="));
+         return "getBestProvider";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
-         return isFakeLocationEnable() ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ==")) : super.call(who, method, args);
+         return isFakeLocationEnable() ? "gps" : super.call(who, method, args);
       }
    }
 
    private static class getAllProviders extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRpESw1LD0cPmkgRQM="));
+         return "getAllProviders";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
-         return isFakeLocationEnable() ? Arrays.asList(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4uLGwzGgRjJ1RF"))) : super.call(who, method, args);
+         return isFakeLocationEnable() ? Arrays.asList("gps", "network") : super.call(who, method, args);
       }
    }
 
    @SkipInject
    static class IsProviderEnabled extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2Am8jGj5jDgo/IzsMDm4jRSRrASxF"));
+         return "isProviderEnabled";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -184,7 +184,7 @@ class MethodProxies {
    @SkipInject
    static class GetLastKnownLocation extends GetLastLocation {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFJANmHA42Ki46DmczNCloDiwaLD4cVg=="));
+         return "getLastKnownLocation";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -200,7 +200,7 @@ class MethodProxies {
    @SkipInject
    static class GetLastLocation extends ReplaceLastPkgMethodProxy {
       public GetLastLocation() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFJANmHFE1Ly0iLmwjNCY=")));
+         super("getLastLocation");
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -220,7 +220,7 @@ class MethodProxies {
 
    static class RemoveUpdates extends ReplaceLastPkgMethodProxy {
       public RemoveUpdates() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtuASQwLwg2PWoFSFo=")));
+         super("removeUpdates");
       }
 
       public RemoveUpdates(String name) {
@@ -240,7 +240,7 @@ class MethodProxies {
    @SkipInject
    static class RequestLocationUpdates extends ReplaceFirstPkgMethodProxy {
       public RequestLocationUpdates() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uL2wVNANmHFE1Ly0iLmwjNCZnDjwvLRcqJ2EjSFo=")));
+         super("requestLocationUpdates");
       }
 
       public RequestLocationUpdates(String name) {
@@ -248,7 +248,7 @@ class MethodProxies {
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
-         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OG8jNAFmDjApLBVbDW4FQQZqAQYbIhc6IH0FFiBlICMp")));
+         VLog.d("VA-", "   requestLocationUpdates  ");
          if (isFakeLocationEnable()) {
             VLocationManager.get().requestLocationUpdates(args);
             return 0;
@@ -266,7 +266,7 @@ class MethodProxies {
    @SkipInject
    static class AddGpsStatusListener extends ReplaceLastPkgMethodProxy {
       public AddGpsStatusListener() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGAwIANpJwo7LBgML2czLANvESgbLhcMVg==")));
+         super("addGpsStatusListener");
       }
 
       public AddGpsStatusListener(String name) {

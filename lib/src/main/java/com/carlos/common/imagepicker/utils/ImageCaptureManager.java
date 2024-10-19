@@ -18,8 +18,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class ImageCaptureManager {
-   private static final String CAPTURED_PHOTO_PATH_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY2I28gFitgNwoCKRdfLm8ITTdvEVlF"));
-   public static final String PHOTO_PATH = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhfD2wFGh9hHiAgKRhSVg=="));
+   private static final String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
+   public static final String PHOTO_PATH = "photo_path";
    private String mCurrentPhotoPath;
    private Context mContext;
 
@@ -28,11 +28,11 @@ public class ImageCaptureManager {
    }
 
    private File createImageFile() throws IOException {
-      String timeStamp = (new SimpleDateFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAcYJ2kbEg1iHgpAIRUAD28gAgM=")), Locale.ENGLISH)).format(new Date());
-      String imageFileName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JDs6WGA2Glo=")) + timeStamp + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5XKGgzSFo="));
+      String timeStamp = (new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH)).format(new Date());
+      String imageFileName = "JPEG_" + timeStamp + ".jpg";
       File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
       if (!storageDir.exists() && !storageDir.mkdir()) {
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRY+Wg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfKmowPC9gNDs8IAguKG8KRQN1Mx0bPC5SVg==")));
+         Log.e("TAG", "Throwing Errors....");
          throw new IOException();
       } else {
          File image = new File(storageDir, imageFileName);
@@ -42,21 +42,21 @@ public class ImageCaptureManager {
    }
 
    public Intent dispatchTakePictureIntent() throws IOException {
-      Intent takePictureIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k3KAc2MW4nMDdoJCwaLD4bKmsIQQ5mIgoOIAZbQGcYNABgEVRF")));
+      Intent takePictureIntent = new Intent("android.media.action.IMAGE_CAPTURE");
       if (takePictureIntent.resolveActivity(this.mContext.getPackageManager()) != null) {
          File file = this.createImageFile();
          Uri photoFile = null;
          if (VERSION.SDK_INT >= 24) {
             ContentValues contentValues = new ContentValues(1);
-            contentValues.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo=")), file.getAbsolutePath());
+            contentValues.put("_data", file.getAbsolutePath());
             Uri uri = this.mContext.getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, contentValues);
-            takePictureIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0uLG8KNAY=")), uri);
+            takePictureIntent.putExtra("output", uri);
          } else {
             photoFile = Uri.fromFile(file);
          }
 
          if (photoFile != null) {
-            takePictureIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0uLG8KNAY=")), photoFile);
+            takePictureIntent.putExtra("output", photoFile);
          }
 
          takePictureIntent.putExtra(PHOTO_PATH, file.getAbsolutePath());
@@ -66,7 +66,7 @@ public class ImageCaptureManager {
    }
 
    public void galleryAddPic() {
-      Intent mediaScanIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42QQpmHBoAJQUYH2ALBl9gHAoALysuAmQxRVVkJSQK")));
+      Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
       if (!TextUtils.isEmpty(this.mCurrentPhotoPath)) {
          File f = new File(this.mCurrentPhotoPath);
          Uri contentUri = Uri.fromFile(f);

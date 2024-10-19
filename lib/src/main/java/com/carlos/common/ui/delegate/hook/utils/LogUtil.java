@@ -15,9 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LogUtil {
-   private static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS5fD28wMFo="));
+   private static String TAG = "ghost";
    private static boolean LOG_DEBUG = true;
-   private static final String LINE_SEPARATOR = System.getProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgYCGhSBgNiASQ7Iz0iLm8KRVo=")));
+   private static final String LINE_SEPARATOR = System.getProperty("line.separator");
    private static final int VERBOSE = 2;
    private static final int DEBUG = 3;
    private static final int INFO = 4;
@@ -57,7 +57,7 @@ public class LogUtil {
       for(int var4 = 0; var4 < var3; ++var4) {
          Object obj = var2[var4];
          sb.append(obj);
-         sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")));
+         sb.append(",");
       }
 
       log(4, (String)null, String.valueOf(sb));
@@ -71,7 +71,7 @@ public class LogUtil {
       for(int var4 = 0; var4 < var3; ++var4) {
          Object obj = var2[var4];
          sb.append(obj);
-         sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")));
+         sb.append(",");
       }
 
       log(3, (String)null, String.valueOf(sb));
@@ -194,7 +194,7 @@ public class LogUtil {
 
    private static void printJson(String tag, String json, String headString) {
       if (TextUtils.isEmpty(json)) {
-         d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQgIKGwKDSVoNzAoKl4mCmoFNCZ4ETAcLC0qJ2AzFlo=")));
+         d("Empty/Null json content");
       } else {
          if (TextUtils.isEmpty(tag)) {
             tag = TAG;
@@ -202,10 +202,10 @@ public class LogUtil {
 
          String message;
          try {
-            if (json.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KC5SVg==")))) {
+            if (json.startsWith("{")) {
                JSONObject jsonObject = new JSONObject(json);
                message = jsonObject.toString(4);
-            } else if (json.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IC5SVg==")))) {
+            } else if (json.startsWith("[")) {
                JSONArray jsonArray = new JSONArray(json);
                message = jsonArray.toString(4);
             } else {
@@ -223,7 +223,7 @@ public class LogUtil {
 
          for(int var7 = 0; var7 < var6; ++var7) {
             String line = var5[var7];
-            printSub(3, tag, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LxhSVg==")) + line);
+            printSub(3, tag, "|" + line);
          }
 
          printLine(tag, false);
@@ -240,10 +240,10 @@ public class LogUtil {
             Source xmlInput = new StreamSource(new StringReader(xml));
             StreamResult xmlOutput = new StreamResult(new StringWriter());
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcPGgVBgY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAguKQ==")));
-            transformer.setOutputProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KC5fLGwKIzJOIB4aKgdaDm4gTTdoJ1kgPC4ACGIkAgVlJF09LS42KmsVNARsDQ4oJgcYPGwzLFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oj5SVg==")));
+            transformer.setOutputProperty("indent", "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.transform(xmlInput, xmlOutput);
-            xml = xmlOutput.getWriter().toString().replaceFirst(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pz5SVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PzhXVg==")));
+            xml = xmlOutput.getWriter().toString().replaceFirst(">", ">\n");
          } catch (Throwable var8) {
             Throwable e = var8;
             e.printStackTrace();
@@ -251,7 +251,7 @@ public class LogUtil {
 
          xml = headString + "\n" + xml;
       } else {
-         xml = headString + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OxgAPXsKPC9mHh08Kj4MCG83TSVoN1EgLT0qVg=="));
+         xml = headString + "Log with null object";
       }
 
       printLine(tag, true);
@@ -262,7 +262,7 @@ public class LogUtil {
       for(int var6 = 0; var6 < var12; ++var6) {
          String line = var11[var6];
          if (!TextUtils.isEmpty(line)) {
-            printSub(3, tag, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LxhSVg==")) + line);
+            printSub(3, tag, "|" + line);
          }
       }
 
@@ -277,9 +277,9 @@ public class LogUtil {
       StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
       StackTraceElement targetElement = stackTrace[5];
       String className = targetElement.getClassName();
-      String[] classNameInfo = className.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("J18cVg==")));
+      String[] classNameInfo = className.split("\\.");
       if (classNameInfo.length > 0) {
-         className = classNameInfo[classNameInfo.length - 1] + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5XP2wjJFo="));
+         className = classNameInfo[classNameInfo.length - 1] + ".java";
       }
 
       String methodName = targetElement.getMethodName();
@@ -289,8 +289,8 @@ public class LogUtil {
       }
 
       String methodNameShort = methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
-      String msg = objects == null ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OxgAPXsKPC9mHh08Kj4MCG83TSVoN1EgLT0qVg==")) : getObjectsString(objects);
-      String headString = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ICpfVg==")) + className + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + lineNumber + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAQ2Vg==")) + methodNameShort + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhUHOA=="));
+      String msg = objects == null ? "Log with null object" : getObjectsString(objects);
+      String headString = "[(" + className + ":" + lineNumber + ")#" + methodNameShort + " ] ";
       return new String[]{tag, msg, headString};
    }
 
@@ -302,24 +302,24 @@ public class LogUtil {
          for(int i = 0; i < objects.length; ++i) {
             Object object = objects[i];
             if (object == null) {
-               stringBuilder.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+KmsVElo="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IC5SVg=="))).append(i).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JwhSVg=="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl4HOA=="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoFSFo="))).append("\n");
+               stringBuilder.append("param").append("[").append(i).append("]").append(" = ").append("null").append("\n");
             } else {
-               stringBuilder.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+KmsVElo="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IC5SVg=="))).append(i).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JwhSVg=="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl4HOA=="))).append(object.toString()).append("\n");
+               stringBuilder.append("param").append("[").append(i).append("]").append(" = ").append(object.toString()).append("\n");
             }
          }
 
          return stringBuilder.toString();
       } else {
          Object object = objects[0];
-         return object == null ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoFSFo=")) : object.toString();
+         return object == null ? "null" : object.toString();
       }
    }
 
    private static void printLine(String tag, boolean isTop) {
       if (isTop) {
-         Log.d(tag, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("AAkrBkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEQ==")));
+         Log.d(tag, "╔═══════════════════════════════════════════════════════════════════════════════════════");
       } else {
-         Log.d(tag, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("AAkrBEEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEUcHEwBESRtTAAkrAkEyMUxbAwsCAQoJDERNB0xGAC0RBz8rQFsHFx1HAw8fAkAdQEYEMQ5BNi1THQoNEQ==")));
+         Log.d(tag, "╚═══════════════════════════════════════════════════════════════════════════════════════");
       }
 
    }

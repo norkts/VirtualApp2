@@ -36,24 +36,24 @@ public abstract class BaseDialogFragment extends DialogFragment {
 
    protected static Bundle getArgumentBundle(Builder b) {
       Bundle bundle = new Bundle();
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwUmCWgKMCA=")), b.mWidth);
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwZfM2UVPCBmEVRF")), b.mHeight);
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYmKmsaOC9mEQZF")), b.mGravity);
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYAPmggLCtmHxpF")), b.mOffsetX);
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYAPmggLCtmHwZF")), b.mOffsetY);
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY+CGUVEjdmHgY1Kj5SVg==")), b.mAnimation);
+      bundle.putInt("mWidth", b.mWidth);
+      bundle.putInt("mHeight", b.mHeight);
+      bundle.putInt("mGravity", b.mGravity);
+      bundle.putInt("mOffsetX", b.mOffsetX);
+      bundle.putInt("mOffsetY", b.mOffsetY);
+      bundle.putInt("mAnimation", b.mAnimation);
       return bundle;
    }
 
    public void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       if (this.getArguments() != null) {
-         this.mWidth = this.getArguments().getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwUmCWgKMCA=")));
-         this.mHeight = this.getArguments().getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwZfM2UVPCBmEVRF")));
-         this.mOffsetX = this.getArguments().getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYAPmggLCtmHxpF")));
-         this.mOffsetY = this.getArguments().getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYAPmggLCtmHwZF")));
-         this.mAnimation = this.getArguments().getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY+CGUVEjdmHgY1Kj5SVg==")));
-         this.mGravity = this.getArguments().getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYmKmsaOC9mEQZF")));
+         this.mWidth = this.getArguments().getInt("mWidth");
+         this.mHeight = this.getArguments().getInt("mHeight");
+         this.mOffsetX = this.getArguments().getInt("mOffsetX");
+         this.mOffsetY = this.getArguments().getInt("mOffsetY");
+         this.mAnimation = this.getArguments().getInt("mAnimation");
+         this.mGravity = this.getArguments().getInt("mGravity");
       }
 
    }

@@ -25,8 +25,8 @@ public class DownloadActivity extends AppCompatActivity {
    ProgressBar pb_progress1;
    ProgressBar pb_progress2;
    DownloadManager mDownloadManager;
-   String wechatUrl = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8OTCVOJAooKBccKHonMAFsDRoqLD4HKWYgLCxrHhodOQhbKmsaFgNlES86IC02IGsaBgJ1ClAcLggcPG8jGi9iViMgM18lDm4gTSE="));
-   String qqUrl = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8KLzJOIB4rKF4YD2gjQQJsVhoqLD4HKWAFGiRlESMeLC1bCmsFJAF6NTg5JBgqJm8KLA9iIyg8Iy4MCWoFNAFhDx47Kj02KG8FLCx1Nzg7Iz5SVg=="));
+   String wechatUrl = "http://dldir1.qq.com/weixin/android/weixin703android1400.apk";
+   String qqUrl = "https://qd.myapp.com/myapp/qqteam/AndroidQQ/mobileqq_android.apk";
    Button btn_cancel2;
    Button btn_cancel1;
 
@@ -40,44 +40,44 @@ public class DownloadActivity extends AppCompatActivity {
       this.mDownloadManager = DownloadManager.getInstance();
       this.mDownloadManager.add(this, this.wechatUrl, new DownloadListner() {
          public void onFinished() {
-            Toast.makeText(DownloadActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzNYEloOAgkdDH4jSFo=")), 0).show();
+            Toast.makeText(DownloadActivity.this, "下载完成!", 0).show();
          }
 
          public void onProgress(float progress) {
             DownloadActivity.this.pb_progress1.setProgress((int)(progress * 100.0F));
-            DownloadActivity.this.tv_progress1.setText(String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQQbKmgjSFo=")), progress * 100.0F) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQhSVg==")));
+            DownloadActivity.this.tv_progress1.setText(String.format("%.2f", progress * 100.0F) + "%");
          }
 
          public void onPause() {
-            Toast.makeText(DownloadActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEZJIR5YXgcUPwhSVg==")), 0).show();
+            Toast.makeText(DownloadActivity.this, "暂停了!", 0).show();
          }
 
          public void onCancel() {
-            DownloadActivity.this.tv_progress1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ol8uVg==")));
+            DownloadActivity.this.tv_progress1.setText("0%");
             DownloadActivity.this.pb_progress1.setProgress(0);
-            DownloadActivity.this.btn_download1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
-            Toast.makeText(DownloadActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzNYFT0qAhlcBkdbGwp4AVRF")), 0).show();
+            DownloadActivity.this.btn_download1.setText("下载");
+            Toast.makeText(DownloadActivity.this, "下载已取消!", 0).show();
          }
       });
       this.mDownloadManager.add(this, this.qqUrl, new DownloadListner() {
          public void onFinished() {
-            Toast.makeText(DownloadActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzNYEloOAgkdDH4jSFo=")), 0).show();
+            Toast.makeText(DownloadActivity.this, "下载完成!", 0).show();
          }
 
          public void onProgress(float progress) {
             DownloadActivity.this.pb_progress2.setProgress((int)(progress * 100.0F));
-            DownloadActivity.this.tv_progress2.setText(String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQQbKmgjSFo=")), progress * 100.0F) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQhSVg==")));
+            DownloadActivity.this.tv_progress2.setText(String.format("%.2f", progress * 100.0F) + "%");
          }
 
          public void onPause() {
-            Toast.makeText(DownloadActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEZJIR5YXgcUPwhSVg==")), 0).show();
+            Toast.makeText(DownloadActivity.this, "暂停了!", 0).show();
          }
 
          public void onCancel() {
-            DownloadActivity.this.tv_progress2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ol8uVg==")));
+            DownloadActivity.this.tv_progress2.setText("0%");
             DownloadActivity.this.pb_progress2.setProgress(0);
-            DownloadActivity.this.btn_download2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
-            Toast.makeText(DownloadActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzNYFT0qAhlcBkdbGwp4AVRF")), 0).show();
+            DownloadActivity.this.btn_download2.setText("下载");
+            Toast.makeText(DownloadActivity.this, "下载已取消!", 0).show();
          }
       });
    }
@@ -86,17 +86,17 @@ public class DownloadActivity extends AppCompatActivity {
       if (view == this.btn_download1) {
          if (!this.mDownloadManager.isDownloading(this.wechatUrl)) {
             this.mDownloadManager.download(this.wechatUrl);
-            this.btn_download1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEZJIR4=")));
+            this.btn_download1.setText("暂停");
          } else {
-            this.btn_download1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
+            this.btn_download1.setText("下载");
             this.mDownloadManager.pause(this.wechatUrl);
          }
       } else if (view == this.btn_download2) {
          if (!this.mDownloadManager.isDownloading(this.qqUrl)) {
             this.mDownloadManager.download(this.qqUrl);
-            this.btn_download2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEZJIR4=")));
+            this.btn_download2.setText("暂停");
          } else {
-            this.btn_download2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
+            this.btn_download2.setText("下载");
             this.mDownloadManager.pause(this.qqUrl);
          }
       }
@@ -105,15 +105,15 @@ public class DownloadActivity extends AppCompatActivity {
 
    public void downloadOrPauseAll(View view) {
       if (!this.mDownloadManager.isDownloading(this.wechatUrl, this.qqUrl)) {
-         this.btn_download1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEZJIR4=")));
-         this.btn_download2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEZJIR4=")));
-         this.btn_download_all.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxorCkNJFyBYAwcQAhk/GA==")));
+         this.btn_download1.setText("暂停");
+         this.btn_download2.setText("暂停");
+         this.btn_download_all.setText("全部暂停");
          this.mDownloadManager.download(this.wechatUrl, this.qqUrl);
       } else {
          this.mDownloadManager.pause(this.wechatUrl, this.qqUrl);
-         this.btn_download1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
-         this.btn_download2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
-         this.btn_download_all.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxorCkNJFyBYXh8XA1dAJQ==")));
+         this.btn_download1.setText("下载");
+         this.btn_download2.setText("下载");
+         this.btn_download_all.setText("全部下载");
       }
 
    }
@@ -129,18 +129,18 @@ public class DownloadActivity extends AppCompatActivity {
 
    public void cancelAll(View view) {
       this.mDownloadManager.cancel(this.wechatUrl, this.qqUrl);
-      this.btn_download1.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
-      this.btn_download2.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzM=")));
-      this.btn_download_all.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxorCkNJFyBYXh8XA1dAJQ==")));
+      this.btn_download1.setText("下载");
+      this.btn_download2.setText("下载");
+      this.btn_download_all.setText("全部下载");
    }
 
    protected void onStart() {
       super.onStart();
       if (VERSION.SDK_INT >= 23) {
-         String permission = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsmU2sLFgpgIgoXOzwAU30xJExmMjBOLiwqAmYmFlo="));
+         String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
          if (!this.checkPermission(permission)) {
             if (this.shouldShowRationale(permission)) {
-               this.showMessage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BhkBEkMRJRFYA14fAxoZDEoGH0hrESgeLDYrUgY0RCl8N1RF")));
+               this.showMessage("需要权限跑demo哦...");
             }
 
             ActivityCompat.requestPermissions(this, new String[]{permission}, 1);

@@ -37,7 +37,7 @@ public class VPackageManager {
    }
 
    private Object getRemoteInterface() {
-      return IPackageManager.Stub.asInterface(ServiceManagerNative.getService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF"))));
+      return IPackageManager.Stub.asInterface(ServiceManagerNative.getService("package"));
    }
 
    public static VPackageManager get() {

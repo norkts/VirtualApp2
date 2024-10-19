@@ -27,9 +27,9 @@ import java.util.concurrent.Executors;
 
 public class InstallActivity extends AppCompatActivity {
    private static final String TAG = InstallActivity.class.getSimpleName();
-   private static final String PACKAGE_INSTALLED_ACTION = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xBg59HAIOJDxbH2IhJFZgHAYWLjwuWGEIQV9hJRpF"));
-   public static final String KEY_XAPK_PATH = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBg+KGU2GgJ9AQo0"));
-   public static final String KEY_APK_PATHS = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6MWYwIDdmHhpF"));
+   private static final String PACKAGE_INSTALLED_ACTION = "android.intent.action.XAPK_PACKAGE_INSTALLED";
+   public static final String KEY_XAPK_PATH = "xapk_path";
+   public static final String KEY_APK_PATHS = "apk_path";
    private String xapkPath;
    private List<String> apkPaths;
    private ExecutorService mExecutorService;
@@ -45,7 +45,7 @@ public class InstallActivity extends AppCompatActivity {
 
    private void installXapk() {
       if (VERSION.SDK_INT < 21) {
-         Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwlAHEYyOT5YXh8NAgoNDUdJJRFBFR9PBRwNGU5XAyofLD0KWDYBX1pWMVFVDzg5JBgqJm8KLzZ1Iy8dBxodX0YWQitYXh8IAj8ZX0dNJSQ=")), 0).show();
+         Toast.makeText(this, "暂时不支持安装,请更新到Android 5.0及以上版本", 0).show();
          this.finish();
       }
 
@@ -151,17 +151,17 @@ public class InstallActivity extends AppCompatActivity {
          int status = -100;
          String message = "";
          if (extras != null) {
-            status = extras.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQjSFo=")));
-            message = extras.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQmGkhgHDBBIwU+Bg==")));
+            status = extras.getInt("android.content.pm.extra.STATUS");
+            message = extras.getString("android.content.pm.extra.STATUS_MESSAGE");
          }
 
          switch (status) {
             case -1:
-               Intent confirmIntent = (Intent)extras.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmsIRVRmDB4T")));
+               Intent confirmIntent = (Intent)extras.get("android.intent.extra.INTENT");
                this.startActivity(confirmIntent);
                break;
             case 0:
-               Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwZXEMRFxVYAB8CAhkFHX4jSFo=")), 0).show();
+               Toast.makeText(this, "安装成功!", 0).show();
                this.finish();
                break;
             case 1:
@@ -171,12 +171,12 @@ public class InstallActivity extends AppCompatActivity {
             case 5:
             case 6:
             case 7:
-               Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwZXEMRFxVYEg8rA1cNPX87EyVVLxNJQFtcKVQFSFo=")), 0).show();
+               Toast.makeText(this, "安装失败,请重试", 0).show();
                this.finish();
-               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcKWwFJCRgVyQ+LwccCGkjATd4EVRF")) + status + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")) + message);
+               Log.d(TAG, "Install failed! " + status + ", " + message);
                break;
             default:
-               Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwZXEMRFxVYEg8rA1cNPX87Ey0dLy1ARDY/Xx8oEz4fPA9XEwAJH1cNMSFVLyEvRDUNIx4SIVMCUgcSXCYrHQY7BzQdUx81WSUZWBgrEyUYAVRF")), 0).show();
+               Toast.makeText(this, "安装失败,解压文件可能已丢失或损坏，请重试", 0).show();
                this.finish();
          }
       }

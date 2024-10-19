@@ -44,14 +44,14 @@ class WidthCompat {
 
    private int getMIUINotificationWidth(Context context, int width, int height) {
       try {
-         Context systemUi = context.createPackageContext(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmoKLANvESgeKhgYVg==")), 3);
-         int layoutId = this.getSystemId(systemUi, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANsJCw7IzxfDm8KBi9rNx4qLRcqI2AgRV9lNFkw")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAY=")));
+         Context systemUi = context.createPackageContext("com.android.systemui", 3);
+         int layoutId = this.getSystemId(systemUi, "status_bar_notification_row", "layout");
          if (layoutId != 0) {
             ViewGroup viewGroup = this.createViewGroup(systemUi, layoutId);
-            int lid = this.getSystemId(systemUi, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqP28KMC9mNDBF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgqVg==")));
+            int lid = this.getSystemId(systemUi, "adaptive", "id");
             View child;
             if (lid == 0) {
-               lid = this.getSystemId(systemUi, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmEVRF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgqVg==")));
+               lid = this.getSystemId(systemUi, "content", "id");
             } else {
                child = viewGroup.findViewById(lid);
                if (child != null && child instanceof ViewGroup) {
@@ -70,7 +70,7 @@ class WidthCompat {
 
                for(int i = 0; i < count; ++i) {
                   child = viewGroup.getChildAt(i);
-                  if (FrameLayout.class.isInstance(child) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oxg+LGgaLAZrAQo/KgY+MWkgElo=")).equals(child.getClass().getName()) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4YImgbJCx9ASQgKQg+PWczQT9lJCg/")).equals(child.getClass().getName())) {
+                  if (FrameLayout.class.isInstance(child) || "LatestItemView".equals(child.getClass().getName()) || "SizeAdaptiveLayout".equals(child.getClass().getName())) {
                      return width - child.getLeft() - child.getPaddingLeft() - child.getPaddingRight();
                   }
                }
@@ -84,12 +84,12 @@ class WidthCompat {
 
    private int getEMUINotificationWidth(Context context, int width, int height) {
       try {
-         Context systemUi = context.createPackageContext(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmoKLANvESgeKhgYVg==")), 3);
-         int layoutId = this.getSystemId(systemUi, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgYDWgYGjdnHgYp")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAY=")));
+         Context systemUi = context.createPackageContext("com.android.systemui", 3);
+         int layoutId = this.getSystemId(systemUi, "time_axis", "layout");
          if (layoutId != 0) {
             ViewGroup viewGroup = this.createViewGroup(systemUi, layoutId);
             this.layout(viewGroup, width, height);
-            int lid = this.getSystemId(systemUi, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmHx4uKQcMI2MFEgRlJCg7")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgqVg==")));
+            int lid = this.getSystemId(systemUi, "content_view_group", "id");
             if (lid != 0) {
                View child = viewGroup.findViewById(lid);
                return width - child.getLeft() - child.getPaddingLeft() - child.getPaddingRight();
@@ -111,7 +111,7 @@ class WidthCompat {
    }
 
    private int getSystemId(Context systemUi, String name, String type) {
-      return systemUi.getResources().getIdentifier(name, type, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmoKLANvESgeKhgYVg==")));
+      return systemUi.getResources().getIdentifier(name, type, "com.android.systemui");
    }
 
    private ViewGroup createViewGroup(Context context, int layoutId) {

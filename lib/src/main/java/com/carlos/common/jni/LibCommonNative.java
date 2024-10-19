@@ -14,6 +14,6 @@ public class LibCommonNative {
    public static native void fileMerge(String var0, String var1, String var2, int var3);
 
    static {
-      System.loadLibrary(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADWoVGiZOATw7")));
+      System.loadLibrary("common-va");
    }
 }

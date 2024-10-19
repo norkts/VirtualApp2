@@ -24,25 +24,25 @@ public class MockLocationHelper {
          try {
             VLocation location = VLocationManager.get().getCurAppLocation();
             if (location != null) {
-               String date = (new SimpleDateFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBZfDWoaLAN3NSgP")), Locale.US)).format(new Date());
+               String date = (new SimpleDateFormat("HHmmss:SS", Locale.US)).format(new Date());
                String lat = getGPSLat(location.getLatitude());
                String lon = getGPSLat(location.getLongitude());
                String latNW = getNorthWest(location);
                String lonSE = getSouthEast(location);
-               String $GPGGA = checksum(String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmAxPBFOVzApOl4ML383GgN1Vig6PAQuD05SPzd+AS8bM141CHVSASR/DQISCF5eP3VTQV5/Myc7")), date, lat, latNW, lon, lonSE, satalines.getSvCount()));
-               String $GPRMC = checksum(String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmchEhNOVzApOhUhCHkgDSR7DjMdPhc1KEgFNzd1V1w5OTleMnxTPyN8MwU7CBUlOw==")), date, lat, latNW, lon, lonSE));
+               String $GPGGA = checksum(String.format("$GPGGA,%s,%s,%s,%s,%s,1,%s,692,.00,M,.00,M,,,", date, lat, latNW, lon, lonSE, satalines.getSvCount()));
+               String $GPRMC = checksum(String.format("$GPRMC,%s,A,%s,%s,%s,%s,0,0,260717,,,A,", date, lat, latNW, lon, lonSE));
                if (LocationManager.GnssStatusListenerTransport.onNmeaReceived != null) {
-                  LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmA2LFNOViMoMwNaKnU3OwF8MwU7Ol8DDUwJBTd1IzsbPCkfKH9TJwJ/ClgiCF8lPHxSOy1/MBEvM14LLn8nGQNPV1ApMwNaLXVSOwF/VycdOV4XKEk3JzY=")));
+                  LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), "$GPGSV,1,1,04,12,05,159,36,15,41,087,15,19,38,262,30,31,56,146,19,*73");
                   LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), $GPGGA);
-                  LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmQmMBdOVicoJF5aKn8xPyR8VgJAPAM5KGskTQ58VwE7My5SVg==")));
+                  LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), "$GPVTG,0,T,0,M,0,N,0,K,A,*25");
                   LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), $GPRMC);
-                  LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmA2LBFOHCMoMzlaKXpSOwF/DQU8P18DD08OTDd8V1wbOTohKHVTOyR8DQUiCQQpO3sJBSB/Mz8bOS5SVg==")));
+                  LocationManager.GnssStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), "$GPGSA,A,2,12,15,19,31,,,,,,,,,604,712,986,*27");
                } else if (LocationManager.GpsStatusListenerTransport.onNmeaReceived != null) {
-                  LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmA2LFNOViMoMwNaKnU3OwF8MwU7Ol8DDUwJBTd1IzsbPCkfKH9TJwJ/ClgiCF8lPHxSOy1/MBEvM14LLn8nGQNPV1ApMwNaLXVSOwF/VycdOV4XKEk3JzY=")));
+                  LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), "$GPGSV,1,1,04,12,05,159,36,15,41,087,15,19,38,262,30,31,56,146,19,*73");
                   LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), $GPGGA);
-                  LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmQmMBdOVicoJF5aKn8xPyR8VgJAPAM5KGskTQ58VwE7My5SVg==")));
+                  LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), "$GPVTG,0,T,0,M,0,N,0,K,A,*25");
                   LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), $GPRMC);
-                  LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRYmAmA2LBFOHCMoMzlaKXpSOwF/DQU8P18DD08OTDd8V1wbOTohKHVTOyR8DQUiCQQpO3sJBSB/Mz8bOS5SVg==")));
+                  LocationManager.GpsStatusListenerTransport.onNmeaReceived.call(listener, System.currentTimeMillis(), "$GPGSA,A,2,12,15,19,31,,,,,,,,,604,712,986,*27");
                }
             }
          } catch (Throwable var10) {
@@ -72,7 +72,7 @@ public class MockLocationHelper {
          GpsStatus mGpsStatus = null;
 
          try {
-            mGpsStatus = (GpsStatus)Reflect.on((Object)locationManager).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYmKG82LAZ9AQovIy5SVg==")));
+            mGpsStatus = (GpsStatus)Reflect.on((Object)locationManager).get("mGpsStatus");
          } catch (Throwable var13) {
          }
 
@@ -197,17 +197,17 @@ public class MockLocationHelper {
    }
 
    private static String getSouthEast(VLocation location) {
-      return location.getLongitude() > 0.0 ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQhSVg==")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS5SVg=="));
+      return location.getLongitude() > 0.0 ? "E" : "W";
    }
 
    private static String getNorthWest(VLocation location) {
-      return location.getLatitude() > 0.0 ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz5SVg==")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5SVg=="));
+      return location.getLatitude() > 0.0 ? "N" : "S";
    }
 
    public static String getGPSLat(double v) {
       int du = (int)v;
       double fen = (v - (double)du) * 60.0;
-      return du + leftZeroPad((int)fen, 2) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + String.valueOf(fen).substring(2);
+      return du + leftZeroPad((int)fen, 2) + ":" + String.valueOf(fen).substring(2);
    }
 
    private static String leftZeroPad(int num, int size) {
@@ -234,7 +234,7 @@ public class MockLocationHelper {
 
    public static String checksum(String nema) {
       String checkStr = nema;
-      if (nema.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRhSVg==")))) {
+      if (nema.startsWith("$")) {
          checkStr = nema.substring(1);
       }
 
@@ -244,6 +244,6 @@ public class MockLocationHelper {
          sum ^= (byte)checkStr.charAt(i);
       }
 
-      return nema + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PD5SVg==")) + String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQM5KmEFSFo=")), sum).toLowerCase();
+      return nema + "*" + String.format("%02X", sum).toLowerCase();
    }
 }

@@ -18,7 +18,7 @@ public class PlayGamesHooker1 {
 
    @HookMethod("g")
    public static Activity getCallingActivity(Object thiz, Activity v1) throws Throwable {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+LGgaLAY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCRgHgY2KCsiP2UzLD5qDiw0")));
+      Log.d("vatest", "getCallingActivity");
       return (Activity)SandHook.callOriginByBackup(method_m1, thiz, v1);
    }
 }

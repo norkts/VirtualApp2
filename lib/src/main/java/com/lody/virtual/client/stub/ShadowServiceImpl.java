@@ -37,15 +37,15 @@ public class ShadowServiceImpl extends Service {
          String event = intent.getAction();
          if (event == null) {
             return 2;
-         } else if (event.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMB9hJDAqLD0cP2kjSFo=")))) {
+         } else if (event.equals("start_service")) {
             ServiceData.ServiceStartData data = new ServiceData.ServiceStartData(intent);
             if (data.intent == null) {
-               VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLmsVHi9iVyQpLBciKGU3TQNrDgo9Ixg2J0saGilqHgodIzk5JA==")) + intent);
+               VLog.e(TAG, "invalid start service intent: " + intent);
                return 2;
             } else {
                ClientConfig config = VClient.get().getClientConfig();
                if (config == null) {
-                  VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwFJARmVyQpKAguLGwjAit4Hjw5LD42J2EjNz15EVRF")) + data.info.processName);
+                  VLog.e(TAG, "restart service process: " + data.info.processName);
                   return 2;
                } else if (!data.info.processName.equals(config.processName)) {
                   return 2;
@@ -70,7 +70,7 @@ public class ShadowServiceImpl extends Service {
                   return result;
                }
             }
-         } else if (event.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qD28IGgNiASwuKQcqPQ==")))) {
+         } else if (event.equals("stop_service")) {
             ServiceData.ServiceStopData data = new ServiceData.ServiceStopData(intent);
             VServiceRuntime.ServiceRecord record = null;
             if (data.token instanceof VServiceRuntime.ServiceRecord) {
@@ -88,7 +88,7 @@ public class ShadowServiceImpl extends Service {
                return 2;
             }
          } else {
-            throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcMWojGj1gMCQ7Ly42MW8FMzJ4EVRF")) + event);
+            throw new RuntimeException("unknown action: " + event);
          }
       }
    }
@@ -97,7 +97,7 @@ public class ShadowServiceImpl extends Service {
       ServiceData.ServiceBindData data = new ServiceData.ServiceBindData(intent);
       ClientConfig config = VClient.get().getClientConfig();
       if (config == null) {
-         VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwFJARmVyQpKAguLGwjAit4Hjw5LD42J2EjNz15EVRF")) + data.info.processName);
+         VLog.e(TAG, "restart service process: " + data.info.processName);
          return null;
       } else if (!data.info.processName.equals(config.processName)) {
          return null;
@@ -125,7 +125,7 @@ public class ShadowServiceImpl extends Service {
                IBindServiceProxy proxy = (IBindServiceProxy)sBinderServiceProxies.get(descriptor);
                if (proxy != null) {
                   binder = proxy.createProxy((Binder)binder);
-                  VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKmwjAiliDywvKj42MW8jGlo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMD2kKDSh9NAY2KBcMKH4zSFo=")) + descriptor + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgiD28nIANiASwuKQcqPXhSTVo=")) + data.component);
+                  VLog.e("ServiceRuntime", "proxy binder " + descriptor + " for service: " + data.component);
                }
             } catch (RemoteException var8) {
                RemoteException e = var8;
@@ -162,7 +162,7 @@ public class ShadowServiceImpl extends Service {
    }
 
    static {
-      sBinderServiceProxies.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxpPJRg2JWAjLClqHCQ+Iz4MJ2UwMAVrNzgZJi4qVg==")), new IBindServiceProxy() {
+      sBinderServiceProxies.put("android.accounts.IAccountAuthenticator", new IBindServiceProxy() {
          public Binder createProxy(Binder binder) {
             return new FakeIdentityBinder(binder, 1000, Process.myPid());
          }

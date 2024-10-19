@@ -93,7 +93,7 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                   ImageAdapter.this.setItemSelect(imageHolder, true);
                } else if (ImageAdapter.this.mMaxCount > 0 && ImageAdapter.this.mSelectImages.size() >= ImageAdapter.this.mMaxCount) {
                   if (ImageAdapter.this.mSelectImages.size() == ImageAdapter.this.mMaxCount) {
-                     Toast.makeText(ImageAdapter.this.mContext, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkBEkZaPVdYEBMyA0AnJUotWgk=")) + ImageAdapter.this.mMaxCount + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxsBOA==")), 0).show();
+                     Toast.makeText(ImageAdapter.this.mContext, "最多只能选" + ImageAdapter.this.mMaxCount + "张", 0).show();
                   }
                } else {
                   ImageAdapter.this.selectImage(image);

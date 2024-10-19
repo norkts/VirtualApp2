@@ -13,6 +13,6 @@ public class BlackList {
    }
 
    static {
-      processList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8jPzJsHig6IwhSVg==")));
+      processList.add("com.tencent.mm:push");
    }
 }

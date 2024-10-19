@@ -30,7 +30,7 @@ class NotificationCompatCompatV21 extends NotificationCompatCompatV14 {
       try {
          return this.resolveRemoteViews(appContext, id, packageName, notification) || this.resolveRemoteViews(appContext, id, packageName, notification.publicVersion);
       } catch (Throwable var6) {
-         VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQcMKmowEShiHjA7Kl4mQG8KBi9rNx4qLRcqI2AgRCQ=")));
+         VLog.e(TAG, "error deal Notification!");
          return false;
       }
    }
@@ -72,9 +72,9 @@ class NotificationCompatCompatV21 extends NotificationCompatCompatV14 {
          this.fixApplicationInfo(notification.contentView, proxyApplicationInfo);
          this.fixApplicationInfo(notification.bigContentView, proxyApplicationInfo);
          this.fixApplicationInfo(notification.headsUpContentView, proxyApplicationInfo);
-         Bundle bundle = (Bundle)Reflect.on((Object)notification).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfLG8jJAM=")));
+         Bundle bundle = (Bundle)Reflect.on((Object)notification).get("extras");
          if (bundle != null) {
-            bundle.putParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7IxgmXm8VHiU=")), proxyApplicationInfo);
+            bundle.putParcelable("android.appInfo", proxyApplicationInfo);
          }
 
          if (VERSION.SDK_INT >= 26 && !isInstalled) {

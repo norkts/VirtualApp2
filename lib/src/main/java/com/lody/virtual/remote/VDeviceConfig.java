@@ -196,7 +196,7 @@ public class VDeviceConfig implements Parcelable {
          }
 
          if (cur == next && cur != 11) {
-            sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")));
+            sb.append(":");
             next += 2;
          }
       }
@@ -210,11 +210,11 @@ public class VDeviceConfig implements Parcelable {
       if (Build.SERIAL != null && Build.SERIAL.length() > 0) {
          serial = Build.SERIAL;
       } else {
-         serial = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ol49Kn80MwVMMzsaPQUiEmYLBhVjN1RF"));
+         serial = "0123456789ABCDEF";
       }
 
       List<Character> list = new ArrayList();
-      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCR3N1RF")) + serial);
+      VLog.e("VA-", "serial:" + serial);
       char[] var2 = serial.toCharArray();
       int var3 = var2.length;
 
@@ -232,7 +232,7 @@ public class VDeviceConfig implements Parcelable {
          sb.append(c);
       }
 
-      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCRLHyggIz0cDmkLRQVqAQIvLhcLPg==")) + sb.toString());
+      VLog.e("VA-", "serial StringBuilder:" + sb.toString());
       return sb.toString();
    }
 
@@ -243,7 +243,7 @@ public class VDeviceConfig implements Parcelable {
          File wifiMacFie = VEnvironment.getWifiMacFile(userId, isExt);
          if (!wifiMacFie.exists()) {
             try {
-               RandomAccessFile file = new RandomAccessFile(wifiMacFie, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mKQ==")));
+               RandomAccessFile file = new RandomAccessFile(wifiMacFie, "rws");
                file.write((this.wifiMac + "\n").getBytes());
                file.close();
             } catch (IOException var5) {

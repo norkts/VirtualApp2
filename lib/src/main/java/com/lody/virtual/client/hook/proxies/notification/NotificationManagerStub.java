@@ -28,35 +28,35 @@ public class NotificationManagerStub extends MethodInvocationProxy<MethodInvocat
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViDwo1LwgqLg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViDwo1LwgqLmEVNAR9EQYu"))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViDwo1LwgqLmEgFlo="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCRuHh47Iy42Vg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YCGUaLCBuHh4xKAcYVg=="))));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("enqueueToast"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("enqueueToastForLog"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("enqueueToastEx"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("cancelToast"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("finishToken"));
       if (VERSION.SDK_INT >= 24) {
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtlATAgKi1XOWUzLClmNygbIS0uKGIFNFo="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VEgJgJywgLwcYP2kjSFo="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcMM2IjGgZjDjwzLy0iLmwjNCZsJSgbLRgMKGIKFlo="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIjGgZjDjwzLy0iLmwjNCZkEQYdIxg2Mw=="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZkEQYdIxg2Mw=="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIjGgZjDjwzLy0iLmwjNCZkEQYdIxg2M2UKNCZuASw8JwdfO2UwMD9oAVRF"))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2U2owMC9iNAY5Lwg2MW8FMExlJwIaLT0YHX0gNCBlJyxLLBhbKm8VNDA="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2U2owMC9iNAY5Lwg2MW8FMExlJwIaLT0YHX0gNCBlJyxLLBhbKm8VNDBgJwYbLxcmKm8gOD9pJ1RF"))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("removeAutomaticZenRules"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getImportance"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("areNotificationsEnabled"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("setNotificationPolicy"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getNotificationPolicy"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("setNotificationPolicyAccessGranted"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("isNotificationPolicyAccessGranted"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("isNotificationPolicyAccessGrantedForPackage"));
       }
 
-      if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+DW8wNCZiJ1RF")).equalsIgnoreCase(Build.BRAND) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+DW8wNCZiJ1RF")).equalsIgnoreCase(Build.MANUFACTURER)) {
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtqDgo9KAUYDWUzLC5qATAsKggYKWAzSFo="))));
+      if ("samsung".equalsIgnoreCase(Build.BRAND) || "samsung".equalsIgnoreCase(Build.MANUFACTURER)) {
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("removeEdgeNotification"));
       }
 
       if (BuildCompat.isOreo()) {
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtoNB4gKQc+MW4FQQZqAQYbJT5fO2AwRSBsHDw7KQcADmwjSFo="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZgJ1ksLC4cJ2AYJDVsJwo5LAhSVg=="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguDmgaMCtoNB4gKQc+MW4FQQZqAQYbJT5fO2AwRSBsHDw7KQcADg=="))));
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtoNB4gKQc+MW4FQQZqAQYbJT5fO2AwRSBsESxF"))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("createNotificationChannelGroups"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getNotificationChannelGroups"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("deleteNotificationChannelGroup"));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("createNotificationChannels"));
          if (BuildCompat.isQ()) {
             this.addMethodProxy(new MethodProxy() {
                public String getMethodName() {
-                  return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZgJ1ksLC4cJ2AVNFo="));
+                  return "getNotificationChannels";
                }
 
                public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -67,13 +67,13 @@ public class NotificationManagerStub extends MethodInvocationProxy<MethodInvocat
                }
             });
          } else {
-            this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZgJ1ksLC4cJ2AVNFo="))));
+            this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("getNotificationChannels"));
          }
 
          if (BuildCompat.isQ()) {
             this.addMethodProxy(new MethodProxy() {
                public String getMethodName() {
-                  return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZgJ1ksLC4cJ2AVSFo="));
+                  return "getNotificationChannel";
                }
 
                public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -83,16 +83,16 @@ public class NotificationManagerStub extends MethodInvocationProxy<MethodInvocat
                   return super.call(who, method, args);
                }
             });
-            this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIjGgZjDjwzLy0iLmwjNCZjESgdLhgmO2YaLFo=")), (Object)null));
-            this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZjESgdLhgmO2YaLFo=")), (Object)null));
-            this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGIjGgZjDjwZJwgqDG4jAiFoASAg")), false));
+            this.addMethodProxy(new ResultStaticMethodProxy("setNotificationDelegate", (Object)null));
+            this.addMethodProxy(new ResultStaticMethodProxy("getNotificationDelegate", (Object)null));
+            this.addMethodProxy(new ResultStaticMethodProxy("canNotifyAsPackage", false));
          } else {
-            this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZgJ1ksLC4cJ2AVSFo="))));
+            this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("getNotificationChannel"));
          }
 
          this.addMethodProxy(new MethodProxy() {
             public String getMethodName() {
-               return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguDmgaMCtoNB4gKQc+MW4FQQZqAQYbJT5fO2AwRSBsEVRF"));
+               return "deleteNotificationChannel";
             }
 
             public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -113,21 +113,21 @@ public class NotificationManagerStub extends MethodInvocationProxy<MethodInvocat
       }
 
       if (BuildCompat.isPie()) {
-         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjGgZjDjwzLy0iLmwjNCZgJ1ksLC4cJ2AYJDVsJwo5"))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getNotificationChannelGroup"));
       }
 
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLH0VBgZiASwqLAgmLmwjNCZjNx4dKgguCA=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAUcD2ozNARvETgbLT4uVg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5fD2wVHixqJyw1LAgmDGwFElo="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMgNCp9NFE/OxguPWkVGgRrARoqLhYiKWExOCRpJAIqLwgAVg=="))));
-      this.addMethodProxy(new StaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzGiZmNDAqIy0iLmwjNCZ9NwY/IxgiI30gPD9vDlkdIAgMO2UzBj9qAVRF"))) {
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("setInterruptionFilter"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getPackageImportance"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("shouldGroupPkg"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getBubblePreferenceForPackage"));
+      this.addMethodProxy(new StaticMethodProxy("getConversationNotificationChannel") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             args[0] = VirtualCore.get().getHostPkg();
             args[2] = VirtualCore.get().getHostPkg();
             return super.call(who, method, args);
          }
       });
-      this.addMethodProxy(new StaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzGiZmNDAqIy0iLmwjNCZ9NwY/IxgiI30gPD9vDlkdIAgMO2UzBj9qAVRF"))) {
+      this.addMethodProxy(new StaticMethodProxy("getConversationNotificationChannel") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             args[0] = VirtualCore.get().getHostPkg();
             args[2] = VirtualCore.get().getHostPkg();

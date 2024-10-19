@@ -13,10 +13,10 @@ import mirror.android.net.wifi.WifiScanner;
 import mirror.android.os.ServiceManager;
 
 public class WifiScannerStub extends BinderInvocationProxy {
-   private static final String SERVICE_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YPmUaLCl9Dlk2KAguVg=="));
+   private static final String SERVICE_NAME = "wifiscanner";
 
    public WifiScannerStub() {
-      super((IInterface)(new EmptyWifiScannerImpl()), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YPmUaLCl9Dlk2KAguVg==")));
+      super((IInterface)(new EmptyWifiScannerImpl()), "wifiscanner");
    }
 
    public void inject() throws Throwable {

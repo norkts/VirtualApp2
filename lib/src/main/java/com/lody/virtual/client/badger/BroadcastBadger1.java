@@ -26,11 +26,11 @@ public abstract class BroadcastBadger1 implements IBadger {
 
    static class OPPOHomeBader extends BroadcastBadger1 {
       public String getAction() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojGgJhHhE2LAcYL2kgBgZlESgvLhciJ2AzFlo="));
+         return "com.oppo.unsettledevent";
       }
 
       public String getPackageKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+MWgVJC1iDFk7KgcMVg=="));
+         return "pakeageName";
       }
 
       public String getClassNameKey() {
@@ -38,17 +38,17 @@ public abstract class BroadcastBadger1 implements IBadger {
       }
 
       public String getCountKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDWsjNAQ="));
+         return "number";
       }
    }
 
    static class NewHtcHomeBadger2 extends BroadcastBadger1 {
       public String getAction() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojRQZ9IFkoLwgMDm4FFitsMxosLT0qI2AgRCliDyBIICscGWEmLFFiMgpOIyw2WA=="));
+         return "com.htc.launcher.action.UPDATE_SHORTCUT";
       }
 
       public String getPackageKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDlk7KgcMVg=="));
+         return "packagename";
       }
 
       public String getClassNameKey() {
@@ -56,61 +56,61 @@ public abstract class BroadcastBadger1 implements IBadger {
       }
 
       public String getCountKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AI2ogMFo="));
+         return "count";
       }
    }
 
    static class AospHomeBadger extends BroadcastBadger1 {
       public String getAction() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42MA5mHDxJJQYYA2cLBgpmMihTLBUmWGYFSFo="));
+         return "android.intent.action.BADGE_COUNT_UPDATE";
       }
 
       public String getPackageKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+PGgzNB99JB4vKj42HWozQSlqJzguLhUAKn0KQSA="));
+         return "badge_count_package_name";
       }
 
       public String getClassNameKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+PGgzNB99JB4vKj42HW4FODdsJDAMLC4+L2IFSFo="));
+         return "badge_count_class_name";
       }
 
       public String getCountKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+PGgzNB99JB4vKj42Vg=="));
+         return "badge_count";
       }
    }
 
    static class AdwHomeBadger extends BroadcastBadger1 {
       public String getAction() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0MPXojJCxmIFkoLwgMDm4FFitsMxoqLD0uKmYaLDV8NSxJIRYcVg=="));
+         return "org.adw.launcher.counter.SEND";
       }
 
       public String getPackageKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhYcEWIbNFo="));
+         return "PNAME";
       }
 
       public String getClassNameKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JiwcEWIbNFo="));
+         return "CNAME";
       }
 
       public String getCountKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JiwABWImMFo="));
+         return "COUNT";
       }
    }
 
    static class LGHomeBadger extends BroadcastBadger1 {
       public String getAction() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42MA5mHDxJJQYYA2cLBgpmMihTLBUmWGYFSFo="));
+         return "android.intent.action.BADGE_COUNT_UPDATE";
       }
 
       public String getPackageKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+PGgzNB99JB4vKj42HWozQSlqJzguLhUAKn0KQSA="));
+         return "badge_count_package_name";
       }
 
       public String getClassNameKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+PGgzNB99JB4vKj42HW4FODdsJDAMLC4+L2IFSFo="));
+         return "badge_count_class_name";
       }
 
       public String getCountKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+PGgzNB99JB4vKj42Vg=="));
+         return "badge_count";
       }
    }
 }

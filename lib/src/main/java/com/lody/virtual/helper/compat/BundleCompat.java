@@ -19,13 +19,13 @@ public class BundleCompat {
 
    public static void putBinder(Intent intent, String key, IBinder value) {
       Bundle bundle = new Bundle();
-      putBinder(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4YCGgFNAQ=")), value);
+      putBinder(bundle, "binder", value);
       intent.putExtra(key, bundle);
    }
 
    public static IBinder getBinder(Intent intent, String key) {
       Bundle bundle = intent.getBundleExtra(key);
-      return bundle != null ? getBinder(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4YCGgFNAQ="))) : null;
+      return bundle != null ? getBinder(bundle, "binder") : null;
    }
 
    public static void clearParcelledData(Bundle bundle) {

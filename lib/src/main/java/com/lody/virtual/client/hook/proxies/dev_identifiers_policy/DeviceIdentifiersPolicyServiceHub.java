@@ -9,11 +9,11 @@ import mirror.android.os.IDeviceIdentifiersPolicyService;
 @TargetApi(29)
 public class DeviceIdentifiersPolicyServiceHub extends BinderInvocationProxy {
    public DeviceIdentifiersPolicyServiceHub() {
-      super(IDeviceIdentifiersPolicyService.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguLmUVLCtsJAYwKAcYLmwjHi9rDgo6")));
+      super(IDeviceIdentifiersPolicyService.Stub.asInterface, "device_identifiers");
    }
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczNARjDiAoID1fKGIzQSlqJzguLhhSVg=="))));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getSerialForPackage"));
    }
 }

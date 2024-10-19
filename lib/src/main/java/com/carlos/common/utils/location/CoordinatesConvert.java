@@ -24,10 +24,10 @@ public class CoordinatesConvert {
       }
 
       Map<String, Double> location = this.converter(x, y, cF);
-      location.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgcPQ==")), (Double)location.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBhSVg=="))));
-      location.remove(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBhSVg==")));
-      location.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+LA==")), (Double)location.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAhSVg=="))));
-      location.remove(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAhSVg==")));
+      location.put("lng", (Double)location.get("x"));
+      location.remove("x");
+      location.put("lat", (Double)location.get("y"));
+      location.remove("y");
       return location;
    }
 
@@ -54,13 +54,13 @@ public class CoordinatesConvert {
       }
 
       Map<String, Double> map = this.converter(lng, lat, cE);
-      double x = (Double)map.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBhSVg==")));
-      double y = (Double)map.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAhSVg==")));
+      double x = (Double)map.get("x");
+      double y = (Double)map.get("y");
       BigDecimal xTemp = new BigDecimal(x);
       BigDecimal yTemp = new BigDecimal(y);
       String tempX = xTemp.setScale(8, 4).toPlainString();
       String tempY = yTemp.setScale(10, 4).toPlainString();
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KF4IVg==")) + tempX + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PT0XOw==")) + tempY;
+      return "x=" + tempX + "&y=" + tempY;
    }
 
    private Map<String, Double> converter(double x, double y, double[] cE) {
@@ -74,8 +74,8 @@ public class CoordinatesConvert {
       BigDecimal tempY = new BigDecimal(yTemp);
       xTemp = tempX.setScale(8, 4).doubleValue();
       yTemp = tempY.setScale(8, 4).doubleValue();
-      location.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBhSVg==")), xTemp);
-      location.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAhSVg==")), yTemp);
+      location.put("x", xTemp);
+      location.put("y", yTemp);
       return location;
    }
 

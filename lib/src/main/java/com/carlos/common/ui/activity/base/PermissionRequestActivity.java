@@ -13,10 +13,10 @@ import com.lody.virtual.helper.compat.PermissionCompat;
 @TargetApi(23)
 public class PermissionRequestActivity extends Activity {
    private static final int REQUEST_PERMISSION_CODE = 995;
-   private static final String EXTRA_PERMISSIONS = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfLG8jJyZhHjAqKgccL2oFLCVlN1RF"));
-   private static final String EXTRA_APP_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfLG8jJyZ9ASQsJi0YOW8jGlo="));
-   private static final String EXTRA_USER_ID = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfLG8jJyZmASg/IzxfMWkzSFo="));
-   private static final String EXTRA_PACKAGE_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfLG8jJyZhHiA5KS0iM2kmNCZoAQ4g"));
+   private static final String EXTRA_PERMISSIONS = "extra.permission";
+   private static final String EXTRA_APP_NAME = "extra.app_name";
+   private static final String EXTRA_USER_ID = "extra.user_id";
+   private static final String EXTRA_PACKAGE_NAME = "extra.package_name";
    private int userId;
    private String appName;
    private String packageName;
@@ -45,12 +45,12 @@ public class PermissionRequestActivity extends Activity {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults);
       if (PermissionCompat.isRequestGranted(grantResults)) {
          Intent data = new Intent();
-         data.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPQ==")), this.packageName);
-         data.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), this.userId);
+         data.putExtra("pkg", this.packageName);
+         data.putExtra("user_id", this.userId);
          this.setResult(-1, data);
       } else {
          this.runOnUiThread(() -> {
-            Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bxk3D0ZJWiA=")) + this.appName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwnL0MWPSs=")), 0).show();
+            Toast.makeText(this, "启动" + this.appName + "失败", 0).show();
          });
       }
 

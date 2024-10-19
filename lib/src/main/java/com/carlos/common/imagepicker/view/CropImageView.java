@@ -89,7 +89,7 @@ public class CropImageView extends TransformImageView {
    }
 
    public void setTargetAspectRatio(float targetAspectRatio) {
-      Log.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQFJARiJDAgJwgqKmkjAgZkNzg/IxgfJA==")) + targetAspectRatio);
+      Log.i("VirtualApp", "setTargetAspectRatio " + targetAspectRatio);
       Drawable drawable = this.getDrawable();
       if (drawable == null) {
          this.mTargetAspectRatio = targetAspectRatio;
@@ -128,7 +128,7 @@ public class CropImageView extends TransformImageView {
       if (imageToWrapCropBoundsAnimDuration > 0L) {
          this.mImageToWrapCropBoundsAnimDuration = imageToWrapCropBoundsAnimDuration;
       } else {
-         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JggcCWoVJAZjDh42Pxc2LWoVQQZqAQYbPQg2O2AwRSpqVyArLypXKmsFPDNsAR4hJAMiPWkKQSFpIyxF")));
+         throw new IllegalArgumentException("Animation duration cannot be negative value.");
       }
    }
 

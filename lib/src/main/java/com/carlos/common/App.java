@@ -31,11 +31,11 @@ public class App extends MultiApplication {
       public SettingConfig.FakeWifiStatus fakeWifiStatus = new SettingConfig.FakeWifiStatus();
 
       public String getMainPackageName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQhSVg=="));
+         return "com.carlos.multiapp";
       }
 
       public String getExtPackageName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcJ2cVFlo="));
+         return "com.carlos.multiapp.ext";
       }
 
       public boolean isEnableIORedirect() {
@@ -44,7 +44,7 @@ public class App extends MultiApplication {
 
       public Intent onHandleLauncherIntent(Intent originIntent) {
          Intent intent = new Intent();
-         ComponentName component = new ComponentName(this.getMainPackageName(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgfCGsgNANgNAY/Iy4pDmUVQCZqEQYeLl8cGH0KNC5nHlkcLyxbJW8VAiJlHiwg")));
+         ComponentName component = new ComponentName(this.getMainPackageName(), "io.busniess.va.home.BackHomeActivity");
          intent.setComponent(component);
          intent.addFlags(268435456);
          return intent;
@@ -63,11 +63,11 @@ public class App extends MultiApplication {
       }
 
       public boolean isHostIntent(Intent intent) {
-         return intent.getData() != null && StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+KmUzNAY=")).equals(intent.getData().getScheme());
+         return intent.getData() != null && "market".equals(intent.getData().getScheme());
       }
 
       public boolean isUseRealApkPath(String packageName) {
-         return packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogLCtiAQY1KjkYP28gTVo=")));
+         return packageName.equals("com.seeyon.cmp");
       }
 
       public boolean isEnableVirtualSdcardAndroidData() {
@@ -75,16 +75,16 @@ public class App extends MultiApplication {
       }
 
       public boolean resumeInstrumentationInMakeApplication(String packageName) {
-         return packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogLANONCA2KBguDWwjASZvASAqPC4+MWIKQSB8NF0iIz4AVg=="))) ? true : super.resumeInstrumentationInMakeApplication(packageName);
+         return packageName.equals("com.ss.android.ugc.aweme.lite") ? true : super.resumeInstrumentationInMakeApplication(packageName);
       }
 
       public boolean isUnProtectAction(String action) {
-         return action.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw+H2MgFiV9Dgo5LwgqLn0zGgNvHAZF"))) ? true : super.isUnProtectAction(action);
+         return action.startsWith("VA_BroadcastTest_") ? true : super.isUnProtectAction(action);
       }
 
       public SettingConfig.FakeWifiStatus getFakeWifiStatus(String packageName, int userId) {
-         String SSID_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki02CWgIGiFiAQZF")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + userId;
-         String MAC_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+OWYzQStnAVRF")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + userId;
+         String SSID_KEY = "ssid_key" + packageName + "_" + userId;
+         String MAC_KEY = "mac_key" + packageName + "_" + userId;
          String ssid = SPTools.getString(VirtualCore.get().getContext(), SSID_KEY);
          String mac = SPTools.getString(VirtualCore.get().getContext(), MAC_KEY);
          if (!TextUtils.isEmpty(ssid) && !TextUtils.isEmpty(mac)) {
@@ -156,7 +156,7 @@ public class App extends MultiApplication {
          public void onMainProcess() {
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
             App.this.mAppComponentDelegate.setMainProcess(App.gApp, true);
-            App.this.registerReceiver(App.this.mGmsInitializeReceiver, new IntentFilter(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42JBJ9JVlNIRY2XWILJEx9HFEKLBhSVg=="))));
+            App.this.registerReceiver(App.this.mGmsInitializeReceiver, new IntentFilter("android.intent.action.GMS_INITIALIZED"));
          }
 
          @RequiresApi(

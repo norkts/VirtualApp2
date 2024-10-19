@@ -63,7 +63,7 @@ public class UCropActivity extends AppCompatActivity {
    public static final int SCALE = 1;
    public static final int ROTATE = 2;
    public static final int ALL = 3;
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQY2KmowIBF9JwozLD0cLmgjSFo="));
+   private static final String TAG = "UCropActivity";
    private static final int TABS_COUNT = 3;
    private static final int SCALE_WIDGET_SENSITIVITY_COEFFICIENT = 15000;
    private static final int ROTATE_WIDGET_SENSITIVITY_COEFFICIENT = 42;
@@ -156,7 +156,7 @@ public class UCropActivity extends AppCompatActivity {
             menuItemLoader.setIcon(menuItemLoaderIcon);
          } catch (IllegalStateException var6) {
             IllegalStateException e = var6;
-            Log.i(TAG, String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQc1OHpSIythJ1RF")), e.getMessage(), this.getString(string.ucrop_mutate_exception_hint)));
+            Log.i(TAG, String.format("%s - %s", e.getMessage(), this.getString(string.ucrop_mutate_exception_hint)));
          }
 
          ((Animatable)menuItemLoader.getIcon()).start();
@@ -198,8 +198,8 @@ public class UCropActivity extends AppCompatActivity {
    }
 
    private void setImageData(@NonNull Intent intent) {
-      Uri inputUri = (Uri)intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcBWAzODBqHwo7Ki5SVg==")));
-      Uri outputUri = (Uri)intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcA2YFFjNqATAULBg2Vg==")));
+      Uri inputUri = (Uri)intent.getParcelableExtra("com.carlos.multiapp.InputUri");
+      Uri outputUri = (Uri)intent.getParcelableExtra("com.carlos.multiapp.OutputUri");
       this.processOptions(intent);
       if (inputUri != null && outputUri != null) {
          try {
@@ -217,41 +217,41 @@ public class UCropActivity extends AppCompatActivity {
    }
 
    private void processOptions(@NonNull Intent intent) {
-      String compressionFormatName = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2AgQTNlNAo8LAg2KWUxOANvJw4oIBVfKGwKFlo=")));
+      String compressionFormatName = intent.getStringExtra("com.carlos.multiapp.CompressionFormatName");
       Bitmap.CompressFormat compressFormat = null;
       if (!TextUtils.isEmpty(compressionFormatName)) {
          compressFormat = CompressFormat.valueOf(compressionFormatName);
       }
 
       this.mCompressFormat = compressFormat == null ? DEFAULT_COMPRESS_FORMAT : compressFormat;
-      this.mCompressQuality = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2AgQTNlNAo8LAg2KWU2JC9rEQIwIBgAVg==")), 90);
-      int[] allowedGestures = intent.getIntArrayExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWAaTSpqJAotJwgAD28aNCZoHjBF")));
+      this.mCompressQuality = intent.getIntExtra("com.carlos.multiapp.CompressionQuality", 90);
+      int[] allowedGestures = intent.getIntArrayExtra("com.carlos.multiapp.AllowedGestures");
       if (allowedGestures != null && allowedGestures.length == 3) {
          this.mAllowedGestures = allowedGestures;
       }
 
-      this.mGestureCropImageView.setMaxBitmapSize(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcAX0FBg9vATAcKC1XUmoKTT8=")), 0));
-      this.mGestureCropImageView.setMaxScaleMultiplier(intent.getFloatExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcAX0FBhBpJCQbLywmCWUaMAVvAQIwJAgqVg==")), 10.0F));
-      this.mGestureCropImageView.setImageToWrapCropBoundsAnimDuration((long)intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcBWAKPCJuDzAeIAdfKWwbFgNsERozJysmJW8KTVdlJFkoKRgYD2ojSFo=")), 500));
-      this.mOverlayView.setFreestyleCropEnabled(intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcBGEwLCB9JzAyKT4AH2wzGiQ=")), false));
-      this.mOverlayView.setDimmedColor(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcGmMKQShuDjBAKC02J2wxLANqAQYb")), this.getResources().getColor(color.ucrop_color_default_dimmed)));
-      this.mOverlayView.setCircleDimmedLayer(intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2MFMCZsHgpIKi4mL2sFMExrHh40Jz5SVg==")), false));
-      this.mOverlayView.setShowCropFrame(intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcUmMaAjJhJygeLDwECGgFEj8=")), true));
-      this.mOverlayView.setCropFrameColor(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNmNygqKS4AH2UjHgNvJ1RF")), this.getResources().getColor(color.ucrop_color_default_crop_frame)));
-      this.mOverlayView.setCropFrameStrokeWidth(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNmNygqKS4AUm8aFgNlNyhNJQcMM28VSFo=")), this.getResources().getDimensionPixelSize(dimen.ucrop_default_crop_frame_stoke_width)));
-      this.mOverlayView.setShowCropGrid(intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcUmMaAjJhJygeLDwICGoFMFo=")), true));
-      this.mOverlayView.setCropGridRowCount(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNmJygiLztfKW8hLANsERoZ")), 2));
-      this.mOverlayView.setCropGridColumnCount(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNmJygiLzwYKWUaNAFqJTA6IAdfMw==")), 2));
-      this.mOverlayView.setCropGridColor(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNmJygiLzwYKWUVGiY=")), this.getResources().getColor(color.ucrop_color_default_crop_grid)));
-      this.mOverlayView.setCropGridStrokeWidth(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNmJygiLzsYCmwzGj1oHCAwJBgMJw==")), this.getResources().getDimensionPixelSize(dimen.ucrop_default_crop_grid_stoke_width)));
-      float aspectRatioX = intent.getFloatExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWEjOCBpJzARKC0cI2UmRVo=")), 0.0F);
-      float aspectRatioY = intent.getFloatExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWEjOCBpJzARKC0cI2UmAlo=")), 0.0F);
-      int aspectRationSelectedByDefault = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWEjOCBpJzARKC0cI2UmLD9qASg2IBc2I2EzBldpJwIoKQgELA==")), 0);
-      ArrayList<AspectRatio> aspectRatioList = intent.getParcelableArrayListExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWEjOCBpJzARKC0cI2UhGiRsAR46Jj4uVg==")));
-      Log.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQFJARiJDAgJwgqKmkjAgZkNzg/IxgfJEsaGilvATMpKgguKWojSFo=")));
+      this.mGestureCropImageView.setMaxBitmapSize(intent.getIntExtra("com.carlos.multiapp.MaxBitmapSize", 0));
+      this.mGestureCropImageView.setMaxScaleMultiplier(intent.getFloatExtra("com.carlos.multiapp.MaxScaleMultiplier", 10.0F));
+      this.mGestureCropImageView.setImageToWrapCropBoundsAnimDuration((long)intent.getIntExtra("com.carlos.multiapp.ImageToCropBoundsAnimDuration", 500));
+      this.mOverlayView.setFreestyleCropEnabled(intent.getBooleanExtra("com.carlos.multiapp.FreeStyleCrop", false));
+      this.mOverlayView.setDimmedColor(intent.getIntExtra("com.carlos.multiapp.DimmedLayerColor", this.getResources().getColor(color.ucrop_color_default_dimmed)));
+      this.mOverlayView.setCircleDimmedLayer(intent.getBooleanExtra("com.carlos.multiapp.CircleDimmedLayer", false));
+      this.mOverlayView.setShowCropFrame(intent.getBooleanExtra("com.carlos.multiapp.ShowCropFrame", true));
+      this.mOverlayView.setCropFrameColor(intent.getIntExtra("com.carlos.multiapp.CropFrameColor", this.getResources().getColor(color.ucrop_color_default_crop_frame)));
+      this.mOverlayView.setCropFrameStrokeWidth(intent.getIntExtra("com.carlos.multiapp.CropFrameStrokeWidth", this.getResources().getDimensionPixelSize(dimen.ucrop_default_crop_frame_stoke_width)));
+      this.mOverlayView.setShowCropGrid(intent.getBooleanExtra("com.carlos.multiapp.ShowCropGrid", true));
+      this.mOverlayView.setCropGridRowCount(intent.getIntExtra("com.carlos.multiapp.CropGridRowCount", 2));
+      this.mOverlayView.setCropGridColumnCount(intent.getIntExtra("com.carlos.multiapp.CropGridColumnCount", 2));
+      this.mOverlayView.setCropGridColor(intent.getIntExtra("com.carlos.multiapp.CropGridColor", this.getResources().getColor(color.ucrop_color_default_crop_grid)));
+      this.mOverlayView.setCropGridStrokeWidth(intent.getIntExtra("com.carlos.multiapp.CropGridStrokeWidth", this.getResources().getDimensionPixelSize(dimen.ucrop_default_crop_grid_stoke_width)));
+      float aspectRatioX = intent.getFloatExtra("com.carlos.multiapp.AspectRatioX", 0.0F);
+      float aspectRatioY = intent.getFloatExtra("com.carlos.multiapp.AspectRatioY", 0.0F);
+      int aspectRationSelectedByDefault = intent.getIntExtra("com.carlos.multiapp.AspectRatioSelectedByDefault", 0);
+      ArrayList<AspectRatio> aspectRatioList = intent.getParcelableArrayListExtra("com.carlos.multiapp.AspectRatioOptions");
+      Log.i("VirtualApp", "setTargetAspectRatio  init kook");
       this.mGestureCropImageView.setTargetAspectRatio(1.0F);
-      int maxSizeX = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcAX0FBhBvAQ4uJj5SVg==")), 0);
-      int maxSizeY = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcAX0FBhBvAQ4uJi5SVg==")), 0);
+      int maxSizeX = intent.getIntExtra("com.carlos.multiapp.MaxSizeX", 0);
+      int maxSizeY = intent.getIntExtra("com.carlos.multiapp.MaxSizeY", 0);
       if (maxSizeX > 0 && maxSizeY > 0) {
          this.mGestureCropImageView.setMaxResultImageSizeX(maxSizeX);
          this.mGestureCropImageView.setMaxResultImageSizeY(maxSizeY);
@@ -260,17 +260,17 @@ public class UCropActivity extends AppCompatActivity {
    }
 
    private void setupViews(@NonNull Intent intent) {
-      this.mStatusBarColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcUmYaPD9qASwBKC1fH2UjHgNvJ1RF")), ContextCompat.getColor(this, color.ucrop_color_statusbar));
-      this.mToolbarColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXWAgAjdpNCQ7IAguKGUgFlo=")), ContextCompat.getColor(this, color.ucrop_color_toolbar));
-      this.mActiveWidgetColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHCweKT4uCGcjAjBoNygZIwcuM28FJDE=")), ContextCompat.getColor(this, color.ucrop_color_widget_active));
-      this.mToolbarWidgetColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHzAeKQgiJmgKFgtlESwyJAgMDGwgQQFqEVRF")), ContextCompat.getColor(this, color.ucrop_color_toolbar_widget));
-      this.mToolbarCancelDrawable = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHzAeKQgiJmgKFh9rERo2JAdXBWUwOC9uJ1k7LQhSVg==")), drawable.ucrop_ic_cross);
-      this.mToolbarCropDrawable = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHzAeKQgiJmgKFh9vJwYdLBgqKGogODRvNwZF")), drawable.ucrop_ic_done);
-      this.mToolbarTitle = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHzAeKQgiJmgKFgplHiw7JAYMLGsVLFo=")));
+      this.mStatusBarColor = intent.getIntExtra("com.carlos.multiapp.StatusBarColor", ContextCompat.getColor(this, color.ucrop_color_statusbar));
+      this.mToolbarColor = intent.getIntExtra("com.carlos.multiapp.ToolbarColor", ContextCompat.getColor(this, color.ucrop_color_toolbar));
+      this.mActiveWidgetColor = intent.getIntExtra("com.carlos.multiapp.UcropColorWidgetActive", ContextCompat.getColor(this, color.ucrop_color_widget_active));
+      this.mToolbarWidgetColor = intent.getIntExtra("com.carlos.multiapp.UcropToolbarWidgetColor", ContextCompat.getColor(this, color.ucrop_color_toolbar_widget));
+      this.mToolbarCancelDrawable = intent.getIntExtra("com.carlos.multiapp.UcropToolbarCancelDrawable", drawable.ucrop_ic_cross);
+      this.mToolbarCropDrawable = intent.getIntExtra("com.carlos.multiapp.UcropToolbarCropDrawable", drawable.ucrop_ic_done);
+      this.mToolbarTitle = intent.getStringExtra("com.carlos.multiapp.UcropToolbarTitleText");
       this.mToolbarTitle = this.mToolbarTitle != null ? this.mToolbarTitle : this.getResources().getString(string.ucrop_label_edit_photo);
-      this.mLogoColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHF0eLwguH2UjHgNvJ1RF")), ContextCompat.getColor(this, color.ucrop_color_default_logo));
-      this.mShowBottomControls = !intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcBmMKFiBhNFk9Iz4uL2AjGgRsDgo6JhguVg==")), false);
-      this.mRootViewBackgroundColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcXH0jMCplHygeKQccX2oFNCFjJzg2JS0+OWwjFgJpNR46IxgAKg==")), ContextCompat.getColor(this, color.ucrop_color_crop_background));
+      this.mLogoColor = intent.getIntExtra("com.carlos.multiapp.UcropLogoColor", ContextCompat.getColor(this, color.ucrop_color_default_logo));
+      this.mShowBottomControls = !intent.getBooleanExtra("com.carlos.multiapp.HideBottomControls", false);
+      this.mRootViewBackgroundColor = intent.getIntExtra("com.carlos.multiapp.UcropRootViewBackgroundColor", ContextCompat.getColor(this, color.ucrop_color_crop_background));
       this.setupAppBar();
       this.initiateRootViews();
       if (this.mShowBottomControls) {
@@ -343,8 +343,8 @@ public class UCropActivity extends AppCompatActivity {
    }
 
    private void setupAspectRatioWidget(@NonNull Intent intent) {
-      int aspectRationSelectedByDefault = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWEjOCBpJzARKC0cI2UmLD9qASg2IBc2I2EzBldpJwIoKQgELA==")), 0);
-      ArrayList<AspectRatio> aspectRatioList = intent.getParcelableArrayListExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcHWEjOCBpJzARKC0cI2UhGiRsAR46Jj4uVg==")));
+      int aspectRationSelectedByDefault = intent.getIntExtra("com.carlos.multiapp.AspectRatioSelectedByDefault", 0);
+      ArrayList<AspectRatio> aspectRatioList = intent.getParcelableArrayListExtra("com.carlos.multiapp.AspectRatioOptions");
       if (aspectRatioList == null || aspectRatioList.isEmpty()) {
          aspectRationSelectedByDefault = 0;
          aspectRatioList = new ArrayList();
@@ -448,14 +448,14 @@ public class UCropActivity extends AppCompatActivity {
 
    private void setAngleText(float angle) {
       if (this.mTextViewRotateAngle != null) {
-         this.mTextViewRotateAngle.setText(String.format(Locale.getDefault(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQQbL2gpEwI=")), angle));
+         this.mTextViewRotateAngle.setText(String.format(Locale.getDefault(), "%.1f°", angle));
       }
 
    }
 
    private void setScaleText(float scale) {
       if (this.mTextViewScalePercent != null) {
-         this.mTextViewScalePercent.setText(String.format(Locale.getDefault(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQgpM3gVSFo=")), (int)(scale * 100.0F)));
+         this.mTextViewScalePercent.setText(String.format(Locale.getDefault(), "%d%%", (int)(scale * 100.0F)));
       }
 
    }
@@ -525,8 +525,8 @@ public class UCropActivity extends AppCompatActivity {
       this.supportInvalidateOptionsMenu();
       this.mGestureCropImageView.cropAndSaveImage(this.mCompressFormat, this.mCompressQuality, new BitmapCropCallback() {
          public void onBitmapCropped(@NonNull Uri resultUri, int offsetX, int offsetY, int imageWidth, int imageHeight) {
-            Log.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwVHgZuASwzPT5SVg==")) + resultUri);
-            Log.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy4iPm8zNAZvVgJF")) + offsetX + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl86D2gjOANiAQpOPT5SVg==")) + offsetY + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFAiN9Djg/JC0cPmUzETI=")) + imageWidth + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFAiN9Djg/IRcMMWkFFgZ+N1RF")) + imageHeight);
+            Log.i("VirtualApp", "resultUri:" + resultUri);
+            Log.i("VirtualApp", "offsetX:" + offsetX + "  offsetY:" + offsetY + "    imageWidth:" + imageWidth + "    imageHeight:" + imageHeight);
             UCropActivity.this.setResultUri(resultUri, UCropActivity.this.mGestureCropImageView.getTargetAspectRatio(), offsetX, offsetY, imageWidth, imageHeight);
             UCropActivity.this.finish();
          }
@@ -539,11 +539,11 @@ public class UCropActivity extends AppCompatActivity {
    }
 
    protected void setResultUri(Uri uri, float resultAspectRatio, int offsetX, int offsetY, int imageWidth, int imageHeight) {
-      this.setResult(-1, this.getIntent().putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcA2YFFjNqATAULBg2Vg==")), uri).putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcH2EwAjNhASw5Ly4YCmQzJCBlEQZF")), resultAspectRatio).putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcBWAKPCJuDzwiLz0cLA==")), imageWidth).putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcBWAKPCJuDAYuKi4ILG8VSFo=")), imageHeight).putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcA2IwIDZuATAX")), offsetX).putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcA2IwIDZuATAI")), offsetY));
+      this.setResult(-1, this.getIntent().putExtra("com.carlos.multiapp.OutputUri", uri).putExtra("com.carlos.multiapp.CropAspectRatio", resultAspectRatio).putExtra("com.carlos.multiapp.ImageWidth", imageWidth).putExtra("com.carlos.multiapp.ImageHeight", imageHeight).putExtra("com.carlos.multiapp.OffsetX", offsetX).putExtra("com.carlos.multiapp.OffsetY", offsetY));
    }
 
    protected void setResultError(Throwable throwable) {
-      this.setResult(96, (new Intent()).putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcGWEzMCplN1RF")), throwable));
+      this.setResult(96, (new Intent()).putExtra("com.carlos.multiapp.Error", throwable));
    }
 
    static {

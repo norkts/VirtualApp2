@@ -16,8 +16,8 @@ import com.kook.librelease.R.id;
 import com.kook.librelease.R.layout;
 
 public class TextProgressBar extends LinearLayout {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRguIGwIIARgJDgqKAgqL2YVQQQ="));
-   String text = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OhhSVg=="));
+   private static final String TAG = "TextProgressBar";
+   String text = "0";
    Paint mPaint;
    private Rect textRect;
    private RectF textBackRectF;
@@ -48,7 +48,7 @@ public class TextProgressBar extends LinearLayout {
       super.onDraw(canvas);
       this.progress = this.progressBar.getProgress();
       if (this.progress != 0) {
-         this.text = (int)((double)this.progress / (double)this.progressBar.getMax() * 100.0) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQhSVg=="));
+         this.text = (int)((double)this.progress / (double)this.progressBar.getMax() * 100.0) + "%";
       }
 
       this.mPaint.getTextBounds(this.text, 0, this.text.length(), this.textRect);
@@ -68,7 +68,7 @@ public class TextProgressBar extends LinearLayout {
          this.textBackRectF = new RectF();
       }
 
-      this.mPaint.setColor(Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PiwiW2MkLBNlN1RF"))));
+      this.mPaint.setColor(Color.parseColor("#FFB3CB"));
       this.textBackRectF.set((float)(tvx - this.mTextMargin), (float)(tvy + this.mTextMargin), (float)(tvx + this.textRect.width() + this.mTextMargin), (float)(this.textRect.height() + this.mTextMarginTop));
       canvas.drawRoundRect(this.textBackRectF, 10.0F, 10.0F, this.mPaint);
       if (this.path == null) {
@@ -93,7 +93,7 @@ public class TextProgressBar extends LinearLayout {
       this.setWillNotDraw(false);
       this.mPaint = new Paint();
       this.mPaint.setAntiAlias(true);
-      this.mPaint.setColor(Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PiwiW2MkLBNlN1RF"))));
+      this.mPaint.setColor(Color.parseColor("#FFB3CB"));
       this.mPaint.setTextSize(25.0F);
       this.textRect = new Rect();
    }

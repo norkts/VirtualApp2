@@ -15,9 +15,9 @@ public class ShortcutHandleActivity extends Activity implements AppLauncherCallb
       this.finish();
       Intent intent = this.getIntent();
       if (intent != null) {
-         int userId = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASg/IzxfMWk2NFo=")), 0);
-         String splashUri = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9hJyQoLwgqMmMFSFo=")));
-         String targetUri = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASwzJi5SVg==")));
+         int userId = intent.getIntExtra("_VA_|_user_id_", 0);
+         String splashUri = intent.getStringExtra("_VA_|_splash_");
+         String targetUri = intent.getStringExtra("_VA_|_uri_");
          Intent splashIntent = null;
          Intent targetIntent = null;
          URISyntaxException e;
@@ -51,8 +51,8 @@ public class ShortcutHandleActivity extends Activity implements AppLauncherCallb
                   var9.printStackTrace();
                }
             } else {
-               splashIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmsIRVRmDB4T")), targetIntent);
-               splashIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmUmNFo=")), userId);
+               splashIntent.putExtra("android.intent.extra.INTENT", targetIntent);
+               splashIntent.putExtra("android.intent.extra.CC", userId);
                this.startActivity(splashIntent);
             }
 
@@ -65,6 +65,6 @@ public class ShortcutHandleActivity extends Activity implements AppLauncherCallb
    }
 
    public String currentActivity() {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYP28FPCNlJx0bKhgXKn0KND9vATgiIz01KmgzJCVoVhpMJAgqIG4zBh9uDhowKT4YLGkVSFo="));
+      return "com.carlos.common.ui.activity.base.VerifyActivity";
    }
 }

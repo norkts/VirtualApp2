@@ -23,7 +23,7 @@ public class DialogHooker {
       } else {
          String packageName = VClient.get().getCurrentPackage();
          String clzName = thiz.getClass().getName();
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgYP2oFGi1rHh41KS0MKA==")), packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhYqCWsVHiViICQpKRdfI34zSFo=")) + thiz);
+         Log.e("DialogHooker", packageName + " Dialog show " + thiz);
          thiz.cancel();
       }
    }

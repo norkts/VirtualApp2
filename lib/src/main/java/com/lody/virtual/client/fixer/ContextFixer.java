@@ -57,7 +57,7 @@ public class ContextFixer {
             ContextImpl.mBasePackageName.set(context, hostPkg);
             if (ContextImplKitkat.mOpPackageName == null) {
                try {
-                  ContextImplKitkat.mOpPackageName = new RefObject(ContextImplKitkat.TYPE, ContextImplKitkat.TYPE.getDeclaredField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYAKGcFJCljJCA9KAUYOW8jGlo="))));
+                  ContextImplKitkat.mOpPackageName = new RefObject(ContextImplKitkat.TYPE, ContextImplKitkat.TYPE.getDeclaredField("mOpPackageName"));
                } catch (Throwable var6) {
                }
             }
@@ -100,7 +100,7 @@ public class ContextFixer {
    private static void fixContentProvider() {
       Throwable e3;
       try {
-         XposedHelpers.findAndHookMethod(ContentProvider.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCRgHgY2KCsiLmUwRS9oNCg/IxgAKmkgAjBlNCwu")), new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod(ContentProvider.class, "getCallingAttributionSource", new XC_MethodHook() {
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                int callingPid = Binder.getCallingPid();
                int mypid = Process.myPid();
@@ -117,7 +117,7 @@ public class ContextFixer {
       }
 
       try {
-         XposedHelpers.findAndHookMethod(ContentProvider.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCRgHgY2KCwmOW4FJDdrJyhF")), new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod(ContentProvider.class, "getCallingPackage", new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                int callingPid = Binder.getCallingPid();
                int mypid = Process.myPid();
@@ -133,7 +133,7 @@ public class ContextFixer {
       }
 
       try {
-         XposedHelpers.findAndHookMethod(ContentProvider.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCRgHgY2KCwmOW4FJDdrJygWLC42LGIKNC5uDjBF")), new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod(ContentProvider.class, "getCallingPackageUnchecked", new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                int callingPid = Binder.getCallingPid();
                int mypid = Process.myPid();

@@ -40,6 +40,6 @@ public class CoordinateBean {
    }
 
    public String toString() {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+LGUaMAViHjM8PTkmVg==")) + this.latitude + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl5aOGoFGiZiJAYgLAc2PX40Iyg=")) + this.longitude;
+      return "latitude : " + this.latitude + " ; longitude : " + this.longitude;
    }
 }

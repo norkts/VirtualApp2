@@ -29,7 +29,7 @@ public class UnreadMsgUtils {
             } else {
                lp.width = -2;
                msgView.setPadding((int)(6.0F * dm.density), 0, (int)(6.0F * dm.density), 0);
-               msgView.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OAMXMQ==")));
+               msgView.setText("99+");
             }
 
             msgView.setLayoutParams(lp);

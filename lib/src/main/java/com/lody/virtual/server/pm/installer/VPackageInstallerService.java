@@ -34,7 +34,7 @@ import java.util.Random;
 
 @TargetApi(21)
 public class VPackageInstallerService extends IPackageInstaller.Stub {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDAY2Iy42OW8zOCtsN1RF"));
+   private static final String TAG = "PackageInstaller";
    private static final long MAX_ACTIVE_SESSIONS = 1024L;
    private static final Singleton<VPackageInstallerService> gDefault = new Singleton<VPackageInstallerService>() {
       protected VPackageInstallerService create() {
@@ -54,7 +54,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
       this.mSessions = new SparseArray();
       this.mInternalCallback = new InternalCallback();
       this.mContext = VirtualCore.get().getContext();
-      this.mInstallThread = new HandlerThread(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDAY2Iy42OW8zOCtsN1RF")));
+      this.mInstallThread = new HandlerThread("PackageInstaller");
       this.mInstallThread.start();
       this.mInstallHandler = new Handler(this.mInstallThread.getLooper());
       this.mCallbacks = new Callbacks(this.mInstallThread.getLooper());
@@ -93,7 +93,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
       synchronized(this.mSessions) {
          int activeCount = getSessionCount(this.mSessions, callingUid);
          if ((long)activeCount >= 1024L) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRgAD3sFEjdgNxk8LwcqLmwgHit4HjAgKT02I2AgRTZ5HjgeLF9XXGILMzQ=")) + callingUid);
+            throw new IllegalStateException("Too many active sessions for UID " + callingUid);
          }
 
          sessionId = this.allocateSessionIdLocked();
@@ -116,7 +116,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
             session.params.appIconLastModified = -1L;
             this.mInternalCallback.onSessionBadgingChanged(session);
          } else {
-            throw new SecurityException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4+DmoFNARLHho7IykmDm8JTTdoJzAgKT01JGYaDSNlJAo8LAg2KWU3IFo=")) + sessionId);
+            throw new SecurityException("Caller has no access to session " + sessionId);
          }
       }
    }
@@ -128,7 +128,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
             session.params.appLabel = appLabel;
             this.mInternalCallback.onSessionBadgingChanged(session);
          } else {
-            throw new SecurityException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4+DmoFNARLHho7IykmDm8JTTdoJzAgKT01JGYaDSNlJAo8LAg2KWU3IFo=")) + sessionId);
+            throw new SecurityException("Caller has no access to session " + sessionId);
          }
       }
    }
@@ -145,7 +145,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
             }
 
          } else {
-            throw new SecurityException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4+DmoFNARLHho7IykmDm8JTTdoJzAgKT01JGYaDSNlJAo8LAg2KWU3IFo=")) + sessionId);
+            throw new SecurityException("Caller has no access to session " + sessionId);
          }
       }
    }
@@ -166,7 +166,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
             session.open();
             return session;
          } else {
-            throw new SecurityException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4+DmoFNARLHho7IykmDm8JTTdoJzAgKT01JGYaDSNlJAo8LAg2KWU3IFo=")) + sessionId);
+            throw new SecurityException("Caller has no access to session " + sessionId);
          }
       }
    }
@@ -218,10 +218,10 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
       boolean success = VAppManagerService.get().uninstallPackage(packageName);
       if (statusReceiver != null) {
          Intent fillIn = new Intent();
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSAAIAY+HWMhNBNiJTgSLAhSVg==")), packageName);
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQjSFo=")), success ? 0 : 1);
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQmGkhgHDBBIwU+Bg==")), PackageHelper.deleteStatusToString(success));
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8Ml1JJwZbH2YIGg9kDzhOKAYuVg==")), success ? 1 : -1);
+         fillIn.putExtra("android.content.pm.extra.PACKAGE_NAME", packageName);
+         fillIn.putExtra("android.content.pm.extra.STATUS", success ? 0 : 1);
+         fillIn.putExtra("android.content.pm.extra.STATUS_MESSAGE", PackageHelper.deleteStatusToString(success));
+         fillIn.putExtra("android.content.pm.extra.LEGACY_STATUS", success ? 1 : -1);
 
          try {
             statusReceiver.sendIntent(this.mContext, 0, fillIn, (IntentSender.OnFinished)null, (Handler)null);
@@ -257,7 +257,7 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
          }
       } while(n++ < 32);
 
-      throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4+CWoFNCxLEQo1PxciCG8zNCloDiwgPQc2J2EjNCxsJBEpIiwcVg==")));
+      throw new IllegalStateException("Failed to allocate session ID");
    }
 
    // $FF: synthetic method
@@ -311,9 +311,9 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
 
       public void onUserActionRequired(Intent intent) {
          Intent fillIn = new Intent();
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSxJJAUYBX0hBhN9HyxF")), this.mSessionId);
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQjSFo=")), -1);
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmsIRVRmDB4T")), intent);
+         fillIn.putExtra("android.content.pm.extra.SESSION_ID", this.mSessionId);
+         fillIn.putExtra("android.content.pm.extra.STATUS", -1);
+         fillIn.putExtra("android.intent.extra.INTENT", intent);
 
          try {
             this.mTarget.sendIntent(this.mContext, 0, fillIn, (IntentSender.OnFinished)null, (Handler)null);
@@ -324,15 +324,15 @@ public class VPackageInstallerService extends IPackageInstaller.Stub {
 
       public void onPackageInstalled(String basePackageName, int returnCode, String msg, Bundle extras) {
          Intent fillIn = new Intent();
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSAAIAY+HWMhNBNiJTgSLAhSVg==")), basePackageName);
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSxJJAUYBX0hBhN9HyxF")), this.mSessionId);
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQjSFo=")), PackageHelper.installStatusToPublicStatus(returnCode));
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8NSwTICscXGQmGkhgHDBBIwU+Bg==")), PackageHelper.installStatusToString(returnCode, msg));
-         fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8Ml1JJwZbH2YIGg9kDzhOKAYuVg==")), returnCode);
+         fillIn.putExtra("android.content.pm.extra.PACKAGE_NAME", basePackageName);
+         fillIn.putExtra("android.content.pm.extra.SESSION_ID", this.mSessionId);
+         fillIn.putExtra("android.content.pm.extra.STATUS", PackageHelper.installStatusToPublicStatus(returnCode));
+         fillIn.putExtra("android.content.pm.extra.STATUS_MESSAGE", PackageHelper.installStatusToString(returnCode, msg));
+         fillIn.putExtra("android.content.pm.extra.LEGACY_STATUS", returnCode);
          if (extras != null) {
-            String existing = extras.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8MjgAIiwiXGQxNBNgHFkWLywMGmQ2IBFiNV0MJCw+WmAVSFo=")));
+            String existing = extras.getString("android.content.pm.extra.FAILURE_EXISTING_PACKAGE");
             if (!TextUtils.isEmpty(existing)) {
-               fillIn.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NDwePC4uPGYVMCR8MlkTIjwAU2EmIB1jNV0OLCs2U2Q2OF5hJ1RF")), existing);
+               fillIn.putExtra("android.content.pm.extra.OTHER_PACKAGE_NAME", existing);
             }
          }
 

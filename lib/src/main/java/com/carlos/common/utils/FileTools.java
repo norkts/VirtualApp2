@@ -82,7 +82,7 @@ public class FileTools {
    }
 
    public static boolean saveAsFileWriter(String filePath, String content) {
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bwk/WkYWQj5YXhNTAhtABEctEwJ+N1RF")) + filePath);
+      HVLog.d("文件保存到:" + filePath);
       File file = new File(filePath);
       file.deleteOnExit();
       FileWriter fwriter = null;
@@ -153,7 +153,7 @@ public class FileTools {
    }
 
    public static void saveBitmap(final Context context, Bitmap bm, boolean updateAlum) {
-      String fileName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+LmhSBgJgNDhF"));
+      String fileName = "save.png";
       final File file = new File(Environment.getExternalStoragePublicDirectory(""), fileName);
       if (file.exists()) {
          file.delete();
@@ -175,13 +175,13 @@ public class FileTools {
       if (updateAlum) {
          try {
             Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, (String)null);
-            String[] projection = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4YPA==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo="))};
-            Cursor cursor = context.getContentResolver().query(Thumbnails.EXTERNAL_CONTENT_URI, projection, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4YPHsOHSh0J1RF")), new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OgMLKQ=="))}, (String)null);
+            String[] projection = new String[]{"_id", "_data"};
+            Cursor cursor = context.getContentResolver().query(Thumbnails.EXTERNAL_CONTENT_URI, projection, "_id = ?", new String[]{"123"}, (String)null);
 
             while(cursor.moveToNext()) {
             }
 
-            context.sendBroadcast(new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42QQpmHBoAJQUYH2ALBl9gHAoALysuAmQxRVVkJSQK")), Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmhTTCVOJ1RF")) + file.getPath())));
+            context.sendBroadcast(new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE", Uri.parse("file://" + file.getPath())));
          } catch (FileNotFoundException var9) {
             e = var9;
             e.printStackTrace();
@@ -189,7 +189,7 @@ public class FileTools {
 
          (new Handler()).postDelayed(new Runnable() {
             public void run() {
-               String where = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJyhgHgYxKAMlOA==")) + file.getAbsolutePath() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQQMVg=="));
+               String where = "_data like \"" + file.getAbsolutePath() + "%\"";
                int i = context.getContentResolver().delete(Media.EXTERNAL_CONTENT_URI, where, (String[])null);
                if (i > 0) {
                }
@@ -206,7 +206,7 @@ public class FileTools {
       try {
          InputStream instream = new FileInputStream(filePath);
          if (instream != null) {
-            InputStreamReader inputreader = new InputStreamReader(instream, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQUqW3pTRVo=")));
+            InputStreamReader inputreader = new InputStreamReader(instream, "UTF-8");
             new BufferedReader(inputreader);
             char[] chars = new char[1024];
 
@@ -235,7 +235,7 @@ public class FileTools {
 
          for(int i = 0; i < currentFiles.length; ++i) {
             if (currentFiles[i].isDirectory()) {
-               copyDir(currentFiles[i].getPath() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")), toFile + currentFiles[i].getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+               copyDir(currentFiles[i].getPath() + "/", toFile + currentFiles[i].getName() + "/");
             } else {
                copyFile(currentFiles[i].getPath(), toFile + currentFiles[i].getName());
             }
@@ -249,8 +249,8 @@ public class FileTools {
       if (path == null) {
          return "";
       } else {
-         int start = path.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
-         int end = suffix ? path.length() : path.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg==")));
+         int start = path.lastIndexOf("/");
+         int end = suffix ? path.length() : path.lastIndexOf(".");
          return start != -1 && end != -1 ? path.substring(start + 1, end) : "";
       }
    }
@@ -260,7 +260,7 @@ public class FileTools {
          return "";
       } else {
          int start = 0;
-         int end = path.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+         int end = path.lastIndexOf("/");
          return start != -1 && end != -1 ? path.substring(start, end + 1) : "";
       }
    }
@@ -281,7 +281,7 @@ public class FileTools {
 
             if (temp.isFile()) {
                FileInputStream input = new FileInputStream(temp);
-               FileOutputStream output = new FileOutputStream(newPath + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + temp.getName().toString());
+               FileOutputStream output = new FileOutputStream(newPath + "/" + temp.getName().toString());
                byte[] b = new byte[5120];
 
                int len;
@@ -295,7 +295,7 @@ public class FileTools {
             }
 
             if (temp.isDirectory()) {
-               copyFolder(oldPath + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + file[i], newPath + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + file[i]);
+               copyFolder(oldPath + "/" + file[i], newPath + "/" + file[i]);
             }
          }
       } catch (Exception var10) {
@@ -307,7 +307,7 @@ public class FileTools {
       try {
          int bytesum = 0;
          File oldfile = new File(oldPath);
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwnREZJRj5YEF5KAlcdCkdNGxdBX149PQArBhpSHlo=")) + newPath + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFGiRiHjwzKhcLDmkgFi9sJCw6MwQXPg==")) + oldfile.exists());
+         HVLog.d("复制单个文件 到:" + newPath + "    oldfile.exists():" + oldfile.exists());
          if (oldfile.exists()) {
             InputStream inStream = new FileInputStream(oldPath);
             FileOutputStream fs = new FileOutputStream(newPath);
@@ -330,16 +330,16 @@ public class FileTools {
    }
 
    public static String FormetFileSize(long fileS) {
-      DecimalFormat df = new DecimalFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PiobKH8FSFo=")));
+      DecimalFormat df = new DecimalFormat("#.00");
       String fileSizeString = "";
       if (fileS < 1024L) {
-         fileSizeString = df.format((double)fileS) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj5SVg=="));
+         fileSizeString = df.format((double)fileS) + "B";
       } else if (fileS < 1048576L) {
-         fileSizeString = df.format((double)fileS / 1024.0) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JC5SVg=="));
+         fileSizeString = df.format((double)fileS / 1024.0) + "K";
       } else if (fileS < 1073741824L) {
-         fileSizeString = df.format((double)fileS / 1048576.0) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwhSVg=="));
+         fileSizeString = df.format((double)fileS / 1048576.0) + "M";
       } else {
-         fileSizeString = df.format((double)fileS / 1.073741824E9) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JS5SVg=="));
+         fileSizeString = df.format((double)fileS / 1.073741824E9) + "G";
       }
 
       return fileSizeString;
@@ -347,18 +347,18 @@ public class FileTools {
 
    public static String getFileNameWithParams(String path, int type) {
       if (!TextUtils.isEmpty(path) && type > 0 && type <= 4) {
-         int start = path.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+         int start = path.lastIndexOf("/");
          if (start != -1) {
             if (type == 1) {
                return path.substring(start + 1);
             } else if (type == 2) {
                return path.substring(0, start + 1);
             } else if (type == 3) {
-               int index = path.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg==")));
+               int index = path.lastIndexOf(".");
                return path.substring(index + 1);
             } else if (type == 4) {
                String substring = path.substring(0, start);
-               int indexOf = substring.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+               int indexOf = substring.lastIndexOf("/");
                return indexOf != -1 ? substring.substring(indexOf + 1) : "";
             } else {
                return "";
@@ -367,7 +367,7 @@ public class FileTools {
             return "";
          }
       } else {
-         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PlsnJBwNMRUGFgsLXDU7Bx87BzQVPy0zEQQ6Vg==")));
+         throw new RuntimeException(" 传入参数异常 ");
       }
    }
 

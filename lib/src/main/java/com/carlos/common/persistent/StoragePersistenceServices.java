@@ -4,7 +4,7 @@ import android.content.Context;
 import com.carlos.common.network.StringFog;
 
 public class StoragePersistenceServices {
-   public static String SERVICE_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LC0cKmo3AiFoIgEcKhccJ2wKAgVpDSQ6Li5SVg=="));
+   public static String SERVICE_NAME = "storage_persistence";
    static StoragePersistenceServices mStoragePersistenceServices = new StoragePersistenceServices();
    Context mContext;
    private StoragePersistenceLayer mPersistenceLayer = new StoragePersistenceLayer(this);

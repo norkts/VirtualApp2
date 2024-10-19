@@ -60,10 +60,10 @@ import mirror.android.content.pm.ApplicationInfoL;
 import mirror.android.content.pm.ApplicationInfoP;
 
 public class VAppManagerService extends IAppManager.Stub {
-   private final String ANDROID_TEST_BASE = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kgKAgqLn8VRTdsJyhF"));
-   private final String ANDROID_TEST_RUNNER = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kgKAgqLn8aRQVlNxogKS5SVg=="));
-   private final String ORG_APACHE_HTTP_LEGACY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0MPXojJAJ9Dig0KAMYMmUwBgJ1NwIgLj4+JWcFSFo="));
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")) + VAppManagerService.class.getSimpleName();
+   private final String ANDROID_TEST_BASE = "android.test.base";
+   private final String ANDROID_TEST_RUNNER = "android.test.runner";
+   private final String ORG_APACHE_HTTP_LEGACY = "org.apache.http.legacy";
+   private static final String TAG = "HV-" + VAppManagerService.class.getSimpleName();
    private static final Singleton<VAppManagerService> sService = new Singleton<VAppManagerService>() {
       protected VAppManagerService create() {
          return new VAppManagerService();
@@ -91,7 +91,7 @@ public class VAppManagerService extends IAppManager.Stub {
                      PackageSetting ps = PackageCacheManager.getSetting(pkg);
                      if (ps != null && ps.dynamic) {
                         VActivityManagerService.get().killAppByPkg(pkg, -1);
-                        if (action.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNA5iDzgMLAUMVg==")))) {
+                        if (action.equals("android.intent.action.PACKAGE_REPLACED")) {
                            ApplicationInfo outInfo = null;
 
                            try {
@@ -106,10 +106,10 @@ public class VAppManagerService extends IAppManager.Stub {
                            }
 
                            VAppInstallerParams params = new VAppInstallerParams(2, 1);
-                           VAppInstallerResult res = VAppManagerService.this.installPackageInternal(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + pkg), params);
-                           VLog.e(VAppManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc6PGsaMCtLESQ7Ly0EOWkFBSh7DjMrKT0qO2YVLDZ7MCMuLz5SVg==")), res.packageName, res.status);
-                        } else if (action.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNEhiMiQKLBhSVg=="))) && intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmoYPFRhD1kRJywmA2cxNFU=")), false)) {
-                           VLog.e(VAppManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uDWowOC9gNDs8IxciP2wFQS1rDT8gKT5SVg==")), ps.packageName);
+                           VAppInstallerResult res = VAppManagerService.this.installPackageInternal(Uri.parse("package:" + pkg), params);
+                           VLog.e(VAppManagerService.TAG, "Update package %s status: %d", res.packageName, res.status);
+                        } else if (action.equals("android.intent.action.PACKAGE_REMOVED") && intent.getBooleanExtra("android.intent.extra.DATA_REMOVED", false)) {
+                           VLog.e(VAppManagerService.TAG, "Removing package %s", ps.packageName);
                            VAppManagerService.this.uninstallPackageFully(ps, true);
                         }
 
@@ -139,14 +139,14 @@ public class VAppManagerService extends IAppManager.Stub {
       this.mSystemConfig.load();
       this.mUidSystem.initUidList();
       IntentFilter filter = new IntentFilter();
-      filter.addAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNA5iDzgMLAUMVg==")));
-      filter.addAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNEhiMiQKLBhSVg==")));
-      filter.addDataScheme(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF")));
+      filter.addAction("android.intent.action.PACKAGE_REPLACED");
+      filter.addAction("android.intent.action.PACKAGE_REMOVED");
+      filter.addDataScheme("package");
       VirtualCore.get().getContext().registerReceiver(this.appEventReceiver, filter);
    }
 
    private void extractApacheFrameworksForPie() {
-      String frameworkName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0MPXojJAJ9Dig0KAMYMmUwBgJ1NwIgLj4+JWcORSVsJFk9"));
+      String frameworkName = "org.apache.http.legacy.boot";
       File dex = VEnvironment.getOptimizedFrameworkFile(frameworkName);
       if (!dex.exists()) {
          try {
@@ -167,7 +167,7 @@ public class VAppManagerService extends IAppManager.Stub {
             if (this.mPersistenceLayer.changed) {
                this.mPersistenceLayer.changed = false;
                this.mPersistenceLayer.save();
-               VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iCiQCKAguL2wgAgZrARoqLhYEO2cKLDV5EQo5Lz5bCmsFMwQ=")));
+               VLog.w(TAG, "Package PersistenceLayer updated.");
             }
 
             List<VUserInfo> userHandles = VUserManagerService.get().getUsers(true);
@@ -194,7 +194,7 @@ public class VAppManagerService extends IAppManager.Stub {
                      VUserInfo userInfo = (VUserInfo)var5.next();
                      if (!this.isAppInstalled(preInstallPkg) && userInfo.id == 0) {
                         VAppInstallerParams params = new VAppInstallerParams(10, 1);
-                        this.installPackageInternal(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + preInstallPkg), params);
+                        this.installPackageInternal(Uri.parse("package:" + preInstallPkg), params);
                      } else if (!this.isAppInstalledAsUser(userInfo.id, preInstallPkg)) {
                         this.installPackageAsUser(userInfo.id, preInstallPkg);
                      }
@@ -209,7 +209,7 @@ public class VAppManagerService extends IAppManager.Stub {
    }
 
    private void cleanUpResidualFiles(PackageSetting ps) {
-      VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4EM2sVBgVhVyQqKAgqMWkwGjdlVjwtIxgEJ2EkOCFsJyspPl9WJ2wjSFo=")), ps.packageName);
+      VLog.e(TAG, "cleanup residual files for : %s", ps.packageName);
       this.uninstallPackageFully(ps, false);
    }
 
@@ -250,9 +250,9 @@ public class VAppManagerService extends IAppManager.Stub {
                   boolean isVersionCodeChange = pkg.mVersionCode != outInfo.versionCode;
                   boolean isPathChange = !(new File(pkg.applicationInfo.publicSourceDir)).exists();
                   if (isVersionCodeChange || isPathChange) {
-                     VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KHsJRVo=")) + ps.packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAQ6CmsaLyh9JBo7Kj06PWk3TT5rDgo6IxgAKk5TODBlHjAqIz4fJGoKMwQ=")));
+                     VLog.d(TAG, "app (" + ps.packageName + ") has changed version, update it.");
                      VAppInstallerParams params = new VAppInstallerParams(10, 1);
-                     this.installPackageInternal(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + ps.packageName), params);
+                     this.installPackageInternal(Uri.parse("package:" + ps.packageName), params);
                   }
                } catch (PackageManager.NameNotFoundException var10) {
                   PackageManager.NameNotFoundException e = var10;
@@ -293,16 +293,16 @@ public class VAppManagerService extends IAppManager.Stub {
       int resultFlags = 0;
       if (uri != null && uri.getScheme() != null) {
          String scheme = uri.getScheme();
-         if (!scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF"))) && !scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")))) {
+         if (!scheme.equals("package") && !scheme.equals("file")) {
             return VAppInstallerResult.create(4);
-         } else if (scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF"))) && uri.getSchemeSpecificPart() == null) {
+         } else if (scheme.equals("package") && uri.getSchemeSpecificPart() == null) {
             return VAppInstallerResult.create(4);
-         } else if (scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo="))) && uri.getPath() == null) {
+         } else if (scheme.equals("file") && uri.getPath() == null) {
             return VAppInstallerResult.create(4);
          } else {
             ApplicationInfo outApplicationInfo = null;
             File packageFile;
-            if (uri.getScheme().equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF")))) {
+            if (uri.getScheme().equals("package")) {
                String packageName = uri.getSchemeSpecificPart();
 
                try {
@@ -321,7 +321,7 @@ public class VAppManagerService extends IAppManager.Stub {
                packageFile = new File(uri.getPath());
             }
 
-            VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDDwzKhcLIA==")) + packageFile);
+            VLog.d("HV-", "packageFile:" + packageFile);
             if (packageFile.exists() && packageFile.isFile()) {
                PackageParser.ApkLite apkLite;
                try {
@@ -363,9 +363,9 @@ public class VAppManagerService extends IAppManager.Stub {
                      res.packageName = pkg.packageName;
                      res.flags = resultFlags;
                      File appDir = VEnvironment.getDataAppPackageDirectory(pkg.packageName);
-                     VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtLHiAsI14mPmwgRDJ4EVRF")) + appDir);
+                     VLog.e(TAG, "create app dir: " + appDir);
                      if (!FileUtils.ensureDirCreate(appDir)) {
-                        VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwsKQc5JGIaGjV7MCBF")) + appDir);
+                        VLog.e(TAG, "failed to create app dir: " + appDir);
                         res.flags = 6;
                         return res;
                      } else {
@@ -424,7 +424,7 @@ public class VAppManagerService extends IAppManager.Stub {
                               String defaultAbi = Build.SUPPORTED_ABIS[0];
                               if (!VirtualCore.get().isExtPackageInstalled()) {
                                  isUse32bitAbi = false;
-                                 defaultAbi = isUse32bitAbi ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcMDWgVJCpjCl0uPC0iVg==")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcMDXwkMyNmMxo7"));
+                                 defaultAbi = isUse32bitAbi ? "armeabi-v7a" : "arm64-v8a";
                               }
 
                               if (instructionSet != null && (isUse32bitAbi || supported64bitAbi == null)) {
@@ -465,11 +465,11 @@ public class VAppManagerService extends IAppManager.Stub {
                                  name = (String)var30.next();
                                  entry = this.mSystemConfig.getSharedLibrary(name);
                                  if (entry == null) {
-                                    VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5bCW8JICVhEQozKi0YOW83TQNqETg5LhgpJGAaGiVlNCQ7Lik5JA==")) + name);
+                                    VLog.e(TAG, "skip optional shared library: " + name);
                                  } else {
                                     sharedLibraryFiles.add(entry.path);
                                     if (BuildCompat.isS()) {
-                                       sharedLibraryInfo = new SharedLibraryInfo(entry.path, (String)null, (List)null, entry.name, -1L, 0, new VersionedPackage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iEVRF")), 0L), (List)null, (List)null, false);
+                                       sharedLibraryInfo = new SharedLibraryInfo(entry.path, (String)null, (List)null, entry.name, -1L, 0, new VersionedPackage("android", 0L), (List)null, (List)null, false);
                                        sharedLibraryInfoList.add(sharedLibraryInfo);
                                     }
                                  }
@@ -481,11 +481,11 @@ public class VAppManagerService extends IAppManager.Stub {
                                  name = (String)var30.next();
                                  entry = this.mSystemConfig.getSharedLibrary(name);
                                  if (entry == null) {
-                                    VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5bCW8JIARiASAvKQguPWk3TQNqETg5LhgpJGAaGiVlNCQ7Lik5JA==")) + name);
+                                    VLog.e(TAG, "skip required shared library: " + name);
                                  } else {
                                     sharedLibraryFiles.add(entry.path);
                                     if (BuildCompat.isS()) {
-                                       sharedLibraryInfo = new SharedLibraryInfo(entry.path, (String)null, (List)null, entry.name, -1L, 0, new VersionedPackage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iEVRF")), 0L), (List)null, (List)null, false);
+                                       sharedLibraryInfo = new SharedLibraryInfo(entry.path, (String)null, (List)null, entry.name, -1L, 0, new VersionedPackage("android", 0L), (List)null, (List)null, false);
                                        sharedLibraryInfoList.add(sharedLibraryInfo);
                                     }
                                  }
@@ -554,23 +554,23 @@ public class VAppManagerService extends IAppManager.Stub {
                         ApplicationInfoL.scanSourceDir.set(pkg.applicationInfo, scanSourcePath);
                         ApplicationInfoL.scanPublicSourceDir.set(pkg.applicationInfo, scanSourcePath);
                         NativeLibraryHelperCompat nativeLibraryHelper = new NativeLibraryHelperCompat(packageFile);
-                        VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4+LGUaOCtoHgY6Iz0iKGgmRSVlJCxKIxcLPg==")) + nativeLibraryRootDir);
+                        VLog.d("HV-", "nativeLibraryRootDir:" + nativeLibraryRootDir);
                         if (outApplicationInfo == null) {
                            if (!FileUtils.ensureDirCreate(nativeLibraryRootDir)) {
-                              VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwbLRcqI2YwLyNsHhorOD1fKWUgMzRoAR4bMTkiVg==")) + nativeLibraryRootDir);
+                              VLog.e(TAG, "failed to create native lib root dir: " + nativeLibraryRootDir);
                            }
 
                            if (FileUtils.ensureDirCreate(nativeLibraryDir)) {
                               nativeLibraryHelper.copyNativeBinaries(nativeLibraryDir, primaryCpuAbi);
                            } else {
-                              VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwbLRcqI2YwLyNsHhorOD4cI2w0TDQ=")) + nativeLibraryDir);
+                              VLog.e(TAG, "failed to create native lib dir: " + nativeLibraryDir);
                            }
 
                            if (secondaryCpuAbi != null) {
                               if (FileUtils.ensureDirCreate(secondaryNativeLibraryDir)) {
                                  nativeLibraryHelper.copyNativeBinaries(secondaryNativeLibraryDir, secondaryCpuAbi);
                               } else {
-                                 VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTw6Lhg2KWAwFiRlNx0pKRhbCmoKOD97AQIwOzkiI28FNyx+N1RF")) + secondaryNativeLibraryDir);
+                                 VLog.e(TAG, "failed to create secondary native lib dir: " + secondaryNativeLibraryDir);
                               }
                            }
                         }
@@ -579,17 +579,17 @@ public class VAppManagerService extends IAppManager.Stub {
                         ps.primaryCpuAbi = primaryCpuAbi;
                         ps.secondaryCpuAbi = secondaryCpuAbi;
                         ps.is64bitPackage = NativeLibraryHelperCompat.is64bitAbi(ps.primaryCpuAbi);
-                        VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0uLGMaIAJgHgY5Lwg2MW8FMAllNyQcPQMhDk8kOz15EVRF")) + outApplicationInfo);
+                        VLog.e(TAG, "outApplicationInfo 603 : " + outApplicationInfo);
                         if (outApplicationInfo == null) {
                            File privatePackageFile = VEnvironment.getPackageFile(pkg.packageName);
-                           VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDDwzKhcLIH4zSFo=")) + packageFile + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OG8KFi9mNCAgKAYmOW4FJDdrJyhIIxgEJ3czSFo=")) + privatePackageFile);
+                           VLog.e(TAG, "packageFile: " + packageFile + "   privatePackageFile:" + privatePackageFile);
                            boolean copied = false;
 
                            try {
                               FileUtils.copyFile(packageFile, privatePackageFile);
                               copied = true;
                            } catch (IOException var35) {
-                              VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqDWowLyhrNx4dLl5WJA==")) + privatePackageFile);
+                              VLog.e(TAG, "failed to copy file: " + privatePackageFile);
                               var35.printStackTrace();
                            }
 
@@ -708,7 +708,7 @@ public class VAppManagerService extends IAppManager.Stub {
             if (FileUtils.ensureDirCreate(nativeLibraryDir)) {
                nativeLibraryHelper.copyNativeBinaries(nativeLibraryDir, primaryCpuAbi);
             } else {
-               VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwbLRcqI2YwLyNsHhorOD4cI2w0TDQ=")) + nativeLibraryDir);
+               VLog.e(TAG, "failed to create native lib dir: " + nativeLibraryDir);
             }
          }
 
@@ -869,7 +869,7 @@ public class VAppManagerService extends IAppManager.Stub {
          }
       }
 
-      VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pls/Hx1WOR4cLAsdRCUJXhgrByYGCVoqU1sjWx9XLVUeUx9LXgREKVdNTVo=")) + infoList.size());
+      VLog.d("HV-", " 查看当前安装的数量 ：" + infoList.size());
       return infoList;
    }
 
@@ -971,14 +971,14 @@ public class VAppManagerService extends IAppManager.Stub {
    }
 
    private void sendInstalledBroadcast(String packageName, VUserHandle user) {
-      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2ALMFVgHyxF")));
-      intent.setData(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + packageName));
+      Intent intent = new Intent("android.intent.action.PACKAGE_ADDED");
+      intent.setData(Uri.parse("package:" + packageName));
       VActivityManagerService.get().sendBroadcastAsUser(intent, user);
    }
 
    private void sendUninstalledBroadcast(String packageName, VUserHandle user) {
-      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNEhiMiQKLBhSVg==")));
-      intent.setData(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + packageName));
+      Intent intent = new Intent("android.intent.action.PACKAGE_REMOVED");
+      intent.setData(Uri.parse("package:" + packageName));
       VActivityManagerService.get().sendBroadcastAsUser(intent, user);
    }
 
@@ -1036,7 +1036,7 @@ public class VAppManagerService extends IAppManager.Stub {
    }
 
    void restoreFactoryState() {
-      VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS4+KmojAiZiIwU8Oz0ML2UzNARrDTw/IwgtJGIwPCZqHlk7LipXD28VJCBoVh05CD5SVg==")));
+      VLog.w(TAG, "Warning: Restore the factory state...");
       FileUtils.deleteDir(VEnvironment.getRoot());
       VEnvironment.systemReady();
    }

@@ -12,14 +12,14 @@ import mirror.android.content.ClipboardManagerOreo;
 
 public class ClipBoardStub extends BinderInvocationProxy {
    public ClipBoardStub() {
-      super(getInterface(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ECW8FFiV9ASww")));
+      super(getInterface(), "clipboard");
    }
 
    private static IInterface getInterface() {
       if (ClipboardManager.getService != null) {
          return (IInterface)ClipboardManager.getService.call();
       } else if (ClipboardManagerOreo.mService != null) {
-         android.content.ClipboardManager cm = (android.content.ClipboardManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ECW8FFiV9ASww")));
+         android.content.ClipboardManager cm = (android.content.ClipboardManager)VirtualCore.get().getContext().getSystemService("clipboard");
          return (IInterface)ClipboardManagerOreo.mService.get(cm);
       } else {
          return ClipboardManagerOreo.sService != null ? (IInterface)ClipboardManagerOreo.sService.get() : null;
@@ -28,14 +28,14 @@ public class ClipBoardStub extends BinderInvocationProxy {
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFi9gDiAqLQUqCGwgTVo="))));
+      this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("getPrimaryClip"));
       if (VERSION.SDK_INT > 17) {
-         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGcKFi9gDiAqLQUqCGwgTVo="))));
-         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFi9gDiAqLQUqCGwgTRZrDjAqKS4YDmYaGipsN1RF"))));
-         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBg+KWcKFi9gDiAqLQUqCGwgTVo="))));
-         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGcKFi9gDiAqLQUqCGwgTRNqETgbLj4uIGgaGjZqHgodLy1fVg=="))));
-         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtpESwzKgciKGghAiRqDjwAIwg+KmIgLC9kHho8Iz4AKmsKFlo="))));
-         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBg+KWMzHi9hHiw1LwguPn0zGjBvEVRF"))));
+         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("setPrimaryClip"));
+         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("getPrimaryClipDescription"));
+         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("hasPrimaryClip"));
+         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("addPrimaryClipChangedListener"));
+         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("removePrimaryClipChangedListener"));
+         this.addMethodProxy(new ReplaceCallingPkgAndLastUserIdMethodProxy("hasClipboardText"));
       }
 
    }
@@ -43,7 +43,7 @@ public class ClipBoardStub extends BinderInvocationProxy {
    public void inject() throws Throwable {
       super.inject();
       if (ClipboardManagerOreo.mService != null) {
-         android.content.ClipboardManager cm = (android.content.ClipboardManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ECW8FFiV9ASww")));
+         android.content.ClipboardManager cm = (android.content.ClipboardManager)VirtualCore.get().getContext().getSystemService("clipboard");
          ClipboardManagerOreo.mService.set(cm, (IInterface)((BinderInvocationStub)this.getInvocationStub()).getProxyInterface());
       } else if (ClipboardManagerOreo.sService != null) {
          ClipboardManagerOreo.sService.set((IInterface)((BinderInvocationStub)this.getInvocationStub()).getProxyInterface());

@@ -66,7 +66,7 @@ public class PropertiesUtils {
    }
 
    private static void store(Map properties, OutputStream out, String comments) throws IOException {
-      store0(properties, new BufferedWriter(new OutputStreamWriter(out, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OF5eI3kYBQE=")))), comments, true);
+      store0(properties, new BufferedWriter(new OutputStreamWriter(out, "8859_1")), comments, true);
    }
 
    private static void store0(Map properties, BufferedWriter bw, String comments, boolean escUnicode) throws IOException {
@@ -88,7 +88,7 @@ public class PropertiesUtils {
             String val = String.valueOf(properties.get(k));
             key = saveConvert(key, true, escUnicode);
             val = saveConvert(val, false, escUnicode);
-            bw.write(key + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwhSVg==")) + val);
+            bw.write(key + "=" + val);
             bw.newLine();
          }
       }
@@ -169,7 +169,7 @@ public class PropertiesUtils {
    }
 
    private static void writeComments(BufferedWriter bw, String comments) throws IOException {
-      bw.write(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi5SVg==")));
+      bw.write("#");
       int len = comments.length();
       int current = 0;
       int last = 0;
@@ -194,7 +194,7 @@ public class PropertiesUtils {
                }
 
                if (current == len - 1 || comments.charAt(current + 1) != '#' && comments.charAt(current + 1) != '!') {
-                  bw.write(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi5SVg==")));
+                  bw.write("#");
                }
             }
 

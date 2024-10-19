@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class SimpleArrayMap<K, V> {
    private static final boolean DEBUG = false;
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgcMKmsaAg19ASRF"));
+   private static final String TAG = "ArrayMap";
    private static final int BASE_SIZE = 4;
    private static final int CACHE_SIZE = 10;
    static Object[] mBaseCache;
@@ -411,21 +411,21 @@ public class SimpleArrayMap<K, V> {
 
    public String toString() {
       if (this.isEmpty()) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KC0IVg=="));
+         return "{}";
       } else {
          StringBuilder buffer = new StringBuilder(this.mSize * 28);
          buffer.append('{');
 
          for(int i = 0; i < this.mSize; ++i) {
             if (i > 0) {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
+               buffer.append(", ");
             }
 
             Object key = this.keyAt(i);
             if (key != this) {
                buffer.append(key);
             } else {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBcqCmUaLyhoDiAsOQhSVg==")));
+               buffer.append("(this Map)");
             }
 
             buffer.append('=');
@@ -433,7 +433,7 @@ public class SimpleArrayMap<K, V> {
             if (value != this) {
                buffer.append(value);
             } else {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBcqCmUaLyhoDiAsOQhSVg==")));
+               buffer.append("(this Map)");
             }
          }
 

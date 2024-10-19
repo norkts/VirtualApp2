@@ -110,7 +110,7 @@ public interface IActivityManager extends IInterface {
    String getSettingsProvider(int var1, int var2, String var3) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IActivityManager {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ="));
+      private static final String DESCRIPTOR = "com.lody.virtual.server.interfaces.IActivityManager";
       static final int TRANSACTION_initProcess = 1;
       static final int TRANSACTION_appDoneExecuting = 2;
       static final int TRANSACTION_getFreeStubCount = 3;
@@ -158,7 +158,7 @@ public interface IActivityManager extends IInterface {
       static final int TRANSACTION_getSettingsProvider = 45;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+         this.attachInterface(this, "com.lody.virtual.server.interfaces.IActivityManager");
       }
 
       public static IActivityManager asInterface(IBinder obj) {
@@ -634,7 +634,7 @@ public interface IActivityManager extends IInterface {
 
       public static boolean setDefaultImpl(IActivityManager impl) {
          if (IActivityManager.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IActivityManager.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -660,7 +660,7 @@ public interface IActivityManager extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ="));
+            return "com.lody.virtual.server.interfaces.IActivityManager";
          }
 
          public ClientConfig initProcess(String packageName, String processName, int userId) throws RemoteException {
@@ -669,7 +669,7 @@ public interface IActivityManager extends IInterface {
 
             ClientConfig var8;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeString(processName);
                _data.writeInt(userId);
@@ -700,7 +700,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeInt(userId);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
@@ -723,7 +723,7 @@ public interface IActivityManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (!_status && IActivityManager.Stub.getDefaultImpl() != null) {
                   int var5 = IActivityManager.Stub.getDefaultImpl().getFreeStubCount();
@@ -746,7 +746,7 @@ public interface IActivityManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(isExt ? 1 : 0);
                _data.writeString(permission);
                _data.writeInt(pid);
@@ -774,7 +774,7 @@ public interface IActivityManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                boolean _status = this.mRemote.transact(5, _data, _reply, 0);
                if (!_status && IActivityManager.Stub.getDefaultImpl() != null) {
                   int var5 = IActivityManager.Stub.getDefaultImpl().getSystemPid();
@@ -797,7 +797,7 @@ public interface IActivityManager extends IInterface {
 
             int var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                boolean _status = this.mRemote.transact(6, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -820,7 +820,7 @@ public interface IActivityManager extends IInterface {
 
             int var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(pid);
                boolean _status = this.mRemote.transact(7, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -844,7 +844,7 @@ public interface IActivityManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                boolean _status = this.mRemote.transact(8, _data, _reply, 0);
                if (!_status && IActivityManager.Stub.getDefaultImpl() != null) {
                   int var5 = IActivityManager.Stub.getDefaultImpl().getCurrentUserId();
@@ -867,7 +867,7 @@ public interface IActivityManager extends IInterface {
 
             boolean var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(processName);
                boolean _status = this.mRemote.transact(9, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -891,7 +891,7 @@ public interface IActivityManager extends IInterface {
 
             boolean var8;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeInt(userId);
                _data.writeInt(foreground ? 1 : 0);
@@ -917,7 +917,7 @@ public interface IActivityManager extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(pid);
                boolean _status = this.mRemote.transact(11, _data, _reply, 0);
                if (!_status && IActivityManager.Stub.getDefaultImpl() != null) {
@@ -941,7 +941,7 @@ public interface IActivityManager extends IInterface {
 
             String var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(pid);
                boolean _status = this.mRemote.transact(12, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -965,7 +965,7 @@ public interface IActivityManager extends IInterface {
 
             List var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(pid);
                boolean _status = this.mRemote.transact(13, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -988,7 +988,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                boolean _status = this.mRemote.transact(14, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -1008,7 +1008,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(pkg);
                _data.writeInt(userId);
                boolean _status = this.mRemote.transact(15, _data, _reply, 0);
@@ -1030,7 +1030,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(processName);
                _data.writeInt(vuid);
                boolean _status = this.mRemote.transact(16, _data, _reply, 0);
@@ -1052,7 +1052,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                boolean _status = this.mRemote.transact(17, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -1073,7 +1073,7 @@ public interface IActivityManager extends IInterface {
 
             String var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(pid);
                boolean _status = this.mRemote.transact(18, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -1097,7 +1097,7 @@ public interface IActivityManager extends IInterface {
 
             int var11;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeTypedArray(intents, 0);
                _data.writeStringArray(resolvedTypes);
                _data.writeStrongBinder(token);
@@ -1132,7 +1132,7 @@ public interface IActivityManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                if (intent != null) {
                   _data.writeInt(1);
                   intent.writeToParcel(_data, 0);
@@ -1181,7 +1181,7 @@ public interface IActivityManager extends IInterface {
 
             int var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                if (intent != null) {
                   _data.writeInt(1);
                   intent.writeToParcel(_data, 0);
@@ -1211,7 +1211,7 @@ public interface IActivityManager extends IInterface {
 
             boolean var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(22, _data, _reply, 0);
@@ -1235,7 +1235,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeStrongBinder(record);
                _data.writeStrongBinder(token);
                _data.writeInt(taskId);
@@ -1258,7 +1258,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(24, _data, _reply, 0);
@@ -1281,7 +1281,7 @@ public interface IActivityManager extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(25, _data, _reply, 0);
@@ -1305,7 +1305,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(26, _data, _reply, 0);
@@ -1328,7 +1328,7 @@ public interface IActivityManager extends IInterface {
 
             ComponentName var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(27, _data, _reply, 0);
@@ -1359,7 +1359,7 @@ public interface IActivityManager extends IInterface {
 
             String var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(28, _data, _reply, 0);
@@ -1384,7 +1384,7 @@ public interface IActivityManager extends IInterface {
 
             ComponentName var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(29, _data, _reply, 0);
@@ -1415,7 +1415,7 @@ public interface IActivityManager extends IInterface {
 
             AppTaskInfo var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(taskId);
                boolean _status = this.mRemote.transact(30, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -1445,7 +1445,7 @@ public interface IActivityManager extends IInterface {
 
             String _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(31, _data, _reply, 0);
@@ -1470,7 +1470,7 @@ public interface IActivityManager extends IInterface {
 
             IBinder var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                if (info != null) {
                   _data.writeInt(1);
@@ -1501,7 +1501,7 @@ public interface IActivityManager extends IInterface {
 
             boolean var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(33, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -1524,7 +1524,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                if (sender != null) {
                   _data.writeInt(1);
                   sender.writeToParcel(_data, 0);
@@ -1552,7 +1552,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(35, _data, _reply, 0);
                if (!_status && IActivityManager.Stub.getDefaultImpl() != null) {
@@ -1574,7 +1574,7 @@ public interface IActivityManager extends IInterface {
 
             IntentSenderData var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeStrongBinder(token);
                boolean _status = this.mRemote.transact(36, _data, _reply, 0);
                if (_status || IActivityManager.Stub.getDefaultImpl() == null) {
@@ -1603,7 +1603,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeString(processName);
                _data.writeInt(userId);
@@ -1626,7 +1626,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                if (info != null) {
                   _data.writeInt(1);
                   info.writeToParcel(_data, 0);
@@ -1653,7 +1653,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeInt(idle ? 1 : 0);
                _data.writeInt(userId);
@@ -1677,7 +1677,7 @@ public interface IActivityManager extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeInt(userId);
                boolean _status = this.mRemote.transact(40, _data, _reply, 0);
@@ -1702,7 +1702,7 @@ public interface IActivityManager extends IInterface {
 
             VParceledListSlice _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(pkg);
                _data.writeInt(maxNum);
                _data.writeInt(flags);
@@ -1732,7 +1732,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                if (intent != null) {
                   _data.writeInt(1);
                   intent.writeToParcel(_data, 0);
@@ -1760,7 +1760,7 @@ public interface IActivityManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeString(packageName);
                _data.writeInt(userId);
                _data.writeString(proccessName);
@@ -1785,7 +1785,7 @@ public interface IActivityManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeInt(tableIndex);
                _data.writeString(arg);
@@ -1810,7 +1810,7 @@ public interface IActivityManager extends IInterface {
 
             String _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWIwcuM28FJD1lNDASLggcP2gzNAQ=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IActivityManager");
                _data.writeInt(userId);
                _data.writeInt(tableIndex);
                _data.writeString(arg);

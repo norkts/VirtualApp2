@@ -111,7 +111,7 @@ public final class VUserHandle implements Parcelable {
       if (noUserGid >= 50000 && noUserGid <= 59999) {
          return noUserGid + 10000 - '썐';
       } else {
-         throw new IllegalArgumentException(Integer.toString(gid) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYKXsFBiVmVyQ7PxgqMm4gRStrVjwsKQc5JGIgGi8=")));
+         throw new IllegalArgumentException(Integer.toString(gid) + " is not a shared app gid");
       }
    }
 
@@ -198,7 +198,7 @@ public final class VUserHandle implements Parcelable {
    }
 
    public String toString() {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITsuKWgaFgp9DlkwKhcMJw==")) + this.mHandle + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LwhSVg=="));
+      return "VUserHandle{" + this.mHandle + "}";
    }
 
    public boolean equals(Object obj) {

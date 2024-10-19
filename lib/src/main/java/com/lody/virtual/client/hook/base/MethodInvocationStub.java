@@ -60,7 +60,7 @@ public class MethodInvocationStub<T> {
    public MethodProxy addMethodProxy(MethodProxy methodProxy) {
       if (methodProxy != null && !TextUtils.isEmpty(methodProxy.getMethodName())) {
          if (this.mInternalMethodProxies.containsKey(methodProxy.getMethodName())) {
-            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfM3sLRSVgJAE0OAgpCH43GgN6DTw0LD0tJH0KFi9uDjMpKj5bD3gVFj9oER03JQdeL24FGj1qDho0Iz42M3ojSFo=")), methodProxy.getMethodName(), methodProxy.getClass().getName());
+            VLog.w(TAG, "The Hook(%s, %s) you added has been in existence.", methodProxy.getMethodName(), methodProxy.getClass().getName());
             return methodProxy;
          }
 
@@ -115,7 +115,7 @@ public class MethodInvocationStub<T> {
             Object e = array[j];
             b.append(e);
             if (j != array.length - 1) {
-               b.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
+               b.append(", ");
             }
          }
 
@@ -127,11 +127,11 @@ public class MethodInvocationStub<T> {
 
    public static String argsToString(Object[] a) {
       if (a == null) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoFSFo="));
+         return "null";
       } else {
          int iMax = a.length - 1;
          if (iMax == -1) {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("P14cVg=="));
+            return "<>";
          } else {
             StringBuilder b = new StringBuilder();
             b.append('<');
@@ -144,7 +144,7 @@ public class MethodInvocationStub<T> {
                   return b.append('>').toString();
                }
 
-               b.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
+               b.append(", ");
                ++i;
             }
          }
@@ -153,7 +153,7 @@ public class MethodInvocationStub<T> {
 
    private void dumpMethodProxies() {
       StringBuilder sb = new StringBuilder(50);
-      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PDpWMnUnTCJJMAUyOTkHCnxSIyJ6M1AhMypWLg==")));
+      sb.append("*********************");
       Iterator var2 = this.mInternalMethodProxies.values().iterator();
 
       while(var2.hasNext()) {
@@ -161,7 +161,7 @@ public class MethodInvocationStub<T> {
          sb.append(proxy.getMethodName()).append("\n");
       }
 
-      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PDpWMnUnTCJJMAUyOTkHCnxSIyJ6M1AhMypWLg==")));
+      sb.append("*********************");
       VLog.e(TAG, sb.toString());
    }
 
@@ -226,12 +226,12 @@ public class MethodInvocationStub<T> {
                      if (exception != null) {
                         retStringx = exception.toString();
                      } else if (method.getReturnType().equals(Void.TYPE)) {
-                        retStringx = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4ACWgFSFo="));
+                        retStringx = "void";
                      } else {
                         retStringx = MethodInvocationStub.argToString(res);
                      }
 
-                     Log.println(logPriorityx, MethodInvocationStub.TAG, method.getDeclaringClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg==")) + method.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBhSVg==")) + argStr + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAQ5O34nIFo=")) + retStringx);
+                     Log.println(logPriorityx, MethodInvocationStub.TAG, method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + argStr + ") => " + retStringx);
                   }
                }
 
@@ -249,12 +249,12 @@ public class MethodInvocationStub<T> {
                if (exception != null) {
                   retString = exception.toString();
                } else if (method.getReturnType().equals(Void.TYPE)) {
-                  retString = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4ACWgFSFo="));
+                  retString = "void";
                } else {
                   retString = MethodInvocationStub.argToString(res);
                }
 
-               Log.println(logPriority, MethodInvocationStub.TAG, method.getDeclaringClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg==")) + method.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBhSVg==")) + argStr + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAQ5O34nIFo=")) + retString);
+               Log.println(logPriority, MethodInvocationStub.TAG, method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + argStr + ") => " + retString);
             }
          }
 

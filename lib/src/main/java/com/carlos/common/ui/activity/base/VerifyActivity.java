@@ -55,18 +55,18 @@ import java.util.List;
 import java.util.Locale;
 
 public class VerifyActivity extends VActivity implements AppLauncherCallback {
-   private static String META_DATA_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii42D28gIC9gJFkPIBUEVg=="));
+   private static String META_DATA_KEY = "ScorpionSDK";
    BottomSheetDialog bottomSheetDialog;
    BottomSheetLayout bottomSheetLayout;
-   private static final String PKG_NAME_ARGUMENT = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHh9lDywTJAVXWmcYBlo="));
-   private static final String KEY_PKGNAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JCwuGWY2IAtqIlkRIgUMVg=="));
-   private static final String APP_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgU6AmYxBhFoDDBF"));
-   private static final String KEY_USER = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JCwuGWY2NF5qDyxF"));
+   private static final String PKG_NAME_ARGUMENT = "MODEL_ARGUMENT";
+   private static final String KEY_PKGNAME = "KEY_PKGNAME";
+   private static final String APP_NAME = "APP_NAME";
+   private static final String KEY_USER = "KEY_USER";
    protected final int ACTION_REQUEST_CODE_LAUNCH = 1;
    protected ViewOnclick mViewOnclick = new ViewOnclick();
    protected Dialog mDialog;
    AlertDialog.Builder mBuilder;
-   String[] whitelist = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qD2szSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qD2swRVo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1XCW8FSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0MP28jSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4+KGUzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4YKGsVSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qIGwFSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4uIGgVSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MzkmIg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4uVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1XVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz42LA==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5bMw==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz42M2wKFjdjDlk/Iz5SVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qOg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qP28jSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06PGgjSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0lKWkFSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4uKGwVFlo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4ID2sjAlo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4+ImwzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4+Imw0LFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4AKWUzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4AKWkjSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1fKGsVSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz42KGUzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4EI2sVSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5XP28jSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qDWgzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06KGwFSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06KGwKRVo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1fDm8zSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1fDm8wRVo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4IKH8zSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4YKGsVSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4YKWozSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4YDWgzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4mCmozSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qLGgjSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qLGszSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qIGgjSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qLWgzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4MP2wFSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qDmoFSFo="))};
+   String[] whitelist = new String[]{".doc", ".docx", ".zip", ".rar", ".apk", ".ipa", ".txt", ".exe", ".7z", ".e", ".z", ".ct", ".ke", ".cetrainer", ".db", ".tar", ".pdf", ".w3x", ".epub", ".mobi", ".azw", ".azw3", ".osk", ".osz", ".xpa", ".cpk", ".lua", ".jar", ".dmg", ".ppt", ".pptx", ".xls", ".xlsx", ".mp3", ".ipa", ".iso", ".img", ".gho", ".ttf", ".ttc", ".txf", ".dwg", ".bat", ".dll"};
    private List<String> history = new ArrayList();
    private List<FileItem> currentFile = new ArrayList();
 
@@ -177,7 +177,7 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
    protected void launchMirrorApp(int userId, String packageName, String appName) {
       if (VirtualCore.get().isRunInExtProcess(packageName)) {
          if (!VirtualCore.get().isExtPackageInstalled()) {
-            Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhgEM2saLCtLHgY2Iy42OW8zOyhjDlk/LhgcD2MKAil5HyAqKAg+O2sjNwQ=")), 0).show();
+            Toast.makeText(this, "Please install Extension Package.", 0).show();
             return;
          }
 
@@ -207,7 +207,7 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
                }
 
                if (BuildCompat.isR() && runHostTargetSdkVersion >= 30 && info.getApplicationInfo(0).targetSdkVersion < 30 && (isExt && !VExtPackageAccessor.isExternalStorageManager() || !isExt && !Environment.isExternalStorageManager())) {
-                  (new androidx.appcompat.app.AlertDialog.Builder(this.getContext())).setTitle(string.permission_boot_notice).setMessage(string.request_external_storage_manager_notice).setCancelable(false).setNegativeButton(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JSwAVg==")), (dialog, which) -> {
+                  (new androidx.appcompat.app.AlertDialog.Builder(this.getContext())).setTitle(string.permission_boot_notice).setMessage(string.request_external_storage_manager_notice).setCancelable(false).setNegativeButton("GO", (dialog, which) -> {
                      RequestExternalStorageManagerActivity.request(VirtualCore.get().getContext(), isExt);
                   }).show();
                   return;
@@ -222,28 +222,28 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
                }
             }
 
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcMI2ohJAJhHFk1LCklIA==")) + runAppNow);
+            HVLog.d(" runAppNow :" + runAppNow);
             if (runAppNow) {
-               this.channelLimit = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHFEzKgccLg==")));
-               this.channelStatus = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHyggLwg2LWoFSFo=")));
-               int channelLimitLocal = SPTools.getInt(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHFEzKgccLg==")), 0);
+               this.channelLimit = this.getPersistentValueToInt("channelLimit");
+               this.channelStatus = this.getPersistentValueToInt("channelStatus");
+               int channelLimitLocal = SPTools.getInt(this, "channelLimit", 0);
                long currentTimeMillisLimit = 0L;
                if (channelLimitLocal == 0) {
-                  SPTools.putLong(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0uKm8jNCZmHwozKgcMUmwjOCRqDjBTIxgII2YVSFo=")), System.currentTimeMillis());
+                  SPTools.putLong(this, "currentTimeMillisLimit", System.currentTimeMillis());
                } else {
-                  currentTimeMillisLimit = SPTools.getLong(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0uKm8jNCZmHwozKgcMUmwjOCRqDjBTIxgII2YVSFo=")));
+                  currentTimeMillisLimit = SPTools.getLong(this, "currentTimeMillisLimit");
                }
 
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHFEzKgccLmczNCloAQUx")) + channelLimitLocal + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFLCB9Dlk2KAdbU2wjPC9vV1FF")) + this.channelLimit);
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHyggLwg2LWoOIFo=")) + this.channelStatus + "    ");
+               HVLog.d("channelLimitLocal:" + channelLimitLocal + "    channelLimit:" + this.channelLimit);
+               HVLog.d("channelStatus:" + this.channelStatus + "    ");
                if (this.channelLimit <= channelLimitLocal) {
-                  Toasty.warning(this.getContext(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxpAH0MXFzNYEBNIAxoZDEQXWhFAXhs+AEABLFlbRgNEK0YdAQsJL0BJIQpGAgsuH1dYJkRaGyBHAiUBBkQ3WA=="))).show();
+                  Toasty.warning(this.getContext(), "功能受限、请在设置中联系软件作者").show();
                   this.finish();
                   return;
                }
 
                if (this.channelStatus == 0) {
-                  Toasty.warning(this.getContext(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxpAH0MXFzNYEBNIAxoZDEQXWhFAXhs+AEABLFlbRgNEK0YdAQsJL0BJIQpGAgsuH1dYJkRaGyBHAiUBBkQ3WA=="))).show();
+                  Toasty.warning(this.getContext(), "功能受限、请在设置中联系软件作者").show();
                   this.finish();
                   return;
                }
@@ -252,7 +252,7 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
                   VActivityManager.get().launchApp(userId, packageName);
                }
 
-               SPTools.putInt(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHFEzKgccLg==")), channelLimitLocal + 1);
+               SPTools.putInt(this, "channelLimit", channelLimitLocal + 1);
                this.finish();
             }
          }
@@ -280,16 +280,16 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
    }
 
    private void showOverlayPermissionDialog() {
-      (new AlertDialog.Builder(this)).setTitle(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwodAkYBPTI="))).setMessage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwoJCkZbBxVZEiUhAhojA0ctBxFAXh8zAAlAGlgXJSpEEAMhAVYZPUEXWgZGAC0RHxpYKUQXOUxHKS0dBwoZXUYWWgpZXzEUAiABBkdNORNAEBMRPC5SVg=="))).setCancelable(false).setNegativeButton(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JSwAVg==")), (dialog, which) -> {
-         Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kpKAg2LmwjMC1sIxosLT0qI2AgRClkDCRTICwIGWEhGgxgHAoRIwYAU30YFg5nJTBBIiwYUmIjSFo=")));
-         intent.setData(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + this.getPackageName()));
+      (new AlertDialog.Builder(this)).setTitle("提示").setMessage("您必须向允许的启动活动界面后台授予覆盖权限.").setCancelable(false).setNegativeButton("GO", (dialog, which) -> {
+         Intent intent = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION");
+         intent.setData(Uri.parse("package:" + this.getPackageName()));
          this.startActivityForResult(intent, 0);
       }).show();
    }
 
    public void showPermissionDialog() {
       Intent intent = OemPermissionHelper.getPermissionActivityIntent(this);
-      (new androidx.appcompat.app.AlertDialog.Builder(this)).setTitle(string.permission_boot_notice).setMessage(string.permission_boot_content).setCancelable(false).setNegativeButton(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JSwAVg==")), (dialog, which) -> {
+      (new androidx.appcompat.app.AlertDialog.Builder(this)).setTitle(string.permission_boot_notice).setMessage(string.permission_boot_content).setCancelable(false).setNegativeButton("GO", (dialog, which) -> {
          if (intent != null) {
             try {
                this.startActivity(intent);
@@ -314,18 +314,18 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
       try {
          PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 64);
          byte[] cert = info.signatures[0].toByteArray();
-         MessageDigest md = MessageDigest.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IixfEX8VSFo=")));
+         MessageDigest md = MessageDigest.getInstance("SHA1");
          byte[] publicKey = md.digest(cert);
          StringBuffer hexString = new StringBuffer();
 
          for(int i = 0; i < publicKey.length; ++i) {
             String appendString = Integer.toHexString(255 & publicKey[i]).toUpperCase(Locale.US);
             if (appendString.length() == 1) {
-               hexString.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OhhSVg==")));
+               hexString.append("0");
             }
 
             hexString.append(appendString);
-            hexString.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")));
+            hexString.append(":");
          }
 
          String result = hexString.toString();
@@ -343,20 +343,20 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
    @TargetApi(23)
    private boolean checkAndRequestPermission() {
       List<String> lackedPermission = new ArrayList();
-      if (this.checkSelfPermission(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsMGWUIFl99HAZXIRYAE2QmMB1kDyhF"))) != 0) {
-         lackedPermission.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsMGWUIFl99HAZXIRYAE2QmMB1kDyhF")));
+      if (this.checkSelfPermission("android.permission.READ_PHONE_STATE") != 0) {
+         lackedPermission.add("android.permission.READ_PHONE_STATE");
       }
 
-      if (this.checkSelfPermission(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsmU2sLFgpgIgoXOzwAU30xJExmMjBOLiwqAmYmFlo="))) != 0) {
-         lackedPermission.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsmU2sLFgpgIgoXOzwAU30xJExmMjBOLiwqAmYmFlo=")));
+      if (this.checkSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE") != 0) {
+         lackedPermission.add("android.permission.WRITE_EXTERNAL_STORAGE");
       }
 
-      if (this.checkSelfPermission(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCw+H2UmLBB9JVlKIiwqGWEhHl5jNThOLQUYHw=="))) != 0) {
-         lackedPermission.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCw+H2UmLBB9JVlKIiwqGWEhHl5jNThOLQUYHw==")));
+      if (this.checkSelfPermission("android.permission.ACCESS_FINE_LOCATION") != 0) {
+         lackedPermission.add("android.permission.ACCESS_FINE_LOCATION");
       }
 
       if (lackedPermission.size() == 0) {
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkFE0NND0xZEC0dAhw3KEcWIQ9BAAdPABtABF4vWhFFEC0sAQsNBkEyQiBGKR80H1c/DEQtFz5+NFk0KRcuKmojSFo=")));
+         HVLog.d("权限都已经有了，那么直接调用 return");
          return true;
       } else {
          String[] requestPermissions = new String[lackedPermission.size()];
@@ -404,14 +404,14 @@ public class VerifyActivity extends VActivity implements AppLauncherCallback {
             VerifyActivity.this.mDialog.dismiss();
 
             try {
-               String assetFileName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgEI2gzAiZsJyw/KhcMOWoFBSZoDjwi"));
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwZXEMRFxVYABMAAlcBLA==")) + assetFileName);
+               String assetFileName = "plugin_release.apk";
+               HVLog.d("安装插件" + assetFileName);
                InputStream inputStream = null;
                File dir = VerifyActivity.this.getCacheDir();
 
                try {
                   inputStream = VerifyActivity.this.getAssets().open(assetFileName);
-                  File apkFile = new File(dir, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgEI2gzAiZsJyw/KhcMOWoFBSZoDjwi")));
+                  File apkFile = new File(dir, "plugin_release.apk");
                   FileUtils.writeToFile(inputStream, apkFile);
                   InstallTools.install(VerifyActivity.this, apkFile);
                } catch (IOException var6) {

@@ -99,8 +99,8 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
       this.mTabsContainer = new LinearLayout(context);
       this.addView(this.mTabsContainer);
       this.obtainAttributes(context, attrs);
-      String height = attrs.getAttributeValue(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8OTCVOJyg5KRcMD24gDSZoARovKS4AI2JTRSZsJFAeKC1XLXUgFj9vMwYoJj0MOWwgBjI=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAZsJBo/KQc6MmUzSFo=")));
-      if (!height.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwM+Vg=="))) && !height.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwMMVg==")))) {
+      String height = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "layout_height");
+      if (!height.equals("-1") && !height.equals("-2")) {
          int[] systemAttrs = new int[]{16842997};
          TypedArray a = context.obtainStyledAttributes(attrs, systemAttrs);
          this.mHeight = a.getDimensionPixelSize(0, -2);
@@ -113,7 +113,7 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
 
    private void obtainAttributes(Context context, AttributeSet attrs) {
       TypedArray ta = context.obtainStyledAttributes(attrs, styleable.SegmentTabLayout);
-      this.mIndicatorColor = ta.getColor(styleable.SegmentTabLayout_tl_indicator_color, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PikLKn8kRANPAVRF"))));
+      this.mIndicatorColor = ta.getColor(styleable.SegmentTabLayout_tl_indicator_color, Color.parseColor("#222831"));
       this.mIndicatorHeight = ta.getDimension(styleable.SegmentTabLayout_tl_indicator_height, -1.0F);
       this.mIndicatorCornerRadius = ta.getDimension(styleable.SegmentTabLayout_tl_indicator_corner_radius, -1.0F);
       this.mIndicatorMarginLeft = ta.getDimension(styleable.SegmentTabLayout_tl_indicator_margin_left, (float)this.dp2px(0.0F));
@@ -124,7 +124,7 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
       this.mIndicatorBounceEnable = ta.getBoolean(styleable.SegmentTabLayout_tl_indicator_bounce_enable, false);
       this.mIndicatorAnimDuration = (long)ta.getInt(styleable.SegmentTabLayout_tl_indicator_anim_duration, -1);
       this.mTextsize = ta.getDimension(styleable.SegmentTabLayout_tl_textsize, (float)this.sp2px(13.0F));
-      this.mTextSelectColor = ta.getColor(styleable.SegmentTabLayout_tl_textSelectColor, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi4iPmgjOC5iN1RF"))));
+      this.mTextSelectColor = ta.getColor(styleable.SegmentTabLayout_tl_textSelectColor, Color.parseColor("#ffffff"));
       this.mTextUnselectColor = ta.getColor(styleable.SegmentTabLayout_tl_textUnselectColor, this.mIndicatorColor);
       this.mTextBold = ta.getInt(styleable.SegmentTabLayout_tl_textBold, 0);
       this.mTextAllCaps = ta.getBoolean(styleable.SegmentTabLayout_tl_textAllCaps, false);
@@ -139,7 +139,7 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
          this.mTitles = titles;
          this.notifyDataSetChanged();
       } else {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRgYLGoFNANLHig7KjkmDm8KAShoNysrJCsuAmhTOCplMCBJIStXXWYJIzM=")));
+         throw new IllegalStateException("Titles can not be NULL or EMPTY !");
       }
    }
 
@@ -581,16 +581,16 @@ public class SegmentTabLayout extends FrameLayout implements ValueAnimator.Anima
 
    protected Parcelable onSaveInstanceState() {
       Bundle bundle = new Bundle();
-      bundle.putParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKWwFJCZ9JDAPLBciLmkjSFo=")), super.onSaveInstanceState());
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY2I28gFitgNwpLLwcuVg==")), this.mCurrentTab);
+      bundle.putParcelable("instanceState", super.onSaveInstanceState());
+      bundle.putInt("mCurrentTab", this.mCurrentTab);
       return bundle;
    }
 
    protected void onRestoreInstanceState(Parcelable state) {
       if (state instanceof Bundle) {
          Bundle bundle = (Bundle)state;
-         this.mCurrentTab = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY2I28gFitgNwpLLwcuVg==")));
-         state = bundle.getParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKWwFJCZ9JDAPLBciLmkjSFo=")));
+         this.mCurrentTab = bundle.getInt("mCurrentTab");
+         state = bundle.getParcelable("instanceState");
          if (this.mCurrentTab != 0 && this.mTabsContainer.getChildCount() > 0) {
             this.updateTabSelection(this.mCurrentTab);
          }

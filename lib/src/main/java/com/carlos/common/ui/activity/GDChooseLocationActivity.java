@@ -124,29 +124,29 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
          Intent intent = this.getIntent();
          this.mLocation.latitude = 0.0;
          this.mLocation.longitude = 0.0;
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgHx4oKi0qOWUzLCVlN1RF")), this.mLocation);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZsETgqIz4+IWIFSFo=")), this.mCurPkg);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZvDjAgKS4YIA==")), this.mCurUserId);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZoASwvKS4uD2EjSFo=")), this.mAddress);
+         intent.putExtra("virtual_location", this.mLocation);
+         intent.putExtra("virtual.extras.package", this.mCurPkg);
+         intent.putExtra("virtual.extras.userid", this.mCurUserId);
+         intent.putExtra("virtual.extras.address", this.mAddress);
          this.setResult(-1, intent);
       });
       this.mMockBtn.setOnClickListener((v) -> {
-         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCRjDiw7Lz0hDm4jMCxsNwYaLgQcCGMKQSBqEVRF")).equals(this.mCurPkg)) {
+         if ("com.alibaba.android.rimet".equals(this.mCurPkg)) {
             CoordinateBean coordinateBean = PositionConvertUtil.gcj02ToWgs84(this.mLocation.getLatitude(), this.mLocation.getLongitude());
             this.mLocation.latitude = coordinateBean.getLatitude();
             this.mLocation.longitude = coordinateBean.getLongitude();
          }
 
-         VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgIQGozLDdmHgY1KjkmVg==")) + this.mLocation.getLatitude() + "  " + this.mLocation.getLongitude());
+         VLog.e("VA-", " mLocation " + this.mLocation.getLatitude() + "  " + this.mLocation.getLongitude());
          VirtualCore.get().killApp(this.mCurPkg, this.mCurUserId);
          VirtualLocationManager.get().setMode(this.mCurUserId, this.mCurPkg, 2);
          VirtualLocationManager.get().setLocation(this.mCurUserId, this.mCurPkg, this.mLocation);
          this.updateMock(true);
          Intent intent = this.getIntent();
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgHx4oKi0qOWUzLCVlN1RF")), this.mLocation);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZsETgqIz4+IWIFSFo=")), this.mCurPkg);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZvDjAgKS4YIA==")), this.mCurUserId);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZoASwvKS4uD2EjSFo=")), this.mAddress);
+         intent.putExtra("virtual_location", this.mLocation);
+         intent.putExtra("virtual.extras.package", this.mCurPkg);
+         intent.putExtra("virtual.extras.userid", this.mCurUserId);
+         intent.putExtra("virtual.extras.address", this.mAddress);
          this.setResult(-1, intent);
       });
       this.findViewById(id.img_loc).setOnClickListener((v) -> {
@@ -157,13 +157,13 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
       });
       this.mMockingView.setOnClickListener((v) -> {
       });
-      this.mCurPkg = this.getIntent().getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZsETgqIz4+IWIFSFo=")));
-      this.mCurUserId = this.getIntent().getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k/LRg2KG4gDSZvDjAgKS4YIA==")), 0);
-      VLocation vLocation = this.getIntent().hasExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgHx4oKi0qOWUzLCVlN1RF"))) ? (VLocation)this.getIntent().getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgHx4oKi0qOWUzLCVlN1RF"))) : null;
+      this.mCurPkg = this.getIntent().getStringExtra("virtual.extras.package");
+      this.mCurUserId = this.getIntent().getIntExtra("virtual.extras.userid", 0);
+      VLocation vLocation = this.getIntent().hasExtra("virtual_location") ? (VLocation)this.getIntent().getParcelableExtra("virtual_location") : null;
       if (vLocation != null) {
          CoordinateBean coordinateBean = PositionConvertUtil.wgs84ToGcj02(vLocation.latitude, vLocation.longitude);
          VLocation mLatLng = new VLocation(coordinateBean.getLatitude(), coordinateBean.getLongitude());
-         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCRjDiw7Lz0hDm4jMCxsNwYaLgQcCGMKQSBqEVRF")).equals(this.mCurPkg)) {
+         if ("com.alibaba.android.rimet".equals(this.mCurPkg)) {
             this.mLocation = mLatLng;
          } else {
             this.mLocation = vLocation;
@@ -206,7 +206,7 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
       mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
          public boolean onQueryTextSubmit(String newText) {
             if (!TextUtils.isEmpty(newText)) {
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4uLWQFNDBmVgJF")) + newText);
+               HVLog.d("newText:" + newText);
                InputtipsQuery inputquery = new InputtipsQuery(newText, newText);
                Inputtips inputTips = new Inputtips(GDChooseLocationActivity.this, inputquery);
                inputTips.setInputtipsListener(GDChooseLocationActivity.this);
@@ -248,9 +248,9 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
 
       if (TextUtils.isEmpty(address)) {
          LatLonPoint latLonPoint = new LatLonPoint(lat, lng);
-         RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200.0F, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGozBjdmNAZF")));
+         RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200.0F, "autonavi");
          this.geocoderSearch.getFromLocationAsyn(query);
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxsBHEYvHytZEDkUAhpYKkcUWghBKAcTAAw3HVlbDzJEBTkBOD4iO29WBygaJ1RF")) + lat + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFHiZiICci")) + lng);
+         HVLog.d("异步逆地理编码请求 lat：" + lat + "    lng :" + lng);
       } else {
          this.setAddress(address);
       }
@@ -346,10 +346,10 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
    }
 
    public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwVHgZLVgJF")) + result + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsKFhNgJAo/PT5SVg==")) + rCode);
+      HVLog.d("result :" + result + "    rCode:" + rCode);
       if (rCode == 1000 && result != null && result.getRegeocodeAddress() != null && result.getRegeocodeAddress().getFormatAddress() != null) {
-         String addressName = result.getRegeocodeAddress().getFormatAddress() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BhkVWUMWB0g="));
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPG8jNANhIlk7KgcLOngVSFo=")) + addressName);
+         String addressName = result.getRegeocodeAddress().getFormatAddress() + "附近";
+         HVLog.d("addressName :" + addressName);
          this.mCity = result.getRegeocodeAddress().getFormatAddress();
          this.setAddress(addressName);
       }
@@ -357,7 +357,7 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
    }
 
    public void onGetInputtips(List<Tip> list, int rCode) {
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy4cWmgaMAlgNyQvLBg2MWowDSh+N1RF")) + list + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsKFhNgJAo/PT5SVg==")) + rCode);
+      HVLog.d("onGetInputtips :" + list + "    rCode:" + rCode);
       if (rCode == 1000) {
          if (this.mSearchTip.getVisibility() != 8) {
             this.runOnUiThread(() -> {

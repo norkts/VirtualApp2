@@ -9,7 +9,7 @@ import java.util.Set;
 
 public final class ArraySet<E> implements Collection<E>, Set<E> {
    private static final boolean DEBUG = false;
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgcMKmsaAl5iAQpF"));
+   private static final String TAG = "ArraySet";
    private static final int BASE_SIZE = 4;
    private static final int CACHE_SIZE = 10;
    static Object[] mBaseCache;
@@ -404,21 +404,21 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
 
    public String toString() {
       if (this.isEmpty()) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KC0IVg=="));
+         return "{}";
       } else {
          StringBuilder buffer = new StringBuilder(this.mSize * 14);
          buffer.append('{');
 
          for(int i = 0; i < this.mSize; ++i) {
             if (i > 0) {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
+               buffer.append(", ");
             }
 
             Object value = this.valueAt(i);
             if (value != this) {
                buffer.append(value);
             } else {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBcqCmUaLyhpJDAgOQhSVg==")));
+               buffer.append("(this Set)");
             }
          }
 
@@ -447,7 +447,7 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
             }
 
             protected Map<E, E> colGetMap() {
-               throw new UnsupportedOperationException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALHsFJyhgDiAs")));
+               throw new UnsupportedOperationException("not a map");
             }
 
             protected void colPut(E key, E value) {
@@ -455,7 +455,7 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
             }
 
             protected E colSetValue(int index, E value) {
-               throw new UnsupportedOperationException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALHsFJyhgDiAs")));
+               throw new UnsupportedOperationException("not a map");
             }
 
             protected void colRemoveAt(int index) {

@@ -24,7 +24,7 @@ public class WindowPreviewActivity extends Activity {
 
       try {
          boolean isFixedOrientationLandscape = StubManifest.isFixedOrientationLandscape(info);
-         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMM2wjAitmIiA5LBccLGwgBj94ER46Ji4YPGIKFhRlNBouKRccO28VAgNqJQIoJj0MOmkgOCZpIDxF")) + isFixedOrientationLandscape + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxgYCGgjBTI=")) + info);
+         VLog.d("VA-", "previewActivity isFixedOrientationLandscape:" + isFixedOrientationLandscape + ",info:" + info);
          if (isFixedOrientationLandscape) {
             windowBackgroundIntent = new Intent(context, WindowPreviewActivity_Land.class);
          }
@@ -33,8 +33,8 @@ public class WindowPreviewActivity extends Activity {
          e.printStackTrace();
       }
 
-      windowBackgroundIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHgVhJDAqJi0cPg==")), userId);
-      windowBackgroundIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHjd9JwozLD0cLmgmNC9lNyQc")), info);
+      windowBackgroundIntent.putExtra("_VA_|user_id", userId);
+      windowBackgroundIntent.putExtra("_VA_|activity_info", info);
       windowBackgroundIntent.addFlags(268435456);
       windowBackgroundIntent.addFlags(65536);
       context.startActivity(windowBackgroundIntent);
@@ -48,8 +48,8 @@ public class WindowPreviewActivity extends Activity {
       if (intent == null) {
          this.finish();
       } else {
-         ActivityInfo info = (ActivityInfo)intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHjd9JwozLD0cLmgmNC9lNyQc")));
-         int userId = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHgVhJDAqJi0cPg==")), -1);
+         ActivityInfo info = (ActivityInfo)intent.getParcelableExtra("_VA_|activity_info");
+         int userId = intent.getIntExtra("_VA_|user_id", -1);
          if (info != null && userId != -1) {
             int theme = info.theme;
             if (theme == 0) {
@@ -112,7 +112,7 @@ public class WindowPreviewActivity extends Activity {
             return false;
          } catch (Throwable var3) {
             Throwable throwable = var3;
-            VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS4YCGgFGj1pESw/LD0cPWULQSlvER49IxcqMw==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4+PHsKIARiATwzKAg5Om4VQSlqJyA5LD0uKmJTPFo=")), throwable);
+            VLog.e("WindowPreviewActivity", "Bad preview background!", throwable);
             return true;
          }
       } else {

@@ -20,7 +20,7 @@ import mirror.android.content.pm.ParceledListSlice;
 @TargetApi(21)
 public class JobServiceStub extends BinderInvocationProxy {
    public JobServiceStub() {
-      super(IJobScheduler.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOm8zLCBiDgovKhcMKA==")));
+      super(IJobScheduler.Stub.asInterface, "jobscheduler");
    }
 
    protected void onBindMethods() {
@@ -45,7 +45,7 @@ public class JobServiceStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViAVRF"));
+         return "enqueue";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -72,7 +72,7 @@ public class JobServiceStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFNCZiHgY2KCsIDW4VSFo="));
+         return "getPendingJob";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -91,7 +91,7 @@ public class JobServiceStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCQ="));
+         return "cancel";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -111,7 +111,7 @@ public class JobServiceStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCRlDlEo"));
+         return "cancelAll";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -130,7 +130,7 @@ public class JobServiceStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRpHjA2KBccDmkLICVoNDBF"));
+         return "getAllPendingJobs";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -153,7 +153,7 @@ public class JobServiceStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki42CmgVMAVgHjBF"));
+         return "schedule";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {

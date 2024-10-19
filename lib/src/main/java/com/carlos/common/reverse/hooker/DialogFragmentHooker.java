@@ -28,7 +28,7 @@ public class DialogFragmentHooker {
       } else {
          String packageName = VClient.get().getCurrentPackage();
          String clzName = thiz.getClass().getName();
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBgAD2UzNAQ=")), packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhYqCWsVHiViIjwqLwc6D2kjMAZ4EQYbIT0qO2EzESM=")) + clzName + "  " + thiz.getDialog().hashCode());
+         Log.e("Hooker", packageName + " DialogFragment onStart " + clzName + "  " + thiz.getDialog().hashCode());
          if (HookDialogUtils.isHiddDialog(clzName, packageName)) {
             HookDialogUtils.addHiddenDialogCode(thiz.getDialog().hashCode());
          }
@@ -38,6 +38,6 @@ public class DialogFragmentHooker {
    }
 
    static {
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LC0LCGszBSZgNDAaKi0XDmUzND91NzgbLgcMKWMKESlqDh0dKC0ACmpSBjNrNzA6IAdfM2wKFgJlIywfIBU6EWszLCVmDlkgIgcMDmUhBi9oAQIcLj5SVg==")));
+      hiddenDialog.add("kr.co.nexon.toy.android.ui.auth.accountmenu.NXPAccountMenuDialog");
    }
 }

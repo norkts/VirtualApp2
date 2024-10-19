@@ -15,12 +15,12 @@ public interface IFileTransfer extends IInterface {
    ParcelFileDescriptor openFile(String var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IFileTransfer {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMyluNy8dIiwEI2UVNApvJzg5Jy06LGUzSFo="));
+      private static final String DESCRIPTOR = "com.lody.virtual.server.fs.IFileTransfer";
       static final int TRANSACTION_listFiles = 1;
       static final int TRANSACTION_openFile = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMyluNy8dIiwEI2UVNApvJzg5Jy06LGUzSFo=")));
+         this.attachInterface(this, "com.lody.virtual.server.fs.IFileTransfer");
       }
 
       public static IFileTransfer asInterface(IBinder obj) {
@@ -70,7 +70,7 @@ public interface IFileTransfer extends IInterface {
 
       public static boolean setDefaultImpl(IFileTransfer impl) {
          if (IFileTransfer.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IFileTransfer.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -96,7 +96,7 @@ public interface IFileTransfer extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMyluNy8dIiwEI2UVNApvJzg5Jy06LGUzSFo="));
+            return "com.lody.virtual.server.fs.IFileTransfer";
          }
 
          public FileInfo[] listFiles(String path) throws RemoteException {
@@ -105,7 +105,7 @@ public interface IFileTransfer extends IInterface {
 
             FileInfo[] _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMyluNy8dIiwEI2UVNApvJzg5Jy06LGUzSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.fs.IFileTransfer");
                _data.writeString(path);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IFileTransfer.Stub.getDefaultImpl() != null) {
@@ -129,7 +129,7 @@ public interface IFileTransfer extends IInterface {
 
             ParcelFileDescriptor var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMyluNy8dIiwEI2UVNApvJzg5Jy06LGUzSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.fs.IFileTransfer");
                _data.writeString(path);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (_status || IFileTransfer.Stub.getDefaultImpl() == null) {

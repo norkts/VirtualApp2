@@ -27,11 +27,11 @@ public class NotificationChannelCompat {
    @TargetApi(26)
    public static void checkOrCreateChannel(Context context, String channelId, String name) {
       if (VERSION.SDK_INT >= 26) {
-         NotificationManager manager = (NotificationManager)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOC99JCAgKQdfDg==")));
+         NotificationManager manager = (NotificationManager)context.getSystemService("notification");
          NotificationChannel channel = manager.getNotificationChannel(channelId);
          if (channel == null) {
             channel = new NotificationChannel(channelId, name, 4);
-            channel.setDescription(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4ADW8FJAZjDiwzKhccLmgnTSVrMzwcLAgpJGYwLDVlJBoeKRcYVg==")));
+            channel.setDescription("Compatibility of old versions");
             channel.setSound((Uri)null, (AudioAttributes)null);
             channel.setShowBadge(false);
 

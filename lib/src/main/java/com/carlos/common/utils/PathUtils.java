@@ -14,11 +14,11 @@ import java.io.OutputStream;
 public class PathUtils {
    public static String getRealPathFromURI(Context context, Uri contentUri) {
       String result = null;
-      String[] proj = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo="))};
+      String[] proj = new String[]{"_data"};
       Cursor cursor = context.getContentResolver().query(contentUri, proj, (String)null, (String[])null, (String)null);
       if (cursor != null) {
          if (cursor.moveToFirst()) {
-            int column_index = cursor.getColumnIndexOrThrow(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo=")));
+            int column_index = cursor.getColumnIndexOrThrow("_data");
             result = cursor.getString(column_index);
          }
 
@@ -29,7 +29,7 @@ public class PathUtils {
    }
 
    private File createFileFromInputStream(Context context, InputStream inputStream) throws IOException {
-      File tempFile = File.createTempFile(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRguDW8LOC9gHjBF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qDW8FSFo=")), context.getCacheDir());
+      File tempFile = File.createTempFile("tempFile", ".tmp", context.getCacheDir());
       OutputStream outputStream = new FileOutputStream(tempFile);
       byte[] buffer = new byte[1024];
 
@@ -46,12 +46,12 @@ public class PathUtils {
    @SuppressLint({"Range"})
    private String getFileName(Context context, Uri uri) {
       String result = null;
-      if (uri.getScheme().equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmEVRF")))) {
+      if (uri.getScheme().equals("content")) {
          Cursor cursor = context.getContentResolver().query(uri, (String[])null, (String)null, (String[])null, (String)null);
 
          try {
             if (cursor != null && cursor.moveToFirst()) {
-               result = cursor.getString(cursor.getColumnIndex(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qCW8wICR9AQZAKj0iD2kjSFo="))));
+               result = cursor.getString(cursor.getColumnIndex("_display_name"));
             }
          } finally {
             cursor.close();

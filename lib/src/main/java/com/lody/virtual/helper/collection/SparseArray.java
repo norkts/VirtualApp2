@@ -246,14 +246,14 @@ public class SparseArray<E> implements Cloneable {
 
    public String toString() {
       if (this.size() <= 0) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KC0IVg=="));
+         return "{}";
       } else {
          StringBuilder buffer = new StringBuilder(this.mSize * 28);
          buffer.append('{');
 
          for(int i = 0; i < this.mSize; ++i) {
             if (i > 0) {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
+               buffer.append(", ");
             }
 
             int key = this.keyAt(i);
@@ -263,7 +263,7 @@ public class SparseArray<E> implements Cloneable {
             if (value != this) {
                buffer.append(value);
             } else {
-               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBcqCmUaLyhoDiAsOQhSVg==")));
+               buffer.append("(this Map)");
             }
          }
 

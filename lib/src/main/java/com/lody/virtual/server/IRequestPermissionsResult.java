@@ -11,11 +11,11 @@ public interface IRequestPermissionsResult extends IInterface {
    boolean onResult(int var1, String[] var2, int[] var3) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IRequestPermissionsResult {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylnDyguLC0AJ2wgMA5oHgo8JQguOm8KRQJqDFk0Ki0uDmwFSFo="));
+      private static final String DESCRIPTOR = "com.lody.virtual.server.IRequestPermissionsResult";
       static final int TRANSACTION_onResult = 1;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylnDyguLC0AJ2wgMA5oHgo8JQguOm8KRQJqDFk0Ki0uDmwFSFo=")));
+         this.attachInterface(this, "com.lody.virtual.server.IRequestPermissionsResult");
       }
 
       public static IRequestPermissionsResult asInterface(IBinder obj) {
@@ -53,7 +53,7 @@ public interface IRequestPermissionsResult extends IInterface {
 
       public static boolean setDefaultImpl(IRequestPermissionsResult impl) {
          if (IRequestPermissionsResult.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IRequestPermissionsResult.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -79,7 +79,7 @@ public interface IRequestPermissionsResult extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylnDyguLC0AJ2wgMA5oHgo8JQguOm8KRQJqDFk0Ki0uDmwFSFo="));
+            return "com.lody.virtual.server.IRequestPermissionsResult";
          }
 
          public boolean onResult(int requestCode, String[] permissions, int[] grantResults) throws RemoteException {
@@ -88,7 +88,7 @@ public interface IRequestPermissionsResult extends IInterface {
 
             boolean var8;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylnDyguLC0AJ2wgMA5oHgo8JQguOm8KRQJqDFk0Ki0uDmwFSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.IRequestPermissionsResult");
                _data.writeInt(requestCode);
                _data.writeStringArray(permissions);
                _data.writeIntArray(grantResults);

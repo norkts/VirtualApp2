@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Oat {
-   public static final String SECTION_RODATA = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0MD2gFJAZ9AVRF"));
+   public static final String SECTION_RODATA = ".rodata";
    public final long oatPosition;
    public final Header header;
    public final OatDexFile[] oatDexFiles;
@@ -16,7 +16,7 @@ public class Oat {
    public Oat(DataReader reader) throws Exception {
       this.oatPosition = (long)reader.position();
       if (this.oatPosition != 4096L) {
-         throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qKmsVBi1iCiQ1Lwg1OmozNANqDiwaLD4bJA==")) + this.oatPosition);
+         throw new IOException("Strange oat position " + this.oatPosition);
       } else {
          this.srcFile = reader.getFile();
          this.header = new Header(reader);
@@ -72,11 +72,11 @@ public class Oat {
          r.readBytes(this.dex_file_location_data_);
          this.dex_file_location_checksum_ = r.readInt();
          this.dex_file_offset_ = r.readInt();
-         File vdex = FileUtils.changeExt(r.getFile(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4qM2kFSFo=")));
+         File vdex = FileUtils.changeExt(r.getFile(), "vdex");
          if (vdex.exists()) {
             this.dex_file_pointer_ = vdex;
          } else if (this.dex_file_offset_ == 28) {
-            throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguIGYzOC9gHjBAKi0+PGoFGgZhIA5F")) + this.dex_file_offset_ + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186PGozNANLEVRF")) + vdex.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgICW8wLzU=")));
+            throw new IOException("dex_file_offset_=" + this.dex_file_offset_ + ", does " + vdex.getName() + " miss?");
          }
 
          if (version >= Oat.Version.N_70.oat) {
@@ -146,7 +146,7 @@ public class Oat {
             this.key_value_store_ = new char[this.key_value_store_size_];
             r.readBytes(this.key_value_store_);
          } else {
-            throw new IOException(String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLmsVHi9iVyQ7Iz41Om8jQS1qATMrPhg1J30kLCY=")), this.magic_[0], this.magic_[1], this.magic_[2]));
+            throw new IOException(String.format("Invalid art magic %c%c%c", this.magic_[0], this.magic_[1], this.magic_[2]));
          }
       }
    }

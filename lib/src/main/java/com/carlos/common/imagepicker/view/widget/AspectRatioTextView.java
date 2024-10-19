@@ -132,7 +132,7 @@ public class AspectRatioTextView extends TextView {
       if (!TextUtils.isEmpty(this.mAspectRatioTitle)) {
          this.setText(this.mAspectRatioTitle);
       } else {
-         this.setText(String.format(Locale.US, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PQgpIngVMFo=")), (int)this.mAspectRatioX, (int)this.mAspectRatioY));
+         this.setText(String.format(Locale.US, "%d:%d", (int)this.mAspectRatioX, (int)this.mAspectRatioY));
       }
 
    }

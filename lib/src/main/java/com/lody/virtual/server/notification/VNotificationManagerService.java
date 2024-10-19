@@ -26,7 +26,7 @@ public class VNotificationManagerService extends INotificationManager.Stub {
 
    private void init(Context context) {
       this.mContext = context;
-      this.mNotificationManager = (NotificationManager)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOC99JCAgKQdfDg==")));
+      this.mNotificationManager = (NotificationManager)context.getSystemService("notification");
    }
 
    public static void systemReady(Context context) {
@@ -45,16 +45,16 @@ public class VNotificationManagerService extends INotificationManager.Stub {
       if (TextUtils.equals(this.mContext.getPackageName(), packageName)) {
          return tag;
       } else {
-         return tag == null ? packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")) + userId : packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + tag + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")) + userId;
+         return tag == null ? packageName + "@" + userId : packageName + ":" + tag + "@" + userId;
       }
    }
 
    public boolean areNotificationsEnabledForPackage(String packageName, int userId) {
-      return !this.mDisables.contains(packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + userId);
+      return !this.mDisables.contains(packageName + ":" + userId);
    }
 
    public void setNotificationsEnabledForPackage(String packageName, boolean enable, int userId) {
-      String key = packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + userId;
+      String key = packageName + ":" + userId;
       if (enable) {
          if (this.mDisables.contains(key)) {
             this.mDisables.remove(key);
@@ -102,7 +102,7 @@ public class VNotificationManagerService extends INotificationManager.Stub {
 
       while(var4.hasNext()) {
          NotificationInfo info = (NotificationInfo)var4.next();
-         VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCRLEVRF")) + info.tag + " " + info.id);
+         VLog.d(TAG, "cancel " + info.tag + " " + info.id);
          this.mNotificationManager.cancel(info.tag, info.id);
       }
 

@@ -33,7 +33,7 @@ public class SyncAdaptersCache {
    }
 
    public void refreshServiceCache(String packageName) {
-      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1MjA0LC42HWIaPDNqHgo7")));
+      Intent intent = new Intent("android.content.SyncAdapter");
       if (packageName != null) {
          intent.setPackage(packageName);
       }
@@ -43,7 +43,7 @@ public class SyncAdaptersCache {
 
    public SyncAdapterInfo getServiceInfo(Account account, String providerName) {
       synchronized(this.mSyncAdapterInfos) {
-         return (SyncAdapterInfo)this.mSyncAdapterInfos.get(account.type + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + providerName);
+         return (SyncAdapterInfo)this.mSyncAdapterInfos.get(account.type + "/" + providerName);
       }
    }
 
@@ -63,7 +63,7 @@ public class SyncAdaptersCache {
             }
 
             info = (ResolveInfo)var4.next();
-            parser = accountParser.getParser(this.mContext, info.serviceInfo, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1MjA0LC42HWIaPDNqHgo7")));
+            parser = accountParser.getParser(this.mContext, info.serviceInfo, "android.content.SyncAdapter");
          } while(parser == null);
 
          try {
@@ -73,10 +73,10 @@ public class SyncAdaptersCache {
             while((type = parser.next()) != 1 && type != 2) {
             }
 
-            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0YCGs3EjdiHiAsLBcMKA==")).equals(parser.getName())) {
+            if ("sync-adapter".equals(parser.getName())) {
                SyncAdapterType adapterType = this.parseSyncAdapterType(accountParser.getResources(this.mContext, info.serviceInfo.applicationInfo), attributeSet);
                if (adapterType != null) {
-                  String key = adapterType.accountType + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + adapterType.authority;
+                  String key = adapterType.accountType + "/" + adapterType.authority;
                   map.put(key, new SyncAdapterInfo(adapterType, info.serviceInfo));
                }
             }

@@ -14,42 +14,42 @@ import mirror.com.android.internal.telephony.IPhoneSubInfo;
 @Inject(MethodProxies.class)
 public class PhoneSubInfoStub extends BinderInvocationProxy {
    public PhoneSubInfoStub() {
-      super(IPhoneSubInfo.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc6CmozBithJzA6KQcYPG8FSFo=")));
+      super(IPhoneSubInfo.Stub.asInterface, "iphonesubinfo");
    }
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjJC9qNB4qOy4MOGoFAgRqAQogKS5SVg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFND5jDig/Oy4+Dg=="))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFND5jDig/Oy4+Dn0gAi9lNyAQKhgMBWIVSFo="))));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getNaiForSubscriber"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getDeviceSvn"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getDeviceSvnUsingSubId"));
       this.addMethodProxy(new GetSubscriberId());
       this.addMethodProxy(new GetSubscriberIdForSubscriber());
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAwFiVmASQJKBVbPWUVGiR8AVRF"))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAwFiVmASQJKBVbPWUVGiR8DyQcKSs2CX0zNCZlNBorLy1fVg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFAiZiDSARKhgmMm4mBjdrJ1RF"))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFAiZiDSARKhgmMm4mBjdrJSQcKSs2CX0zNCZlNBorLy1fVg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIaLC9hJAo2"))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIaLC9hJAo2ID1fKGIKGipsJzA5IxgMJ2EzSFo="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQjGi99JDANLwccCGcaGiNoNyg5"))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQjGi99JDANLwccCGcaGiNoNyg5Ji4ACGkjLCVlJCw7Ki5fJ2wzSFo="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQjGi99JDANLwccCGYjOAJqETgVLRgmVg=="))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQjGi99JDANLwccCGYjOAJqETgVLRgmBGAjMBBqDig8KAdfI2gzNCY="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFAiZiDSAMLAdXOGkgRVo="))));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getGroupIdLevel1"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getGroupIdLevel1ForSubscriber"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getLine1AlphaTag"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getLine1AlphaTagForSubscriber"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getMsisdn"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getMsisdnForSubscriber"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getVoiceMailNumber"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getVoiceMailNumberForSubscriber"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getVoiceMailAlphaTag"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getVoiceMailAlphaTagForSubscriber"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getLine1Number"));
       this.addMethodProxy(new GetLine1NumberForSubscriber());
    }
 
    class GetLine1NumberForSubscriber extends ReplaceCallingPkgMethodProxy {
       public GetLine1NumberForSubscriber() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFAiZiDSAMLAdXOGkgRQhlJAoQKhgMD30jMCxpNAo7")));
+         super("getLine1NumberForSubscriber");
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
          try {
             Context context = VirtualCore.get().getContext();
             if (context != null) {
-               int p1 = context.checkCallingPermission(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsMGWUIFl99HAZXIRYAE302NEhjJShALy5SVg==")));
-               int p2 = context.checkCallingPermission(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsMGWUIFl99IlES")));
-               int p3 = context.checkCallingPermission(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsMGWUIFl99HAZXIRYAE2QmMB1kDyhF")));
+               int p1 = context.checkCallingPermission("android.permission.READ_PHONE_NUMBERS");
+               int p2 = context.checkCallingPermission("android.permission.READ_SMS");
+               int p3 = context.checkCallingPermission("android.permission.READ_PHONE_STATE");
                if (p1 == -1 && p2 == -1 && p3 == -1) {
                   return null;
                }
@@ -66,28 +66,28 @@ public class PhoneSubInfoStub extends BinderInvocationProxy {
 
    class GetSubscriberIdForSubscriber extends ReplaceCallingPkgMethodProxy {
       public GetSubscriberIdForSubscriber() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcwNCphJCgqKQcuPWobLCxjNwY5IT0uJmEgNDVvDiguLBhSVg==")));
+         super("getSubscriberIdForSubscriber");
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
          try {
-            return BuildCompat.isQ() ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcMWojGj1gN1RF")) : super.call(who, method, args);
+            return BuildCompat.isQ() ? "unknown" : super.call(who, method, args);
          } catch (Throwable var5) {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcMWojGj1gN1RF"));
+            return "unknown";
          }
       }
    }
 
    class GetSubscriberId extends ReplaceCallingPkgMethodProxy {
       public GetSubscriberId() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcwNCphJCgqKQcuPWobLCw=")));
+         super("getSubscriberId");
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
          try {
-            return BuildCompat.isQ() ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcMWojGj1gN1RF")) : super.call(who, method, args);
+            return BuildCompat.isQ() ? "unknown" : super.call(who, method, args);
          } catch (Throwable var5) {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcMWojGj1gN1RF"));
+            return "unknown";
          }
       }
    }

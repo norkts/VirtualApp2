@@ -13,7 +13,7 @@ public class MultiAppHelper {
 
    public static int installExistedPackage(InstalledAppInfo info) throws IllegalStateException {
       if (info == null) {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPXsFEgVhJw08Lz0LOmwjMANvETgdLAguIE4zSFo=")));
+         throw new IllegalStateException("pkg must be installed.");
       } else {
          int[] userIds = info.getInstalledUsers();
          int nextUserId = userIds.length;
@@ -26,7 +26,7 @@ public class MultiAppHelper {
          }
 
          if (VUserManager.get().getUserInfo(nextUserId) == null) {
-            String nextUserName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii06P2szNyg=")) + (nextUserId + 1);
+            String nextUserName = "Space " + (nextUserId + 1);
             VUserInfo newUserInfo = VUserManager.get().createUser(nextUserName, 2);
             if (newUserInfo == null) {
                throw new IllegalStateException();
@@ -35,7 +35,7 @@ public class MultiAppHelper {
 
          boolean success = VirtualCore.get().installPackageAsUser(nextUserId, info.packageName);
          if (!success) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKWwFJCRgVyQ+LwccCA==")));
+            throw new IllegalStateException("install fail");
          } else {
             return nextUserId;
          }

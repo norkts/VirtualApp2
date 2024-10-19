@@ -37,7 +37,7 @@ public class DownloadTask extends Handler {
    private static final int MSG_PAUSE = 3;
    private static final int MSG_CANCEL = 4;
    private DownloadListner mListner;
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ=="));
+   private static final String TAG = "DownloadTask";
 
    DownloadTask(FilePoint point, DownloadListner l) {
       this.mPoint = point;
@@ -111,7 +111,7 @@ public class DownloadTask extends Handler {
                         fos = new FileOutputStream(file);
                         byte[] bytes = new byte[1024];
                         long fileSize = response.body().contentLength();
-                        HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgYLC9nNDMi")) + fileSize);
+                        HVLog.d("fileSize:" + fileSize);
                         long sum = 0L;
 
                         int len;
@@ -144,7 +144,7 @@ public class DownloadTask extends Handler {
 
                      }
 
-                     HVLog.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwcYBmsVPFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcXkMWHzNYAB8CAhkFHQ==")));
+                     HVLog.i("myTag", "下载成功");
                   } else {
                      DownloadTask.this.mListner.onCancel();
                   }
@@ -161,7 +161,7 @@ public class DownloadTask extends Handler {
 
    public synchronized void start() {
       try {
-         Log.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMzJLEVRF")) + this.isDownloading + "\t" + this.mPoint.getUrl());
+         Log.e(TAG, "start: " + this.isDownloading + "\t" + this.mPoint.getUrl());
          if (this.isDownloading) {
             return;
          }
@@ -169,7 +169,7 @@ public class DownloadTask extends Handler {
          this.isDownloading = true;
          this.mHttpUtil.getContentLength(this.mPoint.getUrl(), new okhttp3.Callback () {
             public void onResponse(Call call, Response response) throws IOException {
-               HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMzJLEVRF")) + response.code() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("DgQ6CW8xMCVmJFkoKi0iPmwjMC1+N1RF")) + DownloadTask.this.isDownloading + "\t" + DownloadTask.this.mPoint.getUrl());
+               HVLog.e("DownloadTask", "start: " + response.code() + "\t isDownloading:" + DownloadTask.this.isDownloading + "\t" + DownloadTask.this.mPoint.getUrl());
                if (response.code() != 200) {
                   DownloadTask.this.close(response.body());
                   DownloadTask.this.resetStutus();
@@ -177,17 +177,17 @@ public class DownloadTask extends Handler {
                   DownloadTask.this.mFileLength = response.body().contentLength();
                   Headers headers = response.headers();
                   DownloadTask.this.close(response.body());
-                  HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwU6D2UVBgZ3MCRF")) + DownloadTask.this.mPoint.getFilePath() + "    " + DownloadTask.this.mPoint.getFileName());
-                  DownloadTask.this.mTmpFile = new File(DownloadTask.this.mPoint.getFilePath(), DownloadTask.this.mPoint.getFileName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0qDW8FSFo=")));
+                  HVLog.e("DownloadTask", "mPoint: " + DownloadTask.this.mPoint.getFilePath() + "    " + DownloadTask.this.mPoint.getFileName());
+                  DownloadTask.this.mTmpFile = new File(DownloadTask.this.mPoint.getFilePath(), DownloadTask.this.mPoint.getFileName() + ".tmp");
                   if (!DownloadTask.this.mTmpFile.getParentFile().exists()) {
-                     HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwMHO3knIFo=")));
+                     HVLog.e("DownloadTask", "===: ");
                      boolean mkdirs = DownloadTask.this.mTmpFile.getParentFile().mkdirs();
-                     HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwhbPGUaFgN3MCRF")) + mkdirs);
+                     HVLog.e("DownloadTask", "mkdirs: " + mkdirs);
                   }
 
                   try {
-                     RandomAccessFile tmpAccessFile = new RandomAccessFile(DownloadTask.this.mTmpFile, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mVg==")));
-                     HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYiCWoFNA5iDlk9LBcfIH4zSFo=")) + DownloadTask.this.mFileLength);
+                     RandomAccessFile tmpAccessFile = new RandomAccessFile(DownloadTask.this.mTmpFile, "rw");
+                     HVLog.e("DownloadTask", "mFileLength: " + DownloadTask.this.mFileLength);
                      tmpAccessFile.setLength(DownloadTask.this.mFileLength);
                   } catch (FileNotFoundException var11) {
                      HVLog.printException(var11);
@@ -209,7 +209,7 @@ public class DownloadTask extends Handler {
             }
 
             public void onFailure(Call call, IOException e) {
-               HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMzJqARo5KAgmLmwjNCZ4EVRF")) + e.getMessage() + "\n" + DownloadTask.this.mPoint.getUrl());
+               HVLog.e("DownloadTask", "start:Exception " + e.getMessage() + "\n" + DownloadTask.this.mPoint.getUrl());
                DownloadTask.this.resetStutus();
             }
          });
@@ -224,9 +224,9 @@ public class DownloadTask extends Handler {
 
    private void download(final long startIndex, long endIndex, final int threadId) throws IOException {
       long newStartIndex = startIndex;
-      final File cacheFile = new File(this.mPoint.getFilePath(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRhfKmgVJCw=")) + threadId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + this.mPoint.getFileName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz42P2szRSs=")));
+      final File cacheFile = new File(this.mPoint.getFilePath(), "thread" + threadId + "_" + this.mPoint.getFileName() + ".cache");
       this.mCacheFiles[threadId] = cacheFile;
-      final RandomAccessFile cacheAccessFile = new RandomAccessFile(cacheFile, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mPA==")));
+      final RandomAccessFile cacheAccessFile = new RandomAccessFile(cacheFile, "rwd");
       if (cacheFile.exists()) {
          String startIndexStr = cacheAccessFile.readLine();
 
@@ -241,13 +241,13 @@ public class DownloadTask extends Handler {
       final long finalStartIndex = newStartIndex;
       this.mHttpUtil.downloadFileByRange(this.mPoint.getUrl(), finalStartIndex, endIndex, new okhttp3.Callback () {
          public void onResponse(Call call, Response response) throws IOException {
-            Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgALWojHiV9Dg0iPxhSVg==")) + response.code() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("DgQ6CW8xMCVmJFkoKi0iPmwjMC1+N1RF")) + DownloadTask.this.isDownloading + "\t" + DownloadTask.this.mPoint.getUrl());
+            Log.e("DownloadTask", "download: " + response.code() + "\t isDownloading:" + DownloadTask.this.isDownloading + "\t" + DownloadTask.this.mPoint.getUrl());
             if (response.code() != 206) {
                DownloadTask.this.resetStutus();
             } else {
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByBALkYtLRFYFUYSAhs3XH4zSFo=")));
+               HVLog.d("状态开始 ");
                InputStream is = response.body().byteStream();
-               RandomAccessFile tmpAccessFile = new RandomAccessFile(DownloadTask.this.mTmpFile, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mVg==")));
+               RandomAccessFile tmpAccessFile = new RandomAccessFile(DownloadTask.this.mTmpFile, "rw");
                tmpAccessFile.seek(finalStartIndex);
                byte[] buffer = new byte[4096];
                int total = 0;
@@ -255,7 +255,7 @@ public class DownloadTask extends Handler {
 
                int lengthx;
                while((lengthx = is.read(buffer)) > 0) {
-                  HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OH5THTNOClw3OgRWJXsnTCg=")));
+                  HVLog.d("   ===----===  ");
                   if (DownloadTask.this.cancel) {
                      DownloadTask.this.close(cacheAccessFile, is, response.body());
                      DownloadTask.this.cleanFile(cacheFile);
@@ -273,7 +273,7 @@ public class DownloadTask extends Handler {
                   total += lengthx;
                   progress = finalStartIndex + (long)total;
                   cacheAccessFile.seek(0L);
-                  cacheAccessFile.write((progress + "").getBytes(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQUqW3pTRVo="))));
+                  cacheAccessFile.write((progress + "").getBytes("UTF-8"));
                   DownloadTask.this.mProgress[threadId] = progress - startIndex;
                   DownloadTask.this.sendEmptyMessage(1);
                }

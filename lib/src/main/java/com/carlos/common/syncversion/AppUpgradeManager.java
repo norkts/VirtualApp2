@@ -9,7 +9,7 @@ import com.kook.common.utils.HVLog;
 public class AppUpgradeManager {
    public static AppUpgradeManager mAppUpgradeManager = new AppUpgradeManager();
    private boolean SYNC_STATUS = false;
-   private String APPLICATION_SERVER_URL = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8KLzJOIB49KQg2MmUjRCZoJwYePDs2J2EzICBsNSwsKQdfDmoFGgR6NCQwJz4MPGkKQTVqNFEAKT4uKm8zAiVgNR4qKAdbPW4gAithJzAcLC4iI2IkAiVsHlkrOQgmO2wgMD9vIwYhOwYYKmwgAjBsJwE5KBgIDg=="));
+   private String APPLICATION_SERVER_URL = "https://github.com/ServenScorpion/virtualapp_version_release_config/blob/master/va_config.xml";
 
    public static AppUpgradeManager getInstance() {
       return mAppUpgradeManager;
@@ -22,19 +22,19 @@ public class AppUpgradeManager {
          public void onFinished() {
             AppUpgradeManager.this.SYNC_STATUS = true;
             syncCallback.finishedListener();
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+H2szGiZiNAY9P1oNIhkNEzNXCS0bQAA/BlcVSFo=")));
+            HVLog.d("va_config 下载完成");
          }
 
          public void onProgress(float progress) {
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+H2szGiZiNAY9P1oNIhkNEzNXDTw7KS4AIWEwLDZlICIeWgk6Vg==")) + progress);
+            HVLog.d("va_config 下载 progress ：" + progress);
          }
 
          public void onPause() {
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+H2szGiZiNAY9P1o7GhtWBxEaUiEzRDZcPxkFSFo=")));
+            HVLog.d("va_config 暂停下载");
          }
 
          public void onCancel() {
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+H2szGiZiNAY9P1oJRAJWGz4GUiEzRDZcPxkFSFo=")));
+            HVLog.d("va_config 取消下载");
          }
       });
       downloadManager.downloadSingle(this.APPLICATION_SERVER_URL);

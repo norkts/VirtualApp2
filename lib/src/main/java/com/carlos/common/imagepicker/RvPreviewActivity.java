@@ -71,13 +71,13 @@ public class RvPreviewActivity extends AppCompatActivity {
       tempImages = images;
       tempSelectImages = selectImages;
       Intent intent = new Intent(activity, RvPreviewActivity.class);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+IGYwLCtgHjA5LBcMPmMFAiVvARo/")), maxSelectCount);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4YCGgzHis=")), isSingle);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKWUaMC9gJFlF")), position);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2Am8jND5jDjAt")), isPreview);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAD2oLFjdhMig1KhdfKA==")), toolBarColor);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4ALGwFGiNlNCAqJy1fCG8KRVo=")), bottomBarColor);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANlNCAqJy1fCG8KRVo=")), statusBarColor);
+      intent.putExtra("max_selected_count", maxSelectCount);
+      intent.putExtra("single", isSingle);
+      intent.putExtra("position", position);
+      intent.putExtra("isPreview", isPreview);
+      intent.putExtra("toolBarColor", toolBarColor);
+      intent.putExtra("bottomBarColor", bottomBarColor);
+      intent.putExtra("statusBarColor", statusBarColor);
       activity.startActivityForResult(intent, 1000);
    }
 
@@ -107,9 +107,9 @@ public class RvPreviewActivity extends AppCompatActivity {
       this.mSelectImages = tempSelectImages;
       tempSelectImages = null;
       Intent intent = this.getIntent();
-      this.mMaxCount = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+IGYwLCtgHjA5LBcMPmMFAiVvARo/")), 0);
-      this.isSingle = intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4YCGgzHis=")), false);
-      this.isPreview = intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2Am8jND5jDjAt")), false);
+      this.mMaxCount = intent.getIntExtra("max_selected_count", 0);
+      this.isSingle = intent.getBooleanExtra("single", false);
+      this.isPreview = intent.getBooleanExtra("isPreview", false);
       Resources resources = this.getResources();
       Bitmap selectBitmap = ImageUtil.getBitmap(this, drawable.ic_image_select);
       this.mSelectDrawable = new BitmapDrawable(resources, selectBitmap);
@@ -117,18 +117,18 @@ public class RvPreviewActivity extends AppCompatActivity {
       Bitmap unSelectBitmap = ImageUtil.getBitmap(this, drawable.ic_image_un_select);
       this.mUnSelectDrawable = new BitmapDrawable(resources, unSelectBitmap);
       this.mUnSelectDrawable.setBounds(0, 0, unSelectBitmap.getWidth(), unSelectBitmap.getHeight());
-      int toolBarColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAD2oLFjdhMig1KhdfKA==")), ContextCompat.getColor(this, color.blue));
-      int bottomBarColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4ALGwFGiNlNCAqJy1fCG8KRVo=")), ContextCompat.getColor(this, color.blue));
-      int statusBarColor = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANlNCAqJy1fCG8KRVo=")), ContextCompat.getColor(this, color.blue));
+      int toolBarColor = intent.getIntExtra("toolBarColor", ContextCompat.getColor(this, color.blue));
+      int bottomBarColor = intent.getIntExtra("bottomBarColor", ContextCompat.getColor(this, color.blue));
+      int statusBarColor = intent.getIntExtra("statusBarColor", ContextCompat.getColor(this, color.blue));
       this.initView();
       StatusBarUtils.setBarColor(this, statusBarColor);
       this.setToolBarColor(toolBarColor);
       this.setBottomBarColor(bottomBarColor);
       this.initListener();
       this.initViewPager();
-      this.changeSelect((Image)this.mImages.get(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKWUaMC9gJFlF")), 0)));
-      this.recyclerView.scrollToPosition(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKWUaMC9gJFlF")), 0));
-      this.toolbar.setTitle(intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKWUaMC9gJFlF")), 0) + 1 + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + this.mImages.size());
+      this.changeSelect((Image)this.mImages.get(intent.getIntExtra("position", 0)));
+      this.recyclerView.scrollToPosition(intent.getIntExtra("position", 0));
+      this.toolbar.setTitle(intent.getIntExtra("position", 0) + 1 + "/" + this.mImages.size());
       if (this.isPreview) {
          this.bottomRecycleview.smoothScrollToPosition(0);
       }
@@ -211,7 +211,7 @@ public class RvPreviewActivity extends AppCompatActivity {
             if (newState == 0) {
                int position = RvPreviewActivity.this.linearLayoutManager.findLastVisibleItemPosition();
                ((Image)RvPreviewActivity.this.mImages.get(position)).setPosition(position);
-               RvPreviewActivity.this.toolbar.setTitle(position + 1 + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + RvPreviewActivity.this.mImages.size());
+               RvPreviewActivity.this.toolbar.setTitle(position + 1 + "/" + RvPreviewActivity.this.mImages.size());
                RvPreviewActivity.this.changeSelect((Image)RvPreviewActivity.this.mImages.get(position));
             }
 
@@ -248,7 +248,7 @@ public class RvPreviewActivity extends AppCompatActivity {
       this.appBarLayout.postDelayed(new Runnable() {
          public void run() {
             if (RvPreviewActivity.this.appBarLayout != null) {
-               ObjectAnimator animator = ObjectAnimator.ofFloat(RvPreviewActivity.this.appBarLayout, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMP2ogLCR9AQozKi0YGw==")), new float[]{RvPreviewActivity.this.appBarLayout.getTranslationY(), 0.0F}).setDuration(300L);
+               ObjectAnimator animator = ObjectAnimator.ofFloat(RvPreviewActivity.this.appBarLayout, "translationY", new float[]{RvPreviewActivity.this.appBarLayout.getTranslationY(), 0.0F}).setDuration(300L);
                animator.addListener(new AnimatorListenerAdapter() {
                   public void onAnimationStart(Animator animation) {
                      super.onAnimationStart(animation);
@@ -259,7 +259,7 @@ public class RvPreviewActivity extends AppCompatActivity {
                   }
                });
                animator.start();
-               ObjectAnimator.ofFloat(RvPreviewActivity.this.rlBottomBar, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMP2ogLCR9AQozKi0YGw==")), new float[]{RvPreviewActivity.this.rlBottomBar.getTranslationY(), 0.0F}).setDuration(300L).start();
+               ObjectAnimator.ofFloat(RvPreviewActivity.this.rlBottomBar, "translationY", new float[]{RvPreviewActivity.this.rlBottomBar.getTranslationY(), 0.0F}).setDuration(300L).start();
             }
 
          }
@@ -268,7 +268,7 @@ public class RvPreviewActivity extends AppCompatActivity {
 
    private void hideBar() {
       this.isShowBar = false;
-      ObjectAnimator animator = ObjectAnimator.ofFloat(this.appBarLayout, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMP2ogLCR9AQozKi0YGw==")), new float[]{0.0F, (float)(-this.appBarLayout.getHeight())}).setDuration(300L);
+      ObjectAnimator animator = ObjectAnimator.ofFloat(this.appBarLayout, "translationY", new float[]{0.0F, (float)(-this.appBarLayout.getHeight())}).setDuration(300L);
       animator.addListener(new AnimatorListenerAdapter() {
          public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
@@ -287,7 +287,7 @@ public class RvPreviewActivity extends AppCompatActivity {
          }
       });
       animator.start();
-      ObjectAnimator.ofFloat(this.rlBottomBar, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMP2ogLCR9AQozKi0YGw==")), new float[]{0.0F, (float)this.rlBottomBar.getHeight()}).setDuration(300L).start();
+      ObjectAnimator.ofFloat(this.rlBottomBar, "translationY", new float[]{0.0F, (float)this.rlBottomBar.getHeight()}).setDuration(300L).start();
    }
 
    private void clickSelect() {
@@ -300,7 +300,7 @@ public class RvPreviewActivity extends AppCompatActivity {
             this.mSelectImages.clear();
             this.mSelectImages.add(image);
          } else if (this.mMaxCount > 0 && this.mSelectImages.size() >= this.mMaxCount) {
-            Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkBEkZaPVdYEBMyA0AnJUotWgk=")) + this.mMaxCount + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxsBOA==")), 0).show();
+            Toast.makeText(this, "最多只能选" + this.mMaxCount + "张", 0).show();
          } else {
             this.mSelectImages.add(image);
          }
@@ -358,7 +358,7 @@ public class RvPreviewActivity extends AppCompatActivity {
 
    public void finish() {
       Intent intent = new Intent();
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2H2szGiZiNAYqKghSVg==")), this.isConfirm);
+      intent.putExtra("is_confirm", this.isConfirm);
       this.setResult(1000, intent);
       super.finish();
    }

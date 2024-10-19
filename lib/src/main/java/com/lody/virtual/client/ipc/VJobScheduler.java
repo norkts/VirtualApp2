@@ -33,7 +33,7 @@ public class VJobScheduler {
    }
 
    private Object getRemoteInterface() {
-      return IJobService.Stub.asInterface(ServiceManagerNative.getService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOg=="))));
+      return IJobService.Stub.asInterface(ServiceManagerNative.getService("job"));
    }
 
    public int schedule(JobInfo job) {

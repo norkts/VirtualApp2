@@ -100,7 +100,7 @@ class PackagePersistenceLayer extends PersistenceLayer {
                PackageSettingV5 settingV5_1 = (PackageSettingV5)var12.next();
                Uri uri_1;
                if (settingV5_1.appMode == 1) {
-                  uri_1 = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + settingV5_1.packageName);
+                  uri_1 = Uri.parse("package:" + settingV5_1.packageName);
                } else {
                   File apkFile = VEnvironment.getPackageFile(settingV5_1.packageName);
                   if (!apkFile.exists()) {
@@ -110,7 +110,7 @@ class PackagePersistenceLayer extends PersistenceLayer {
                   if (apkFile.exists()) {
                      uri_1 = Uri.fromFile(apkFile);
                   } else {
-                     uri_1 = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + settingV5_1.packageName);
+                     uri_1 = Uri.parse("package:" + settingV5_1.packageName);
                   }
                }
 
@@ -121,7 +121,7 @@ class PackagePersistenceLayer extends PersistenceLayer {
                      PackageSetting ps = PackageCacheManager.getSetting(settingV5_1.packageName);
                      ps.userState = settingV5_1.userState;
                   } else {
-                     VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDyQ/Iz4qMWoKBitlNzAgJAg+M2IFMFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtLESQ7Ly0EOWkFBShqARotLDo6In0KGjduDjMpPl9XI2UwLCBrEQI7DV42OnkaJDVsJyQ0LRhSVg==")), settingV5_1.packageName);
+                     VLog.e("PackagePersistenceLayer", "update package info failed : install %s failed", settingV5_1.packageName);
                   }
                }
             }

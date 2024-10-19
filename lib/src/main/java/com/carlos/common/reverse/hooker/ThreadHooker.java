@@ -25,11 +25,11 @@ public class ThreadHooker {
       } else {
          String packageName = VClient.get().getCurrentPackage();
          String clzName = thiz.getClass().getName();
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfKmgVJCxrHh41KS0MKA==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBgAD2UzNCxLHwo0Iz0MOWk3TQNvETg5KgQ6Dn0KNC5pDjwuIRhbL2sOTVo=")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl86LGUFAjJ3N1RF")) + thiz + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl86OWoKTQB9Dl0/PT5SVg==")) + clzName);
+         Log.e("ThreadHooker", "hooked Thread start packageName:" + packageName + "  thiz:" + thiz + "  clzName:" + clzName);
          Thread.dumpStack();
          if (bypassList.contains(clzName)) {
             thiz.interrupt();
-            Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfKmgVJCxrHh41KS0MKA==")), clzName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhhfD2ozQStiVyQsLwgqLw==")));
+            Log.e("ThreadHooker", clzName + " hooked pass");
          } else {
             SandHook.callOriginByBackup(methodStart, thiz);
          }
@@ -37,36 +37,36 @@ public class ThreadHooker {
    }
 
    static {
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgYI2sKGixvDBoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxYYI2sKGixvDBoiKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxYYBWMKGixvDBoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxYYI2sKGixvDBoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgYI2MKGixvDBpNKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxYYI2sKGixvDhoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxgYBWMKGixnDhoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgYI2sKGixvDhpNIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgYI2sKGixvDBoiKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxYYBWsKGixvDhoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgYBWsKGixvDhoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxYYI2MIGixnDhoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxYYI2MKGixvDBoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxgYBWsKGixvDhpNKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxgYBWsKGixvDhoiKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxYYBWMKGixvDhpNIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxgYI2MIGixvDBoiKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxYYBWsIGixvDBoiIi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxYYI2sKGixvDBoiKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbOxYYI2sKGixvDBoiKi5SVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbKj4+Vg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbKj5bVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbKS4MVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbLi4MVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbLAgEVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgYVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxgMVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIy4MVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbKj4MVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIxhSVg==")));
-      bypassList.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojAiZ9JCM2Iy0MP2UgRS9vHhEbIQcMKWcVBSlhASA5JwcAO2wzMA5vJwYvIQVbKGwwOD9pJFgzOghSVg==")));
+      bypassList.add("com.inca.security.iiiIiiiIiI");
+      bypassList.add("com.inca.security.iIiIiiiIii");
+      bypassList.add("com.inca.security.iIIiiiiIiI");
+      bypassList.add("com.inca.security.IIiIiiiIiI");
+      bypassList.add("com.inca.security.iiiiiiiIIi");
+      bypassList.add("com.inca.security.iIiIiiiiiI");
+      bypassList.add("com.inca.security.IiIiiiIiiI");
+      bypassList.add("com.inca.security.iiiIiiiiII");
+      bypassList.add("com.inca.security.iiiIiiiIii");
+      bypassList.add("com.inca.security.iIIIiiiiiI");
+      bypassList.add("com.inca.security.iiIIiiiiiI");
+      bypassList.add("com.inca.security.IIiiIiIiiI");
+      bypassList.add("com.inca.security.IIiiiiiIiI");
+      bypassList.add("com.inca.security.IiIIiiiiIi");
+      bypassList.add("com.inca.security.IiIIiiiiii");
+      bypassList.add("com.inca.security.iIIiiiiiII");
+      bypassList.add("com.inca.security.IiiiIiiIii");
+      bypassList.add("com.inca.security.IIIIIiiIiI");
+      bypassList.add("com.inca.security.IIiIiiiIii");
+      bypassList.add("com.inca.security.IIiIiiiIii");
+      bypassList.add("com.inca.security.wa");
+      bypassList.add("com.inca.security.wk");
+      bypassList.add("com.inca.security.rb");
+      bypassList.add("com.inca.security.fb");
+      bypassList.add("com.inca.security.ll");
+      bypassList.add("com.inca.security.ii");
+      bypassList.add("com.inca.security.ib");
+      bypassList.add("com.inca.security.jb");
+      bypassList.add("com.inca.security.wb");
+      bypassList.add("com.inca.security.i");
+      bypassList.add("com.inca.security.Proxy.AppGuardProxyManager$1");
    }
 }

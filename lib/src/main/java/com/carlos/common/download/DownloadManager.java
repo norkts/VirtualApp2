@@ -11,7 +11,7 @@ public class DownloadManager {
    private String DEFAULT_FILE_DIR;
    private Map<String, DownloadTask> mDownloadTasks = new HashMap();
    private static DownloadManager mInstance;
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgoNLwcYOWkFGgQ="));
+   private static final String TAG = "DownloadManager";
 
    public void download(String... urls) {
       int i = 0;
@@ -38,7 +38,7 @@ public class DownloadManager {
    }
 
    public String getFileName(String url) {
-      return url.substring(url.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg=="))) + 1);
+      return url.substring(url.lastIndexOf("/") + 1);
    }
 
    public void pause(String... urls) {

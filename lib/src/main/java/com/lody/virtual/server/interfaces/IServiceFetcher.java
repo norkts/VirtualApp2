@@ -15,13 +15,13 @@ public interface IServiceFetcher extends IInterface {
    void removeService(String var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IServiceFetcher {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLy02OWowBjNpJQI0KRg2CmgaFlo="));
+      private static final String DESCRIPTOR = "com.lody.virtual.server.interfaces.IServiceFetcher";
       static final int TRANSACTION_getService = 1;
       static final int TRANSACTION_addService = 2;
       static final int TRANSACTION_removeService = 3;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLy02OWowBjNpJQI0KRg2CmgaFlo=")));
+         this.attachInterface(this, "com.lody.virtual.server.interfaces.IServiceFetcher");
       }
 
       public static IServiceFetcher asInterface(IBinder obj) {
@@ -72,7 +72,7 @@ public interface IServiceFetcher extends IInterface {
 
       public static boolean setDefaultImpl(IServiceFetcher impl) {
          if (IServiceFetcher.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IServiceFetcher.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -98,7 +98,7 @@ public interface IServiceFetcher extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLy02OWowBjNpJQI0KRg2CmgaFlo="));
+            return "com.lody.virtual.server.interfaces.IServiceFetcher";
          }
 
          public IBinder getService(String name) throws RemoteException {
@@ -107,7 +107,7 @@ public interface IServiceFetcher extends IInterface {
 
             IBinder _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLy02OWowBjNpJQI0KRg2CmgaFlo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IServiceFetcher");
                _data.writeString(name);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IServiceFetcher.Stub.getDefaultImpl() != null) {
@@ -130,7 +130,7 @@ public interface IServiceFetcher extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLy02OWowBjNpJQI0KRg2CmgaFlo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IServiceFetcher");
                _data.writeString(name);
                _data.writeStrongBinder(service);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
@@ -152,7 +152,7 @@ public interface IServiceFetcher extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLy02OWowBjNpJQI0KRg2CmgaFlo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IServiceFetcher");
                _data.writeString(name);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IServiceFetcher.Stub.getDefaultImpl() == null) {

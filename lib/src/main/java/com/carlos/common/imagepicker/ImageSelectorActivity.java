@@ -100,18 +100,18 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
       assert bundle != null;
 
-      this.mMaxCount = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+IGYwLCtgHjA5LBcMPmMFAiVvARo/")), 9);
-      this.column = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADmwVEiY=")), 3);
-      this.isSingle = bundle.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4YCGgzHis=")), false);
-      this.cropMode = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MD28IGiNgJAo/")), 1);
-      this.showCamera = bundle.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5fD2w2Gil9Dl0/Iz0iVg==")), true);
-      this.isCrop = bundle.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2H2swFiVhEVRF")), false);
-      this.mSelectedImages = bundle.getStringArrayList(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uDmgVLAZiDgpAKQdXOWkFGgM=")));
+      this.mMaxCount = bundle.getInt("max_selected_count", 9);
+      this.column = bundle.getInt("column", 3);
+      this.isSingle = bundle.getBoolean("single", false);
+      this.cropMode = bundle.getInt("crop_mode", 1);
+      this.showCamera = bundle.getBoolean("show_camera", true);
+      this.isCrop = bundle.getBoolean("is_crop", false);
+      this.mSelectedImages = bundle.getStringArrayList("selected_images");
       this.captureManager = new ImageCaptureManager(this);
-      this.toolBarColor = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAD2oLFjdhMig1KhdfKA==")), ContextCompat.getColor(this, color.blue));
-      this.bottomBarColor = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4ALGwFGiNlNCAqJy1fCG8KRVo=")), ContextCompat.getColor(this, color.blue));
-      this.statusBarColor = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANlNCAqJy1fCG8KRVo=")), ContextCompat.getColor(this, color.blue));
-      boolean materialDesign = bundle.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+LGgaFi99DlFAKBcML2wjEiY=")), false);
+      this.toolBarColor = bundle.getInt("toolBarColor", ContextCompat.getColor(this, color.blue));
+      this.bottomBarColor = bundle.getInt("bottomBarColor", ContextCompat.getColor(this, color.blue));
+      this.statusBarColor = bundle.getInt("statusBarColor", ContextCompat.getColor(this, color.blue));
+      boolean materialDesign = bundle.getBoolean("material_design", false);
       if (materialDesign) {
          this.setContentView(layout.activity_image_select);
       } else {
@@ -207,10 +207,10 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
    private void crop(@NonNull String imagePath, int requestCode) {
       Uri selectUri = Uri.fromFile(new File(imagePath));
-      SimpleDateFormat timeFormatter = new SimpleDateFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAcYJ2kbEg1iHgpAIRUAD28gAgM=")), Locale.CHINA);
+      SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA);
       long time = System.currentTimeMillis();
       String imageName = timeFormatter.format(new Date(time));
-      UCrop uCrop = UCrop.of(this.getIntent(), selectUri, Uri.fromFile(new File(this.getCacheDir(), imageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5XKGgzSFo=")))));
+      UCrop uCrop = UCrop.of(this.getIntent(), selectUri, Uri.fromFile(new File(this.getCacheDir(), imageName + ".jpg")));
       UCrop.Options options = new UCrop.Options();
       if (this.cropMode == 2) {
          options.setCircleDimmedLayer(true);
@@ -279,7 +279,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
       try {
          Intent intent = this.captureManager.dispatchTakePictureIntent();
          if (this.isCrop && this.isSingle) {
-            this.filePath = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhfD2wFGh9hHiAgKRhSVg==")));
+            this.filePath = intent.getStringExtra("photo_path");
             this.startActivityForResult(intent, 1001);
          } else {
             this.startActivityForResult(intent, 1002);
@@ -289,7 +289,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
          e.printStackTrace();
       } catch (ActivityNotFoundException var3) {
          ActivityNotFoundException e = var3;
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhhfD2wFGkxjDigxKAguWWoVQS1lASgbKghSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOGMVLAZjATwzLBgbOmEVNAVlNy8rKggfJGMaPCluHl0uODw2Km8VNARsAVRF")), e);
+         Log.e("PhotoPickerFragment", "No Activity Found to handle Intent", e);
       }
 
    }
@@ -355,7 +355,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
    private void hideTime() {
       if (this.isShowTime) {
-         ObjectAnimator.ofFloat(this.tvTime, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggEKGUFJFo=")), new float[]{1.0F, 0.0F}).setDuration(300L).start();
+         ObjectAnimator.ofFloat(this.tvTime, "alpha", new float[]{1.0F, 0.0F}).setDuration(300L).start();
          this.isShowTime = false;
       }
 
@@ -363,7 +363,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
    private void showTime() {
       if (!this.isShowTime) {
-         ObjectAnimator.ofFloat(this.tvTime, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggEKGUFJFo=")), new float[]{0.0F, 1.0F}).setDuration(300L).start();
+         ObjectAnimator.ofFloat(this.tvTime, "alpha", new float[]{0.0F, 1.0F}).setDuration(300L).start();
          this.isShowTime = true;
       }
 
@@ -398,7 +398,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
          }
 
          Intent intent = this.getIntent();
-         intent.putStringArrayListExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uDmgVLAZsJyw/Iy4MCGUzSFo=")), images);
+         intent.putStringArrayListExtra("select_result", images);
          this.setResult(-1, intent);
          this.finish();
       }
@@ -422,7 +422,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgIP2gzNF5iDlE/Ly42DWobQSlvER49IxcqM0tTOCpsMiQsIz42MmoKMCtnJygcIAdXM3szSFo=")));
+      Log.d("HV-", "ImageSelectorActivity  onActivityResult:");
       Iterator var4;
       Image image;
       switch (requestCode) {
@@ -436,7 +436,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
             }
             break;
          case 1000:
-            if (data != null && data.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2H2szGiZiNAYqKghSVg==")), false)) {
+            if (data != null && data.getBooleanExtra("is_confirm", false)) {
                if (this.isSingle && this.isCrop) {
                   this.crop(((Image)this.mAdapter.getSelectImages().get(0)).getPath(), 69);
                } else {
@@ -501,12 +501,12 @@ public class ImageSelectorActivity extends AppCompatActivity {
    }
 
    private void checkPermissionAndLoadImages() {
-      if (Environment.getExternalStorageState().equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwgAI2ogMCtiEVRF")))) {
-         int hasWriteContactsPermission = ContextCompat.checkSelfPermission(this.getApplication(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsmU2sLFgpgIgoXOzwAU30xJExmMjBOLiwqAmYmFlo=")));
+      if (Environment.getExternalStorageState().equals("mounted")) {
+         int hasWriteContactsPermission = ContextCompat.checkSelfPermission(this.getApplication(), "android.permission.WRITE_EXTERNAL_STORAGE");
          if (hasWriteContactsPermission == 0) {
             this.loadImageForSDCard();
          } else {
-            ActivityCompat.requestPermissions(this, new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCsmU2sLFgpgIgoXOzwAU30xJExmMjBOLiwqAmYmFlo="))}, 17);
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 17);
          }
 
       }
@@ -524,12 +524,12 @@ public class ImageSelectorActivity extends AppCompatActivity {
    }
 
    private void showExceptionDialog() {
-      (new AlertDialog.Builder(this)).setCancelable(false).setTitle(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwodAkYBPTI="))).setMessage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcdM0YEQjBYEDEOAxpYHEoBGxFAXy1NABtABllbRgRFEzEdASIjWUEXEwZGAEYJHgpYDEUXAwBFEjkRBlcdLUZJRgJbADlXA1YVJEcWOSZGAzEOOCYJHlpXFz0GUzETHDZcHhoOADYUEAQxHBksIBQXPjQbACIzElcGCRVJHC0ZEls+UxkoMRUyXikVTQpF"))).setNegativeButton(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxodAEYsJQo=")), new DialogInterface.OnClickListener() {
+      (new AlertDialog.Builder(this)).setCancelable(false).setTitle("提示").setMessage("该相册需要赋予访问存储的权限，请到“设置”>“应用”>“权限”中配置权限。").setNegativeButton("取消", new DialogInterface.OnClickListener() {
          public void onClick(DialogInterface dialog, int which) {
             dialog.cancel();
             ImageSelectorActivity.this.finish();
          }
-      }).setPositiveButton(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByI7CEZaA1c=")), new DialogInterface.OnClickListener() {
+      }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
          public void onClick(DialogInterface dialog, int which) {
             dialog.cancel();
             ImageSelectorActivity.this.startAppSettings();
@@ -561,8 +561,8 @@ public class ImageSelectorActivity extends AppCompatActivity {
    }
 
    private void startAppSettings() {
-      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kpKAg2LmwjMC1sIxoCIQU6AmsINA5iHBpXIRUuGmMIMB19HwJBKiwuBmIbLFJnHw5B")));
-      intent.setData(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + this.getPackageName()));
+      Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+      intent.setData(Uri.parse("package:" + this.getPackageName()));
       this.startActivity(intent);
    }
 }

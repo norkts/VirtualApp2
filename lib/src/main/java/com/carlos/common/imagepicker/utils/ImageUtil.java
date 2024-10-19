@@ -22,7 +22,7 @@ import java.util.Locale;
 
 public class ImageUtil {
    public static String saveImage(Bitmap bitmap, String path) {
-      String name = DateFormat.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAcYJ2kbEg1iHgpAKRcAD28gAgM=")), Calendar.getInstance(Locale.CHINA)) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06CGgzSFo="));
+      String name = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.CHINA)) + ".png";
       FileOutputStream b = null;
       File file = new File(path);
       if (!file.exists()) {
@@ -90,7 +90,7 @@ public class ImageUtil {
 
       try {
          ExifInterface exifInterface = new ExifInterface(pathName);
-         int result = exifInterface.getAttributeInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oy0MCWgVBgZ9AQozKi0YVg==")), 0);
+         int result = exifInterface.getAttributeInt("Orientation", 0);
          switch (result) {
             case 3:
                degree = 180;
@@ -121,7 +121,7 @@ public class ImageUtil {
             return bitmap;
          }
       } catch (OutOfMemoryError var7) {
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQguMw==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bxo/WEZaH1VYBS0WAxpYKEUWJRE=")));
+         Log.e("eee", "内存泄露！");
          return null;
       }
    }

@@ -25,7 +25,7 @@ public class HookBase {
             HVLog.printException(e);
          }
 
-         XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7IxglDmYgTQJgJwYeKQg+CmUgPDdsHigqKAg+Dw==")), classLoader, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2E2UFJCZiJDAVKj0iOG8zGiw=")), Long.TYPE, new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod("android.app.AppCompatCallbacks", classLoader, "isChangeEnabled", Long.TYPE, new XC_MethodHook() {
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.afterHookedMethod(param);
                param.setResult(false);
@@ -36,7 +36,7 @@ public class HookBase {
                param.setResult(false);
             }
          });
-         XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7IxglDmIzGiZrER4bLjwYKmYaLClqEVRF")), classLoader, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQQhgHiA9Iy5SVg==")), Integer.TYPE, String.class, new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod("android.app.PendingIntent", classLoader, "checkFlags", Integer.TYPE, String.class, new XC_MethodHook() {
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.afterHookedMethod(param);
             }
@@ -47,7 +47,7 @@ public class HookBase {
                String packageName = (String)param.args[1];
                boolean flagImmutableSet = (flags & 67108864) != 0;
                boolean flagMutableSet = (flags & 33554432) != 0;
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4EP2gxAiNgATAgLwcuCGkmAitvV1FF")) + flagImmutableSet + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OGgjHjdiIl0vLBciOG8zGl5rDi8x")) + flagMutableSet);
+               HVLog.d("VA-", "flagImmutableSet:" + flagImmutableSet + "   flagMutableSet:" + flagMutableSet);
             }
          });
       } catch (Exception var4) {

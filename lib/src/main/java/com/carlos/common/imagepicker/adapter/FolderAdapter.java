@@ -47,10 +47,10 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
       holder.tvFolderName.setText(folder.getName());
       holder.ivSelect.setVisibility(this.mSelectItem == position ? 0 : 8);
       if (images != null && !images.isEmpty()) {
-         holder.tvFolderSize.setText(images.size() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxsBOA==")));
+         holder.tvFolderSize.setText(images.size() + "张");
          Glide.with(this.mContext).load(new File(((Image)images.get(0)).getPath())).apply((new RequestOptions()).diskCacheStrategy(DiskCacheStrategy.NONE)).into(holder.ivImage);
       } else {
-         holder.tvFolderSize.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OlsrJBwFSFo=")));
+         holder.tvFolderSize.setText("0张");
          holder.ivImage.setImageBitmap((Bitmap)null);
       }
 

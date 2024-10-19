@@ -15,29 +15,29 @@ import mirror.android.media.session.ISessionManager;
 @TargetApi(21)
 public class SessionManagerStub extends BinderInvocationProxy {
    public SessionManagerStub() {
-      super(ISessionManager.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwguPGUVJB9hJDApIy0cDW8VSFo=")));
+      super(ISessionManager.Stub.asInterface, "media_session");
    }
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtpJDApIy0cDW8VSFo="))) {
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("createSession") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             replaceLastUserId(args);
             final IInterface ISession = (IInterface)super.call(who, method, args);
             return SessionManagerStub.CreateProxy(ISession, new InvocationHandler() {
                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                  if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzGiZmESw1KhdbPWoVSFo=")).equals(method.getName())) {
+                  if ("getController".equals(method.getName())) {
                      final IInterface controller = (IInterface)method.invoke(ISession, args);
                      return SessionManagerStub.CreateProxy(controller, new InvocationHandler() {
                         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                           if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQjGiRmDl0/JBdfVg==")).equals(method.getName())) {
+                           if ("setVolumeTo".equals(method.getName())) {
                               MethodParameterUtils.replaceFirstAppPkg(args);
                               return method.invoke(controller, args);
-                           } else if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqMmwaLAZuNB4oLAdXPQ==")).equals(method.getName())) {
+                           } else if ("adjustVolume".equals(method.getName())) {
                               MethodParameterUtils.replaceFirstAppPkg(args);
                               return method.invoke(controller, args);
                            } else {
-                              if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtpJDApIy0cDW8VSFo=")).equals(method.getName()) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczNANhJAY1Kj4qVg==")).equals(method.getName()) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczNANhJAY1KjouAG8FJCtlNDBF")).equals(method.getName()) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGczNANhJAY1Kj4qU2wgAgZrARogKS5SVg==")).equals(method.getName()) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGczNANhJAY1KjouAG8FJCtlNDBTIxc2CmIKRSBlN1RF")).equals(method.getName())) {
+                              if ("createSession".equals(method.getName()) || "getSessions".equals(method.getName()) || "getSession2Tokens".equals(method.getName()) || "addSessionsListener".equals(method.getName()) || "addSession2TokensListener".equals(method.getName())) {
                                  MethodProxy.replaceLastUserId(args);
                               }
 

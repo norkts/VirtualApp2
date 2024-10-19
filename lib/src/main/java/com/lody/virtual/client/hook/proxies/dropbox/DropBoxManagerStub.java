@@ -11,12 +11,12 @@ import mirror.com.android.internal.os.IDropBoxManagerService;
 
 public class DropBoxManagerStub extends BinderInvocationProxy {
    public DropBoxManagerStub() {
-      super(IDropBoxManagerService.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRcMD28FFiVnEVRF")));
+      super(IDropBoxManagerService.Stub.asInterface, "dropbox");
    }
 
    public void inject() throws Throwable {
       super.inject();
-      DropBoxManager dm = (DropBoxManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRcMD28FFiVnEVRF")));
+      DropBoxManager dm = (DropBoxManager)VirtualCore.get().getContext().getSystemService("dropbox");
 
       try {
          mirror.android.os.DropBoxManager.mService.set(dm, (IInterface)((BinderInvocationStub)this.getInvocationStub()).getProxyInterface());
@@ -29,7 +29,7 @@ public class DropBoxManagerStub extends BinderInvocationProxy {
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjNDBmHDA2LBguIQ==")), (Object)null));
-      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjNDBmHDA2LBguIX0FLAZqHzg/KgcMI30zLD9vDlkd")), (Object)null));
+      this.addMethodProxy(new ResultStaticMethodProxy("getNextEntry", (Object)null));
+      this.addMethodProxy(new ResultStaticMethodProxy("getNextEntryWithAttribution", (Object)null));
    }
 }

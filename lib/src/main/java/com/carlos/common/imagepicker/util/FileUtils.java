@@ -21,31 +21,31 @@ import java.nio.channels.FileChannel;
 import java.util.Locale;
 
 public class FileUtils {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4YDmgYNAZjDlEp"));
+   private static final String TAG = "FileUtils";
 
    private FileUtils() {
    }
 
    public static boolean isExternalStorageDocument(Uri uri) {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmkgFgZrDgobLRgED2YaAjVpDjwuORgcKWggNAFoERoZJy5SVg==")).equals(uri.getAuthority());
+      return "com.android.externalstorage.documents".equals(uri.getAuthority());
    }
 
    public static boolean isDownloadsDocument(Uri uri) {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmowRSVvNx4vLhcMD04wFipqJB4bKQhbIGwnBjBqNzAaJgc2JWoVMFo=")).equals(uri.getAuthority());
+      return "com.android.providers.downloads.documents".equals(uri.getAuthority());
    }
 
    public static boolean isMediaDocument(Uri uri) {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmowRSVvNx4vLhcMD04wQSBuHhoqORgcKWggNAFoERoZJy5SVg==")).equals(uri.getAuthority());
+      return "com.android.providers.media.documents".equals(uri.getAuthority());
    }
 
    public static boolean isGooglePhotosUri(Uri uri) {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojPCVgJDgoKAMYOW8VBgRlJx4vPC4+DmEVNyllHgYeIz4uD3UzLANqJCw0Jj4MVg==")).equals(uri.getAuthority());
+      return "com.google.android.apps.photos.content".equals(uri.getAuthority());
    }
 
    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
       Cursor cursor = null;
-      String column = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo="));
-      String[] projection = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo="))};
+      String column = "_data";
+      String[] projection = new String[]{"_data"};
 
       String var8;
       try {
@@ -54,11 +54,11 @@ public class FileUtils {
             return null;
          }
 
-         int column_index = cursor.getColumnIndexOrThrow(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo=")));
+         int column_index = cursor.getColumnIndexOrThrow("_data");
          var8 = cursor.getString(column_index);
       } catch (IllegalArgumentException var12) {
          IllegalArgumentException ex = var12;
-         Log.i(TAG, String.format(Locale.getDefault(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFJAZ9DCg1KhgMD29TIyhhJywsKgg9JE4OOFN+ASwM")), ex.getMessage()));
+         Log.i(TAG, String.format(Locale.getDefault(), "getDataColumn: _data - [%s]", ex.getMessage()));
          return null;
       } finally {
          if (cursor != null) {
@@ -79,16 +79,16 @@ public class FileUtils {
          String type;
          if (isExternalStorageDocument(uri)) {
             id = DocumentsContract.getDocumentId(uri);
-            split = id.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")));
+            split = id.split(":");
             type = split[0];
-            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMCWoVJARnAVRF")).equalsIgnoreCase(type)) {
-               return Environment.getExternalStorageDirectory() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + split[1];
+            if ("primary".equalsIgnoreCase(type)) {
+               return Environment.getExternalStorageDirectory() + "/" + split[1];
             }
          } else if (isDownloadsDocument(uri)) {
             id = DocumentsContract.getDocumentId(uri);
             if (!TextUtils.isEmpty(id)) {
                try {
-                  Uri contentUri = ContentUris.withAppendedId(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1Oi02DWUFMCRlJzgvKToADmYKMDdvDiwOLz4uMWUzHgNrESwc"))), Long.valueOf(id));
+                  Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
                   return getDataColumn(context, contentUri, (String)null, (String[])null);
                } catch (NumberFormatException var9) {
                   NumberFormatException e = var9;
@@ -98,23 +98,23 @@ public class FileUtils {
             }
          } else if (isMediaDocument(uri)) {
             id = DocumentsContract.getDocumentId(uri);
-            split = id.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")));
+            split = id.split(":");
             type = split[0];
             Uri contentUri = null;
-            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgIP2gzNFo=")).equals(type)) {
+            if ("image".equals(type)) {
                contentUri = Media.EXTERNAL_CONTENT_URI;
-            } else if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YPGgVGlo=")).equals(type)) {
+            } else if ("video".equals(type)) {
                contentUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-            } else if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuPGUVGlo=")).equals(type)) {
+            } else if ("audio".equals(type)) {
                contentUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
             }
 
-            String selection = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4YPH5TGlo="));
+            String selection = "_id=?";
             String[] selectionArgs = new String[]{split[1]};
-            return getDataColumn(context, contentUri, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4YPH5TGlo=")), selectionArgs);
+            return getDataColumn(context, contentUri, "_id=?", selectionArgs);
          }
       } else {
-         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmEVRF")).equalsIgnoreCase(uri.getScheme())) {
+         if ("content".equalsIgnoreCase(uri.getScheme())) {
             if (isGooglePhotosUri(uri)) {
                return uri.getLastPathSegment();
             }
@@ -122,7 +122,7 @@ public class FileUtils {
             return getDataColumn(context, uri, (String)null, (String[])null);
          }
 
-         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")).equalsIgnoreCase(uri.getScheme())) {
+         if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
          }
       }

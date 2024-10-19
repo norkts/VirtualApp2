@@ -9,17 +9,17 @@ import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
 public class AESUtil {
-   private static final String SECRET_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKW8kJwFPVjhF"));
+   private static final String SECRET_KEY = "sesr1107";
 
    public static void main(String[] args) {
       String content = "";
-      String key = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ojk5L3w0JwFPDThF"));
+      String key = "20171117";
       System.currentTimeMillis();
-      System.out.println(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxpAOEZaBwhYEBsNDCJYGg==")) + content);
+      System.out.println("加密前：" + content);
       byte[] encrypted = desEncrypt(content.getBytes(), key.getBytes());
-      System.out.println(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxpAOEZaBwhYEzkMDCJYGg==")) + byteToHexString(encrypted));
+      System.out.println("加密后：" + byteToHexString(encrypted));
       byte[] decrypted = desDecrypt(encrypted, key.getBytes());
-      System.out.println(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcjOUZaBwhYEzkMDCJYGg==")) + new String(decrypted));
+      System.out.println("解密后：" + new String(decrypted));
    }
 
    public static String desEncrypt(String content) {
@@ -30,21 +30,21 @@ public class AESUtil {
    private static byte[] desEncrypt(byte[] content, byte[] keyBytes) {
       try {
          DESKeySpec keySpec = new DESKeySpec(keyBytes);
-         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAw==")));
+         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
          SecretKey key = keyFactory.generateSecret(keySpec);
-         Cipher cipher = Cipher.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuA3oxLBRlIB4CISsqAXUmTTdrESwaLC4mVg==")));
+         Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
          cipher.init(1, key, new IvParameterSpec(keySpec.getKey()));
          byte[] result = cipher.doFinal(content);
          return result;
       } catch (Exception var7) {
          Exception e = var7;
-         System.out.println(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfOWgaIAZjDh42PT5SVg==")) + e.toString());
+         System.out.println("exception:" + e.toString());
          return null;
       }
    }
 
    public static String desDecrypt(String content) {
-      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DWAILBY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2D2ogMCtgNw08P18hKXonTCh+N1RF")) + content);
+      VLog.e("VA-DSD", " content  111  :" + content);
       byte[] bytes = hexStringToByteArray(content);
       byte[] desDecrypt = desDecrypt(bytes, SECRET_KEY.getBytes());
       if (desDecrypt == null) {
@@ -63,15 +63,15 @@ public class AESUtil {
    private static byte[] desDecrypt(byte[] content, byte[] keyBytes) {
       try {
          DESKeySpec keySpec = new DESKeySpec(keyBytes);
-         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAw==")));
+         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
          SecretKey key = keyFactory.generateSecret(keySpec);
-         Cipher cipher = Cipher.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuA3oxLBRlIB4CISsqAXUmTTdrESwaLC4mVg==")));
+         Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
          cipher.init(2, key, new IvParameterSpec(keyBytes));
          byte[] result = cipher.doFinal(content);
          return result;
       } catch (Exception var7) {
          Exception e = var7;
-         VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DWAILBY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgqM28xMCt9JywZIxg1OmkgFilrDjw/IxgAKktTOz0=")) + e.toString());
+         VLog.e("VA-DSD", " desDecrypt exception  :" + e.toString());
          return null;
       }
    }

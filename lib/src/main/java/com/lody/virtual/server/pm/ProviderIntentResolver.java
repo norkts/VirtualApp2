@@ -54,7 +54,7 @@ final class ProviderIntentResolver extends IntentResolver<VPackage.ProviderInten
 
    public final void addProvider(VPackage.ProviderComponent p) {
       if (this.mProviders.containsKey(p.getComponentName())) {
-         VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDF07Kj0iM2kgRVo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhcMD2wjAixiAS88")) + p.getComponentName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg+Dm8jNDdiERk8KBcMPGwjMCtrV1wrIxgmKmAjMCxsNDxF")));
+         VLog.w("PackageManager", "Provider " + p.getComponentName() + " already defined; ignoring");
       } else {
          this.mProviders.put(p.getComponentName(), p);
          int NI = p.intents.size();

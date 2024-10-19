@@ -25,7 +25,7 @@ public class ComponentStateManager {
       private SharedPreferences sharedPreferences;
 
       private UserComponentState(int userId) {
-         this.sharedPreferences = VirtualCore.get().getContext().getSharedPreferences(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+H2szGiNhHh42KAcYLmoINANvETg/LhUACQ==")) + userId, 0);
+         this.sharedPreferences = VirtualCore.get().getContext().getSharedPreferences("va_components_state_u" + userId, 0);
       }
 
       public int get(ComponentName componentName) {
@@ -43,7 +43,7 @@ public class ComponentStateManager {
 
             while(var3.hasNext()) {
                String component = (String)var3.next();
-               if (component.startsWith(packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")))) {
+               if (component.startsWith(packageName + "@")) {
                   this.sharedPreferences.edit().remove(component).apply();
                }
             }
@@ -56,7 +56,7 @@ public class ComponentStateManager {
       }
 
       private String componentKey(ComponentName componentName) {
-         return componentName.getPackageName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")) + componentName.getClassName();
+         return componentName.getPackageName() + "@" + componentName.getClassName();
       }
 
       // $FF: synthetic method

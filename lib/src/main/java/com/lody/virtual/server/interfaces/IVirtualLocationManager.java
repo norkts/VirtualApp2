@@ -43,7 +43,7 @@ public interface IVirtualLocationManager extends IInterface {
    VLocation getGlobalLocation() throws RemoteException;
 
    public abstract static class Stub extends Binder implements IVirtualLocationManager {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo="));
+      private static final String DESCRIPTOR = "com.lody.virtual.server.interfaces.IVirtualLocationManager";
       static final int TRANSACTION_getMode = 1;
       static final int TRANSACTION_setMode = 2;
       static final int TRANSACTION_setCell = 3;
@@ -61,7 +61,7 @@ public interface IVirtualLocationManager extends IInterface {
       static final int TRANSACTION_getGlobalLocation = 15;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+         this.attachInterface(this, "com.lody.virtual.server.interfaces.IVirtualLocationManager");
       }
 
       public static IVirtualLocationManager asInterface(IBinder obj) {
@@ -248,7 +248,7 @@ public interface IVirtualLocationManager extends IInterface {
 
       public static boolean setDefaultImpl(IVirtualLocationManager impl) {
          if (IVirtualLocationManager.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IVirtualLocationManager.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -274,7 +274,7 @@ public interface IVirtualLocationManager extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo="));
+            return "com.lody.virtual.server.interfaces.IVirtualLocationManager";
          }
 
          public int getMode(int userId, String pkg) throws RemoteException {
@@ -283,7 +283,7 @@ public interface IVirtualLocationManager extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
@@ -307,7 +307,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                _data.writeInt(mode);
@@ -330,7 +330,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                if (cell != null) {
@@ -359,7 +359,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                _data.writeTypedList(cell);
@@ -382,7 +382,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                _data.writeTypedList(cell);
@@ -405,7 +405,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                if (cell != null) {
                   _data.writeInt(1);
                   cell.writeToParcel(_data, 0);
@@ -432,7 +432,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeTypedList(cell);
                boolean _status = this.mRemote.transact(7, _data, _reply, 0);
                if (!_status && IVirtualLocationManager.Stub.getDefaultImpl() != null) {
@@ -453,7 +453,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeTypedList(cell);
                boolean _status = this.mRemote.transact(8, _data, _reply, 0);
                if (_status || IVirtualLocationManager.Stub.getDefaultImpl() == null) {
@@ -475,7 +475,7 @@ public interface IVirtualLocationManager extends IInterface {
 
             VCell var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                boolean _status = this.mRemote.transact(9, _data, _reply, 0);
@@ -506,7 +506,7 @@ public interface IVirtualLocationManager extends IInterface {
 
             ArrayList _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                boolean _status = this.mRemote.transact(10, _data, _reply, 0);
@@ -531,7 +531,7 @@ public interface IVirtualLocationManager extends IInterface {
 
             ArrayList _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                boolean _status = this.mRemote.transact(11, _data, _reply, 0);
@@ -555,7 +555,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                if (loc != null) {
@@ -585,7 +585,7 @@ public interface IVirtualLocationManager extends IInterface {
 
             VLocation var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                _data.writeInt(userId);
                _data.writeString(pkg);
                boolean _status = this.mRemote.transact(13, _data, _reply, 0);
@@ -615,7 +615,7 @@ public interface IVirtualLocationManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                if (loc != null) {
                   _data.writeInt(1);
                   loc.writeToParcel(_data, 0);
@@ -643,7 +643,7 @@ public interface IVirtualLocationManager extends IInterface {
 
             VLocation var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWKD0AOWoVFjVvNSQ6Li4+LGUVGiZoDiA2Lwc6PWoVSFo=")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IVirtualLocationManager");
                boolean _status = this.mRemote.transact(15, _data, _reply, 0);
                if (_status || IVirtualLocationManager.Stub.getDefaultImpl() == null) {
                   _reply.readException();

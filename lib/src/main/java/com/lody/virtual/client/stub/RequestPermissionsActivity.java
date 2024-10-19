@@ -25,8 +25,8 @@ public class RequestPermissionsActivity extends Activity {
       }
 
       intent.setFlags(268435456);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhguKmoVAgNhJAY1Kj4qVg==")), permissions);
-      BundleCompat.putBinder(intent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoFFjd9JA5F")), callback.asBinder());
+      intent.putExtra("permissions", permissions);
+      BundleCompat.putBinder(intent, "callback", callback.asBinder());
       context.startActivity(intent);
    }
 
@@ -36,8 +36,8 @@ public class RequestPermissionsActivity extends Activity {
       if (intent == null) {
          this.finish();
       } else {
-         String[] permissions = intent.getStringArrayExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhguKmoVAgNhJAY1Kj4qVg==")));
-         IBinder binder = BundleCompat.getBinder(intent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoFFjd9JA5F")));
+         String[] permissions = intent.getStringArrayExtra("permissions");
+         IBinder binder = BundleCompat.getBinder(intent, "callback");
          if (binder != null && permissions != null) {
             this.mCallBack = IRequestPermissionsResult.Stub.asInterface(binder);
             this.requestPermissions(permissions, 996);
@@ -55,7 +55,7 @@ public class RequestPermissionsActivity extends Activity {
             if (!success) {
                this.runOnUiThread(new Runnable() {
                   public void run() {
-                     Toast.makeText(RequestPermissionsActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uL2wVNANmVyQsKAguD2wgAgNqAQYbPQgiO2MKTSBuVx5F")), 0).show();
+                     Toast.makeText(RequestPermissionsActivity.this, "Request permission failed.", 0).show();
                   }
                });
             }

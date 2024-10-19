@@ -14,7 +14,7 @@ import java.nio.ByteOrder;
 
 @TargetApi(21)
 public class FileBridge extends Thread {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4YDmgbFgRjDgo9KAhSVg=="));
+   private static final String TAG = "FileBridge";
    private static final int MSG_LENGTH = 8;
    private static final int CMD_WRITE = 1;
    private static final int CMD_FSYNC = 2;
@@ -28,7 +28,7 @@ public class FileBridge extends Thread {
       try {
          Os.socketpair(OsConstants.AF_UNIX, OsConstants.SOCK_STREAM, 0, this.mServer, this.mClient);
       } catch (ErrnoException var2) {
-         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwpKS4YIGIgLFo=")));
+         throw new RuntimeException("Failed to create bridge");
       }
    }
 
@@ -62,7 +62,7 @@ public class FileBridge extends Thread {
                for(int len = FileUtils.peekInt(temp, 4, ByteOrder.BIG_ENDIAN); len > 0; len -= n) {
                   n = read(this.mServer, temp, 0, Math.min(temp.length, len));
                   if (n == -1) {
-                     throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcM2kKICt9Jwo/KF4mWmcLGTF4HjA/IxgEKEsaLAVlHgosIz4AIHgVSFo=")) + len + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgMJ2wFNAM=")));
+                     throw new IOException("Unexpected EOF; still expected " + len + " bytes");
                   }
 
                   write(this.mTarget, temp, 0, n);
@@ -80,7 +80,7 @@ public class FileBridge extends Thread {
          }
       } catch (IOException | ErrnoException var8) {
          Exception e = var8;
-         Log.wtf(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4+CWoFNCxLHgovIz0cDmkJTSpsNx4vLj4uVg==")), e);
+         Log.wtf(TAG, "Failed during bridge", e);
       } finally {
          this.forceClose();
       }

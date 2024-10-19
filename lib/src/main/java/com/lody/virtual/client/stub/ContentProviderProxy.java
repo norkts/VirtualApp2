@@ -26,7 +26,7 @@ import mirror.android.content.ContentProviderClientJB;
 public class ContentProviderProxy extends ContentProvider {
    public static Uri buildProxyUri(int userId, boolean isExt, String authority, Uri uri) {
       String proxyAuthority = StubManifest.getProxyAuthority(isExt);
-      Uri proxyUriPrefix = Uri.parse(String.format(Locale.ENGLISH, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1OikLKXkwDSV7Cg0vLgQfJ08kFjY=")), proxyAuthority, userId, authority));
+      Uri proxyUriPrefix = Uri.parse(String.format(Locale.ENGLISH, "content://%1$s/%2$d/%3$s", proxyAuthority, userId, authority));
       return Uri.withAppendedPath(proxyUriPrefix, uri.toString());
    }
 
@@ -53,8 +53,8 @@ public class ContentProviderProxy extends ContentProvider {
                if (providerInfo != null && providerInfo.enabled) {
                   String uriContent = uri.toString();
                   String targetUriStr = uriContent.substring(authority.length() + uriContent.indexOf(authority, 1) + 1);
-                  if (targetUriStr.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1"))) && !targetUriStr.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1Oi5SVg==")))) {
-                     targetUriStr = targetUriStr.replace(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1Oi5SVg==")));
+                  if (targetUriStr.startsWith("content:/") && !targetUriStr.startsWith("content://")) {
+                     targetUriStr = targetUriStr.replace("content:/", "content://");
                   }
 
                   return new TargetProviderInfo(userId, providerInfo, Uri.parse(targetUriStr));
@@ -280,7 +280,7 @@ public class ContentProviderProxy extends ContentProvider {
       }
 
       public String toString() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRg+KmgzNAZpESw1LD0cPmkgRQllNyQcLz0uD2IFMBZuVlFF")) + this.userId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186CWojOCV0AVRF")) + this.info + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186I28jDTM=")) + this.uri + '}';
+         return "TargetProviderInfo{userId=" + this.userId + ", info=" + this.info + ", uri=" + this.uri + '}';
       }
    }
 }

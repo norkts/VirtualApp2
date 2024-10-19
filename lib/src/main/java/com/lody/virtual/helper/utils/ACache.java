@@ -46,7 +46,7 @@ public class ACache {
    private ACacheManager mCache;
 
    public static ACache get(Context ctx) {
-      return get(ctx, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgY2P2szRSs=")));
+      return get(ctx, "ACache");
    }
 
    public static ACache get(Context ctx, String cacheName) {
@@ -59,7 +59,7 @@ public class ACache {
    }
 
    public static ACache get(Context ctx, long max_zise, int max_count) {
-      File f = new File(ctx.getCacheDir(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgY2P2szRSs=")));
+      File f = new File(ctx.getCacheDir(), "ACache");
       return get(f, max_zise, max_count);
    }
 
@@ -74,12 +74,12 @@ public class ACache {
    }
 
    private static String myPid() {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + Process.myPid();
+      return "_" + Process.myPid();
    }
 
    private ACache(File cacheDir, long max_size, int max_count) {
       if (!cacheDir.exists() && !cacheDir.mkdirs()) {
-         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CHgwMyhgDiAxKAMmPmwgRQN4ER4bPQhSVg==")) + cacheDir.getAbsolutePath());
+         throw new RuntimeException("can\'t make dirs in " + cacheDir.getAbsolutePath());
       } else {
          this.mCache = new ACacheManager(cacheDir, max_size, max_count);
       }
@@ -259,7 +259,7 @@ public class ACache {
                return (byte[])var5;
             }
 
-            RAFile = new RandomAccessFile(file, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj5SVg==")));
+            RAFile = new RandomAccessFile(file, "r");
             byte[] byteArray = new byte[(int)RAFile.length()];
             RAFile.read(byteArray);
             if (ACache.Utils.isDue(byteArray)) {
@@ -418,7 +418,7 @@ public class ACache {
          String[] strs = getDateInfoFromDate(data);
          if (strs != null && strs.length == 2) {
             String saveTimeStr;
-            for(saveTimeStr = strs[0]; saveTimeStr.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OhhSVg=="))); saveTimeStr = saveTimeStr.substring(1, saveTimeStr.length())) {
+            for(saveTimeStr = strs[0]; saveTimeStr.startsWith("0"); saveTimeStr = saveTimeStr.substring(1, saveTimeStr.length())) {
             }
 
             long saveTime = Long.valueOf(saveTimeStr);
@@ -482,7 +482,7 @@ public class ACache {
       private static byte[] copyOfRange(byte[] original, int from, int to) {
          int newLength = to - from;
          if (newLength < 0) {
-            throw new IllegalArgumentException(from + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl4bOA==")) + to);
+            throw new IllegalArgumentException(from + " > " + to);
          } else {
             byte[] copy = new byte[newLength];
             System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
@@ -492,10 +492,10 @@ public class ACache {
 
       private static String createDateInfo(int second) {
          String currentTime;
-         for(currentTime = System.currentTimeMillis() + ""; currentTime.length() < 13; currentTime = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OhhSVg==")) + currentTime) {
+         for(currentTime = System.currentTimeMillis() + ""; currentTime.length() < 13; currentTime = "0" + currentTime) {
          }
 
-         return currentTime + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwhSVg==")) + second + ' ';
+         return currentTime + "-" + second + ' ';
       }
 
       private static byte[] Bitmap2Bytes(Bitmap bm) {

@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 class MethodProxies {
    static class GetAppActiveNotifications extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaIAJlDiggKQg+PWcVNAZqASQaLT4+CmMKAillJ1RF"));
+         return "getAppActiveNotifications";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -26,7 +26,7 @@ class MethodProxies {
 
    static class SetNotificationsEnabledForPackage extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIjGgZjDjwzLy0iLmwjNCZsJSgbLRgMKGIKFgtsJygfKC4YLWgFPD8="));
+         return "setNotificationsEnabledForPackage";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -44,7 +44,7 @@ class MethodProxies {
 
    static class AreNotificationsEnabledForPackage extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcMM2IjGgZjDjwzLy0iLmwjNCZsJSgbLRgMKGIKFgtsJygfKC4YLWgFPD8="));
+         return "areNotificationsEnabledForPackage";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -55,7 +55,7 @@ class MethodProxies {
 
    static class CancelAllNotifications extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCRlDlEoIj1fLmwjHi9oJzg/IxgAKmEjSFo="));
+         return "cancelAllNotifications";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -72,7 +72,7 @@ class MethodProxies {
 
    static class CancelNotificationWithTag extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCRoNB4gKQc+MW4FQQZqAQYbIj4YCmMbFiRuJ1RF"));
+         return "cancelNotificationWithTag";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -96,13 +96,13 @@ class MethodProxies {
 
    static class EnqueueNotificationWithTagPriority extends EnqueueNotificationWithTag {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViDFk1LBccPGwjAjdvER4cLCsmI2YaBlRpDjwfLBg2KWwzAiBpEVRF"));
+         return "enqueueNotificationWithTagPriority";
       }
    }
 
    static class EnqueueNotificationWithTag extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViDFk1LBccPGwjAjdvER4cLCsmI2YaBlRpDjxF"));
+         return "enqueueNotificationWithTag";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -138,7 +138,7 @@ class MethodProxies {
 
    static class EnqueueNotification extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcL2wVNAViDFk1LBccPGwjAjdvER4cLC5SVg=="));
+         return "enqueueNotification";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {

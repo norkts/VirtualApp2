@@ -13,14 +13,14 @@ public class DateUtils {
       Calendar imageTime = Calendar.getInstance();
       imageTime.setTimeInMillis(time);
       if (sameDay(calendar, imageTime)) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZYX0ZaPS8="));
+         return "今天";
       } else if (sameWeek(calendar, imageTime)) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkBDkZNISA="));
+         return "本周";
       } else if (sameMonth(calendar, imageTime)) {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkBDkYyGwo="));
+         return "本月";
       } else {
          Date date = new Date(time);
-         SimpleDateFormat sdf = new SimpleDateFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAcYJ2lSEg1oAVRF")), Locale.CANADA);
+         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM", Locale.CANADA);
          return sdf.format(date);
       }
    }

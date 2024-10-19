@@ -64,9 +64,9 @@ public class StatusBarUtils {
       int statusBarHeight = 0;
 
       try {
-         Class<?> c = Class.forName(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmwjMAZrDgobLRgDKmk0Fi9vDlEuKRhSVg==")));
+         Class<?> c = Class.forName("com.android.internal.R$dimen");
          Object obj = c.newInstance();
-         Field field = c.getField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANsJCw7IzxfMmkjLC1qHixF")));
+         Field field = c.getField("status_bar_height");
          int x = Integer.parseInt(field.get(obj).toString());
          statusBarHeight = context.getResources().getDimensionPixelSize(x);
       } catch (Exception var7) {

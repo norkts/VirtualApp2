@@ -28,15 +28,15 @@ public abstract class BroadcastBadger2 implements IBadger {
 
    static class NewHtcHomeBadger1 extends BroadcastBadger2 {
       public String getAction() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojRQZ9IFkoLwgMDm4FFitsMxosLT0qI2AgRCl9IgoTJQYqA2cbAld9HzAOKBUAGGQzSFo="));
+         return "com.htc.launcher.action.SET_NOTIFICATION";
       }
 
       public String getComponentKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojRQZ9IFkoLwgMDm4FFitsMxogLwcqCH0ORQBkIlEfIQYqGX02MFo="));
+         return "com.htc.launcher.extra.COMPONENT";
       }
 
       public String getCountKey() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojRQZ9IFkoLwgMDm4FFitsMxogLwcqCH0ORQBkJQpTOz5SVg=="));
+         return "com.htc.launcher.extra.COUNT";
       }
    }
 }

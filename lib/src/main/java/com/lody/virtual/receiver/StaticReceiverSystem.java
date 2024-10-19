@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class StaticReceiverSystem {
    private static final int BROADCAST_TIME_OUT = 8500;
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qP2wFAilpNDA5KAccLGkgRV5uDjA/LhgIVg=="));
+   private static final String TAG = "StaticReceiverSystem";
    private static StaticReceiverSystem mSystem = new StaticReceiverSystem();
    private ApplicationInfo mApplicationInfo;
    private Map<IBinder, BroadcastRecord> mBroadcastRecords = new HashMap();
@@ -78,13 +78,13 @@ public class StaticReceiverSystem {
    public void attach(String processName, Context context, ApplicationInfo appInfo, int userId) {
       StaticReceiverSystem staticReceiverSystem = this;
       if (staticReceiverSystem.mApplicationInfo != null) {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcqLGsVLCBiDgpF")));
+         throw new IllegalStateException("attached");
       } else {
          staticReceiverSystem.mContext = context;
          staticReceiverSystem.mApplicationInfo = appInfo;
          staticReceiverSystem.mUserId = userId;
-         HandlerThread broadcastThread = new HandlerThread(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MD2sVMCl9ASggJBcAKGkjQSw=")));
-         HandlerThread anrThread = new HandlerThread(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MD2sVMCl9ASggJwcYKH0zFgRrATgv")));
+         HandlerThread broadcastThread = new HandlerThread("BroadcastThread");
+         HandlerThread anrThread = new HandlerThread("BroadcastAnrThread");
          broadcastThread.start();
          anrThread.start();
          staticReceiverSystem.mScheduler = new StaticScheduler(broadcastThread.getLooper());
@@ -95,13 +95,13 @@ public class StaticReceiverSystem {
             ReceiverInfo receiverInfo = (ReceiverInfo)var11.next();
             String componentAction = ComponentUtils.getComponentAction(receiverInfo.info);
             IntentFilter componentFilter = new IntentFilter(componentAction);
-            componentFilter.addCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysAAGMYGh9kHx4pLBciLmwjAh9sNygqLhgYMmIFMF8=")));
+            componentFilter.addCategory("__VA__|_static_receiver_");
             String str;
             if (BuildCompat.isUpsideDownCake()) {
-               str = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysAAGMYGh9kHx4pLBciLmwjAh9sNygqLhgYMmIFMF8="));
+               str = "__VA__|_static_receiver_";
                staticReceiverSystem.mContext.registerReceiver(new StaticReceiver(staticReceiverSystem, receiverInfo.info), componentFilter, (String)null, staticReceiverSystem.mScheduler, 2);
             } else {
-               str = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysAAGMYGh9kHx4pLBciLmwjAh9sNygqLhgYMmIFMF8="));
+               str = "__VA__|_static_receiver_";
                staticReceiverSystem.mContext.registerReceiver(new StaticReceiver(staticReceiverSystem, receiverInfo.info), componentFilter, (String)null, staticReceiverSystem.mScheduler);
             }
 
@@ -159,7 +159,7 @@ public class StaticReceiverSystem {
       public void handleMessage(@NonNull Message msg) {
          BroadcastRecord broadcastRecord = (BroadcastRecord)StaticReceiverSystem.get().BroadcastRecords(this.staticReceiverSystem).remove((IBinder)msg.obj);
          if (broadcastRecord != null) {
-            VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qP2wFAilpNDA5KAccLGkgRV5uDjA/LhgIVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MD2sVMCl9ASggPxg2MW8jGiVvDi8dPQg2O2AwNCBsVyA9KQRXIGoKLCRrHiw2JV4iIGpTAlo=")));
+            VLog.w("StaticReceiverSystem", "Broadcast timeout, cancel to dispatch it.");
             broadcastRecord.pendingResult.finish();
          }
 
@@ -183,7 +183,7 @@ public class StaticReceiverSystem {
 
       public void onReceive(Context context, Intent intent) {
          if ((intent.getFlags() & 1073741824) == 0 && !this.isInitialStickyBroadcast() && VClient.get() != null && VClient.get().getCurrentApplication() != null) {
-            if (intent.getAction() == null || !intent.getAction().startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwIARgJwo/Ly42PWk2NFo=")))) {
+            if (intent.getAction() == null || !intent.getAction().startsWith("_VA_protected_")) {
                intent.setExtrasClassLoader(VClient.get().getCurrentApplication().getClassLoader());
                BroadcastIntentData data = new BroadcastIntentData(intent);
                if (data.intent == null) {

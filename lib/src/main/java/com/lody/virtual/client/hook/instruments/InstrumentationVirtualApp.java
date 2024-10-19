@@ -56,7 +56,7 @@ public class InstrumentationVirtualApp extends InstrumentationProxy implements I
          for(int var4 = 0; var4 < var3; ++var4) {
             Field field = var2[var4];
             if (field.getType().isAssignableFrom(Instrumentation.class)) {
-               VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWozHj5iCiQ5Ki0YPG8zLClvVjwaLC02CmEzLChuDh49KC0cI2UjAS57DSgcCAReLGUjSFo=")), this.base.getClass().getName(), field.getName());
+               VLog.e(TAG, "resolve conflict instrumentation: %s->%s", this.base.getClass().getName(), field.getName());
                field.setAccessible(true);
                field.set(this.base, this.root);
             }
@@ -172,7 +172,7 @@ public class InstrumentationVirtualApp extends InstrumentationProxy implements I
          Class cls = instrumentation.getClass();
          if (Instrumentation.class.equals(cls)) {
             return false;
-         } else if (TextUtils.equals(VClient.get().getCurrentPackage(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogTSBjDlEzLwdfOWowTCZlDig6Ixg2O2AaTQY="))) && VERSION.SDK_INT == 26) {
+         } else if (TextUtils.equals(VClient.get().getCurrentPackage(), "com.zhiliaoapp.musically") && VERSION.SDK_INT == 26) {
             return false;
          } else {
             do {

@@ -74,7 +74,7 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
          this.mInvocationStub.addMethodProxy(methodProxy);
       } catch (Throwable var4) {
          Throwable e = var4;
-         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxccDmoKBjdlNzAgPQZfKWAgHSN7MCBF")) + hookType + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl5WOA==")) + e.getMessage());
+         throw new RuntimeException("Unable to instance Hook : " + hookType + " : " + e.getMessage());
       }
    }
 

@@ -11,7 +11,7 @@ public class JobWorkItemCompat {
    public static JobWorkItem redirect(int userId, JobWorkItem item, String pkg) {
       if (item != null) {
          Intent target = (Intent)mirror.android.app.job.JobWorkItem.getIntent.call(item);
-         if (target.hasExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9jDlkgKAcYLmMFSFo=")))) {
+         if (target.hasExtra("_VA_|_intent_")) {
             return item;
          } else {
             Intent intent = ComponentUtils.getProxyIntentSenderIntent(userId, 4, pkg, target);
@@ -32,7 +32,7 @@ public class JobWorkItemCompat {
    public static JobWorkItem parse(JobWorkItem item) {
       if (item != null) {
          Intent target = (Intent)mirror.android.app.job.JobWorkItem.getIntent.call(item);
-         if (target.hasExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9jDlkgKAcYLmMFSFo=")))) {
+         if (target.hasExtra("_VA_|_intent_")) {
             return item;
          } else {
             Intent intent = ComponentUtils.parseIntentSenderInfo(item.getIntent(), false).intent;

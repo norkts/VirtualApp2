@@ -21,7 +21,7 @@ import com.carlos.common.imagepicker.util.RectUtils;
 import com.carlos.libcommon.StringFog;
 
 public class TransformImageView extends ImageView {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRcMP2ogLC5gJyw3IQdXOWkFGlNqASg+"));
+   private static final String TAG = "TransformImageView";
    private static final int RECT_CORNER_POINTS_COORDS = 8;
    private static final int RECT_CENTER_POINT_COORDS = 2;
    private static final int MATRIX_VALUES_COUNT = 9;
@@ -69,7 +69,7 @@ public class TransformImageView extends ImageView {
       if (scaleType == ScaleType.MATRIX) {
          super.setScaleType(scaleType);
       } else {
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLmsVHi9iVyQPLy0iCGkmBj9sESsbPQYAKmAVBSN9JCwqKT4AXW4KID96JQ4OKBYqGmNTPDNuJy83Lj4tOGwaLCtiEVRF")));
+         Log.w(TAG, "Invalid ScaleType. Only ScaleType.MATRIX can be used");
       }
 
    }
@@ -114,7 +114,7 @@ public class TransformImageView extends ImageView {
          }
 
          public void onFailure(@NonNull Exception bitmapWorkerException) {
-            Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRcMP2ogLC5gJyw3IQdXOWkFGlNqASg+")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy4cW2sVAiRmASw/PTkmL2kgBgllATguLhUuCGMFSFo=")), bitmapWorkerException);
+            Log.e("TransformImageView", "onFailure: setImageUri", bitmapWorkerException);
             if (TransformImageView.this.mTransformImageListener != null) {
                TransformImageView.this.mTransformImageListener.onLoadFailure(bitmapWorkerException);
             }
@@ -203,7 +203,7 @@ public class TransformImageView extends ImageView {
       if (drawable != null) {
          float w = (float)drawable.getIntrinsicWidth();
          float h = (float)drawable.getIntrinsicHeight();
-         Log.d(TAG, String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgIP2gzNyhhJAYiKAQHOmAJGix+MygvIBhSVg==")), (int)w, (int)h));
+         Log.d(TAG, String.format("Image size: [%d:%d]", (int)w, (int)h));
          RectF initialImageRect = new RectF(0.0F, 0.0F, w, h);
          this.mInitialImageCorners = RectUtils.getCornersFromRect(initialImageRect);
          this.mInitialImageCenter = RectUtils.getCenterFromRect(initialImageRect);
@@ -225,7 +225,7 @@ public class TransformImageView extends ImageView {
       float y = this.getMatrixValue(matrix, 5);
       float rScale = this.getMatrixScale(matrix);
       float rAngle = this.getMatrixAngle(matrix);
-      Log.d(TAG, logPrefix + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6DWsaMARjAR0iPxgDOmg0Iyg=")) + x + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186J3knIFo=")) + y + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186KWszJCRiDQU8")) + rScale + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186P2ojPCRiDQU8")) + rAngle + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcIVg==")));
+      Log.d(TAG, logPrefix + ": matrix: { x: " + x + ", y: " + y + ", scale: " + rScale + ", angle: " + rAngle + " }");
    }
 
    private void updateCurrentImagePoints() {

@@ -34,7 +34,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class DeviceDetailActiivty extends VActivity {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRguLmUVLCtqHiAgLwhSVg=="));
+   private static final String TAG = "DeviceData";
    private int mDeviceID;
    private String mPackageName;
    private String mTitle;
@@ -62,10 +62,10 @@ public class DeviceDetailActiivty extends VActivity {
 
    public static void open(Activity context, DeviceData data, int position) {
       Intent intent = new Intent(context, DeviceDetailActiivty.class);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgYLGoFNFo=")), data.name);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPQ==")), data.packageName);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo=")), data.userId);
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKQ==")), position);
+      intent.putExtra("title", data.name);
+      intent.putExtra("pkg", data.packageName);
+      intent.putExtra("user", data.userId);
+      intent.putExtra("pos", position);
       context.startActivityForResult(intent, 1001);
    }
 
@@ -91,22 +91,22 @@ public class DeviceDetailActiivty extends VActivity {
       this.edt_manufacturer = (EditText)this.findViewById(id.edt_manufacturer);
       this.edt_fingerprint = (EditText)this.findViewById(id.edt_fingerprint);
       this.edt_bluetooth_name = (EditText)this.findViewById(id.edt_bluetooth_name);
-      this.mWifiManager = (WifiManager)this.getApplicationContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YPmUVSFo=")));
-      this.mTelephonyManager = (TelephonyManager)this.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhfD2ojNFo=")));
+      this.mWifiManager = (WifiManager)this.getApplicationContext().getSystemService("wifi");
+      this.mTelephonyManager = (TelephonyManager)this.getSystemService("phone");
       if (TextUtils.isEmpty(this.mTitle)) {
-         this.mPackageName = this.getIntent().getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPQ==")));
-         this.mUserId = this.getIntent().getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo=")), 0);
-         this.mTitle = this.getIntent().getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgYLGoFNFo=")));
+         this.mPackageName = this.getIntent().getStringExtra("pkg");
+         this.mUserId = this.getIntent().getIntExtra("user", 0);
+         this.mTitle = this.getIntent().getStringExtra("title");
       }
 
       this.mDeviceID = getDeviceId(this.mPackageName, this.mUserId);
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYqM2wjAiliDAYWDCJYGg==")) + this.mDeviceID + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OGoYNANiASwJKF8IVg==")) + this.mUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFEkx9DigxLwc6PWcVQSNrClFF")) + this.mPackageName);
+      HVLog.d("mDeviceID：" + this.mDeviceID + "   mUserId:" + this.mUserId + "    mPackageName:" + this.mPackageName);
       this.setTitle(this.mTitle);
       this.setTitleColor(-1);
       this.mDeviceConfig = VDeviceManager.get().getDeviceConfig(this.mDeviceID);
       this.updateConfig();
       this.randomData = (MainFunBtn)this.findViewById(id.main_fun_btn);
-      this.randomData.setTopText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcEkNNPSZYAzEsAgpYIA==")));
+      this.randomData.setTopText("一键新机");
       this.randomData.setOnClickListener((view) -> {
          this.mDeviceConfig = VDeviceConfig.random();
          this.updateConfig();
@@ -115,10 +115,10 @@ public class DeviceDetailActiivty extends VActivity {
 
    protected void onNewIntent(Intent intent) {
       super.onNewIntent(intent);
-      this.mPackageName = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPQ==")));
-      this.mUserId = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo=")), 0);
-      this.mTitle = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgYLGoFNFo=")));
-      this.mPosition = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKQ==")), -1);
+      this.mPackageName = intent.getStringExtra("pkg");
+      this.mUserId = intent.getIntExtra("user", 0);
+      this.mTitle = intent.getStringExtra("title");
+      this.mPosition = intent.getIntExtra("pos", -1);
    }
 
    public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,10 +142,10 @@ public class DeviceDetailActiivty extends VActivity {
          this.updateConfig();
          VDeviceManager.get().updateDeviceConfig(this.mDeviceID, this.mDeviceConfig);
          Intent intent = new Intent();
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPQ==")), this.mPackageName);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo=")), this.mUserId);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKQ==")), this.mPosition);
-         intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwVHgY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+LmgVSFo=")));
+         intent.putExtra("pkg", this.mPackageName);
+         intent.putExtra("user", this.mUserId);
+         intent.putExtra("pos", this.mPosition);
+         intent.putExtra("result", "save");
          this.setResult(-1, intent);
          if (TextUtils.isEmpty(this.mPackageName)) {
             VirtualCore.get().killAllApps();
@@ -154,17 +154,17 @@ public class DeviceDetailActiivty extends VActivity {
          }
 
          this.killApp();
-         Toast.makeText(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1YdHUZaH1VYAB8CAhkFHQ==")), 0).show();
+         Toast.makeText(this, "保存成功", 0).show();
       } else if (item.getItemId() == id.action_reset) {
          (new AlertDialog.Builder(this)).setMessage(string.dlg_reset_device).setPositiveButton(17039370, (dialog, which) -> {
             this.mDeviceConfig.enable = false;
             this.mDeviceConfig.clear();
             VDeviceManager.get().updateDeviceConfig(this.mDeviceID, this.mDeviceConfig);
             Intent intent = new Intent();
-            intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhbPQ==")), this.mPackageName);
-            intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo=")), this.mUserId);
-            intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKQ==")), this.mPosition);
-            intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwVHgY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWgaMFo=")));
+            intent.putExtra("pkg", this.mPackageName);
+            intent.putExtra("user", this.mUserId);
+            intent.putExtra("pos", this.mPosition);
+            intent.putExtra("result", "reset");
             this.setResult(-1, intent);
             this.killApp();
             this.updateConfig();
@@ -189,16 +189,16 @@ public class DeviceDetailActiivty extends VActivity {
    }
 
    private void fillConfig() {
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjsMEWIhMFo=")), this.getValue(this.edt_brand));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHlo=")), this.getValue(this.edt_model));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhUMUmAINBNuEVRF")), this.getValue(this.edt_name));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAH0bLBU=")), this.getValue(this.edt_device));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjwAEWchMFo=")), this.getValue(this.edt_board));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYYA2cLHhFvAVRF")), this.getValue(this.edt_display));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAYqVg==")), this.getValue(this.edt_id));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwY+U2QbOBFlJQpKOzsMAg==")), this.getValue(this.edt_manufacturer));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4EI2gaMCVgJwo0Ij0iD2kjSFo=")), this.getValue(this.edt_bluetooth_name));
-      this.mDeviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTwYU2AxNF9pHywJIjw2Vg==")), this.getValue(this.edt_fingerprint));
+      this.mDeviceConfig.setProp("BRAND", this.getValue(this.edt_brand));
+      this.mDeviceConfig.setProp("MODEL", this.getValue(this.edt_model));
+      this.mDeviceConfig.setProp("PRODUCT", this.getValue(this.edt_name));
+      this.mDeviceConfig.setProp("DEVICE", this.getValue(this.edt_device));
+      this.mDeviceConfig.setProp("BOARD", this.getValue(this.edt_board));
+      this.mDeviceConfig.setProp("DISPLAY", this.getValue(this.edt_display));
+      this.mDeviceConfig.setProp("ID", this.getValue(this.edt_id));
+      this.mDeviceConfig.setProp("MANUFACTURER", this.getValue(this.edt_manufacturer));
+      this.mDeviceConfig.setProp("BluetoothName", this.getValue(this.edt_bluetooth_name));
+      this.mDeviceConfig.setProp("FINGERPRINT", this.getValue(this.edt_fingerprint));
       this.mDeviceConfig.serial = this.getValue(this.edt_serial);
       this.mDeviceConfig.deviceId = this.getValue(this.edt_imei);
       this.mDeviceConfig.iccId = this.getValue(this.edt_imsi);
@@ -208,17 +208,17 @@ public class DeviceDetailActiivty extends VActivity {
 
    @SuppressLint({"HardwareIds", "MissingPermission"})
    private void updateConfig() {
-      this.setValue(this.edt_brand, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjsMEWIhMFo="))), Build.BRAND);
-      this.setValue(this.edt_model, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHlo="))), Build.MODEL);
-      this.setValue(this.edt_name, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhUMUmAINBNuEVRF"))), Build.PRODUCT);
-      this.setValue(this.edt_device, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAH0bLBU="))), Build.DEVICE);
-      this.setValue(this.edt_board, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjwAEWchMFo="))), Build.BOARD);
-      this.setValue(this.edt_display, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYYA2cLHhFvAVRF"))), Build.DISPLAY);
-      this.setValue(this.edt_id, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAYqVg=="))), Build.ID);
-      this.setValue(this.edt_manufacturer, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwY+U2QbOBFlJQpKOzsMAg=="))), Build.MANUFACTURER);
-      this.setValue(this.edt_fingerprint, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTwYU2AxNF9pHywJIjw2Vg=="))), Build.FINGERPRINT + this.mUserId);
-      String bluetoothName = Secure.getString(this.getContentResolver(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4EI2gaMCVgJwo0Ji0YOW8jGlo=")));
-      this.setValue(this.edt_bluetooth_name, this.mDeviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4EI2gaMCVgJwo0Ij0iD2kjSFo="))), bluetoothName);
+      this.setValue(this.edt_brand, this.mDeviceConfig.getProp("BRAND"), Build.BRAND);
+      this.setValue(this.edt_model, this.mDeviceConfig.getProp("MODEL"), Build.MODEL);
+      this.setValue(this.edt_name, this.mDeviceConfig.getProp("PRODUCT"), Build.PRODUCT);
+      this.setValue(this.edt_device, this.mDeviceConfig.getProp("DEVICE"), Build.DEVICE);
+      this.setValue(this.edt_board, this.mDeviceConfig.getProp("BOARD"), Build.BOARD);
+      this.setValue(this.edt_display, this.mDeviceConfig.getProp("DISPLAY"), Build.DISPLAY);
+      this.setValue(this.edt_id, this.mDeviceConfig.getProp("ID"), Build.ID);
+      this.setValue(this.edt_manufacturer, this.mDeviceConfig.getProp("MANUFACTURER"), Build.MANUFACTURER);
+      this.setValue(this.edt_fingerprint, this.mDeviceConfig.getProp("FINGERPRINT"), Build.FINGERPRINT + this.mUserId);
+      String bluetoothName = Secure.getString(this.getContentResolver(), "bluetooth_name");
+      this.setValue(this.edt_bluetooth_name, this.mDeviceConfig.getProp("BluetoothName"), bluetoothName);
       this.setValue(this.edt_serial, this.mDeviceConfig.serial, Build.SERIAL);
 
       try {
@@ -234,12 +234,12 @@ public class DeviceDetailActiivty extends VActivity {
       }
 
       this.setValue(this.edt_mac, this.mDeviceConfig.wifiMac, this.getDefaultWifiMac());
-      this.setValue(this.edt_androidId, this.mDeviceConfig.androidId, Secure.getString(this.getContentResolver(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iHx4zKBhSVg=="))));
+      this.setValue(this.edt_androidId, this.mDeviceConfig.androidId, Secure.getString(this.getContentResolver(), "android_id"));
    }
 
    @SuppressLint({"HardwareIds"})
    private String getDefaultWifiMac() {
-      String[] files = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02J283GilgHiApIylfDmkgASVvJwIsLCk5KX0KFi9lNAo8LAhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02J283GilgHiApIylfDmkgASVrDiwZOQQAO2IaFjVuASw8")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02J283GilgHiApIylfDmkgASVvJx4tI18AO2IaFjVuASw8"))};
+      String[] files = new String[]{"/sys/class/net/wlan0/address", "/sys/class/net/eth0/address", "/sys/class/net/wifi/address"};
       String mac = this.mWifiManager.getConnectionInfo().getMacAddress();
       if (TextUtils.isEmpty(mac)) {
          String[] var3 = files;

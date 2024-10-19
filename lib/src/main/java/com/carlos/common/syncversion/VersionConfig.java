@@ -19,11 +19,11 @@ public class VersionConfig {
       try {
          permReader = new FileReader(permFile);
       } catch (FileNotFoundException var16) {
-         HVLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08KD0cDmk3TSVsMzwcKQguKksbICBlNywiKQgpJGAjGgRoJx4yDRc6IGwaETY=")) + permFile);
+         HVLog.w("Couldn\'t find or open Version Config file " + permFile);
          return;
       }
 
-      HVLog.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gFAiZiICRJKAguL2wjNCZ4HzAcLC4iI2IkOCFlNFkcOD5SVg==")) + permFile);
+      HVLog.i("Reading Version Config from " + permFile);
       XmlPullParser parser = Xml.newPullParser();
 
       try {
@@ -34,11 +34,11 @@ public class VersionConfig {
          }
 
          if (type != 2) {
-            throw new XmlPullParserException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOG8wMDdhNw08LBciM34zHiVvARov")));
+            throw new XmlPullParserException("No start tag found");
          }
 
-         if (!parser.getName().equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhguKmoVAgNhJAY1Kj4qVg=="))) && !parser.getName().equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGgjAi0=")))) {
-            throw new XmlPullParserException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcM2kKICt9Jwo/KF4mL2UzQQRvVjw/LRglJGMKRCM=")) + permFile + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6PmowNCZiVyRF")) + parser.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186M2kKICt9Jwo/KF4lM2ozGgRlAR46KT4YKWAzNyJ5Hlk7ODoIJWUjBjJlESMy")));
+         if (!parser.getName().equals("permissions") && !parser.getName().equals("config")) {
+            throw new XmlPullParserException("Unexpected start tag in " + permFile + ": found " + parser.getName() + ", expected \'permissions\' or \'config\'");
          }
 
          while(true) {
@@ -54,21 +54,21 @@ public class VersionConfig {
                byte var7 = -1;
                switch (name.hashCode()) {
                   case 166208699:
-                     if (name.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgYOm8jJARnAVRF")))) {
+                     if (name.equals("library")) {
                         var7 = 0;
                      }
                   default:
                      switch (var7) {
                         case 0:
-                           String lname = parser.getAttributeValue((String)null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4+DWgVSFo=")));
-                           String lfile = parser.getAttributeValue((String)null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")));
-                           String ldependency = parser.getAttributeValue((String)null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguKGgVBixiDlk5LQhSVg==")));
+                           String lname = parser.getAttributeValue((String)null, "name");
+                           String lfile = parser.getAttributeValue((String)null, "file");
+                           String ldependency = parser.getAttributeValue((String)null, "dependency");
                            if (lname == null) {
-                              HVLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PxhSVg==")) + name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pzo6LWUaMCBgJzAgPxcYOW8jBShqAR0r")) + permFile + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg+LHsFSFo=")) + parser.getPositionDescription());
+                              HVLog.w("<" + name + "> without name in " + permFile + " at " + parser.getPositionDescription());
                            } else if (lfile == null) {
-                              HVLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PxhSVg==")) + name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pzo6LWUaMCBgJzAgPxc+MW8zBShqAR0r")) + permFile + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg+LHsFSFo=")) + parser.getPositionDescription());
+                              HVLog.w("<" + name + "> without file in " + permFile + " at " + parser.getPositionDescription());
                            } else {
-                              new SystemConfig.SharedLibraryEntry(lname, lfile, ldependency == null ? new String[0] : ldependency.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg=="))));
+                              new SystemConfig.SharedLibraryEntry(lname, lfile, ldependency == null ? new String[0] : ldependency.split(":"));
                            }
 
                            XmlUtils.skipCurrentTag(parser);

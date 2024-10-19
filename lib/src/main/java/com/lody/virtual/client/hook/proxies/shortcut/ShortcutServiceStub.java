@@ -34,42 +34,42 @@ import mirror.com.android.internal.infra.AndroidFuture;
 @TargetApi(25)
 public class ShortcutServiceStub extends BinderInvocationProxy {
    public ShortcutServiceStub() {
-      super(IShortcutService.Stub.TYPE, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5fD28gMClmAQpF")));
+      super(IShortcutService.Stub.TYPE, "shortcut");
    }
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgYKWsVFiRiDyg0Ki4uLm4KGgZsJ1RF"))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgcP2sjHitpJBo1Iz42P2UgBgM="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcjNCN9DgY2KQcYM2YFQSRlHzAcKhgcCg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcjJAZiDFEzKgccLmIVGgNrDiwVIxgIJw=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VLCVgMl07LRU2MW8jGiZsJx4cLC02Vg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIVJDBpJBo1Iz42P2UgBhNlJCgbKgU6J2E2PCZqHho/Ki0cMw=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKGowFgZpJBo1Iz42P2UgBlBsJygv"))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy4cEW8KICRjDig7LBccDW8bQSlvER49LhhSVg=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBg+KWczRSVhNwo5LAg2X28KAgZkESg5LBgYD2EgGipsN1RF"))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtlDlEoIBgcDm4jPC9oIjAZLD0MCn0jLD9lJ1RF"))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtqEQY2LwdXMW4IAiBlJAo/LT0uCmEjSFo="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczRSVhNwo5LAg2Lw=="))));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtoHh42KCtbMWUVGixkJ1kcKS0qJWYFFjY="))));
-      this.addMethodProxy(new WrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcuKWULMD9gNCA3KQcqAWwzNARvETAwKghSVg==")), 1, (Object)null));
-      this.addMethodProxy(new WrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uL2wVNANmHyQzKjwqMm8KRQZoJCg/")), 1, false));
-      this.addMethodProxy(new UnWrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFAiZgNDAwOy0ADWoaBilvDiw6"))));
-      this.addMethodProxy(new WrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGAKAiZ9Dl0zLywqMm8KRQZoJCg/KT5SVg==")), 1, false));
-      this.addMethodProxy(new WrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAKAiZ9Dl0zLywqMm8KRQZoJCg/KT5SVg==")), 1, false));
-      this.addMethodProxy(new UnWrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAKAiZ9Dl0zLywqMm8KRQZoJCg/KT5SVg=="))));
-      this.addMethodProxy(new WrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtpJBo1Iz42P2UgBl9rDjAwLAcqBWAzFiBsNzBF")), 1, (Object)null));
-      this.addMethodProxy(new WrapperShortcutInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtpJBo1Iz42P2UgBgM=")), 1, false));
-      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIVJCZjDjw/Iy42AWwzNARvETAwKgc2Vg=="))) {
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("disableShortcuts"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("enableShortcuts"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getRemainingCallCount"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getRateLimitResetTime"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getIconMaxDimensions"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getMaxShortcutCountPerActivity"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("reportShortcutUsed"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("onApplicationActive"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("hasShortcutHostPermission"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("removeAllDynamicShortcuts"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("removeDynamicShortcuts"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getShortcuts"));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("removeLongLivedShortcuts"));
+      this.addMethodProxy(new WrapperShortcutInfo("pushDynamicShortcut", 1, (Object)null));
+      this.addMethodProxy(new WrapperShortcutInfo("requestPinShortcut", 1, false));
+      this.addMethodProxy(new UnWrapperShortcutInfo("getPinnedShortcuts"));
+      this.addMethodProxy(new WrapperShortcutInfo("addDynamicShortcuts", 1, false));
+      this.addMethodProxy(new WrapperShortcutInfo("setDynamicShortcuts", 1, false));
+      this.addMethodProxy(new UnWrapperShortcutInfo("getDynamicShortcuts"));
+      this.addMethodProxy(new WrapperShortcutInfo("createShortcutResultIntent", 1, (Object)null));
+      this.addMethodProxy(new WrapperShortcutInfo("updateShortcuts", 1, false));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy("getManifestShortcuts") {
          public Object call(Object who, Method method, Object... args) {
             return ParceledListSliceCompat.create(new ArrayList());
          }
       });
-      this.addMethodProxy(new ReplaceFirstUserIdMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2DGgaJAViASggOxccDmQgBitlDDAwKQc6KWEzFiBuEVRF"))));
+      this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("isRequestPinItemSupported"));
    }
 
    static ShortcutInfo wrapper(Context appContext, ShortcutInfo shortcutInfo, String pkg, int userId) {
-      Icon icon = (Icon)Reflect.on((Object)shortcutInfo).opt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYYOWozBlo=")));
+      Icon icon = (Icon)Reflect.on((Object)shortcutInfo).opt("mIcon");
       Bitmap bmp;
       if (icon != null) {
          bmp = BitmapUtils.drawableToBitmap(icon.loadDrawable(appContext));
@@ -79,9 +79,9 @@ public class ShortcutServiceStub extends BinderInvocationProxy {
       }
 
       Intent proxyIntent = VirtualCore.get().wrapperShortcutIntent(shortcutInfo.getIntent(), (Intent)null, pkg, userId);
-      proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHil9AQo/KC1fKGwjGgM=")), setToString(shortcutInfo.getCategories()));
-      proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHjd9JwozLD0cLmgjSFo=")), shortcutInfo.getActivity());
-      ShortcutInfo.Builder builder = new ShortcutInfo.Builder(VirtualCore.get().getContext(), pkg + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")) + userId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + shortcutInfo.getId());
+      proxyIntent.putExtra("_VA_|categories", setToString(shortcutInfo.getCategories()));
+      proxyIntent.putExtra("_VA_|activity", shortcutInfo.getActivity());
+      ShortcutInfo.Builder builder = new ShortcutInfo.Builder(VirtualCore.get().getContext(), pkg + "@" + userId + "/" + shortcutInfo.getId());
       if (shortcutInfo.getLongLabel() != null) {
          builder.setLongLabel(shortcutInfo.getLongLabel());
       }
@@ -100,20 +100,20 @@ public class ShortcutServiceStub extends BinderInvocationProxy {
       if (intent == null) {
          return null;
       } else {
-         String pkg = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9hHg49Ji5SVg==")));
-         int userId = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASg/IzxfMWk2NFo=")), 0);
+         String pkg = intent.getStringExtra("_VA_|_pkg_");
+         int userId = intent.getIntExtra("_VA_|_user_id_", 0);
          if (TextUtils.equals(pkg, _pkg) && userId == _userId) {
             String _id = shortcutInfo.getId();
-            String id = _id.substring(_id.indexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg=="))) + 1);
-            Icon icon = (Icon)Reflect.on((Object)shortcutInfo).opt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYYOWozBlo=")));
-            String uri = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASwzJi5SVg==")));
+            String id = _id.substring(_id.indexOf("/") + 1);
+            Icon icon = (Icon)Reflect.on((Object)shortcutInfo).opt("mIcon");
+            String uri = intent.getStringExtra("_VA_|_uri_");
             Intent targetIntent = null;
             if (!TextUtils.isEmpty(uri)) {
                targetIntent = Intent.parseUri(uri, 0);
             }
 
-            ComponentName componentName = (ComponentName)intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHjd9JwozLD0cLmgjSFo=")));
-            String categories = intent.getStringExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHil9AQo/KC1fKGwjGgM=")));
+            ComponentName componentName = (ComponentName)intent.getParcelableExtra("_VA_|activity");
+            String categories = intent.getStringExtra("_VA_|categories");
             ShortcutInfo.Builder builder = new ShortcutInfo.Builder(appContext, id);
             if (icon != null) {
                builder.setIcon(icon);
@@ -158,7 +158,7 @@ public class ShortcutServiceStub extends BinderInvocationProxy {
             if (first) {
                first = false;
             } else {
-               stringBuilder.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")));
+               stringBuilder.append(",");
             }
          }
 
@@ -171,7 +171,7 @@ public class ShortcutServiceStub extends BinderInvocationProxy {
       if (allStr == null) {
          return null;
       } else {
-         String[] strs = allStr.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")));
+         String[] strs = allStr.split(",");
          Set<String> sets = new ArraySet();
          String[] var3 = strs;
          int var4 = strs.length;
@@ -240,8 +240,8 @@ public class ShortcutServiceStub extends BinderInvocationProxy {
       }
 
       private Object wrapperResult(Method method, Object result) {
-         VLog.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS0MP28KICthNSw/Iy4MCGUzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwguLGUFGixOClw3")) + method.toString());
-         if (!method.toString().contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JggcPG8jGi9iHDwvLBgMKGkjSFo=")))) {
+         VLog.i("wrapperResult", "method---" + method.toString());
+         if (!method.toString().contains("AndroidFuture")) {
             return result;
          } else {
             Object ret = AndroidFuture.ctor.newInstance();
@@ -252,7 +252,7 @@ public class ShortcutServiceStub extends BinderInvocationProxy {
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
          if (!getConfig().isAllowCreateShortcut()) {
-            VLog.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fD28gMClmAQoPKAguLGwjAitkJCwwLS5SVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkjOEZJRlZYFQMiAhxcCUdJOT1BADk0AFYBA1gHQgBFEx8f")));
+            VLog.i("ShortcutServiceStub", "无创建快捷方式权限");
             return this.wrapperResult(method, this.defValue);
          } else {
             Object paramValue = args[this.infoIndex];

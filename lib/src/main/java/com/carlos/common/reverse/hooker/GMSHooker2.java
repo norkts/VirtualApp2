@@ -9,7 +9,7 @@ import com.swift.sandhook.annotation.HookReflectClass;
 public class GMSHooker2 {
    @HookMethod("zba")
    public static boolean providesSignIn(Object thiz) throws Throwable {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+LGgaLAY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMD2wjAixiASgPKQc6DmQjMFo=")));
+      Log.d("vatest", "providesSignIn");
       return true;
    }
 }

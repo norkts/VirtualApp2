@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class IniFile {
    static String STORAGE;
    private String line_separator = "\n";
-   private String charSet = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQUqW3pTRVo="));
+   private String charSet = "UTF-8";
    private Map<String, Section> sections = new LinkedHashMap();
    private File file = null;
    private static IniFile mIniFile;
@@ -143,11 +143,11 @@ public class IniFile {
             boolean fileNewFile;
             if (!storage.exists()) {
                fileNewFile = storage.mkdirs();
-               HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcCWAjAiRiCiQpLBdfKG4jEit4V1Ar")) + fileNewFile);
+               HVLog.e("IniFile storage : " + fileNewFile);
             }
 
             fileNewFile = file.createNewFile();
-            HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcCWAjAiRiCic8KD0cCGkhMCtvJSQaLAgtPg==")) + fileNewFile);
+            HVLog.e("IniFile  fileNewFile:" + fileNewFile);
          }
 
          BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -164,7 +164,7 @@ public class IniFile {
 
    private void toIniFile(BufferedReader bufferedReader) {
       Section section = null;
-      Pattern p = Pattern.compile(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JzsEG3onTR5sCgpF")));
+      Pattern p = Pattern.compile("^\\[.*\\]$");
 
       try {
          String strLine;
@@ -175,7 +175,7 @@ public class IniFile {
                section.name = strLine.substring(1, strLine.length() - 1);
                this.sections.put(section.name, section);
             } else {
-               String[] keyValue = strLine.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwhSVg==")));
+               String[] keyValue = strLine.split("=");
                if (keyValue.length == 2) {
                   section.set(keyValue[0], keyValue[1]);
                }
@@ -201,7 +201,7 @@ public class IniFile {
 
          while(var3.hasNext()) {
             Section section = (Section)var3.next();
-            bufferedWriter.write(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IC5SVg==")) + section.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JwhSVg==")));
+            bufferedWriter.write("[" + section.getName() + "]");
             if (line_spe) {
                bufferedWriter.write(this.line_separator);
             } else {
@@ -213,7 +213,7 @@ public class IniFile {
             while(var5.hasNext()) {
                Map.Entry<String, Object> entry = (Map.Entry)var5.next();
                bufferedWriter.write((String)entry.getKey());
-               bufferedWriter.write(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwhSVg==")));
+               bufferedWriter.write("=");
                bufferedWriter.write(entry.getValue().toString());
                if (line_spe) {
                   bufferedWriter.write(this.line_separator);
@@ -232,8 +232,8 @@ public class IniFile {
    }
 
    static {
-      STORAGE = Environment.getExternalStorageDirectory() + File.separator + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki42D28gIC9gJFg1"));
-      mIniFile = new IniFile(new File(STORAGE + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki42D28gIC9gJFg2KQcYMQ=="))));
+      STORAGE = Environment.getExternalStorageDirectory() + File.separator + "scorpion/";
+      mIniFile = new IniFile(new File(STORAGE + "scorpion.ini"));
    }
 
    public class Section {

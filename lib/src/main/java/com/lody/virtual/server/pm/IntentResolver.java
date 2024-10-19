@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLGgVBgZpNDApKi1bLGkgRVo="));
+   private static final String TAG = "IntentResolver";
    private static final Comparator sResolvePrioritySorter = new Comparator() {
       public int compare(Object o1, Object o2) {
          int q1;
@@ -56,14 +56,14 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
 
    public void addFilter(F f) {
       this.mFilters.add(f);
-      int numS = this.register_intent_filter(f, f.filter.schemesIterator(), this.mSchemeToFilter, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhpJCg0KAdXPXhSTVo=")));
-      int numT = this.register_mime_types(f, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhuEQYsKAQHOg==")));
+      int numS = this.register_intent_filter(f, f.filter.schemesIterator(), this.mSchemeToFilter, "      Scheme: ");
+      int numT = this.register_mime_types(f, "      Type: ");
       if (numS == 0 && numT == 0) {
-         this.register_intent_filter(f, f.filter.actionsIterator(), this.mActionToFilter, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhlDiggKQdfDnhSTVo=")));
+         this.register_intent_filter(f, f.filter.actionsIterator(), this.mActionToFilter, "      Action: ");
       }
 
       if (numT != 0) {
-         this.register_intent_filter(f, f.filter.actionsIterator(), this.mTypedActionToFilter, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhuEQYsKAc2E24KBi9lJx0xPQhSVg==")));
+         this.register_intent_filter(f, f.filter.actionsIterator(), this.mTypedActionToFilter, "      TypedAction: ");
       }
 
    }
@@ -189,14 +189,14 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
    }
 
    void removeFilterInternal(F f) {
-      int numS = this.unregister_intent_filter(f, f.filter.schemesIterator(), this.mSchemeToFilter, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhpJCg0KAdXPXhSTVo=")));
-      int numT = this.unregister_mime_types(f, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhuEQYsKAQHOg==")));
+      int numS = this.unregister_intent_filter(f, f.filter.schemesIterator(), this.mSchemeToFilter, "      Scheme: ");
+      int numT = this.unregister_mime_types(f, "      Type: ");
       if (numS == 0 && numT == 0) {
-         this.unregister_intent_filter(f, f.filter.actionsIterator(), this.mActionToFilter, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhlDiggKQdfDnhSTVo=")));
+         this.unregister_intent_filter(f, f.filter.actionsIterator(), this.mActionToFilter, "      Action: ");
       }
 
       if (numT != 0) {
-         this.unregister_intent_filter(f, f.filter.actionsIterator(), this.mTypedActionToFilter, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsJIyhuEQYsKAc2E24KBi9lJx0xPQhSVg==")));
+         this.unregister_intent_filter(f, f.filter.actionsIterator(), this.mTypedActionToFilter, "      TypedAction: ");
       }
 
    }
@@ -234,7 +234,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
          int slashpos = resolvedType.indexOf(47);
          if (slashpos > 0) {
             String baseType = resolvedType.substring(0, slashpos);
-            if (!baseType.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PD5SVg==")))) {
+            if (!baseType.equals("*")) {
                if (resolvedType.length() == slashpos + 2 && resolvedType.charAt(slashpos + 1) == '*') {
                   firstTypeCut = this.mBaseTypeToFilter.get(baseType);
                   secondTypeCut = this.mWildTypeToFilter.get(baseType);
@@ -243,7 +243,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
                   secondTypeCut = this.mWildTypeToFilter.get(baseType);
                }
 
-               thirdTypeCut = this.mWildTypeToFilter.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PD5SVg==")));
+               thirdTypeCut = this.mWildTypeToFilter.get("*");
             } else if (intent.getAction() != null) {
                firstTypeCut = this.mTypedActionToFilter.get(intent.getAction());
             }
@@ -305,13 +305,13 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
    }
 
    protected Object filterToLabel(F filter) {
-      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLGgVBgZqNAYoLBcMKA=="));
+      return "IntentFilter";
    }
 
    protected void dumpFilterLabel(PrintWriter out, String prefix, Object label, int count) {
       out.print(prefix);
       out.print(label);
-      out.print(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")));
+      out.print(": ");
       out.println(count);
    }
 
@@ -355,7 +355,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
             if (slashpos > 0) {
                baseName = name.substring(0, slashpos).intern();
             } else {
-               name = name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MypXVg=="));
+               name = name + "/*";
             }
 
             this.addFilter(this.mTypeToFilter, name, filter);
@@ -385,7 +385,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
             if (slashpos > 0) {
                baseName = name.substring(0, slashpos).intern();
             } else {
-               name = name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MypXVg=="));
+               name = name + "/*";
             }
 
             this.remove_all_objects(this.mTypeToFilter, name, filter);
@@ -474,7 +474,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
          if ((packageName == null || this.isPackageForFilter(packageName, filter)) && this.allowFilterResult(filter, dest)) {
             int match = filter.filter.match(action, resolvedType, scheme, data, categories, TAG);
             if (match >= 0) {
-               if (defaultOnly && !filter.filter.hasCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlmHApKICsAAmcVSFo=")))) {
+               if (defaultOnly && !filter.filter.hasCategory("android.intent.category.DEFAULT")) {
                   hasNonDefaults = true;
                } else {
                   R oneResult = this.newResult(filter, match, userId);
@@ -488,9 +488,9 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
 
       if (hasNonDefaults) {
          if (dest.size() == 0) {
-            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWozHj5iDAY2LBcMDmU3TS5oAR4dLhgpPksaICpqDh4tOD4mO28VLAZ6DTw1IAgLL2wwRQJpI1EiLAcqCnsLLBFuHDATIiwuG2MLBhVjNTgWJAUqVg==")));
+            VLog.w(TAG, "resolveIntent failed: found match, but none with CATEGORY_DEFAULT");
          } else if (dest.size() > 1) {
-            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWozHj5iDAY2LBcMDmU0IyhlDigdKggYDmAaLyNsDiQ9KAgMJ2wnGTRqNxo7IQMiOmwgTTF+NA4wKRheOGMxJFFqDDgLOzwcHWExGghgDChTIghSVg==")));
+            VLog.w(TAG, "resolveIntent: multiple matches, only some with CATEGORY_DEFAULT");
          }
       }
 

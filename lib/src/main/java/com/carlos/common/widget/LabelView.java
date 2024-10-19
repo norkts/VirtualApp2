@@ -45,12 +45,12 @@ public class LabelView extends View {
    private void obtainAttributes(Context context, AttributeSet attrs) {
       TypedArray ta = context.obtainStyledAttributes(attrs, styleable.LabelView);
       this.mTextContent = ta.getString(styleable.LabelView_lv_text);
-      this.mTextColor = ta.getColor(styleable.LabelView_lv_text_color, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi4iPmgjOC5iN1RF"))));
+      this.mTextColor = ta.getColor(styleable.LabelView_lv_text_color, Color.parseColor("#ffffff"));
       this.mTextSize = ta.getDimension(styleable.LabelView_lv_text_size, (float)this.sp2px(11.0F));
       this.mTextBold = ta.getBoolean(styleable.LabelView_lv_text_bold, true);
       this.mTextAllCaps = ta.getBoolean(styleable.LabelView_lv_text_all_caps, true);
       this.mFillTriangle = ta.getBoolean(styleable.LabelView_lv_fill_triangle, false);
-      this.mBackgroundColor = ta.getColor(styleable.LabelView_lv_background_color, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PiwiW3wOIzBPAVRF"))));
+      this.mBackgroundColor = ta.getColor(styleable.LabelView_lv_background_color, Color.parseColor("#FF4081"));
       this.mMinSize = ta.getDimension(styleable.LabelView_lv_min_size, this.mFillTriangle ? (float)this.dp2px(35.0F) : (float)this.dp2px(50.0F));
       this.mPadding = ta.getDimension(styleable.LabelView_lv_padding, (float)this.dp2px(3.5F));
       this.mGravity = ta.getInt(styleable.LabelView_lv_gravity, 51);

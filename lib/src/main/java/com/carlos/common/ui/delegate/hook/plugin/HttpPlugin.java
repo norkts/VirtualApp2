@@ -11,7 +11,7 @@ import de.robv.android.xposed.XposedHelpers;
 import java.net.URL;
 
 public class HttpPlugin {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IgU+HG8jGj1hJDAqIRdfDWwLFgZvHjxF"));
+   private static final String TAG = "QQBrowserHookHttp";
    ClassLoader mClassLoader;
    String mVersionName;
    boolean isHooking = false;
@@ -25,12 +25,12 @@ public class HttpPlugin {
    }
 
    private void hookHttp() {
-      HVLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IgU+HG8jGj1hJDAqAhxYHEcvHwtiEQYcIzxfCmYVOFo=")));
+      HVLog.d(TAG, "QQBrowser开始HookHttp");
 
       Exception e;
       Class RequestClass;
       try {
-         RequestClass = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8gBgZ1Nwo5LD0mD2IFMylqJBodLz4uMXU2NCZqDDwoJz0mJGUjSFo=")), this.mClassLoader);
+         RequestClass = XposedHelpers.findClass("com.tencent.mtt.browser.window.UrlParams", this.mClassLoader);
          XposedBridge.hookAllConstructors(RequestClass, new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
@@ -39,7 +39,7 @@ public class HttpPlugin {
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.afterHookedMethod(param);
                Object object = param.thisObject;
-               ClassUtil.printFieldsInClassAndObject(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQcMDmcFJAR9Dl0p")), object.getClass(), object);
+               ClassUtil.printFieldsInClassAndObject("UrlParams", object.getClass(), object);
             }
          });
       } catch (Exception var8) {
@@ -48,16 +48,16 @@ public class HttpPlugin {
       }
 
       try {
-         RequestClass = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4+LmtSBiZiAQ02IRg2Lmo2Gl99HzAcLC4cJ30jFixsJB5F")), this.mClassLoader);
+         RequestClass = XposedHelpers.findClass("java.net.HttpURLConnection", this.mClassLoader);
          XposedBridge.hookAllConstructors(RequestClass, new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) {
                if (param.args.length == 1 && param.args[0].getClass() == URL.class) {
                   URL url = (URL)param.args[0];
-                  HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IgU+HG8jGj1hJDAqIRdfDWwLFgZvHjxF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBcqLG8INF9oHCg1Kj0YPW4KBi9lJx0xPQhSVg==")) + param.args[0] + "");
-                  if (url.toString().contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OgM9KXokDT4=")))) {
+                  HVLog.d("QQBrowserHookHttp", "HttpURLConnection: " + param.args[0] + "");
+                  if (url.toString().contains("113.96")) {
                      StringBuilder TraceString = new StringBuilder("");
-                     TraceString.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("P14DJH4JHSNOClw3OgNWD38nPyN1DQEePF8HL04OQCh8ClAcOSolL3UJHQF6Vx0pMjpeD3lTP1E="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Djo5JH4OGTROClw3OgNWD38nPyN1DQEePF8HL04OQCh8ClAcOSolL3UJHQF6VgE8MjpeD3g3Alo="))).append("\n");
-                     HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IgU+HG8jGj1hJDAqIRdfDWwLFgZvHjxF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bxw3W0YvLQpYXhM7Agk/DUUWJVc=")) + TraceString.toString());
+                     TraceString.append("<<<<------------------------------>>>>>  \n").append("\n <<<<------------------------------>>>>>").append("\n");
+                     HVLog.e("QQBrowserHookHttp", "堆栈信息：" + TraceString.toString());
                   }
 
                }
@@ -69,8 +69,8 @@ public class HttpPlugin {
       }
 
       try {
-         RequestClass = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm4FNCNlAQYbPC5fCmYVOylkATA9JBgADW8FNCVsDwooJy02Vg==")), this.mClassLoader);
-         XposedBridge.hookAllMethods(RequestClass, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPH0FNDdiHjAqIy5SVg==")), new XC_MethodHook() {
+         RequestClass = XposedHelpers.findClass("com.tencent.common.http.MttRequestBase", this.mClassLoader);
+         XposedBridge.hookAllMethods(RequestClass, "addHeaders", new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
             }
@@ -86,8 +86,8 @@ public class HttpPlugin {
       }
 
       try {
-         RequestClass = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm4FNCNlAQYbPC5fCmYVOylkATA9JBgADW8FNCVsDwooJy02Vg==")), this.mClassLoader);
-         XposedBridge.hookAllMethods(RequestClass, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPH0FNDdiHjAq")), new XC_MethodHook() {
+         RequestClass = XposedHelpers.findClass("com.tencent.common.http.MttRequestBase", this.mClassLoader);
+         XposedBridge.hookAllMethods(RequestClass, "addHeader", new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
             }
@@ -103,8 +103,8 @@ public class HttpPlugin {
       }
 
       try {
-         RequestClass = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogLAFmDiAqKAgMKn8VNCFqHiw/KQQcU2IFPDBuASw9")), this.mClassLoader);
-         XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogLAFmDiAqKAgMKn8VNCFqHiw/KQQcA2MmBj9qESACKT42J2UwMFo=")), this.mClassLoader, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4uLWMzJCRgEVRF")), RequestClass, new XC_MethodHook() {
+         RequestClass = XposedHelpers.findClass("com.squareup.okhttp.Request", this.mClassLoader);
+         XposedHelpers.findAndHookMethod("com.squareup.okhttp.OkHttpClient", this.mClassLoader, "newCall", RequestClass, new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
             }
@@ -112,7 +112,7 @@ public class HttpPlugin {
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.afterHookedMethod(param);
                Object param0 = param.args[0];
-               ClassUtil.printFieldsInClassAndObject(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oy5bXWwKMAJlJFEzKAcYLn8VMCtvJTAsLAgDL2EaPDVpDlA5")), param0.getClass(), param0);
+               ClassUtil.printFieldsInClassAndObject("OkHttpClient.newCall-param0", param0.getClass(), param0);
             }
          });
       } catch (Exception var4) {
@@ -121,14 +121,14 @@ public class HttpPlugin {
       }
 
       try {
-         XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8gBgZ1MiAaLC4qKWYmNCpsASAeKRgAKm8bNCxsASg5Jy0AJmw2BgNqN1RF")), this.mClassLoader, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD5SVg==")), new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod("com.tencent.mtt.WindowComponentExtensionImp", this.mClassLoader, "j", new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
             }
 
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.afterHookedMethod(param);
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IgU+HG8jGj1hJDAqIRdfDWwLFgZvHjxF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS4YCGgFGj1lJB43IxdfDmkjMAZjDlk/LhgcD2MKAilnDlE5ORg5LHoJIjICXiI/RBlEIxwEJFo=")));
+               HVLog.d("QQBrowserHookHttp", "WindowComponentExtensionImp.j() 执行了");
             }
          });
       } catch (Exception var3) {
@@ -137,14 +137,14 @@ public class HttpPlugin {
       }
 
       try {
-         XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8gBgZ1Nwo5LD0mD2IFMylpNygqORccKWUjHjZrHg05JRhSVg==")), this.mClassLoader, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy4cE2oFAiljJ1RF")), View.class, new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod("com.tencent.mtt.browser.bra.toolbar.h", this.mClassLoader, "onClick", View.class, new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
             }
 
             protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.afterHookedMethod(param);
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IgU+HG8jGj1hJDAqIRdfDWwLFgZvHjxF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAD2oFFjdhMFk0Oj1fDmYFOC9oJ1wZM184IhwWJitXEF8tW0QEVg==")));
+               HVLog.d("QQBrowserHookHttp", "toolbar.h.onClick() 执行了");
             }
          });
       } catch (Exception var2) {

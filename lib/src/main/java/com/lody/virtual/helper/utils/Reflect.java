@@ -359,7 +359,7 @@ public class Reflect {
          type = type.getSuperclass();
       } while(type != null);
 
-      throw new NoSuchMethodException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOG8zAiNjDlE7IzkmD2kgBiBlJy8r")) + name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcmCWwFRChhHiAqLwdXL34zSFo=")) + Arrays.toString(types) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2D2wVHixLHiw/Pxc+DWUjMCx4EQYbPQcqM2EaLyM=")) + this.type() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg==")));
+      throw new NoSuchMethodException("No similar method " + name + " with params " + Arrays.toString(types) + " could be found on type " + this.type() + ".");
    }
 
    private boolean isSimilarSignature(Method possiblyMatchingMethod, String desiredMethodName, Class<?>[] desiredParamTypes) {
@@ -405,15 +405,15 @@ public class Reflect {
                if (isMap) {
                   Map<String, Object> map = (Map)Reflect.this.object;
                   int length = args == null ? 0 : args.length;
-                  if (length == 0 && name.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLA==")))) {
+                  if (length == 0 && name.startsWith("get")) {
                      return map.get(Reflect.property(name.substring(3)));
                   }
 
-                  if (length == 0 && name.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2Vg==")))) {
+                  if (length == 0 && name.startsWith("is")) {
                      return map.get(Reflect.property(name.substring(2)));
                   }
 
-                  if (length == 1 && name.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLA==")))) {
+                  if (length == 1 && name.startsWith("set")) {
                      map.put(Reflect.property(name.substring(3)), args[0]);
                      return null;
                   }
@@ -458,21 +458,21 @@ public class Reflect {
 
    public static String getMethodDetails(Method method) {
       StringBuilder sb = new StringBuilder(40);
-      sb.append(Modifier.toString(method.getModifiers())).append(" ").append(method.getReturnType().getName()).append(" ").append(method.getName()).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBhSVg==")));
+      sb.append(Modifier.toString(method.getModifiers())).append(" ").append(method.getReturnType().getName()).append(" ").append(method.getName()).append("(");
       Class<?>[] parameters = method.getParameterTypes();
       Class[] var3 = parameters;
       int var4 = parameters.length;
 
       for(int var5 = 0; var5 < var4; ++var5) {
          Class<?> parameter = var3[var5];
-         sb.append(parameter.getName()).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
+         sb.append(parameter.getName()).append(", ");
       }
 
       if (parameters.length > 0) {
          sb.delete(sb.length() - 2, sb.length());
       }
 
-      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAhSVg==")));
+      sb.append(")");
       return sb.toString();
    }
 
@@ -512,7 +512,7 @@ public class Reflect {
 
          return on(bestMethod, this.object, args);
       } else {
-         throw new ReflectException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4fOGoVNAZjHh4wPxc+DWUjMCx4ESQcKSo6Vg==")) + name, new NoSuchMethodException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOGsjNANmVyQ3KAg2Mm8FASg=")) + name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcmCWwFRChhHiAqLwdXL34zSFo=")) + Arrays.toString(types) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2D2wVHixLHiw/Pxc+DWUjMCx4EQYbPQcqM2EaLyM=")) + this.type() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg=="))));
+         throw new ReflectException("no method found for " + name, new NoSuchMethodException("No best method " + name + " with params " + Arrays.toString(types) + " could be found on type " + this.type() + "."));
       }
    }
 
@@ -527,8 +527,8 @@ public class Reflect {
                Map.Entry<String, Reflect> entry = (Map.Entry)var3.next();
                String name = (String)entry.getKey();
                Reflect reflect = (Reflect)entry.getValue();
-               String value = reflect.object == null ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoFSFo=")) : reflect.object.toString();
-               out.append(name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl4HOA==")) + value);
+               String value = reflect.object == null ? "null" : reflect.object.toString();
+               out.append(name + " = " + value);
                out.append('\n');
             }
 

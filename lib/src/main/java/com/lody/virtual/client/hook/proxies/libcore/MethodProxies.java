@@ -24,14 +24,14 @@ class MethodProxies {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wFSFo="));
+         return "stat";
       }
 
       static {
          try {
-            Method stat = Os.TYPE.getMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wFSFo=")), String.class);
+            Method stat = Os.TYPE.getMethod("stat", String.class);
             Class<?> StructStat = stat.getReturnType();
-            st_uid = StructStat.getDeclaredField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qH2wVAiw=")));
+            st_uid = StructStat.getDeclaredField("st_uid");
             st_uid.setAccessible(true);
          } catch (Throwable var2) {
             Throwable e = var2;
@@ -42,15 +42,15 @@ class MethodProxies {
 
    static class GetsockoptUcred extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLG8zGiljJB4sLBYMP2oVGiw="));
+         return "getsockoptUcred";
       }
 
       public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
          if (result != null) {
             Reflect ucred = Reflect.on(result);
-            int uid = (Integer)ucred.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgYPA==")));
+            int uid = (Integer)ucred.get("uid");
             if (uid == VirtualCore.get().myUid()) {
-               ucred.set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgYPA==")), getBaseVUid());
+               ucred.set("uid", getBaseVUid());
             }
          }
 
@@ -60,7 +60,7 @@ class MethodProxies {
 
    static class GetUid extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGwVAiw="));
+         return "getuid";
       }
 
       public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
@@ -71,15 +71,15 @@ class MethodProxies {
 
    static class Getpwnam extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLG8KPCZ9Dl1F"));
+         return "getpwnam";
       }
 
       public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
          if (result != null) {
             Reflect pwd = Reflect.on(result);
-            int uid = (Integer)pwd.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcmH2wVAiw=")));
+            int uid = (Integer)pwd.get("pw_uid");
             if (uid == VirtualCore.get().myUid()) {
-               pwd.set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcmH2wVAiw=")), VClient.get().getVUid());
+               pwd.set("pw_uid", VClient.get().getVUid());
             }
          }
 
@@ -89,15 +89,15 @@ class MethodProxies {
 
    static class Fstat extends Stat {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT02LGsaMFo="));
+         return "fstat";
       }
 
       public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
          if (result != null) {
             Reflect pwd = Reflect.on(result);
-            int uid = (Integer)pwd.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qH2wVAiw=")));
+            int uid = (Integer)pwd.get("st_uid");
             if (uid == VirtualCore.get().myUid()) {
-               pwd.set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qH2wVAiw=")), VClient.get().getVUid());
+               pwd.set("st_uid", VClient.get().getVUid());
             }
          }
 
@@ -107,15 +107,15 @@ class MethodProxies {
 
    static class Lstat extends Stat {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixc2LGsaMFo="));
+         return "lstat";
       }
 
       public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
          if (result != null) {
             Reflect pwd = Reflect.on(result);
-            int uid = (Integer)pwd.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qH2wVAiw=")));
+            int uid = (Integer)pwd.get("st_uid");
             if (uid == VirtualCore.get().myUid()) {
-               pwd.set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qH2wVAiw=")), VClient.get().getVUid());
+               pwd.set("st_uid", VClient.get().getVUid());
             }
          }
 

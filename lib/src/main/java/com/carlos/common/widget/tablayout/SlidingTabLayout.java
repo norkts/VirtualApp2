@@ -114,8 +114,8 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
       this.mTabsContainer = new LinearLayout(context);
       this.addView(this.mTabsContainer);
       this.obtainAttributes(context, attrs);
-      String height = attrs.getAttributeValue(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8OTCVOJyg5KRcMD24gDSZoARovKS4AI2JTRSZsJFAeKC1XLXUgFj9vMwYoJj0MOWwgBjI=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAZsJBo/KQc6MmUzSFo=")));
-      if (!height.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwM+Vg=="))) && !height.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwMMVg==")))) {
+      String height = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "layout_height");
+      if (!height.equals("-1") && !height.equals("-2")) {
          int[] systemAttrs = new int[]{16842997};
          TypedArray a = context.obtainStyledAttributes(attrs, systemAttrs);
          this.mHeight = a.getDimensionPixelSize(0, -2);
@@ -127,7 +127,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
    private void obtainAttributes(Context context, AttributeSet attrs) {
       TypedArray ta = context.obtainStyledAttributes(attrs, styleable.SlidingTabLayout);
       this.mIndicatorStyle = ta.getInt(styleable.SlidingTabLayout_tl_indicator_style, 0);
-      this.mIndicatorColor = ta.getColor(styleable.SlidingTabLayout_tl_indicator_color, Color.parseColor(this.mIndicatorStyle == 2 ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PikqHHwhJzBMJ1RF")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi4iPmgjOC5iN1RF"))));
+      this.mIndicatorColor = ta.getColor(styleable.SlidingTabLayout_tl_indicator_color, Color.parseColor(this.mIndicatorStyle == 2 ? "#4B6A87" : "#ffffff"));
       this.mIndicatorHeight = ta.getDimension(styleable.SlidingTabLayout_tl_indicator_height, (float)this.dp2px(this.mIndicatorStyle == 1 ? 4.0F : (float)(this.mIndicatorStyle == 2 ? -1 : 2)));
       this.mIndicatorWidth = ta.getDimension(styleable.SlidingTabLayout_tl_indicator_width, (float)this.dp2px(this.mIndicatorStyle == 1 ? 10.0F : -1.0F));
       this.mIndicatorCornerRadius = ta.getDimension(styleable.SlidingTabLayout_tl_indicator_corner_radius, (float)this.dp2px(this.mIndicatorStyle == 2 ? -1.0F : 0.0F));
@@ -137,15 +137,15 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
       this.mIndicatorMarginBottom = ta.getDimension(styleable.SlidingTabLayout_tl_indicator_margin_bottom, (float)this.dp2px(this.mIndicatorStyle == 2 ? 7.0F : 0.0F));
       this.mIndicatorGravity = ta.getInt(styleable.SlidingTabLayout_tl_indicator_gravity, 80);
       this.mIndicatorWidthEqualTitle = ta.getBoolean(styleable.SlidingTabLayout_tl_indicator_width_equal_title, false);
-      this.mUnderlineColor = ta.getColor(styleable.SlidingTabLayout_tl_underline_color, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi4iPmgjOC5iN1RF"))));
+      this.mUnderlineColor = ta.getColor(styleable.SlidingTabLayout_tl_underline_color, Color.parseColor("#ffffff"));
       this.mUnderlineHeight = ta.getDimension(styleable.SlidingTabLayout_tl_underline_height, (float)this.dp2px(0.0F));
       this.mUnderlineGravity = ta.getInt(styleable.SlidingTabLayout_tl_underline_gravity, 80);
-      this.mDividerColor = ta.getColor(styleable.SlidingTabLayout_tl_divider_color, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi4iPmgjOC5iN1RF"))));
+      this.mDividerColor = ta.getColor(styleable.SlidingTabLayout_tl_divider_color, Color.parseColor("#ffffff"));
       this.mDividerWidth = ta.getDimension(styleable.SlidingTabLayout_tl_divider_width, (float)this.dp2px(0.0F));
       this.mDividerPadding = ta.getDimension(styleable.SlidingTabLayout_tl_divider_padding, (float)this.dp2px(12.0F));
       this.mTextsize = ta.getDimension(styleable.SlidingTabLayout_tl_textsize, (float)this.sp2px(14.0F));
-      this.mTextSelectColor = ta.getColor(styleable.SlidingTabLayout_tl_textSelectColor, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pi4iPmgjOC5iN1RF"))));
-      this.mTextUnselectColor = ta.getColor(styleable.SlidingTabLayout_tl_textUnselectColor, Color.parseColor(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Piw+EWgjOC5iNDw+"))));
+      this.mTextSelectColor = ta.getColor(styleable.SlidingTabLayout_tl_textSelectColor, Color.parseColor("#ffffff"));
+      this.mTextUnselectColor = ta.getColor(styleable.SlidingTabLayout_tl_textUnselectColor, Color.parseColor("#AAffffff"));
       this.mTextBold = ta.getInt(styleable.SlidingTabLayout_tl_textBold, 0);
       this.mTextAllCaps = ta.getBoolean(styleable.SlidingTabLayout_tl_textAllCaps, false);
       this.mTabSpaceEqual = ta.getBoolean(styleable.SlidingTabLayout_tl_tab_space_equal, false);
@@ -161,7 +161,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
          this.mViewPager.addOnPageChangeListener(this);
          this.notifyDataSetChanged();
       } else {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YM2w2IDdiJDAqPxdfKH42Hi9rDiARLRgmJ2E0OCRuHiQ5Iz4ACHgVLDNqIzw5Ji4LL2kwETZnHAYRO185Pw==")));
+         throw new IllegalStateException("ViewPager or ViewPager adapter can not be NULL !");
       }
    }
 
@@ -169,7 +169,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
       if (vp != null && vp.getAdapter() != null) {
          if (titles != null && titles.length != 0) {
             if (titles.length != vp.getAdapter().getCount()) {
-               throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRgYLGoFNANLHlE/Kj06Lmw3TSNvDjA/PQgMJ0sVFituCiA8KC4mJ3gVJCV7Diw/JAMiP2kKIDF+Nx46KQgcLHsJJFo=")));
+               throw new IllegalStateException("Titles length must be the same as the page count !");
             } else {
                this.mViewPager = vp;
                this.mTitles = new ArrayList();
@@ -179,16 +179,16 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
                this.notifyDataSetChanged();
             }
          } else {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRgYLGoFNANLHig7KjkmDm8KAShoNysrJhYIQG4bBSN5AVRF")));
+            throw new IllegalStateException("Titles can not be EMPTY !");
          }
       } else {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YM2w2IDdiJDAqPxdfKH42Hi9rDiARLRgmJ2E0OCRuHiQ5Iz4ACHgVLDNqIzw5Ji4LL2kwETZnHAYRO185Pw==")));
+         throw new IllegalStateException("ViewPager or ViewPager adapter can not be NULL !");
       }
    }
 
    public void setViewPager(ViewPager vp, String[] titles, FragmentActivity fa, ArrayList<Fragment> fragments) {
       if (vp == null) {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YM2w2IDdiJDAqPxcqOW9STSZlJC8rLS4tJGgxLBFkVyMq")));
+         throw new IllegalStateException("ViewPager can not be NULL !");
       } else if (titles != null && titles.length != 0) {
          this.mViewPager = vp;
          this.mViewPager.setAdapter(new InnerPagerAdapter(fa.getSupportFragmentManager(), fragments, titles));
@@ -196,7 +196,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
          this.mViewPager.addOnPageChangeListener(this);
          this.notifyDataSetChanged();
       } else {
-         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRgYLGoFNANLHig7KjkmDm8KAShoNysrJhYIQG4bBSN5AVRF")));
+         throw new IllegalStateException("Titles can not be EMPTY !");
       }
    }
 
@@ -748,16 +748,16 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
 
    protected Parcelable onSaveInstanceState() {
       Bundle bundle = new Bundle();
-      bundle.putParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKWwFJCZ9JDAPLBciLmkjSFo=")), super.onSaveInstanceState());
-      bundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY2I28gFitgNwpLLwcuVg==")), this.mCurrentTab);
+      bundle.putParcelable("instanceState", super.onSaveInstanceState());
+      bundle.putInt("mCurrentTab", this.mCurrentTab);
       return bundle;
    }
 
    protected void onRestoreInstanceState(Parcelable state) {
       if (state instanceof Bundle) {
          Bundle bundle = (Bundle)state;
-         this.mCurrentTab = bundle.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY2I28gFitgNwpLLwcuVg==")));
-         state = bundle.getParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKWwFJCZ9JDAPLBciLmkjSFo=")));
+         this.mCurrentTab = bundle.getInt("mCurrentTab");
+         state = bundle.getParcelable("instanceState");
          if (this.mCurrentTab != 0 && this.mTabsContainer.getChildCount() > 0) {
             this.updateTabSelection(this.mCurrentTab);
             this.scrollToCurrentTab();

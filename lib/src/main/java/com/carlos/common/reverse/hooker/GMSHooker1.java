@@ -12,28 +12,28 @@ public class GMSHooker1 {
    @HookMethod("isGooglePlayServicesAvailable")
    @MethodParams({Context.class})
    public static boolean isGooglePlayServicesAvailable(Context v1) throws Throwable {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+LGgaLAY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2WmozGi1gHjACKhciIWIFGgRvNx4qLhc2HWYwPCxsHiQrKT4fDQ==")));
+      Log.d("vatest", "isGooglePlayServicesAvailable1");
       return true;
    }
 
    @HookMethod("isGooglePlayServicesAvailable")
    @MethodParams({Context.class, int.class})
    public static boolean isGooglePlayServicesAvailable2(Context v1, int v2) throws Throwable {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+LGgaLAY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2WmozGi1gHjACKhciIWIFGgRvNx4qLhc2HWYwPCxsHiQrKT4fCA==")));
+      Log.d("vatest", "isGooglePlayServicesAvailable2");
       return true;
    }
 
    @HookMethod("isPlayServicesPossiblyUpdating")
    @MethodParams({Context.class, int.class})
    public static boolean isGooglePlayServicesUid(Context v1, int v2) throws Throwable {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+LGgaLAY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2AmoFJD9pJDAqLD0cP2kgAkxlJDA6IxgMKGcLLDNuHiQ9Ki4qIQ==")));
+      Log.d("vatest", "isPlayServicesPossiblyUpdating");
       return true;
    }
 
    @HookMethod("isPlayStorePossiblyUpdating")
    @MethodParams({Context.class, int.class})
    public static boolean isPlayStorePossiblyUpdating(Context v1, int v2) throws Throwable {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+LGgaLAY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2AmoFJD9pJwo1Iz0MDG8KAgNqAQodLxUuDmIaPD9vDh4g")));
+      Log.d("vatest", "isPlayStorePossiblyUpdating");
       return true;
    }
 }

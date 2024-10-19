@@ -27,15 +27,15 @@ public class ServiceData {
       }
 
       public ServiceBindData(Intent proxyIntent) {
-         this.info = (ServiceInfo)proxyIntent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcPmozSFo=")));
+         this.info = (ServiceInfo)proxyIntent.getParcelableExtra("info");
          if (this.info != null) {
             this.component = new ComponentName(this.info.packageName, this.info.name);
          }
 
-         this.intent = (Intent)proxyIntent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")));
-         this.flags = proxyIntent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4EP2gwLFo=")), 0);
-         this.userId = proxyIntent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), 0);
-         IBinder connBinder = BundleCompat.getBinder(proxyIntent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGojSFo=")));
+         this.intent = (Intent)proxyIntent.getParcelableExtra("intent");
+         this.flags = proxyIntent.getIntExtra("flags", 0);
+         this.userId = proxyIntent.getIntExtra("user_id", 0);
+         IBinder connBinder = BundleCompat.getBinder(proxyIntent, "conn");
          if (connBinder != null) {
             this.connection = IServiceConnection.Stub.asInterface(connBinder);
          }
@@ -43,12 +43,12 @@ public class ServiceData {
       }
 
       public void saveToIntent(Intent proxyIntent) {
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcPmozSFo=")), this.info);
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")), this.intent);
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4EP2gwLFo=")), this.flags);
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), this.userId);
+         proxyIntent.putExtra("info", this.info);
+         proxyIntent.putExtra("intent", this.intent);
+         proxyIntent.putExtra("flags", this.flags);
+         proxyIntent.putExtra("user_id", this.userId);
          if (this.connection != null) {
-            BundleCompat.putBinder(proxyIntent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGojSFo=")), this.connection.asBinder());
+            BundleCompat.putBinder(proxyIntent, "conn", this.connection.asBinder());
          }
 
       }
@@ -73,9 +73,9 @@ public class ServiceData {
             this.component = ComponentName.unflattenFromString(type);
          }
 
-         this.info = (ServiceInfo)proxyIntent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcPmozSFo=")));
-         this.intent = (Intent)proxyIntent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")));
-         this.userId = proxyIntent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), 0);
+         this.info = (ServiceInfo)proxyIntent.getParcelableExtra("info");
+         this.intent = (Intent)proxyIntent.getParcelableExtra("intent");
+         this.userId = proxyIntent.getIntExtra("user_id", 0);
          if (this.info != null && this.intent != null && this.component != null && this.intent.getComponent() == null) {
             this.intent.setComponent(this.component);
          }
@@ -83,11 +83,11 @@ public class ServiceData {
       }
 
       public void saveToIntent(Intent proxyIntent) {
-         proxyIntent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMB9hJDAqLD0cP2kjSFo=")));
+         proxyIntent.setAction("start_service");
          proxyIntent.setType(this.component.flattenToString());
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcPmozSFo=")), this.info);
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")), this.intent);
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), this.userId);
+         proxyIntent.putExtra("info", this.info);
+         proxyIntent.putExtra("intent", this.intent);
+         proxyIntent.putExtra("user_id", this.userId);
       }
    }
 
@@ -110,17 +110,17 @@ public class ServiceData {
             this.component = ComponentName.unflattenFromString(type);
          }
 
-         this.userId = proxyIntent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), 0);
-         this.startId = proxyIntent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMB9jDgpF")), 0);
-         this.token = BundleCompat.getBinder(proxyIntent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAMWgVBlo=")));
+         this.userId = proxyIntent.getIntExtra("user_id", 0);
+         this.startId = proxyIntent.getIntExtra("start_id", 0);
+         this.token = BundleCompat.getBinder(proxyIntent, "token");
       }
 
       public void saveToIntent(Intent proxyIntent) {
-         proxyIntent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qD28IGgNiASwuKQcqPQ==")));
+         proxyIntent.setAction("stop_service");
          proxyIntent.setType(this.component.flattenToString());
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28mGi9iEVRF")), this.userId);
-         proxyIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMB9jDgpF")), this.startId);
-         BundleCompat.putBinder(proxyIntent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAMWgVBlo=")), this.token);
+         proxyIntent.putExtra("user_id", this.userId);
+         proxyIntent.putExtra("start_id", this.startId);
+         BundleCompat.putBinder(proxyIntent, "token", this.token);
       }
    }
 }

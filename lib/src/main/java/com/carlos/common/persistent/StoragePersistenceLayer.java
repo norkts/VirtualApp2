@@ -8,7 +8,7 @@ public class StoragePersistenceLayer extends PersistenceLayer {
    private StoragePersistenceServices mService;
 
    StoragePersistenceLayer(StoragePersistenceServices service) {
-      super(new File(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OS4cJGVSDSloNzMiKV82CW8jPyVuIx4pLD4HDn4jJClvHho/KANfOA==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAdXDX8JQSlqES89KjoMOW8zLFo="))));
+      super(new File("/data/data/com.carlos.multiapp", "app-config.ini"));
       this.mService = service;
    }
 

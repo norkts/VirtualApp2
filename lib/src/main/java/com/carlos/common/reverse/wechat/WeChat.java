@@ -8,20 +8,20 @@ import de.robv.android.xposed.XposedHelpers;
 
 public class WeChat {
    public static void hook(ClassLoader classLoader, Application application) {
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PlsrJBQNMS0cICQ0Ki1fCX4zAiVlDRo/LhgcJWIKRT98NFEcODpXVg==")));
-      Class<?> logClz = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8jPyZsJywiPC06KH0FFiFsJygcIz4uKWUaLwRiAQYy")), classLoader);
-      Class<?> logImpClz = XposedHelpers.findClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8jPyZsJywiPC06KH0FFiFsJygcIz4uKWUaLwRiAQYyDhVXJm4mBgNqN1RF")), classLoader);
-      XposedHelpers.setStaticIntField(logClz, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxguLmgVHlo=")), 0);
-      Object getLogLevel = XposedHelpers.callStaticMethod(logClz, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFGi1oHjAuKAdbVg==")));
-      XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8jPyZsJywiPC06KH0FFiFsJygcIz4uKWUaLwRiAQYy")), classLoader, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFGi1oHjAuKAdbVg==")), new XC_MethodHook() {
+      HVLog.d(" 开始 hook com.tencent.mm  ");
+      Class<?> logClz = XposedHelpers.findClass("com.tencent.mm.sdk.platformtools.Log", classLoader);
+      Class<?> logImpClz = XposedHelpers.findClass("com.tencent.mm.sdk.platformtools.Log$LogImp", classLoader);
+      XposedHelpers.setStaticIntField(logClz, "level", 0);
+      Object getLogLevel = XposedHelpers.callStaticMethod(logClz, "getLogLevel");
+      XposedHelpers.findAndHookMethod("com.tencent.mm.sdk.platformtools.Log", classLoader, "getLogLevel", new XC_MethodHook() {
          protected void afterHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
             param.setResult(0);
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl86CmozGiFLHig1KgMYLmkjMClrARo/PC4IL04zNC9vIB45KT5bCmszGiZqHiw6Ji1XOnw2QQFpDSwyLQcqQGozPA5iATw/Kl4lOmkFGgZkNyg6KhgECnczSFo=")) + param.getResult());
+            HVLog.d("  hook com.tencent.mm.sdk.platformtools.Log.getLogLevel  getResult:" + param.getResult());
          }
 
          protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
          }
       });
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl86CmozGiFLHig1KgMYLmkjMClrARo/PC4IL0tTOCJuATBAKQgIAmsKOD9qDTxF")) + getLogLevel);
+      HVLog.d("  hook com.tencent.mm  getLogLevel " + getLogLevel);
    }
 }

@@ -26,7 +26,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
    };
    private static final int MAX_IPC_SIZE = 262144;
    private static final int MAX_FIRST_IPC_SIZE = 131072;
-   private static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+KmszNCRiDgoOKQgqLmIFOC9oJyhF"));
+   private static String TAG = "ParceledListSlice";
    private static boolean DEBUG = false;
    private final List<T> mList;
 
@@ -42,7 +42,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
       int N = p.readInt();
       this.mList = new ArrayList(N);
       if (DEBUG) {
-         Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uLG8jAitmNAY2KCkmVg==")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYLGgVEgM=")));
+         Log.d(TAG, "Retrieving " + N + " items");
       }
 
       if (N > 0) {
@@ -59,7 +59,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
 
             this.mList.add(parcelable);
             if (DEBUG) {
-               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gJIC9gNFEzKj0LOn4FSFo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + this.mList.get(this.mList.size() - 1));
+               Log.d(TAG, "Read inline #" + i + ": " + this.mList.get(this.mList.size() - 1));
             }
          }
 
@@ -68,7 +68,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
 
             while(i < N) {
                if (DEBUG) {
-                  Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gFAiZiICQ3Ki4uPX4xTVo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6KmgaMARjDjAuKAgtJQ==")) + retriever);
+                  Log.d(TAG, "Reading more @" + i + " of " + N + ": retriever=" + retriever);
                }
 
                Parcel data = Parcel.obtain();
@@ -79,7 +79,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
                   retriever.transact(1, data, reply, 0);
                } catch (RemoteException var10) {
                   RemoteException e = var10;
-                  Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4+CWoKNARiCiQqKAg2KGwjGj5qARouPQg+CGEwPAZ7ICAeKRgiM3gaFj9rNygwID02I3kVSFo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N, e);
+                  Log.w(TAG, "Failure retrieving array; only received " + i + " of " + N, e);
                   return;
                }
 
@@ -91,7 +91,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
 
                   this.mList.add(parcelable);
                   if (DEBUG) {
-                     Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gJICtnEQoqLwMlPw==")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + this.mList.get(this.mList.size() - 1));
+                     Log.d(TAG, "Read extra #" + i + ": " + this.mList.get(this.mList.size() - 1));
                   }
                }
 
@@ -105,7 +105,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
 
    private static void verifySameType(Class<?> expected, Class<?> actual) {
       if (!actual.equals(expected)) {
-         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4+CHgwMyhmDlksLwguP2kjOyhvHh47Ll86Vg==")) + actual.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYCHsFHi9hJw08Ki09OmUwLAJrDTxF")) + expected.getName());
+         throw new IllegalArgumentException("Can\'t unparcel type " + actual.getName() + " in list of type " + expected.getName());
       }
    }
 
@@ -128,7 +128,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
       final int callFlags = flags;
       dest.writeInt(N);
       if (DEBUG) {
-         Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MCWwFAiZiICRF")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYLGgVEgM=")));
+         Log.d(TAG, "Writing " + N + " items");
       }
 
       if (N > 0) {
@@ -146,7 +146,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
             }
 
             if (DEBUG) {
-               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MD2wFNyhjDlkoKQcYPX43Alo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + this.mList.get(i));
+               Log.d(TAG, "Wrote inline #" + i + ": " + this.mList.get(i));
             }
          }
 
@@ -159,7 +159,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
                   } else {
                      int i = data.readInt();
                      if (VParceledListSlice.DEBUG) {
-                        Log.d(VParceledListSlice.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MCWwFAiZiICQ3Ki4uPX4xTVo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N);
+                        Log.d(VParceledListSlice.TAG, "Writing more @" + i + " of " + N);
                      }
 
                      for(; i < N && reply.dataSize() < 262144; ++i) {
@@ -168,13 +168,13 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
                         VParceledListSlice.verifySameType(listElementClass, parcelable.getClass());
                         reply.writeParcelable(parcelable, callFlags);
                         if (VParceledListSlice.DEBUG) {
-                           Log.d(VParceledListSlice.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MD2wFNyhiARogIz0hOn4FSFo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + VParceledListSlice.this.mList.get(i));
+                           Log.d(VParceledListSlice.TAG, "Wrote extra #" + i + ": " + VParceledListSlice.this.mList.get(i));
                         }
                      }
 
                      if (i < N) {
                         if (VParceledListSlice.DEBUG) {
-                           Log.d(VParceledListSlice.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MM2sVQS9gNDs8JxhSVg==")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N);
+                           Log.d(VParceledListSlice.TAG, "Breaking @" + i + " of " + N);
                         }
 
                         reply.writeInt(0);
@@ -185,7 +185,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
                }
             };
             if (DEBUG) {
-               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MM2sVQS9gNDs8JxhSVg==")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6KmgaMARjDjAuKAgtJQ==")) + retriever);
+               Log.d(TAG, "Breaking @" + i + " of " + N + ": retriever=" + retriever);
             }
 
             dest.writeStrongBinder(retriever);

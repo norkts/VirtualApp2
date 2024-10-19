@@ -34,7 +34,7 @@ public class ServiceConnectionProxy extends IServiceConnection.Stub {
    public static IServiceConnection getDispatcher(Context context, ServiceConnection connection, int flags) {
       IServiceConnection sd = null;
       if (connection == null) {
-         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGojNClmHgY1KjkmMWoJTSZvAQId")));
+         throw new IllegalArgumentException("connection is null");
       } else {
          try {
             Object activityThread = ActivityThread.currentActivityThread.call();
@@ -43,11 +43,11 @@ public class ServiceConnectionProxy extends IServiceConnection.Stub {
             sd = (IServiceConnection)LoadedApk.getServiceDispatcher.call(loadApk, connection, context, handler, flags);
          } catch (Exception var7) {
             Exception e = var7;
-            Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4ACGojNClmHgY1Kjs2PW8zGi1oDiwg")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczNARmNAY5KAU2MWoKTTdvETAZLhcMVg==")), e);
+            Log.e("ConnectionDelegate", "getServiceDispatcher", e);
          }
 
          if (sd == null) {
-            throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4ALHsKLAVhESQ1Iz42PWk3TS9lMzw6Lxc2CmIKQCNpJFkdIz4APG8VSFo=")));
+            throw new RuntimeException("Not supported in system context");
          } else {
             return sd;
          }
@@ -62,7 +62,7 @@ public class ServiceConnectionProxy extends IServiceConnection.Stub {
          connection = (IServiceConnection)LoadedApk.forgetServiceDispatcher.call(loadApk, context, conn);
       } catch (Exception var4) {
          Exception e = var4;
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4ACGojNClmHgY1Kjs2PW8zGi1oDiwg")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4AKmgzNAZpJDAqLD0cP2khBi9sJDwsKgg2LGIFMFo=")), e);
+         Log.e("ConnectionDelegate", "forgetServiceDispatcher", e);
       }
 
       return connection;

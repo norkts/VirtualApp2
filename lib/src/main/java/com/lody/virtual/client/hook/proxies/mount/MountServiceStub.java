@@ -24,11 +24,11 @@ import mirror.android.os.storage.IStorageManager;
 @Inject(MethodProxies.class)
 public class MountServiceStub extends BinderInvocationProxy {
    public MountServiceStub() {
-      super(getInterfaceMethod(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwgAI2ogMFo=")));
+      super(getInterfaceMethod(), "mount");
       IInterface hookedStorageManager = (IInterface)((BinderInvocationStub)this.getInvocationStub()).getProxyInterface();
 
       try {
-         Reflect.on(StorageManager.class).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kis2LGowFjdiJDANLwcYOWkFGgQ=")), hookedStorageManager);
+         Reflect.on(StorageManager.class).set("sStorageManager", hookedStorageManager);
       } catch (Throwable var3) {
          Throwable e = var3;
          e.printStackTrace();
@@ -38,9 +38,9 @@ public class MountServiceStub extends BinderInvocationProxy {
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQFGgZ9DlEQLQg2PWoFSFo="))));
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCljHjAQLQg2PWoFSFo="))));
-      this.addMethodProxy(new StaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCljHjABLAdfLm4hRT9vESg6"))) {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getTotalBytes"));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("getCacheBytes"));
+      this.addMethodProxy(new StaticMethodProxy("getCacheQuotaBytes") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             if (args[args.length - 1] instanceof Integer) {
                args[args.length - 1] = getRealUid();
@@ -49,20 +49,20 @@ public class MountServiceStub extends BinderInvocationProxy {
             return method.invoke(who, args);
          }
       });
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAl5mHiAgIys+DWoYGgNrDgpF"))) {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("queryStatsForUser") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             replaceLastUserId(args);
             return super.call(who, method, args);
          }
       });
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAhVnEQo/Iz0YOW82AgZoDiw6Ji4ACG4FNCBlN1RF"))) {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("queryExternalStatsForUser") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             replaceLastUserId(args);
             return super.call(who, method, args);
          }
       });
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAl5mHiAgIys+DWoYGi9rEVRF"))));
-      this.addMethodProxy(new StaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAl5mHiAgIys+DWoYTTdoJ10sLj4uVg=="))) {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("queryStatsForUid"));
+      this.addMethodProxy(new StaticMethodProxy("queryStatsForPackage") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             int packageNameIndex = ArrayUtils.indexOfFirst(args, String.class);
             int userIdIndex = ArrayUtils.indexOfLast(args, Integer.class);

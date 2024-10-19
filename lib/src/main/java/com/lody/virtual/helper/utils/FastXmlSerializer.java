@@ -15,7 +15,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import org.xmlpull.v1.XmlSerializer;
 
 public class FastXmlSerializer implements XmlSerializer {
-   private static final String[] ESCAPE_TABLE = new String[]{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PT0+I2owMzE=")), null, null, null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PT4+DW8OQVo=")), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PT4ELHkzSFo=")), null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PT4mLHkzSFo=")), null};
+   private static final String[] ESCAPE_TABLE = new String[]{null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "&quot;", null, null, null, "&amp;", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "&lt;", null, "&gt;", null};
    private static final int BUFFER_LEN = 8192;
    private static String sSpace = "                                                              ";
    private final char[] mText = new char[8192];
@@ -159,7 +159,7 @@ public class FastXmlSerializer implements XmlSerializer {
       }
 
       this.append(name);
-      this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwQMVg==")));
+      this.append("=\"");
       this.escapeAndAppendString(value);
       this.append('"');
       this.mLineStart = false;
@@ -185,20 +185,20 @@ public class FastXmlSerializer implements XmlSerializer {
    public XmlSerializer endTag(String namespace, String name) throws IOException, IllegalArgumentException, IllegalStateException {
       --this.mNesting;
       if (this.mInTag) {
-         this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl8fJksjSFo=")));
+         this.append(" />\n");
       } else {
          if (this.mIndent && this.mLineStart) {
             this.appendIndent(this.mNesting);
          }
 
-         this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("P18AVg==")));
+         this.append("</");
          if (namespace != null) {
             this.append(namespace);
             this.append(':');
          }
 
          this.append(name);
-         this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PzhXVg==")));
+         this.append(">\n");
       }
 
       this.mLineStart = true;
@@ -283,7 +283,7 @@ public class FastXmlSerializer implements XmlSerializer {
    }
 
    public void setFeature(String name, boolean state) throws IllegalArgumentException, IllegalStateException {
-      if (name.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8OTCVOJxo3KhgmLW8zOyZlJAouPD0hDU4gFippIFkvLy5bCm8KFj9vMxo/IBdbO3kgBgJpNwY5KV8ID2waMAJmAQpF")))) {
+      if (name.equals("http://xmlpull.org/v1/doc/features.html#indent-output")) {
          this.mIndent = true;
       } else {
          throw new UnsupportedOperationException();
@@ -321,13 +321,13 @@ public class FastXmlSerializer implements XmlSerializer {
    }
 
    public void startDocument(String encoding, Boolean standalone) throws IOException, IllegalArgumentException, IllegalStateException {
-      this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("P14AIGoVGShmNDAqIy0cDW9TPy18DR07Pjo6J2AwNCpuHhodLwMlIW8KMDJ6V1gyDRguM2kKAjJuJyQ6Iz4tO3gzSFo=")) + (standalone ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAguKQ==")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4AVg=="))) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PSo5JX4lTVo=")));
+      this.append("<?xml version=\'1.0\' encoding=\'utf-8\' standalone=\'" + (standalone ? "yes" : "no") + "\' ?>\n");
       this.mLineStart = true;
    }
 
    public XmlSerializer startTag(String namespace, String name) throws IOException, IllegalArgumentException, IllegalStateException {
       if (this.mInTag) {
-         this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PzhXVg==")));
+         this.append(">\n");
       }
 
       if (this.mIndent) {
@@ -349,7 +349,7 @@ public class FastXmlSerializer implements XmlSerializer {
 
    public XmlSerializer text(char[] buf, int start, int len) throws IOException, IllegalArgumentException, IllegalStateException {
       if (this.mInTag) {
-         this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pz5SVg==")));
+         this.append(">");
          this.mInTag = false;
       }
 
@@ -363,7 +363,7 @@ public class FastXmlSerializer implements XmlSerializer {
 
    public XmlSerializer text(String text) throws IOException, IllegalArgumentException, IllegalStateException {
       if (this.mInTag) {
-         this.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pz5SVg==")));
+         this.append(">");
          this.mInTag = false;
       }
 

@@ -26,7 +26,7 @@ public class VNotificationManager {
    }
 
    private Object getRemoteInterface() {
-      return INotificationManager.Stub.asInterface(ServiceManagerNative.getService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOC99JCAgKQdfDg=="))));
+      return INotificationManager.Stub.asInterface(ServiceManagerNative.getService("notification"));
    }
 
    private VNotificationManager() {

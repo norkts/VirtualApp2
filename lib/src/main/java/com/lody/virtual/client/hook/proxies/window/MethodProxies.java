@@ -21,13 +21,13 @@ class MethodProxies {
 
    static class SetAppStartingWindow extends BasePatchSession {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMaIAJpJwo7Iz42MW8VElJqARovLD0mVg=="));
+         return "setAppStartingWindow";
       }
    }
 
    static class OverridePendingAppTransitionInPlace extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0iM28gFi9iHjACKAcYPmwjMC1gDjw7IgcMO2AzNCxqHhoeKRY2KmQVHjNrNyhF"));
+         return "overridePendingAppTransitionInPlace";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -41,7 +41,7 @@ class MethodProxies {
 
    static class OverridePendingAppTransition extends BasePatchSession {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0iM28gFi9iHjACKAcYPmwjMC1gDjw7IgcMO2AzNCxqHhoeKRhSVg=="));
+         return "overridePendingAppTransition";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -55,7 +55,7 @@ class MethodProxies {
 
    static class OpenSession extends BasePatchSession {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy06M2omLCthJygzKi0YVg=="));
+         return "openSession";
       }
    }
 }

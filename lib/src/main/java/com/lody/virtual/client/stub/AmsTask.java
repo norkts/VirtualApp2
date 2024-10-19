@@ -30,7 +30,7 @@ public abstract class AmsTask extends FutureTask<Bundle> implements AccountManag
    public AmsTask(Activity activity, Handler handler, AccountManagerCallback<Bundle> callback) {
       super(new Callable<Bundle>() {
          public Bundle call() throws Exception {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRhfCW83IANjHh4vKhc1Om8VGj5rDg0rLS4tJH0gPDdsHgot")));
+            throw new IllegalStateException("this should never be called");
          }
       });
       this.mHandler = handler;
@@ -52,7 +52,7 @@ public abstract class AmsTask extends FutureTask<Bundle> implements AccountManag
 
    protected void set(Bundle bundle) {
       if (bundle == null) {
-         VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jgg2OWowNCZmHF07Kj0iM2kgRVo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRhfM3sFFgVgNAooKAMmD2UgAgZ4ERocKgQ6JmIOOClqDl0bMl8ADw==")), new Exception());
+         VLog.e("AccountManager", "the bundle must not be null\n%s", new Exception());
       }
 
       super.set(bundle);
@@ -147,10 +147,10 @@ public abstract class AmsTask extends FutureTask<Bundle> implements AccountManag
       }
 
       public void onResult(Bundle bundle) {
-         Intent intent = (Intent)bundle.getParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")));
+         Intent intent = (Intent)bundle.getParcelable("intent");
          if (intent != null && AmsTask.this.mActivity != null) {
             AmsTask.this.mActivity.startActivity(intent);
-         } else if (bundle.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uLG8gAlo=")))) {
+         } else if (bundle.getBoolean("retry")) {
             try {
                AmsTask.this.doWork();
             } catch (RemoteException var4) {

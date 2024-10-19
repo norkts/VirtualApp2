@@ -45,7 +45,7 @@ class NotificationCompatCompatV14 extends NotificationCompat {
          if (this.isSystemLayout(notification.tickerView)) {
             this.getNotificationFixer().fixRemoteViewActions(appContext, false, notification.tickerView);
          } else {
-            notification.tickerView = this.getRemoteViewsFixer().makeRemoteViews(id + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD0qCWszQSthNTwzKAg6Vg==")), appContext, notification.tickerView, false, false);
+            notification.tickerView = this.getRemoteViewsFixer().makeRemoteViews(id + ":tickerView", appContext, notification.tickerView, false, false);
          }
       }
 
@@ -55,7 +55,7 @@ class NotificationCompatCompatV14 extends NotificationCompat {
             hasIconBitmap = this.getNotificationFixer().fixRemoteViewActions(appContext, false, notification.contentView);
             this.getNotificationFixer().fixIconImage(appContext.getResources(), notification.contentView, hasIconBitmap, notification);
          } else {
-            notification.contentView = this.getRemoteViewsFixer().makeRemoteViews(id + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD42D2ogMCtgNwpJKQcMIw==")), appContext, notification.contentView, false, true);
+            notification.contentView = this.getRemoteViewsFixer().makeRemoteViews(id + ":contentView", appContext, notification.contentView, false, true);
          }
       }
 
@@ -63,7 +63,7 @@ class NotificationCompatCompatV14 extends NotificationCompat {
          if (this.isSystemLayout(notification.bigContentView)) {
             this.getNotificationFixer().fixRemoteViewActions(appContext, false, notification.bigContentView);
          } else {
-            notification.bigContentView = this.getRemoteViewsFixer().makeRemoteViews(id + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD4MCWgxLCVgNwo/Kj42BmwjGj0=")), appContext, notification.bigContentView, true, true);
+            notification.bigContentView = this.getRemoteViewsFixer().makeRemoteViews(id + ":bigContentView", appContext, notification.bigContentView, true, true);
          }
       }
 
@@ -72,7 +72,7 @@ class NotificationCompatCompatV14 extends NotificationCompat {
             hasIconBitmap = this.getNotificationFixer().fixRemoteViewActions(appContext, false, notification.headsUpContentView);
             this.getNotificationFixer().fixIconImage(appContext.getResources(), notification.contentView, hasIconBitmap, notification);
          } else {
-            notification.headsUpContentView = this.getRemoteViewsFixer().makeRemoteViews(id + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5fM2sVMANuASQfKi0YLmkjMAZnNx4gKj5SVg==")), appContext, notification.headsUpContentView, false, false);
+            notification.headsUpContentView = this.getRemoteViewsFixer().makeRemoteViews(id + ":headsUpContentView", appContext, notification.headsUpContentView, false, false);
          }
       }
 

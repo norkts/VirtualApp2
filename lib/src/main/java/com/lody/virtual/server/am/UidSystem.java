@@ -53,7 +53,7 @@ public class UidSystem {
       IOException e;
       if (uidFile.exists()) {
          if (bakUidFile.exists() && !bakUidFile.delete()) {
-            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS4+KmojAiZiIwU8JAcYOW4VOCt4HiwcPQgqJ2AaLD9uCiA9Kj4fJGsKRSRlHgo0JF4iLW8KQTF+MyM8Djo6Vg==")) + bakUidFile.getPath());
+            VLog.w(TAG, "Warning: Unable to delete the expired file --\n " + bakUidFile.getPath());
          }
 
          try {

@@ -23,8 +23,8 @@ public class AlertDialogHooker {
          SandHook.callOriginByBackup(setMessageBackup, thiz, msg);
       } else {
          if (msg != null) {
-            Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JggEM28gMBZjDiAoKi06X28FNCFrDgpF")), msg.toString());
-            if (msg.toString().contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByE/DUMRHz0=")))) {
+            Log.d("AlertDialogHooker", msg.toString());
+            if (msg.toString().contains("維護")) {
                thiz.cancel();
             }
          }

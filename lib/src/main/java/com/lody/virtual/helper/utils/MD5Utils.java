@@ -34,7 +34,7 @@ public class MD5Utils {
 
       Object var4;
       try {
-         SHA = MessageDigest.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IixfEXpTJFo=")));
+         SHA = MessageDigest.getInstance("SHA-1");
          byte[] buffer = new byte[1024];
 
          int numRead;
@@ -102,7 +102,7 @@ public class MD5Utils {
 
    static {
       try {
-         MESSAGE_DIGEST_5 = MessageDigest.getInstance(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYpIw==")));
+         MESSAGE_DIGEST_5 = MessageDigest.getInstance("MD5");
       } catch (NoSuchAlgorithmException var1) {
          NoSuchAlgorithmException e = var1;
          e.printStackTrace();

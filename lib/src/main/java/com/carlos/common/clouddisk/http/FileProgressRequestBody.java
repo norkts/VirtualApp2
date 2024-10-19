@@ -24,7 +24,7 @@ public class FileProgressRequestBody extends RequestBody {
       this.listener = listener;
       this.fileLength = this.contentLength();
       this.segmentSize = 2048;
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OSleJw==")), this.fileLength + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + this.segmentSize);
+      Log.d("789", this.fileLength + ":" + this.segmentSize);
    }
 
    protected FileProgressRequestBody() {

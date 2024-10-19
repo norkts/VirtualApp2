@@ -30,11 +30,11 @@ public class LibCoreStub extends MethodInvocationProxy<MethodInvocationStub<Obje
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fD2wzBlo=")), 1));
-      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT42CmowPCY=")), 1));
-      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLG8KPAVjDgpF")), 0));
-      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg2CmowPCY=")), 1));
-      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGwVAiw=")), 0));
+      this.addMethodProxy(new ReplaceUidMethodProxy("chown", 1));
+      this.addMethodProxy(new ReplaceUidMethodProxy("fchown", 1));
+      this.addMethodProxy(new ReplaceUidMethodProxy("getpwuid", 0));
+      this.addMethodProxy(new ReplaceUidMethodProxy("lchown", 1));
+      this.addMethodProxy(new ReplaceUidMethodProxy("setuid", 0));
    }
 
    public void inject() {
@@ -58,7 +58,7 @@ public class LibCoreStub extends MethodInvocationProxy<MethodInvocationStub<Obje
       }
 
       public boolean beforeCall(Object who, Method method, Object... args) {
-         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhUMM28FHjd9JDBKKQc2UmkgBiBlJywRKS4APGcOOChuATAhKQgbPnhSIFo=")) + method.getName());
+         VLog.d("HV-", " ReplaceUidMethodProxy method:  " + method.getName());
          int uid = (Integer)args[this.index];
          if (uid == getVUid() || uid == getBaseVUid()) {
             args[this.index] = getRealUid();

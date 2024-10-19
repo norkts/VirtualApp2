@@ -14,7 +14,7 @@ public class AtomicFile {
 
    public AtomicFile(File baseName) {
       this.mBaseName = baseName;
-      this.mBackupName = new File(baseName.getPath() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4MP2UzSFo=")));
+      this.mBackupName = new File(baseName.getPath() + ".bak");
    }
 
    public File getBaseFile() {
@@ -30,7 +30,7 @@ public class AtomicFile {
       if (this.mBaseName.exists()) {
          if (!this.mBackupName.exists()) {
             if (!this.mBaseName.renameTo(this.mBackupName)) {
-               Log.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgcqD2oVAilqNAYoKAhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08Iz0MDm4jPCt4ESQaLAgtJA==")) + this.mBaseName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcqD3sFFjd9JA4vI14mPGwjOCt4EVRF")) + this.mBackupName);
+               Log.w("AtomicFile", "Couldn\'t rename file " + this.mBaseName + " to backup file " + this.mBackupName);
             }
          } else {
             this.mBaseName.delete();
@@ -44,13 +44,13 @@ public class AtomicFile {
       } catch (FileNotFoundException var6) {
          File parent = this.mBaseName.getParentFile();
          if (!parent.mkdir()) {
-            throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08Ly4uPW4gBit4ESwaKS4uJWYaAjVrCiBF")) + this.mBaseName);
+            throw new IOException("Couldn\'t create directory " + this.mBaseName);
          }
 
          try {
             str = new FileOutputStream(this.mBaseName);
          } catch (FileNotFoundException var5) {
-            throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08Ly4uPW4gBit4EVRF")) + this.mBaseName);
+            throw new IOException("Couldn\'t create " + this.mBaseName);
          }
       }
 
@@ -66,7 +66,7 @@ public class AtomicFile {
             this.mBackupName.delete();
          } catch (IOException var3) {
             IOException e = var3;
-            Log.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgcqD2oVAilqNAYoKAhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YCGUaLCBuJywzLBcLIH4xEiVvVjwgLwg2J2EVFixsJBEz")), e);
+            Log.w("AtomicFile", "finishWrite: Got exception:", e);
          }
       }
 
@@ -82,7 +82,7 @@ public class AtomicFile {
             this.mBackupName.renameTo(this.mBaseName);
          } catch (IOException var3) {
             IOException e = var3;
-            Log.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgcqD2oVAilqNAYoKAhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoIPARjAQo/PTkmWG8KAShrDlkqLhc6CmMKAil7N1RF")), e);
+            Log.w("AtomicFile", "failWrite: Got exception:", e);
          }
       }
 
@@ -133,7 +133,7 @@ public class AtomicFile {
          fos.getFD().sync();
          fos.close();
       } catch (FileNotFoundException var2) {
-         throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08LwgmKmkjMCx4EVRF")) + this.mBaseName);
+         throw new IOException("Couldn\'t append " + this.mBaseName);
       } catch (IOException var3) {
       }
 
@@ -145,7 +145,7 @@ public class AtomicFile {
       try {
          return new FileOutputStream(this.mBaseName, true);
       } catch (FileNotFoundException var2) {
-         throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08LwgmKmkjMCx4EVRF")) + this.mBaseName);
+         throw new IOException("Couldn\'t append " + this.mBaseName);
       }
    }
 

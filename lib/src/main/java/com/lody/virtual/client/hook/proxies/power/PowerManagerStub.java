@@ -14,13 +14,13 @@ import mirror.android.os.IPowerManager;
 
 public class PowerManagerStub extends BinderInvocationProxy {
    public PowerManagerStub() {
-      super(IPowerManager.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgALWgaFlo=")));
+      super(IPowerManager.Stub.asInterface, "power");
    }
 
    protected void onBindMethods() {
       super.onBindMethods();
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4+MWgYNAI="))));
-      this.addMethodProxy(new ReplaceSequencePkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2L2wVAgRiDzg7KS0MU28FAiE=")), 2) {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("wakeUp"));
+      this.addMethodProxy(new ReplaceSequencePkgMethodProxy("acquireWakeLock", 2) {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             PowerManagerStub.this.replaceWorkSource(args);
 
@@ -32,7 +32,7 @@ public class PowerManagerStub extends BinderInvocationProxy {
             }
          }
       });
-      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2L2wVAgRiDzg7KS0MU28FAiFnJx4/IwUuI2IVSFo="))) {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy("acquireWakeLockWithUid") {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             PowerManagerStub.this.replaceWorkSource(args);
 
@@ -44,14 +44,14 @@ public class PowerManagerStub extends BinderInvocationProxy {
             }
          }
       });
-      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtuJCAxKAVbDW4FJFJlJAoiIT4ACWEwNCA=")), 0) {
+      this.addMethodProxy(new ResultStaticMethodProxy("updateWakeLockWorkSource", 0) {
          public Object call(Object who, Method method, Object... args) throws Throwable {
             PowerManagerStub.this.replaceWorkSource(args);
             return super.call(who, method, args);
          }
       });
-      if (Build.MANUFACTURER.equalsIgnoreCase(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTsuX30YMF5uAVRF")))) {
-         this.addMethodProxy(new StaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2L2wVAgRiDzg7KS0MU28FAiFnJx4/IwYEKWIgJCxsNDxF"))) {
+      if (Build.MANUFACTURER.equalsIgnoreCase("FUJITSU")) {
+         this.addMethodProxy(new StaticMethodProxy("acquireWakeLockWithLogging") {
             public Object call(Object who, Method method, Object... args) throws Throwable {
                if (args[3] instanceof String && this.isAppPkg((String)args[3])) {
                   args[3] = getHostPkg();

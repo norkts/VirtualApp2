@@ -68,10 +68,10 @@ public class NewStatusBarUtil {
          Class clazz = window.getClass();
 
          try {
-            Class layoutParams = Class.forName(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kuKQcMI38bPC9vAR4UIxgcIGAjJBJpDh4qLwgACHsbHjNpEQYaIBYiKGUwOANqAVRF")));
-            Field field = layoutParams.getField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQVfBmchJB9qMlERICxfAX0xQVFnDDAMJSw+U2wmFg59MgIOISwuGmMFSFo=")));
+            Class layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
+            Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
             int darkModeFlag = field.getInt(layoutParams);
-            Method extraFlagField = clazz.getMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAaRQZhNCAUKhciM2oFSFo=")), Integer.TYPE, Integer.TYPE);
+            Method extraFlagField = clazz.getMethod("setExtraFlags", Integer.TYPE, Integer.TYPE);
             if (dark) {
                extraFlagField.invoke(window, darkModeFlag, darkModeFlag);
             } else {
@@ -91,8 +91,8 @@ public class NewStatusBarUtil {
       if (window != null) {
          try {
             WindowManager.LayoutParams lp = window.getAttributes();
-            Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYuXGEmNB9qMlERICxfW2YmRQthIjAVJRUqXGkhAg9hDygOIiwYA30zSFo=")));
-            Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwguCWkgNAhgHiA9Iy5SVg==")));
+            Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
+            Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField("meizuFlags");
             darkFlag.setAccessible(true);
             meizuFlags.setAccessible(true);
             int bit = darkFlag.getInt((Object)null);

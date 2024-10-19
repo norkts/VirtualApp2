@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class BitmapLoadUtils {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4YLGoVJAJoHh47KBYMLmwjOAM="));
+   private static final String TAG = "BitmapLoadUtils";
 
    public static void decodeBitmapInBackground(@NonNull Context context, @NonNull Uri uri, @Nullable Uri outputUri, int requiredWidth, int requiredHeight, BitmapLoadCallback loadCallback) {
       (new BitmapLoadTask(context, uri, outputUri, requiredWidth, requiredHeight, loadCallback)).execute(new Void[0]);
@@ -34,7 +34,7 @@ public class BitmapLoadUtils {
          }
       } catch (OutOfMemoryError var3) {
          OutOfMemoryError error = var3;
-         Log.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMP2ogLC5gJyw3Jz0cLm8jQQJ+MzxF")), error);
+         Log.e(TAG, "transformBitmap: ", error);
       }
 
       return bitmap;
@@ -66,7 +66,7 @@ public class BitmapLoadUtils {
          close(stream);
       } catch (IOException var4) {
          IOException e = var4;
-         Log.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAaRS9iMh4qKQcMDmUzQQZqAQYbPyo6Vg==")) + imageUri.toString(), e);
+         Log.e(TAG, "getExifOrientation: " + imageUri.toString(), e);
       }
 
       return orientation;
@@ -113,7 +113,7 @@ public class BitmapLoadUtils {
    }
 
    public static int calculateMaxBitmapSize(@NonNull Context context) {
-      WindowManager wm = (WindowManager)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YCGgFGj0=")));
+      WindowManager wm = (WindowManager)context.getSystemService("window");
       Point size = new Point();
       if (wm != null) {
          Display display = wm.getDefaultDisplay();
@@ -134,7 +134,7 @@ public class BitmapLoadUtils {
          maxBitmapSize = Math.min(maxBitmapSize, maxTextureSize);
       }
 
-      Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+IGMjAgZgDiAsOy0cIGkkIyg=")) + maxBitmapSize);
+      Log.d(TAG, "maxBitmapSize: " + maxBitmapSize);
       return maxBitmapSize;
    }
 

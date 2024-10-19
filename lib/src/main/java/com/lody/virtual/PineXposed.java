@@ -50,15 +50,15 @@ public class PineXposed {
          }
       });
       SandHook.disableVMInline();
-      XposedCompat.cacheDir = new File(VirtualCore.get().getContext().getCacheDir(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+CGgFRSVgJA5ALy0iP2wzGh9rJygbLhcMO2AVSFo=")));
+      XposedCompat.cacheDir = new File(VirtualCore.get().getContext().getCacheDir(), "sandhook_cache_general");
    }
 
    public static void fixPendingIntentFlags(Context context) {
       if (BuildCompat.isS()) {
-         XposedHelpers.findAndHookMethod(PendingIntent.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLAZjATwzLBgcE2oIGgNrDgpF")), Context.class, Integer.TYPE, Intent.class, Integer.TYPE, Bundle.class, UserHandle.class, PendingIntentFlagsHook);
-         XposedHelpers.findAndHookMethod(PendingIntent.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLAZjATwzLBccPWoLQQNnDjAgKS5SVg==")), Context.class, Integer.TYPE, Intent[].class, Integer.TYPE, Bundle.class, UserHandle.class, PendingIntentFlagsHook);
-         XposedHelpers.findAndHookMethod(PendingIntent.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMgFiV9Dgo5LwgqLmYgAlBsJyg5")), Context.class, Integer.TYPE, Intent.class, Integer.TYPE, UserHandle.class, PendingIntentFlagsHook);
-         XposedHelpers.findAndHookMethod(PendingIntent.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAjGgRiDjgqKi4MDmk2AitsNCQaLT4uVg==")), Context.class, Integer.TYPE, Intent.class, Integer.TYPE, PendingIntentFlagsHook);
+         XposedHelpers.findAndHookMethod(PendingIntent.class, "getActivityAsUser", Context.class, Integer.TYPE, Intent.class, Integer.TYPE, Bundle.class, UserHandle.class, PendingIntentFlagsHook);
+         XposedHelpers.findAndHookMethod(PendingIntent.class, "getActivitiesAsUser", Context.class, Integer.TYPE, Intent[].class, Integer.TYPE, Bundle.class, UserHandle.class, PendingIntentFlagsHook);
+         XposedHelpers.findAndHookMethod(PendingIntent.class, "getBroadcastAsUser", Context.class, Integer.TYPE, Intent.class, Integer.TYPE, UserHandle.class, PendingIntentFlagsHook);
+         XposedHelpers.findAndHookMethod(PendingIntent.class, "getForegroundService", Context.class, Integer.TYPE, Intent.class, Integer.TYPE, PendingIntentFlagsHook);
       }
 
    }
@@ -68,7 +68,7 @@ public class PineXposed {
       fixPendingIntentFlags(context);
       if (BuildCompat.isS()) {
          try {
-            XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k5Ki0YLmkjMAZ1NTg/KgcMI30zLD9vDlkdJAguCWwzLD8=")), context.getClassLoader(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQRN9DlEoKQcYM30jLCw=")), new XC_MethodReplacement() {
+            XposedHelpers.findAndHookMethod("android.content.AttributionSource", context.getClassLoader(), "checkCallingUid", new XC_MethodReplacement() {
                protected Object replaceHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                   return true;
                }
@@ -78,7 +78,7 @@ public class PineXposed {
       }
 
       try {
-         XposedBridge.hookAllMethods(MediaRecorder.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4+LGUaOCtsJyg/LBgMKg==")), new XC_MethodHook() {
+         XposedBridge.hookAllMethods(MediaRecorder.class, "native_setup", new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
                MethodParameterUtils.replaceFirstAppPkg(param.args);
@@ -86,11 +86,11 @@ public class PineXposed {
          });
       } catch (Throwable var4) {
          Throwable throwable = var4;
-         VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw+Vg==")), throwable);
+         VLog.e("VA", throwable);
       }
 
       try {
-         XposedHelpers.findAndHookMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kuKQcMI38YEi9lNywcKjwIO2AwPCJuAShLKT4uJmgFHlo=")), context.getClassLoader(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGQjAitmJ1RF")), View.class, ViewGroup.LayoutParams.class, Display.class, Window.class, Integer.TYPE, new XC_MethodHook() {
+         XposedHelpers.findAndHookMethod("android.view.WindowManagerGlobal", context.getClassLoader(), "addView", View.class, ViewGroup.LayoutParams.class, Display.class, Window.class, Integer.TYPE, new XC_MethodHook() {
             protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                super.beforeHookedMethod(param);
                param.args[4] = VUserHandle.realUserId();

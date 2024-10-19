@@ -82,16 +82,16 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
       }
 
       if (this.isCheckLog()) {
-         this.tsp_virtualbox = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgHiw1LRhSVg==")));
-         this.tsp_dingtalk = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgYCGgwMDdgHg5F")));
-         this.tsp_dingtalkPic = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgYCGgwMDdgHg4CKQcqVg==")));
-         this.tsp_mockphone = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwgAOWUwICBgJFk/")));
-         this.tsp_mockwifi = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwgAOWUwPC9iNAZF")));
-         this.tsp_virtuallocation = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgHlE1Ly0iLmwjNCY=")));
-         this.tsp_hookXposed = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBgAD2U2RQJgJyg/KBhSVg==")));
-         this.tsp_backupRecovery = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4+OWUwNAJpNDA5Ki4+PWoaLFo=")));
-         this.channelLimit = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHFEzKgccLg==")));
-         this.channelStatus = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fP2ojBitgHyggLwg2LWoFSFo=")));
+         this.tsp_virtualbox = this.getPersistentValueToInt("virtualbox");
+         this.tsp_dingtalk = this.getPersistentValueToInt("dingtalk");
+         this.tsp_dingtalkPic = this.getPersistentValueToInt("dingtalkPic");
+         this.tsp_mockphone = this.getPersistentValueToInt("mockphone");
+         this.tsp_mockwifi = this.getPersistentValueToInt("mockwifi");
+         this.tsp_virtuallocation = this.getPersistentValueToInt("virtuallocation");
+         this.tsp_hookXposed = this.getPersistentValueToInt("hookXposed");
+         this.tsp_backupRecovery = this.getPersistentValueToInt("backupRecovery");
+         this.channelLimit = this.getPersistentValueToInt("channelLimit");
+         this.channelStatus = this.getPersistentValueToInt("channelStatus");
       }
 
       this.checkUpgrade();
@@ -101,19 +101,19 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
       DeviceInfo deviceInfo = DeviceInfo.getInstance(this);
       int versionCode = deviceInfo.getVersionCode();
       deviceInfo.getVersionName(this);
-      int upgradeEnforce = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PW8jJCxiDDA2KD1fKG4FGlo=")));
-      int upgradeVersion = this.getPersistentValueToInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PW8jJCxiDzw/Iz4qMW8FMFo=")));
+      int upgradeEnforce = this.getPersistentValueToInt("upgradeEnforce");
+      int upgradeVersion = this.getPersistentValueToInt("upgradeVersion");
       String fileName = this.getVPersistent().getBuildConfig(VPersistent.fileName);
       VPersistent persistent = this.getVPersistent();
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4uKm8zAiVgMig1KBcLIA==")) + versionCode + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsKNAJiJyw7KBcMBmkgRQNqAQYbPy5SVg==")) + upgradeVersion);
+      HVLog.d("versionCode:" + versionCode + "    upgradeVersion:" + upgradeVersion);
       if (versionCode < upgradeVersion) {
-         String appConfigMd5 = persistent.getBuildConfig(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgbEixMAVRF")));
-         String localApk = this.getFilesDir().getAbsolutePath() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MywqD2wzBiRgJCAwOi5SVg==")) + fileName;
+         String appConfigMd5 = persistent.getBuildConfig("fileMd5");
+         String localApk = this.getFilesDir().getAbsolutePath() + "/Download/" + fileName;
          File apkFile = new File(localApk);
          String fileMD5Sync = MD5Utils.fileMD5Sync(apkFile);
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgbEhZMDygZKj0pIA==")) + fileMD5Sync + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFJAJjIjwzKhcLIA==")) + apkFile.exists() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OGoFGil9DlERIxcDIA==")) + localApk + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFJAJhHCg1Kj0+MWkLPCx/ClFF")) + appConfigMd5);
+         HVLog.d("fileMD5Sync:" + fileMD5Sync + "    apkFile:" + apkFile.exists() + "   localApk:" + localApk + "    appConfigMd5:" + appConfigMd5);
          if (fileMD5Sync.equals(appConfigMd5)) {
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bwk/WkYWQj5YXh8XA1dAJUdJE0xBE0YM")));
+            HVLog.d("文件下载成功");
             this.installApkWindow(localApk);
             return true;
          }
@@ -129,7 +129,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
       Dialog dialog = builder.show();
       ((Dialog)dialog).setCanceledOnTouchOutside(false);
       TextView textView = (TextView)view1.findViewById(id.tips_content);
-      textView.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwkBXEYyJQJYNhsKAgpYCEdNIQZBADk7BgsBAllbDzJEAwc9AUABDkERA1BDFQsK")));
+      textView.setText("有新版本更新，请更新安装");
       ((Dialog)dialog).setCancelable(false);
       view1.findViewById(id.double_btn_layout).setVisibility(0);
       view1.findViewById(id.btn_cancel).setOnClickListener((v2) -> {
@@ -219,7 +219,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
    public void finish() {
       View view = this.getCurrentFocus();
       if (view != null) {
-         InputMethodManager manager = (InputMethodManager)this.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKGwaMB9gDjAgKRdfPg==")));
+         InputMethodManager manager = (InputMethodManager)this.getSystemService("input_method");
          if (manager != null) {
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
          }
@@ -243,9 +243,9 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
    public String getSavePath() {
       String path;
       if (VERSION.SDK_INT > 29) {
-         path = this.getExternalFilesDir((String)null).getAbsolutePath() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg=="));
+         path = this.getExternalFilesDir((String)null).getAbsolutePath() + "/";
       } else {
-         path = Environment.getExternalStorageDirectory().getPath() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg=="));
+         path = Environment.getExternalStorageDirectory().getPath() + "/";
       }
 
       return path;
@@ -262,7 +262,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
          if (!TextUtils.isEmpty(versionsNumber)) {
             int versionNumber = Integer.parseInt(versionsNumber);
             int versionCode = DeviceInfo.getInstance(this).getVersionCode(this);
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2BW8FPAR9Dgo/Pxg+PWoaAi9lJxo6JC0uL30wLDV7N1RF")) + versionsNumber + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsNJR4VUwtXWFo3Xhk7Gx4eUi1BHDYdOFUzSFo=")) + versionCode);
+            HVLog.d("isUpgrade versionsNumber:" + versionsNumber + "    本地版本号：" + versionCode);
             if (versionCode < versionNumber) {
                this.downloadVersion();
                return true;
@@ -287,21 +287,21 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
       if (softVersions != null) {
          String updateUrl = softVersions.getUpdateUrl();
          DownloadManager downloadManager = DownloadManager.getInstance();
-         downloadManager.add(this, updateUrl, this.getDataDir().getAbsolutePath(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KA==")) + softVersions.getNumber() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4+KGUzSFo=")), new DownloadListner() {
+         downloadManager.add(this, updateUrl, this.getDataDir().getAbsolutePath(), "app" + softVersions.getNumber() + ".apk", new DownloadListner() {
             public void onFinished() {
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgACGAjAiZjASg0KAc1Og==")));
+               HVLog.d(" onFinished ");
             }
 
             public void onProgress(float progress) {
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMD2gwFithJysi")) + progress);
+               HVLog.d("progress:" + progress);
             }
 
             public void onPause() {
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByAVXUYyGyRLUwsNXSU3IFcNBxEaUjkeWio6KWAxOCRqASwuPhhSVg==")));
+               HVLog.d("版本 升级停止 onPause:");
             }
 
             public void onCancel() {
-               HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByAVXUYyGyRLUwsNXSU3IFcNBxEaUjkeWio6KWA2NCRsNCwuKTk6Vg==")));
+               HVLog.d("版本 升级停止 onCancel:");
             }
          });
          downloadManager.downloadSingle(updateUrl);
@@ -311,9 +311,9 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
 
    public boolean isNetwork() {
       try {
-         URL url = new URL(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8KLzJOIB4tLC45Dm4VQS9rHisbLT4ALw==")));
+         URL url = new URL("https://www.baidu.com");
          InputStream stream = url.openStream();
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2U2gaMD1gJywx")));
+         HVLog.d("isNetwork");
          return true;
       } catch (MalformedURLException var3) {
          MalformedURLException e = var3;
@@ -328,17 +328,17 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
 
    protected void install(File file) {
       try {
-         Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xIBZmDzxF")));
+         Intent intent = new Intent("android.intent.action.VIEW");
          intent.addFlags(268435456);
          intent.addFlags(1);
          Uri uri;
          if (VERSION.SDK_INT >= 24) {
-            String authority = this.getPackageName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06KmowOC9iHjAq"));
-            uri = FileProvider.getUriForFile(this, this.getPackageName().concat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06KmowOC9iHjAq"))), file);
-            intent.setDataAndType(uri, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGoFAil9AQozKi0XDWUVMCx1NzgbLgcMKWMKESllHiQsKghbIWsJEjNvJzA/JQg6LA==")));
+            String authority = this.getPackageName() + ".provider";
+            uri = FileProvider.getUriForFile(this, this.getPackageName().concat(".provider"), file);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
          } else {
             uri = Uri.fromFile(file);
-            intent.setDataAndType(uri, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGoFAil9AQozKi0XDWUVMCx1NzgbLgcMKWMKESllHiQsKghbIWsJEjNvJzA/JQg6LA==")));
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
          }
 
          this.startActivity(intent);

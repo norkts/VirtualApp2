@@ -16,13 +16,13 @@ public interface IIntentFilterObserver extends IInterface {
    IBinder getCallBack() throws RemoteException;
 
    public abstract static class Stub extends Binder implements IIntentFilterObserver {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLQdfM24KAiJhETA7KRguKmIzFgNiASwuKAguVg=="));
+      private static final String DESCRIPTOR = "com.lody.virtual.server.interfaces.IIntentFilterObserver";
       static final int TRANSACTION_filter = 1;
       static final int TRANSACTION_setCallBack = 2;
       static final int TRANSACTION_getCallBack = 3;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLQdfM24KAiJhETA7KRguKmIzFgNiASwuKAguVg==")));
+         this.attachInterface(this, "com.lody.virtual.server.interfaces.IIntentFilterObserver");
       }
 
       public static IIntentFilterObserver asInterface(IBinder obj) {
@@ -83,7 +83,7 @@ public interface IIntentFilterObserver extends IInterface {
 
       public static boolean setDefaultImpl(IIntentFilterObserver impl) {
          if (IIntentFilterObserver.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IIntentFilterObserver.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -109,7 +109,7 @@ public interface IIntentFilterObserver extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLQdfM24KAiJhETA7KRguKmIzFgNiASwuKAguVg=="));
+            return "com.lody.virtual.server.interfaces.IIntentFilterObserver";
          }
 
          public Intent filter(Intent intent) throws RemoteException {
@@ -118,7 +118,7 @@ public interface IIntentFilterObserver extends IInterface {
 
             Intent var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLQdfM24KAiJhETA7KRguKmIzFgNiASwuKAguVg==")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IIntentFilterObserver");
                if (intent != null) {
                   _data.writeInt(1);
                   intent.writeToParcel(_data, 0);
@@ -153,7 +153,7 @@ public interface IIntentFilterObserver extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLQdfM24KAiJhETA7KRguKmIzFgNiASwuKAguVg==")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IIntentFilterObserver");
                _data.writeStrongBinder(callBack);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (!_status && IIntentFilterObserver.Stub.getDefaultImpl() != null) {
@@ -175,7 +175,7 @@ public interface IIntentFilterObserver extends IInterface {
 
             IBinder var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVho6LhcMMmIFMylvDh49Ly1fImgFLD9vMxoWLQdfM24KAiJhETA7KRguKmIzFgNiASwuKAguVg==")));
+               _data.writeInterfaceToken("com.lody.virtual.server.interfaces.IIntentFilterObserver");
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IIntentFilterObserver.Stub.getDefaultImpl() == null) {
                   _reply.readException();

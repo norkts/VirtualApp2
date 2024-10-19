@@ -109,7 +109,7 @@ class NotificationFixer {
       if (remoteViews != null) {
          int systemIconViewId = R_Hide.id.icon.get();
          List<BitmapReflectionAction> mNew = new ArrayList();
-         ArrayList<Object> mActions = (ArrayList)Reflect.on((Object)remoteViews).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwY+OWwFAiVgNyhF")));
+         ArrayList<Object> mActions = (ArrayList)Reflect.on((Object)remoteViews).get("mActions");
          if (mActions != null) {
             int count = mActions.size();
             int i = count - 1;
@@ -131,13 +131,13 @@ class NotificationFixer {
 
                Object action = mActions.get(i);
                if (action != null) {
-                  if (action.getClass().getSimpleName().endsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRguIGwIOC9iATgWIz0iI24jRSRrDzgqKggYKWAzSFo=")))) {
+                  if (action.getClass().getSimpleName().endsWith("TextViewDrawableAction")) {
                      mActions.remove(action);
                   } else if (ReflectionActionCompat.isInstance(action)) {
-                     int viewId = (Integer)Reflect.on(action).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YM2wxAiw=")));
-                     String methodName = (String)Reflect.on(action).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwguLGUFGixoNCA3KAhSVg==")));
-                     int type = (Integer)Reflect.on(action).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcYKGgVSFo=")));
-                     Object value = Reflect.on(action).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+DmwVNFo=")));
+                     int viewId = (Integer)Reflect.on(action).get("viewId");
+                     String methodName = (String)Reflect.on(action).get("methodName");
+                     int type = (Integer)Reflect.on(action).get("type");
+                     Object value = Reflect.on(action).get("value");
                      if (!hasIcon) {
                         hasIcon = viewId == systemIconViewId;
                         if (hasIcon && type == 4 && (Integer)value == 0) {
@@ -145,19 +145,19 @@ class NotificationFixer {
                         }
                      }
 
-                     if (methodName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLH0VEjdiJDAAKAgqDWUgRSlrAVRF")))) {
-                        mNew.add(new BitmapReflectionAction(viewId, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLH0VEjdiJDAQKQg2D24gTVo=")), BitmapUtils.drawableToBitmap(appContext.getResources().getDrawable((Integer)value))));
+                     if (methodName.equals("setImageResource")) {
+                        mNew.add(new BitmapReflectionAction(viewId, "setImageBitmap", BitmapUtils.drawableToBitmap(appContext.getResources().getDrawable((Integer)value))));
                         mActions.remove(action);
-                     } else if (methodName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQFNDBmEVRF"))) && type == 4) {
-                        Reflect.on(action).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcYKGgVSFo=")), 9);
-                        Reflect.on(action).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+DmwVNFo=")), appContext.getResources().getString((Integer)value));
-                     } else if (methodName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIFJCpiDlEUKi4uVg==")))) {
+                     } else if (methodName.equals("setText") && type == 4) {
+                        Reflect.on(action).set("type", 9);
+                        Reflect.on(action).set("value", appContext.getResources().getString((Integer)value));
+                     } else if (methodName.equals("setLabelFor")) {
                         mActions.remove(action);
-                     } else if (methodName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMjJCljJDgqKi4MDmk2RStsJwYwKS42Jw==")))) {
+                     } else if (methodName.equals("setBackgroundResource")) {
                         mActions.remove(action);
-                     } else if (methodName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLH0VEjdiJDBKOzscVg==")))) {
+                     } else if (methodName.equals("setImageURI")) {
                         Uri uri = (Uri)value;
-                        if (!uri.getScheme().startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8FSFo=")))) {
+                        if (!uri.getScheme().startsWith("http")) {
                            mActions.remove(action);
                         }
                      } else if (VERSION.SDK_INT >= 23 && value instanceof Icon) {

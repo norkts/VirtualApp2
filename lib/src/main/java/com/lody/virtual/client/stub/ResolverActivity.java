@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ResolverActivity extends Activity implements AdapterView.OnItemClickListener {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uKWozHj5iASwRLy42MWUVLAZuAVRF"));
+   private static final String TAG = "ResolverActivity";
    private static final boolean DEBUG = false;
    protected Bundle mOptions;
    protected String mResultWho;
@@ -84,13 +84,13 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
       Intent intent = this.makeMyIntent();
       Set<String> categories = intent.getCategories();
       int titleResource;
-      if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42QQ5nDB5F")).equals(intent.getAction()) && categories != null && categories.size() == 1 && categories.contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlnHFlBJy5SVg==")))) {
+      if ("android.intent.action.MAIN".equals(intent.getAction()) && categories != null && categories.size() == 1 && categories.contains("android.intent.category.HOME")) {
          titleResource = string.choose;
       } else {
          titleResource = string.choose;
       }
 
-      int userId = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYFNCBlNVkhKC4qIGUVNFo=")), VUserHandle.getCallingUserId());
+      int userId = intent.getIntExtra("android.intent.extra.user_handle", VUserHandle.getCallingUserId());
       this.onCreate(savedInstanceState, intent, this.getResources().getText(titleResource), (Intent[])null, (List)null, true, userId);
    }
 
@@ -101,7 +101,7 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
       this.mAlwaysUseOption = alwaysUseOption;
       this.mMaxColumns = this.getResources().getInteger(integer.config_maxResolverActivityColumns);
       this.mRegistered = true;
-      ActivityManager am = (ActivityManager)this.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      ActivityManager am = (ActivityManager)this.getSystemService("activity");
       this.mIconDpi = am.getLauncherLargeIconDensity();
       this.mIconSize = am.getLauncherLargeIconSize();
       this.mAdapter = new ResolveListAdapter(this, intent, initialIntents, rList, this.mLaunchedFromUid);
@@ -176,7 +176,7 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
          }
       } catch (PackageManager.NameNotFoundException var4) {
          PackageManager.NameNotFoundException e = var4;
-         VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08KD0cDmk3TQRrDjAcKhcMJWIFNyNuNFk7OD1XO2gjQTNoNysT")) + VLog.getStackTraceString(e));
+         VLog.e(TAG, "Couldn\'t find resources for package\n" + VLog.getStackTraceString(e));
       }
 
       return ri.loadIcon(this.mPm);
@@ -261,7 +261,7 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
             }
          }
 
-         filter.addCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlmHApKICsAAmcVSFo=")));
+         filter.addCategory("android.intent.category.DEFAULT");
          int cat = ri.match & 268369920;
          Uri data = intent.getData();
          if (cat == 6291456) {
@@ -271,14 +271,14 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
                   filter.addDataType(mimeType);
                } catch (IntentFilter.MalformedMimeTypeException var14) {
                   IntentFilter.MalformedMimeTypeException e = var14;
-                  VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwgYDWgYMD9hHjMI")) + VLog.getStackTraceString(e));
+                  VLog.w(TAG, "mimeType\n" + VLog.getStackTraceString(e));
                   filter = null;
                }
             }
          }
 
          int port;
-         if (data != null && data.getScheme() != null && (cat != 6291456 || !StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")).equals(data.getScheme()) && !StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmEVRF")).equals(data.getScheme()))) {
+         if (data != null && data.getScheme() != null && (cat != 6291456 || !"file".equals(data.getScheme()) && !"content".equals(data.getScheme()))) {
             filter.addDataScheme(data.getScheme());
             if (VERSION.SDK_INT >= 19) {
                Iterator<PatternMatcher> pIt = ri.filter.schemeSpecificPartsIterator();
@@ -338,9 +338,9 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
                this.getPackageManager().addPreferredActivity(filter, bestMatch, set, intent.getComponent());
             } else {
                try {
-                  Reflect.on((Object)VClient.get().getCurrentApplication().getPackageManager()).call(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIFJANmHCg0Ki4qPW8bQSlvER49IxcqMw==")), intent, intent.resolveTypeIfNeeded(this.getContentResolver()), 65536, filter, bestMatch, intent.getComponent());
+                  Reflect.on((Object)VClient.get().getCurrentApplication().getPackageManager()).call("setLastChosenActivity", intent, intent.resolveTypeIfNeeded(this.getContentResolver()), 65536, filter, bestMatch, intent.getComponent());
                } catch (Exception var13) {
-                  VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcMKmowESh9JCAoKhccDmkJTQNrDixTLRc2CmUgBiplJAodIC4YCmoKOAVsDhET")) + VLog.getStackTraceString(var13));
+                  VLog.d(TAG, "Error calling setLastChosenActivity\n" + VLog.getStackTraceString(var13));
                }
             }
          }
@@ -363,7 +363,7 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
    }
 
    void showAppDetails(ResolveInfo ri) {
-      Intent in = (new Intent()).setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kpKAg2LmwjMC1sIxoCIQU6AmsINA5iHBpXIRUuGmMIMB19HwJBKiwuBmIbLFJnHw5B"))).setData(Uri.fromParts(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF")), ri.activityInfo.packageName, (String)null)).addFlags(524288);
+      Intent in = (new Intent()).setAction("android.settings.APPLICATION_DETAILS_SETTINGS").setData(Uri.fromParts("package", ri.activityInfo.packageName, (String)null)).addFlags(524288);
       this.startActivity(in);
    }
 
@@ -406,7 +406,7 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
          this.mInitialIntents = initialIntents;
          this.mBaseResolveList = rList;
          this.mLaunchedFromUid = launchedFromUid;
-         this.mInflater = (LayoutInflater)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAZsJAY2KD1bOWUzGgQ=")));
+         this.mInflater = (LayoutInflater)context.getSystemService("layout_inflater");
          this.mList = new ArrayList();
          this.rebuildList();
       }
@@ -467,7 +467,7 @@ public class ResolverActivity extends Activity implements AdapterView.OnItemClic
                   if (ii != null) {
                      ActivityInfo ai = ii.resolveActivityInfo(ResolverActivity.this.getPackageManager(), 0);
                      if (ai == null) {
-                        VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uKWozHj5iASwRLy42MWUVLAZuAVRF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOGsVLAZjATwzLBgbOmkVNAVlNy8rLi4ACEsVSFo=")) + ii);
+                        VLog.w("ResolverActivity", "No activity found for " + ii);
                      } else {
                         rix = new ResolveInfo();
                         rix.activityInfo = ai;

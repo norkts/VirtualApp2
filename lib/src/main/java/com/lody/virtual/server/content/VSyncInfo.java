@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import com.lody.virtual.StringFog;
 
 public class VSyncInfo implements Parcelable {
-   private static final Account REDACTED_ACCOUNT = new Account(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PDpWMnUnTVo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PDpWMnUnTVo=")));
+   private static final Account REDACTED_ACCOUNT = new Account("*****", "*****");
    public final int authorityId;
    public final Account account;
    public final String authority;

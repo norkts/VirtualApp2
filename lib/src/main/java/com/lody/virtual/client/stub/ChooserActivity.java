@@ -13,16 +13,16 @@ import com.lody.virtual.os.VUserHandle;
 import java.util.List;
 
 public class ChooserActivity extends ResolverActivity {
-   public static final String EXTRA_DATA = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYwGjVqEQoqKToqIGgKMDM="));
-   public static final String EXTRA_WHO = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYwGjVqEQoqKToqMWoVGlo="));
-   public static final String EXTRA_INTENT = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYwGjVqEQoqKToqI2UwMD9qJCxF"));
-   public static final String EXTRA_REQUEST_CODE = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYwGjVqEQoqKToqCGsKJC9oHjAZKi0uJm4aFlo="));
+   public static final String EXTRA_DATA = "android.intent.extra.virtual.data";
+   public static final String EXTRA_WHO = "android.intent.extra.virtual.who";
+   public static final String EXTRA_INTENT = "android.intent.extra.virtual.intent";
+   public static final String EXTRA_REQUEST_CODE = "android.intent.extra.virtual.request_code";
    public static final String ACTION;
-   public static final String EXTRA_RESULTTO = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy0iP24FAipjDlkwKAguJmoVGgNvAQI/IggAVg=="));
+   public static final String EXTRA_RESULTTO = "_va|ibinder|resultTo";
 
    public static boolean check(Intent intent) {
       try {
-         return TextUtils.equals(ACTION, intent.getAction()) || TextUtils.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42NBVkIlkSJytfVg==")), intent.getAction());
+         return TextUtils.equals(ACTION, intent.getAction()) || TextUtils.equals("android.intent.action.CHOOSER", intent.getAction());
       } catch (Exception var2) {
          Exception e = var2;
          e.printStackTrace();
@@ -34,30 +34,30 @@ public class ChooserActivity extends ResolverActivity {
    protected void onCreate(Bundle savedInstanceState) {
       Bundle extras = this.getIntent().getExtras();
       Intent intent = this.getIntent();
-      int userId = extras.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYFNCBlNVkhKC4qIGUVNFo=")), VUserHandle.getCallingUserId());
+      int userId = extras.getInt("android.intent.extra.user_handle", VUserHandle.getCallingUserId());
       this.mOptions = (Bundle)extras.getParcelable(EXTRA_DATA);
       this.mResultWho = extras.getString(EXTRA_WHO);
       this.mRequestCode = extras.getInt(EXTRA_REQUEST_CODE, 0);
       this.mResultTo = BundleCompat.getBinder(extras, EXTRA_RESULTTO);
-      Parcelable targetParcelable = intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmsIRVRmDB4T")));
+      Parcelable targetParcelable = intent.getParcelableExtra("android.intent.extra.INTENT");
       if (!(targetParcelable instanceof Intent)) {
-         VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji5fD2owLCtlDiggKQg+MWUwLFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRg+KmgzNAZLHgYpPxcYDWU3TTdlMzwaLC0qJ2AzET15Vwo8")), targetParcelable);
+         VLog.w("ChooseActivity", "Target is not an intent: %s", targetParcelable);
          this.finish();
       } else {
          Intent target = (Intent)targetParcelable;
-         CharSequence title = intent.getCharSequenceExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49Km4YGlRkHApF")));
+         CharSequence title = intent.getCharSequenceExtra("android.intent.extra.TITLE");
          if (title == null) {
             title = this.getString(string.choose);
          }
 
-         Parcelable[] pa = intent.getParcelableArrayExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmsIRRZiHBoAITsuBX02MFRiIixB")));
+         Parcelable[] pa = intent.getParcelableArrayExtra("android.intent.extra.INITIAL_INTENTS");
          Intent[] initialIntents = null;
          if (pa != null) {
             initialIntents = new Intent[pa.length];
 
             for(int i = 0; i < pa.length; ++i) {
                if (!(pa[i] instanceof Intent)) {
-                  VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji5fD2owLCtlDiggKQg+MWUwLFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcCWwFAjdgVyQzKj42PW8aASh4J1RF")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgcD2wJIDdgMCQJKj42PW8aATJ4Vig6")), pa[i]);
+                  VLog.w("ChooseActivity", "Initial intent #" + i + " not an Intent: %s", pa[i]);
                   this.finish();
                   return;
                }

@@ -20,7 +20,7 @@ public class ImageModel {
          public void run() {
             Uri mImageUri = Media.EXTERNAL_CONTENT_URI;
             ContentResolver mContentResolver = context.getContentResolver();
-            Cursor mCursor = mContentResolver.query(mImageUri, new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qCW8wICR9AQZAKj0iD2kjSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRg+LGgYGjdiHgo/KBhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4YPA=="))}, (String)null, (String[])null, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRg+LGgYGjdiHgo/KBhSVg==")));
+            Cursor mCursor = mContentResolver.query(mImageUri, new String[]{"_data", "_display_name", "date_added", "_id"}, (String)null, (String[])null, "date_added");
             ArrayList<Image> images = new ArrayList();
             if (mCursor != null) {
                while(true) {
@@ -29,10 +29,10 @@ public class ImageModel {
                      break;
                   }
 
-                  String path = mCursor.getString(mCursor.getColumnIndex(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qP2wFJFo="))));
-                  String name = mCursor.getString(mCursor.getColumnIndex(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4qCW8wICR9AQZAKj0iD2kjSFo="))));
-                  long time = mCursor.getLong(mCursor.getColumnIndex(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRg+LGgYGjdiHgo/KBhSVg=="))));
-                  if (!StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz4qD2wzBiRgJCAwKQcYMw==")).equals(ImageModel.getExtensionName(path))) {
+                  String path = mCursor.getString(mCursor.getColumnIndex("_data"));
+                  String name = mCursor.getString(mCursor.getColumnIndex("_display_name"));
+                  long time = mCursor.getLong(mCursor.getColumnIndex("date_added"));
+                  if (!".downloading".equals(ImageModel.getExtensionName(path))) {
                      images.add(new Image(path, time, name));
                   }
                }
@@ -46,7 +46,7 @@ public class ImageModel {
 
    private static ArrayList<Folder> splitFolder(ArrayList<Image> images) {
       ArrayList<Folder> folders = new ArrayList();
-      folders.add(new Folder(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxorCkNJFyBYEwMcAj8ZWA==")), images));
+      folders.add(new Folder("全部图片", images));
       if (images != null && !images.isEmpty()) {
          int size = images.size();
 

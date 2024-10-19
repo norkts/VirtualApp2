@@ -44,15 +44,15 @@ public class BinderInvocationStub extends MethodInvocationStub<IInterface> imple
          if (stubClass == null) {
             return null;
          } else if (binder == null) {
-            Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxcqKGkjQQZrDTw6KgcuJksaMCBpJCQ+LAgfJGgzAgRoASgbDV9aL2wzFgRvMyc3Ki0qI2shLCR9ASgpPghSVg==")) + stubClass);
+            Log.w(TAG, "Could not create stub because binder = null, stubClass=" + stubClass);
             return null;
          } else {
-            Method asInterface = stubClass.getMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc2XGogMCthNDw7Ly0MVg==")), IBinder.class);
+            Method asInterface = stubClass.getMethod("asInterface", IBinder.class);
             return (IInterface)asInterface.invoke((Object)null, binder);
          }
       } catch (Exception var3) {
          Exception e = var3;
-         Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxcqKGkjQQZrDTw6KgcuJksVSFo=")) + stubClass.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mzo6E2saNANiDQU8")) + e);
+         Log.d(TAG, "Could not create stub " + stubClass.getName() + ". Cause: " + e);
          return null;
       }
    }
@@ -112,7 +112,7 @@ public class BinderInvocationStub extends MethodInvocationStub<IInterface> imple
 
    public IBinder getExtension() throws RemoteException {
       try {
-         Object result = Reflect.on((Object)this.mBaseBinder).call(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAaRQZiDlkpKQdfDg=="))).get();
+         Object result = Reflect.on((Object)this.mBaseBinder).call("getExtension").get();
          return (IBinder)result;
       } catch (Throwable var3) {
          Throwable e = var3;
@@ -120,7 +120,7 @@ public class BinderInvocationStub extends MethodInvocationStub<IInterface> imple
          if (cause instanceof RemoteException) {
             throw (RemoteException)cause;
          } else {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcMWojGj1gMCQ/LRcqPWowBi9lJxpF")), cause);
+            throw new IllegalStateException("Unknown exception", cause);
          }
       }
    }
@@ -130,7 +130,7 @@ public class BinderInvocationStub extends MethodInvocationStub<IInterface> imple
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc2HGUVBixiASxF"));
+         return "asBinder";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {

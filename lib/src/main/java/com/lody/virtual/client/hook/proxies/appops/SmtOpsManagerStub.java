@@ -10,6 +10,6 @@ import mirror.com.android.internal.app.ISmtOpsService;
 @TargetApi(19)
 public class SmtOpsManagerStub extends BinderInvocationProxy {
    public SmtOpsManagerStub() {
-      super(ISmtOpsService.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4ILGowIAM=")));
+      super(ISmtOpsService.Stub.asInterface, "smtops");
    }
 }

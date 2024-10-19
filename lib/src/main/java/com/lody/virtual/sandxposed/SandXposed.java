@@ -22,7 +22,7 @@ import mirror.dalvik.system.VMRuntime;
 
 public class SandXposed {
    public static void init() {
-      Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4+CGgLRSVgJA5F")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhguCGgFAiZiICQKKi1fCX4xPCVrESss")));
+      Log.e("SandHook", "Pending Hook Mode!");
       if (VERSION.SDK_INT >= 28) {
          ReflectionUtils.passApiCheck();
       }
@@ -32,26 +32,26 @@ public class SandXposed {
       SandHookConfig.SDK_INT = OSUtils.getInstance().isAndroidQ() ? 29 : VERSION.SDK_INT;
       SandHookConfig.compiler = SandHookConfig.SDK_INT < 26;
       if (PendingHookHandler.canWork()) {
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4+CGgLRSVgJA5F")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhguCGgFAiZiICQKKi1fCX4xPCVrESss")));
+         Log.e("SandHook", "Pending Hook Mode!");
       }
 
    }
 
    public static void injectXposedModule(Context context, String packageName, String processName) {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwMHO35THTN0DVwdPgRWJXskPzNqARohLhg2Cm8VOCplJAotIS4uIG8FHj97Cj8sMgRaDngJTCl7ICMsPwMHO35THTN0DVwdPghSVg==")));
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwMHO35THTN0DVwdPgRWJXskPzNqARohLhg2Cm8VOCplJAotIS4uIG8FHj97DT8eMgRaDngJTCl7ICMsPwMHO35THTN0DVwdPgRXVg==")));
+      Log.d("HV-", "===============injectXposedModule 0====================");
+      Log.d("HV-", "===============injectXposedModule  1====================");
       List<InstalledAppInfo> appInfos = VirtualCore.get().getInstalledApps(1342177280);
       ClassLoader classLoader = context.getClassLoader();
-      Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IBU6UmcxNBY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMyh9ASQsIQcYPG8KDTI=")) + appInfos.size());
+      Log.e("XPOSED", "start appInfos:" + appInfos.size());
       Iterator var5 = appInfos.iterator();
 
       while(var5.hasNext()) {
          InstalledAppInfo module = (InstalledAppInfo)var5.next();
          if (TextUtils.equals(packageName, module.packageName)) {
-            Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcMmgVLAZvESQ1Iy0MPmcjNCxvAQIg")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcMmgVLAZpJDAoKDklIH4zSFo=")) + processName);
+            Log.d("injectXposedModule", "injectSelf : " + processName);
          }
 
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IBU6UmcxNBY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgAP2gOTVo=")) + module.packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwhSVg==")) + module.libPath);
+         Log.e("XPOSED", "load:" + module.packageName + "-" + module.libPath);
          XposedCompat.loadModule(module.getApkPath(), module.getOatFile().getParent(), module.libPath, XposedBridge.class.getClassLoader());
       }
 
@@ -69,7 +69,7 @@ public class SandXposed {
       } catch (Throwable var7) {
          Throwable throwable = var7;
          throwable.printStackTrace();
-         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IBU6UmcxNBY=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQcMKnkjSFo=")) + throwable.getStackTrace().toString());
+         Log.e("XPOSED", "err:" + throwable.getStackTrace().toString());
       }
 
    }

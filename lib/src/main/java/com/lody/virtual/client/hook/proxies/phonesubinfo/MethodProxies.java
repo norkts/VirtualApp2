@@ -9,13 +9,13 @@ import java.lang.reflect.Method;
 class MethodProxies {
    static class GetIccSerialNumberForSubscriber extends GetIccSerialNumber {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VLClpJDAqKQciCGcaGiNoNyg5Ji4ACGkjLCVlJCw7Ki5fJ2wzSFo="));
+         return "getIccSerialNumberForSubscriber";
       }
    }
 
    static class GetIccSerialNumber extends ReplaceLastPkgMethodProxy {
       public GetIccSerialNumber() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VLClpJDAqKQciCGcaGiNoNyg5")));
+         super("getIccSerialNumber");
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -37,25 +37,25 @@ class MethodProxies {
 
    static class GetImeiForSubscriber extends GetDeviceId {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VEitjDDw1IzwqLW4aAilsNx4pLhcMVg=="));
+         return "getImeiForSubscriber";
       }
    }
 
    static class GetDeviceIdForSubscriber extends GetDeviceId {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFND5jDig/IQc2WW8KRV5vAQo6LT0MI30wLDU="));
+         return "getDeviceIdForSubscriber";
       }
    }
 
    static class GetDeviceIdForPhone extends GetDeviceId {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFND5jDig/IQc2WW8KRUxqEQYbLhhSVg=="));
+         return "getDeviceIdForPhone";
       }
    }
 
    static class GetDeviceId extends ReplaceLastPkgMethodProxy {
       public GetDeviceId() {
-         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFND5jDig/IQc2Vg==")));
+         super("getDeviceId");
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {

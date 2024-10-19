@@ -32,7 +32,7 @@ public interface IExtHelperInterface extends IInterface {
    void startActivity(Intent var1, Bundle var2) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IExtHelperInterface {
-      private static final String DESCRIPTOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0"));
+      private static final String DESCRIPTOR = "com.lody.virtual.IExtHelperInterface";
       static final int TRANSACTION_syncPackages = 1;
       static final int TRANSACTION_cleanPackageData = 2;
       static final int TRANSACTION_forceStop = 3;
@@ -43,7 +43,7 @@ public interface IExtHelperInterface extends IInterface {
       static final int TRANSACTION_startActivity = 8;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+         this.attachInterface(this, "com.lody.virtual.IExtHelperInterface");
       }
 
       public static IExtHelperInterface asInterface(IBinder obj) {
@@ -139,7 +139,7 @@ public interface IExtHelperInterface extends IInterface {
 
       public static boolean setDefaultImpl(IExtHelperInterface impl) {
          if (IExtHelperInterface.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGAFNC59ATAoLBUcD2ozOyB6DTwqLRgEKGIKESNqETwiKAgAVg==")));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IExtHelperInterface.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -165,7 +165,7 @@ public interface IExtHelperInterface extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0"));
+            return "com.lody.virtual.IExtHelperInterface";
          }
 
          public int syncPackages() throws RemoteException {
@@ -174,7 +174,7 @@ public interface IExtHelperInterface extends IInterface {
 
             int var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (_status || IExtHelperInterface.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -196,7 +196,7 @@ public interface IExtHelperInterface extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                _data.writeIntArray(userIds);
                _data.writeString(packageName);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
@@ -218,7 +218,7 @@ public interface IExtHelperInterface extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                _data.writeIntArray(pids);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IExtHelperInterface.Stub.getDefaultImpl() == null) {
@@ -240,7 +240,7 @@ public interface IExtHelperInterface extends IInterface {
 
             ArrayList _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                _data.writeInt(maxNum);
                boolean _status = this.mRemote.transact(4, _data, _reply, 0);
                if (!_status && IExtHelperInterface.Stub.getDefaultImpl() != null) {
@@ -264,7 +264,7 @@ public interface IExtHelperInterface extends IInterface {
 
             ArrayList _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                _data.writeInt(maxNum);
                _data.writeInt(flags);
                boolean _status = this.mRemote.transact(5, _data, _reply, 0);
@@ -289,7 +289,7 @@ public interface IExtHelperInterface extends IInterface {
 
             List var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                boolean _status = this.mRemote.transact(6, _data, _reply, 0);
                if (_status || IExtHelperInterface.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -312,7 +312,7 @@ public interface IExtHelperInterface extends IInterface {
 
             boolean var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                boolean _status = this.mRemote.transact(7, _data, _reply, 0);
                if (_status || IExtHelperInterface.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -334,7 +334,7 @@ public interface IExtHelperInterface extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojHiViERk2LD0cKGUwGjdlVhpPJhdfCmsaLDdlHgo7Ii4qCmsKFjJrETA0")));
+               _data.writeInterfaceToken("com.lody.virtual.IExtHelperInterface");
                if (intent != null) {
                   _data.writeInt(1);
                   intent.writeToParcel(_data, 0);

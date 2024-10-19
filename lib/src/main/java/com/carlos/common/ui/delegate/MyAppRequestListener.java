@@ -19,24 +19,24 @@ public class MyAppRequestListener implements VirtualCore.AppRequestListener {
    }
 
    public void onRequestInstall(String path) {
-      info(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qP28gMyhjDlkpLBciCG8zLCZrIFAr")) + path);
+      info("Start installing: " + path);
       VAppInstallerParams params = new VAppInstallerParams();
       VAppInstallerResult res = VirtualCore.get().installPackage(Uri.fromFile(new File(path)), params);
       if (res.status == 0) {
-         info(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcKWwFJCRgVyRF")) + res.packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phc2I2szLCthJys2")));
+         info("Install " + res.packageName + " success.");
          boolean success = VActivityManager.get().launchApp(0, res.packageName);
-         info(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+I2ojLCBLHiAsI14mVg==")) + (success ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0uOWszNANhIFlF")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoJBlo="))));
+         info("launch app " + (success ? "success." : "fail."));
       } else {
-         info(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcKWwFJCRgVyRF")) + res.packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgiP2UVGSRLHjAqIz1fKH4zAiVrESsxPQhSVg==")) + res.status);
+         info("Install " + res.packageName + " fail, error code: " + res.status);
       }
 
    }
 
    private static void info(String msg) {
-      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jgc6KH0VBgNmHiAoKhcMKA==")), msg);
+      VLog.e("AppInstaller", msg);
    }
 
    public void onRequestUninstall(String pkg) {
-      Toast.makeText(this.mContext, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLGgaFiliASQgPxgMDmwjMANvETgdLAQ6CGIFPDBuASw9Pl9XVg==")) + pkg, 0).show();
+      Toast.makeText(this.mContext, "Intercept uninstall request: " + pkg, 0).show();
    }
 }

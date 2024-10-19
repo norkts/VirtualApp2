@@ -25,7 +25,7 @@ public class ProviderCall {
    }
 
    public static Bundle call(String authority, Context context, String method, String arg, Bundle bundle, int retryCount) throws IllegalAccessException {
-      Uri uri = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1Oi5SVg==")) + authority);
+      Uri uri = Uri.parse("content://" + authority);
       return ContentProviderCompat.call(context, uri, method, arg, bundle, retryCount);
    }
 
@@ -68,7 +68,7 @@ public class ProviderCall {
                this.bundle.putParcelable(key, (Parcelable)value);
             } else {
                if (!(value instanceof int[])) {
-                  throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcMWojGj1gMCQgLQgmPX4zSFo=")) + value.getClass() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYCHsLFgVgNAooKAMYVg==")));
+                  throw new IllegalArgumentException("Unknown type " + value.getClass() + " in Bundle.");
                }
 
                this.bundle.putIntArray(key, (int[])value);

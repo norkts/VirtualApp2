@@ -14,11 +14,11 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipTools {
    private static int result = 0;
-   private static final String SECRET_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKW8kJwFPVjhF"));
+   private static final String SECRET_KEY = "sesr1107";
 
    public static int compressZip(String src, String dest, ZipCallback zipCallback) {
       ZipOutputStream out = null;
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcJMUZJAwtYK0YzIy4uP3gVSFo=")) + src + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsKTS9hUx8cRCUJWB1WEz0eLy01UwNXVg==")) + dest);
+      HVLog.d("被压缩src:" + src + "    zip输出路径:" + dest);
 
       try {
          File outFile = new File(dest);
@@ -52,9 +52,9 @@ public class ZipTools {
    }
 
    private static String checkString(String sourceFileName) {
-      if (sourceFileName.indexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz5SVg=="))) > 0) {
+      if (sourceFileName.indexOf(".") > 0) {
          sourceFileName = sourceFileName.substring(0, sourceFileName.length() - 4);
-         HVLog.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQV5mESwzKj05IH47GygdCRMhQABcOR8oIVIbESweIy1fJWsLOAVqASgfOwdbLEQHBwFFEjlI")) + sourceFileName);
+         HVLog.i("checkString: 校验过的sourceFileName是：" + sourceFileName);
       }
 
       return sourceFileName;
@@ -68,7 +68,7 @@ public class ZipTools {
          Enumeration e = zipFile.entries();
          ZipEntry zipEntry = null;
          File dest = new File(outputDirectory);
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgqM28wMyh3N1RF")) + dest.exists());
+         HVLog.d(" dest :" + dest.exists());
          if (!dest.exists()) {
             dest.mkdirs();
          }
@@ -79,7 +79,7 @@ public class ZipTools {
             InputStream in = null;
             FileOutputStream out = null;
             unZipCallback.callbackName(entryName);
-            HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhguCGwKFj9oNCA3KAMlIA==")) + entryName);
+            HVLog.d(" entryName :" + entryName);
 
             try {
                File f;
@@ -89,13 +89,13 @@ public class ZipTools {
                   f = new File(outputDirectory + File.separator + name);
                   f.mkdirs();
                } else {
-                  int index = entryName.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JxhSVg==")));
+                  int index = entryName.lastIndexOf("\\");
                   if (index != -1) {
                      f = new File(outputDirectory + File.separator + entryName.substring(0, index));
                      f.mkdirs();
                   }
 
-                  index = entryName.lastIndexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+                  index = entryName.lastIndexOf("/");
                   if (index != -1) {
                      f = new File(outputDirectory + File.separator + entryName.substring(0, index));
                      f.mkdirs();
@@ -117,7 +117,7 @@ public class ZipTools {
                IOException ex = var41;
                ex.printStackTrace();
                HVLog.printException(ex);
-               throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcjOUZJAwtYEg8rA1cNPUUWJVc=")) + ex.toString());
+               throw new IOException("解压失败：" + ex.toString());
             } finally {
                IOException ex;
                if (in != null) {
@@ -179,7 +179,7 @@ public class ZipTools {
             File[] entries = fileOrDirectory.listFiles();
 
             for(i = 0; i < entries.length; ++i) {
-               zipFileOrDirectory(out, entries[i], curPath + fileOrDirectory.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")), zipCallback);
+               zipFileOrDirectory(out, entries[i], curPath + fileOrDirectory.getName() + "/", zipCallback);
             }
          }
       } catch (IOException var16) {

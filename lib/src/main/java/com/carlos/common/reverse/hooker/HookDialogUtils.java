@@ -27,8 +27,8 @@ public class HookDialogUtils {
 
       while(var2.hasNext()) {
          String str = (String)var2.next();
-         if (str.indexOf(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg=="))) > 0) {
-            String[] arr = str.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")));
+         if (str.indexOf(":") > 0) {
+            String[] arr = str.split(":");
             if (arr != null && arr.length == 2 && arr[0].equals(packageName) && arr[1].equals(clzName)) {
                return true;
             }
@@ -41,12 +41,12 @@ public class HookDialogUtils {
    }
 
    static {
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LC0LCGszBSZgNDAaKi0XDmUzND91NzgbLgcMKWMKESlqDh0dKBguO2wzMwRiIjxBJRcYPmIaRTJuJDAJLAg+DmozPFo=")));
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMDdhHgI1LQMYMW8aBitsNxosLAQcJQ==")));
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojBjBmHh02LC1fPm9TIDdlNyw5LD4YIE4wPDNlVx4AKT4ACG8bMAVrEQI6JC5SVg==")));
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojFiRmDjAsKi42MW8FMC1oAQ4gKTocJ2AjNCh7NCQdLz1fKWoFMwRrHjwdCDsmO24FNCJhNzAoIxgAPQ==")));
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojFiRmDjAsKi42MW8FMC1oAQ4gKTocJ2AjNCh7NCQdLz1fKWoFMwRrHjwdCDwiOWwgICRpJB4cJRgYP2oFGi0=")));
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojBilhJB4+LF4YOW8VBgRlJx4vPC4IKWFTRRNpIiwqKS1XO2oFPARkNyg1KD0ALGomLD1uJyQ6LS5SVg==")));
-      hiddenDialog.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojQTdjJCA1KC0iD2knMAJsNwYeLD0qI2AgRClqNBouIwQqUm8VJCZsAR45JCwiOWwgTQFlNzA6IzwiKmsVPCNiDlkg")));
+      hiddenDialog.add("kr.co.nexon.toy.android.ui.board.NPShowTodayDialog");
+      hiddenDialog.add("com.tapjoy.internal.c");
+      hiddenDialog.add("com.nxth.wodn:android.app.AlertDialog");
+      hiddenDialog.add("com.bluepotiongames.eosm:android.app.AlertDialog");
+      hiddenDialog.add("com.bluepotiongames.eosm:android.app.ProgressDialog");
+      hiddenDialog.add("com.ncsoft.android.mop.NcCampaignWebViewDialog");
+      hiddenDialog.add("com.kakaogame.promotion.view.StartingPromotionFragment");
    }
 }

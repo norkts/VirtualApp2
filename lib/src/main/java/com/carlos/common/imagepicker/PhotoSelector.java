@@ -22,21 +22,21 @@ public class PhotoSelector {
    public static final int TAKE_PHOTO_CROP_REQUESTCODE = 1001;
    public static final int TAKE_PHOTO_REQUESTCODE = 1002;
    public static final int CROP_REQUESTCODE = 1003;
-   public static final String SELECT_RESULT = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uDmgVLAZsJyw/Iy4MCGUzSFo="));
-   public static final String EXTRA_MAX_SELECTED_COUNT = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+IGYwLCtgHjA5LBcMPmMFAiVvARo/"));
-   public static final String EXTRA_GRID_COLUMN = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADmwVEiY="));
-   public static final String EXTRA_SHOW_CAMERA = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5fD2w2Gil9Dl0/Iz0iVg=="));
-   public static final String EXTRA_SELECTED_IMAGES = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uDmgVLAZiDgpAKQdXOWkFGgM="));
-   public static final String EXTRA_SINGLE = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4YCGgzHis="));
-   public static final String EXTRA_CROP = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2H2swFiVhEVRF"));
-   public static final String EXTRA_CROP_MODE = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MD28IGiNgJAo/"));
-   public static final String EXTRA_MATERIAL_DESIGN = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+LGgaFi99DlFAKBcML2wjEiY="));
-   public static final String EXTRA_TOOLBARCOLOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAD2oLFjdhMig1KhdfKA=="));
-   public static final String EXTRA_BOTTOMBARCOLOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4ALGwFGiNlNCAqJy1fCG8KRVo="));
-   public static final String EXTRA_STATUSBARCOLOR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANlNCAqJy1fCG8KRVo="));
-   public static final String EXTRA_POSITION = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhgAKWUaMC9gJFlF"));
-   public static final String EXTRA_ISPREVIEW = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2Am8jND5jDjAt"));
-   public static final String IS_CONFIRM = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2H2szGiZiNAYqKghSVg=="));
+   public static final String SELECT_RESULT = "select_result";
+   public static final String EXTRA_MAX_SELECTED_COUNT = "max_selected_count";
+   public static final String EXTRA_GRID_COLUMN = "column";
+   public static final String EXTRA_SHOW_CAMERA = "show_camera";
+   public static final String EXTRA_SELECTED_IMAGES = "selected_images";
+   public static final String EXTRA_SINGLE = "single";
+   public static final String EXTRA_CROP = "is_crop";
+   public static final String EXTRA_CROP_MODE = "crop_mode";
+   public static final String EXTRA_MATERIAL_DESIGN = "material_design";
+   public static final String EXTRA_TOOLBARCOLOR = "toolBarColor";
+   public static final String EXTRA_BOTTOMBARCOLOR = "bottomBarColor";
+   public static final String EXTRA_STATUSBARCOLOR = "statusBarColor";
+   public static final String EXTRA_POSITION = "position";
+   public static final String EXTRA_ISPREVIEW = "isPreview";
+   public static final String IS_CONFIRM = "is_confirm";
 
    public static Uri getCropImageUri(@NonNull Intent intent) {
       return UCrop.getOutput(intent);
@@ -76,57 +76,57 @@ public class PhotoSelector {
       }
 
       public PhotoSelectorBuilder setMaxSelectCount(int maxSelectCount) {
-         this.mPickerOptionsBundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+IGYwLCtgHjA5LBcMPmMFAiVvARo/")), maxSelectCount);
+         this.mPickerOptionsBundle.putInt("max_selected_count", maxSelectCount);
          return this;
       }
 
       public PhotoSelectorBuilder setSingle(boolean isSingle) {
-         this.mPickerOptionsBundle.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4YCGgzHis=")), isSingle);
+         this.mPickerOptionsBundle.putBoolean("single", isSingle);
          return this;
       }
 
       public PhotoSelectorBuilder setGridColumnCount(int columnCount) {
-         this.mPickerOptionsBundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADmwVEiY=")), columnCount);
+         this.mPickerOptionsBundle.putInt("column", columnCount);
          return this;
       }
 
       public PhotoSelectorBuilder setShowCamera(boolean showCamera) {
-         this.mPickerOptionsBundle.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5fD2w2Gil9Dl0/Iz0iVg==")), showCamera);
+         this.mPickerOptionsBundle.putBoolean("show_camera", showCamera);
          return this;
       }
 
       public PhotoSelectorBuilder setSelected(ArrayList<String> selected) {
-         this.mPickerOptionsBundle.putStringArrayList(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uDmgVLAZiDgpAKQdXOWkFGgM=")), selected);
+         this.mPickerOptionsBundle.putStringArrayList("selected_images", selected);
          return this;
       }
 
       public PhotoSelectorBuilder setToolBarColor(@ColorInt int toolBarColor) {
-         this.mPickerOptionsBundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAD2oLFjdhMig1KhdfKA==")), toolBarColor);
+         this.mPickerOptionsBundle.putInt("toolBarColor", toolBarColor);
          return this;
       }
 
       public PhotoSelectorBuilder setBottomBarColor(@ColorInt int bottomBarColor) {
-         this.mPickerOptionsBundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4ALGwFGiNlNCAqJy1fCG8KRVo=")), bottomBarColor);
+         this.mPickerOptionsBundle.putInt("bottomBarColor", bottomBarColor);
          return this;
       }
 
       public PhotoSelectorBuilder setStatusBarColor(@ColorInt int statusBarColor) {
-         this.mPickerOptionsBundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP2wKNANlNCAqJy1fCG8KRVo=")), statusBarColor);
+         this.mPickerOptionsBundle.putInt("statusBarColor", statusBarColor);
          return this;
       }
 
       public PhotoSelectorBuilder setMaterialDesign(boolean materialDesign) {
-         this.mPickerOptionsBundle.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+LGgaFi99DlFAKBcML2wjEiY=")), materialDesign);
+         this.mPickerOptionsBundle.putBoolean("material_design", materialDesign);
          return this;
       }
 
       public PhotoSelectorBuilder setCrop(boolean isCrop) {
-         this.mPickerOptionsBundle.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2H2swFiVhEVRF")), isCrop);
+         this.mPickerOptionsBundle.putBoolean("is_crop", isCrop);
          return this;
       }
 
       public PhotoSelectorBuilder setCropMode(int mode) {
-         this.mPickerOptionsBundle.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MD28IGiNgJAo/")), mode);
+         this.mPickerOptionsBundle.putInt("crop_mode", mode);
          return this;
       }
    }

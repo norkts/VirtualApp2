@@ -5,7 +5,7 @@ import com.lody.virtual.StringFog;
 
 class ReflectionActionCompat {
    private static Class ReflectionActionClass;
-   private static final String ReflectionAction = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uPmoFNClmHgY1KjsiP2UzLCVlN1RF"));
+   private static final String ReflectionAction = "ReflectionAction";
    static final int TAG = 2;
    static final int BOOLEAN = 1;
    static final int BYTE = 2;
@@ -30,7 +30,7 @@ class ReflectionActionCompat {
 
    static {
       try {
-         ReflectionActionClass = Class.forName(RemoteViews.class.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PRhSVg==")) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uPmoFNClmHgY1KjsiP2UzLCVlN1RF")));
+         ReflectionActionClass = Class.forName(RemoteViews.class.getName() + "$" + "ReflectionAction");
       } catch (ClassNotFoundException var1) {
       }
 

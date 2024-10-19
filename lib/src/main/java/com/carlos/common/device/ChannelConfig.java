@@ -9,7 +9,7 @@ import com.lody.virtual.client.ipc.VPackageManager;
 import com.lody.virtual.helper.InstalledInfoCache;
 
 public class ChannelConfig {
-   public static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji5fP2ojBitgHCg1Kj0+MWkFSFo="));
+   public static String TAG = "ChannelConfig";
    DeviceInfo deviceInfo;
    private static ChannelConfig channelConfig;
    IniFile mIniFile;

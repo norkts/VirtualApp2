@@ -11,8 +11,8 @@ public class VDownloadService {
    private ContentResolver mResolver = VirtualCore.get().getContext().getContentResolver();
 
    private void trimDownloadRequests() {
-      Uri uri = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmVgU1Oi02DWUFMCRlJzgvKToAL2cLAi9sJzwdKT4uO2saLFo=")));
-      Cursor cursor = this.mResolver.query(uri, new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy4YPA=="))}, (String)null, (String[])null, (String)null);
+      Uri uri = Uri.parse("content://downloads/my_downloads");
+      Cursor cursor = this.mResolver.query(uri, new String[]{"_id"}, (String)null, (String[])null, (String)null);
       if (cursor != null) {
          while(true) {
             if (!cursor.moveToNext()) {
@@ -20,7 +20,7 @@ public class VDownloadService {
                break;
             }
 
-            VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgoNLwcYOWkFGgQ=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgALWojHiV9Dg08KQc1IH4zSFo=")) + cursor.getLong(0));
+            VLog.e("DownloadManager", "download id: " + cursor.getLong(0));
          }
       }
 

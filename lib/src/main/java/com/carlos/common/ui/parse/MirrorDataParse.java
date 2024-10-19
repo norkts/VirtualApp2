@@ -21,42 +21,42 @@ public class MirrorDataParse {
 
    public String getBackupData(String packageName, int userId) {
       this.mElement.clear();
-      this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDFk7KgcMVg==")), packageName);
-      this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28hAiw=")), userId);
+      this.elementAddProperty("packageName", packageName);
+      this.elementAddProperty("userId", userId);
       SettingConfig.FakeWifiStatus fakeWifiStatus = App.getApp().mConfig.getFakeWifiStatus(packageName, userId);
-      this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki02CWgFSFo=")), fakeWifiStatus == null ? "" : fakeWifiStatus.getSSID());
-      this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+OQ==")), fakeWifiStatus == null ? "" : fakeWifiStatus.getMAC());
-      this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj02KWUVMFo=")), fakeWifiStatus == null ? "" : fakeWifiStatus.getBSSID());
+      this.elementAddProperty("ssid", fakeWifiStatus == null ? "" : fakeWifiStatus.getSSID());
+      this.elementAddProperty("mac", fakeWifiStatus == null ? "" : fakeWifiStatus.getMAC());
+      this.elementAddProperty("bssid", fakeWifiStatus == null ? "" : fakeWifiStatus.getBSSID());
       VLocation location = VLocationManager.get().getLocation(packageName, userId);
       if (location != null) {
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+LGUaMAViHjBF")), location.latitude);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgACGgzAgZmDgo/")), location.longitude);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggELGUaMAViHjBF")), location.altitude);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWwaFjd9JwZF")), location.accuracy);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki06M2gVMFo=")), location.speed);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4uP28jAiZiJ1RF")), location.bearing);
+         this.elementAddProperty("latitude", location.latitude);
+         this.elementAddProperty("longitude", location.longitude);
+         this.elementAddProperty("altitude", location.altitude);
+         this.elementAddProperty("accuracy", location.accuracy);
+         this.elementAddProperty("speed", location.speed);
+         this.elementAddProperty("bearing", location.bearing);
       }
 
       int deviceId = BaseActivity.getDeviceId(packageName, userId);
       VDeviceConfig deviceConfig = VDeviceManager.get().getDeviceConfig(deviceId);
       boolean enable = VDeviceManager.get().isEnable(deviceId);
       if (enable) {
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjsMEWIhMFo=")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjsMEWIhMFo="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHlo=")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHlo="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhUMUmAINBNuEVRF")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhUMUmAINBNuEVRF"))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAH0bLBU=")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAH0bLBU="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjwAEWchMFo=")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjwAEWchMFo="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYYA2cLHhFvAVRF")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYYA2cLHhFvAVRF"))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAYqVg==")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAYqVg=="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwY+U2QbOBFlJQpKOzsMAg==")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwY+U2QbOBFlJQpKOzsMAg=="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTwYU2AxNF9pHywJIjw2Vg==")), deviceConfig.getProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTwYU2AxNF9pHywJIjw2Vg=="))));
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCQ=")), deviceConfig.serial);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguLmUVLCtrDgpF")), deviceConfig.deviceId);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAg2OX0VMFo=")), deviceConfig.iccId);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YPmUbEjd9J1RF")), deviceConfig.wifiMac);
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iHAYw")), deviceConfig.androidId);
+         this.elementAddProperty("BRAND", deviceConfig.getProp("BRAND"));
+         this.elementAddProperty("MODEL", deviceConfig.getProp("MODEL"));
+         this.elementAddProperty("PRODUCT", deviceConfig.getProp("PRODUCT"));
+         this.elementAddProperty("DEVICE", deviceConfig.getProp("DEVICE"));
+         this.elementAddProperty("BOARD", deviceConfig.getProp("BOARD"));
+         this.elementAddProperty("DISPLAY", deviceConfig.getProp("DISPLAY"));
+         this.elementAddProperty("ID", deviceConfig.getProp("ID"));
+         this.elementAddProperty("MANUFACTURER", deviceConfig.getProp("MANUFACTURER"));
+         this.elementAddProperty("FINGERPRINT", deviceConfig.getProp("FINGERPRINT"));
+         this.elementAddProperty("serial", deviceConfig.serial);
+         this.elementAddProperty("deviceId", deviceConfig.deviceId);
+         this.elementAddProperty("iccId", deviceConfig.iccId);
+         this.elementAddProperty("wifiMac", deviceConfig.wifiMac);
+         this.elementAddProperty("androidId", deviceConfig.androidId);
       } else {
-         this.elementAddProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguLmUVLCtrDgoVKj0iOG8zGlo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+Dm8zNFo=")));
+         this.elementAddProperty("deviceIdEnable", "false");
       }
 
       return this.mElement.toString();
@@ -64,53 +64,53 @@ public class MirrorDataParse {
 
    public void parseBackupData(String filePath) {
       String readFile = FileTools.readFile(filePath);
-      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uP2gLOC9gHjMi")) + readFile + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFOC9gHjACLwg2MngVSFo=")) + filePath);
+      HVLog.d("readFile:" + readFile + "    filePath:" + filePath);
       JSONObject jsonObject = JSON.parseObject(readFile);
       if (jsonObject == null) {
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlYdGkZJAx9YAwssAglADkcsJRRBEloz")));
+         HVLog.d("还原数据异常");
       } else {
-         String packageName = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDFk7KgcMVg==")));
-         int userId = this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28hAiw=")));
-         String ssid = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki02CWgFSFo=")));
-         String mac = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+OQ==")));
-         this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj02KWUVMFo=")));
-         String SSID_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki02CWgIGiFiAQZF")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + userId;
-         String MAC_KEY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+OWYzQStnAVRF")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + userId;
+         String packageName = this.getPropertyString(jsonObject, "packageName");
+         int userId = this.getPropertyInt(jsonObject, "userId");
+         String ssid = this.getPropertyString(jsonObject, "ssid");
+         String mac = this.getPropertyString(jsonObject, "mac");
+         this.getPropertyString(jsonObject, "bssid");
+         String SSID_KEY = "ssid_key" + packageName + "_" + userId;
+         String MAC_KEY = "mac_key" + packageName + "_" + userId;
          SPTools.putString(VirtualCore.get().getContext(), SSID_KEY, ssid);
          SPTools.putString(VirtualCore.get().getContext(), MAC_KEY, mac);
-         if (jsonObject.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+LGUaMAViHjBF"))) || jsonObject.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgACGgzAgZmDgo/")))) {
+         if (jsonObject.containsKey("latitude") || jsonObject.containsKey("longitude")) {
             VLocation mLatLng = new VLocation();
-            mLatLng.latitude = (double)this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+LGUaMAViHjBF")));
-            mLatLng.longitude = (double)this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgACGgzAgZmDgo/")));
-            mLatLng.altitude = (double)this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggELGUaMAViHjBF")));
-            mLatLng.accuracy = (float)this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWwaFjd9JwZF")));
-            mLatLng.speed = (float)this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki06M2gVMFo=")));
-            mLatLng.bearing = (float)this.getPropertyInt(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4uP28jAiZiJ1RF")));
+            mLatLng.latitude = (double)this.getPropertyInt(jsonObject, "latitude");
+            mLatLng.longitude = (double)this.getPropertyInt(jsonObject, "longitude");
+            mLatLng.altitude = (double)this.getPropertyInt(jsonObject, "altitude");
+            mLatLng.accuracy = (float)this.getPropertyInt(jsonObject, "accuracy");
+            mLatLng.speed = (float)this.getPropertyInt(jsonObject, "speed");
+            mLatLng.bearing = (float)this.getPropertyInt(jsonObject, "bearing");
             VirtualLocationManager.get().setMode(userId, packageName, 2);
             VirtualLocationManager.get().setLocation(userId, packageName, mLatLng);
          }
 
          int deviceId = BaseActivity.getDeviceId(packageName, userId);
          VDeviceConfig deviceConfig = VDeviceManager.get().getDeviceConfig(deviceId);
-         if (!jsonObject.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguLmUVLCtrDgoVKj0iOG8zGlo=")))) {
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjsMEWIhMFo=")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjsMEWIhMFo="))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHlo=")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwYAWWAbHlo="))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhUMUmAINBNuEVRF")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhUMUmAINBNuEVRF"))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAH0bLBU=")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYuAH0bLBU="))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjwAEWchMFo=")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JjwAEWchMFo="))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYYA2cLHhFvAVRF")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRYYA2cLHhFvAVRF"))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAYqVg==")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAYqVg=="))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwY+U2QbOBFlJQpKOzsMAg==")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwY+U2QbOBFlJQpKOzsMAg=="))));
-            deviceConfig.setProp(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTwYU2AxNF9pHywJIjw2Vg==")), this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JTwYU2AxNF9pHywJIjw2Vg=="))));
-            deviceConfig.serial = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCQ=")));
-            deviceConfig.deviceId = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguLmUVLCtrDgpF")));
-            deviceConfig.iccId = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAg2OX0VMFo=")));
-            deviceConfig.wifiMac = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YPmUbEjd9J1RF")));
-            deviceConfig.androidId = this.getPropertyString(jsonObject, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iHAYw")));
+         if (!jsonObject.containsKey("deviceIdEnable")) {
+            deviceConfig.setProp("BRAND", this.getPropertyString(jsonObject, "BRAND"));
+            deviceConfig.setProp("MODEL", this.getPropertyString(jsonObject, "MODEL"));
+            deviceConfig.setProp("PRODUCT", this.getPropertyString(jsonObject, "PRODUCT"));
+            deviceConfig.setProp("DEVICE", this.getPropertyString(jsonObject, "DEVICE"));
+            deviceConfig.setProp("BOARD", this.getPropertyString(jsonObject, "BOARD"));
+            deviceConfig.setProp("DISPLAY", this.getPropertyString(jsonObject, "DISPLAY"));
+            deviceConfig.setProp("ID", this.getPropertyString(jsonObject, "ID"));
+            deviceConfig.setProp("MANUFACTURER", this.getPropertyString(jsonObject, "MANUFACTURER"));
+            deviceConfig.setProp("FINGERPRINT", this.getPropertyString(jsonObject, "FINGERPRINT"));
+            deviceConfig.serial = this.getPropertyString(jsonObject, "serial");
+            deviceConfig.deviceId = this.getPropertyString(jsonObject, "deviceId");
+            deviceConfig.iccId = this.getPropertyString(jsonObject, "iccId");
+            deviceConfig.wifiMac = this.getPropertyString(jsonObject, "wifiMac");
+            deviceConfig.androidId = this.getPropertyString(jsonObject, "androidId");
             VDeviceManager.get().updateDeviceConfig(deviceId, deviceConfig);
          }
 
-         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlYdGkZJAx9YAwssAglADkcvPQ5BA1oR")));
+         HVLog.d("还原数据完成");
       }
    }
 
@@ -131,7 +131,7 @@ public class MirrorDataParse {
          this.mElement.put(property, (Double)object);
       } else {
          if (!(object instanceof Float)) {
-            throw new NullPointerException(property + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl5WOHsJIFo=")) + object + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("B1ZcREMXFzNZXl4oAgkdDGwaAiVlMz4tWhsCJxlNDCEGFSIvXiIqVg==")));
+            throw new NullPointerException(property + " :   " + object + "不能转成json 格式数据");
          }
 
          this.mElement.put(property, (Float)object);

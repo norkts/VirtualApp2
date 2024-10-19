@@ -13,7 +13,7 @@ public class MyTaskDescDelegate implements TaskDescriptionDelegate {
          return null;
       } else {
          int userId = VUserManager.get().getUserHandle();
-         String suffix = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl9fVg==")) + (userId + 1) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAhSVg=="));
+         String suffix = " (" + (userId + 1) + ")";
          String oldLabel = oldTaskDescription.getLabel() != null ? oldTaskDescription.getLabel() : "";
          return !oldLabel.endsWith(suffix) ? new ActivityManager.TaskDescription(oldTaskDescription.getLabel() + suffix, oldTaskDescription.getIcon(), oldTaskDescription.getPrimaryColor()) : oldTaskDescription;
       }

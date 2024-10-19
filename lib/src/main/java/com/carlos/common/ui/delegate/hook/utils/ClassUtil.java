@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ClassUtil {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4EP28wLFBmHgYo"));
+   private static final String TAG = "ClassUtil";
 
    public static void printMethodsInClass(String printTag, Class mClazz) {
       Method[] var2 = mClazz.getDeclaredMethods();
@@ -23,10 +23,10 @@ public class ClassUtil {
 
          for(int var13 = 0; var13 < var12; ++var13) {
             Class clazz = var11[var13];
-            types = types + clazz.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg=="));
+            types = types + clazz.getName() + ",";
          }
 
-         LogUtil.d(TAG, printTag + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgIM2wFRSViHFk7KgcLJQ==")) + methodName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BSEBQGwKAgJiDFk7KgcLJQ==")) + typeName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mxg2P2ojGiZjDig7KhUYOW8jBTM=")) + canonicalName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BSEBQEMWB1FYEwNBLBgcKmkkPyA=")) + types + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAhSVg==")));
+         LogUtil.d(TAG, printTag + " methodName=" + methodName + "，typeName=" + typeName + ",canonicalName=" + canonicalName + "，返回type=(" + types + ")");
          method.setAccessible(true);
       }
 
@@ -42,7 +42,7 @@ public class ClassUtil {
          field.setAccessible(true);
 
          try {
-            LogUtil.d(TAG, printTag + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgiCWgVHixoNCA3KARXVg==")) + fieldName);
+            LogUtil.d(TAG, printTag + " fieldName=" + fieldName);
          } catch (Throwable var8) {
             Throwable e = var8;
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class ClassUtil {
          field.setAccessible(true);
 
          try {
-            LogUtil.d(TAG, printTag + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgiCWgVHixoNCA3KARXVg==")) + fieldName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M1srElQNJVUVJ1RF")) + field.get(object));
+            LogUtil.d(TAG, printTag + " fieldName=" + fieldName + ",值是" + field.get(object));
          } catch (Throwable var9) {
             Throwable e = var9;
             e.printStackTrace();

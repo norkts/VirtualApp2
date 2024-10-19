@@ -53,11 +53,11 @@ import mirror.android.content.pm.ParceledListSlice;
 class MethodProxies {
    private static final int MATCH_FACTORY_ONLY = 2097152;
    private static final int MATCH_ANY_USER = 4194304;
-   private static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwguLGUFGixpESw1LRccPWoFSFo="));
+   private static String TAG = "MethodProxies";
 
    static class GetApplicationBlockedSettingAsUser extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaIAJgHgY5Lwg2MW8FMBRlEQYqIz4uIGkgLD9qHhodLwZbD2cKLD9vJ1RF"));
+         return "getApplicationBlockedSettingAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -70,7 +70,7 @@ class MethodProxies {
    @TargetApi(19)
    static class QueryIntentContentProviders extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAglgNwo/Kj42EW8FMAZrARo/IQcMKWYwGi9uASg8"));
+         return "queryIntentContentProviders";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -109,7 +109,7 @@ class MethodProxies {
 
    static class SetPackageStoppedState extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGcFJCljJCA9KAYqLm8KTQJrASwQKgg+CmIFSFo="));
+         return "setPackageStoppedState";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -126,7 +126,7 @@ class MethodProxies {
    @TargetApi(17)
    static class GetPermissionFlags extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFNARgDgYpIy0cDW8bHiRoASA6"));
+         return "getPermissionFlags";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -145,7 +145,7 @@ class MethodProxies {
 
    static class GetReceiverInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcjNCliDgYuKAguXm8VHiU="));
+         return "getReceiverInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -176,7 +176,7 @@ class MethodProxies {
 
    static class QueryIntentReceivers extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAglgNwo/Kj42AmkjAitqDiQgKS02Vg=="));
+         return "queryIntentReceivers";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -210,7 +210,7 @@ class MethodProxies {
 
    static class GetInstalledPackages extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VBgNmHiAoKhcMPmIzQSlqJzguLhc2Vg=="));
+         return "getInstalledPackages";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -245,7 +245,7 @@ class MethodProxies {
 
    static class GetInstalledApplications extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VBgNmHiAoKhcMPmYgTQJlER4qLRcqI2AgRTY="));
+         return "getInstalledApplications";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -275,7 +275,7 @@ class MethodProxies {
 
    static class SetComponentEnabledSetting extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMzGiNhHh42KAcYLmEjMDdoNwIgLgU2J2YVFixsNDxF"));
+         return "setComponentEnabledSetting";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -293,7 +293,7 @@ class MethodProxies {
 
    static class GetProviderInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFiVmNAYwKAguXm8VHiU="));
+         return "getProviderInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -322,15 +322,15 @@ class MethodProxies {
 
    static class GetApplicationInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaIAJgHgY5Lwg2MW8FMAllNyQc"));
+         return "getApplicationInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
          String pkg = (String)args[0];
          int flags = (int)this.getIntOrLongValue(args[1]);
          int userId = VUserHandle.myUserId();
-         if (pkg.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmkzGi5oJwYbKgg+I2AwLDU=")))) {
-            return VPackageManager.get().getApplicationInfo(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmowRSVvNx4vLhcMD04wFipqJB4bKQhbIGwjSFo=")), flags, userId);
+         if (pkg.equals("com.android.defcontainer")) {
+            return VPackageManager.get().getApplicationInfo("com.android.providers.downloads", flags, userId);
          } else if (getHostPkg().equals(pkg)) {
             replaceLastUserId(args);
             return method.invoke(who, args);
@@ -358,7 +358,7 @@ class MethodProxies {
 
    static class ResolveIntent extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWozHj5iDAY2LBcMDmUzSFo="));
+         return "resolveIntent";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -382,7 +382,7 @@ class MethodProxies {
 
    static class ActivitySupportsIntent extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQYPLAgmKm8KRQZsJR4bKgguKmYVSFo="));
+         return "activitySupportsIntent";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -395,7 +395,7 @@ class MethodProxies {
 
    static class DeletePackage extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguDmgaMCtpHiA5KS0iM2kjSFo="));
+         return "deletePackage";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -405,7 +405,7 @@ class MethodProxies {
             VirtualCore.get().uninstallPackage(pkgName);
             IPackageDeleteObserver2 observer = (IPackageDeleteObserver2)args[1];
             if (observer != null) {
-               observer.onPackageDeleted(pkgName, 0, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgACGhSBlo=")));
+               observer.onPackageDeleted(pkgName, 0, "done.");
             }
          } catch (Throwable var6) {
          }
@@ -416,7 +416,7 @@ class MethodProxies {
 
    static class getNameForUid extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIjJCNiDDw1IzwMMWkzSFo="));
+         return "getNameForUid";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -435,7 +435,7 @@ class MethodProxies {
 
    static class checkUidSignatures extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQVBjDgoPKQc6Dm4gBgVsNyg6"));
+         return "checkUidSignatures";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -458,7 +458,7 @@ class MethodProxies {
    @SuppressLint({"PackageManagerGetSignatures"})
    static class CheckSignatures extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQV5jDjg2Lwg2LWoVGgM="));
+         return "checkSignatures";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -474,7 +474,7 @@ class MethodProxies {
 
    static class SetApplicationEnabledSetting extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMaIAJgHgY5Lwg2MW8FMBVlNzgpLAguIGkgLD9qHhodLwhSVg=="));
+         return "setApplicationEnabledSetting";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -489,7 +489,7 @@ class MethodProxies {
 
    static class QueryContentProviders extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAhNgJFkgKAcYLmIwRSVvNx4vLhcMDw=="));
+         return "queryContentProviders";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -519,7 +519,7 @@ class MethodProxies {
 
    static class GetPersistentApplications extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFNARhJAYpLBcMDmUxQQJsEQIaLT4+CmMKAillJ1RF"));
+         return "getPersistentApplications";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -529,13 +529,13 @@ class MethodProxies {
 
    static class QuerySliceContentProviders extends QueryContentProviders {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAl5gHgY5KAUqDW8aBitlNCwRKS4AMmMKFiBlNyxF"));
+         return "querySliceContentProviders";
       }
    }
 
    static class GetPackagesForUid extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAgqWW8KRVBqASxF"));
+         return "getPackagesForUid";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -563,7 +563,7 @@ class MethodProxies {
 
    static class CheckPermission extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQUxiASw3KQgqL2wjNCY="));
+         return "checkPermission";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -584,7 +584,7 @@ class MethodProxies {
 
    static class AddPackageToPreferred extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGcFJCljJCA9KAY2DWIwRStrNyg5KS4uIA=="));
+         return "addPackageToPreferred";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -594,7 +594,7 @@ class MethodProxies {
 
    static class CanRequestPackageInstalls extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGcjNAFmDjApLBYmOW4FJDdrJyhPLC02Cn0KTTdlJ1RF"));
+         return "canRequestPackageInstalls";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -610,7 +610,7 @@ class MethodProxies {
 
    static class GetApplicationEnabledSetting extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaIAJgHgY5Lwg2MW8FMBVlNzgpLAguIGkgLD9qHhodLwhSVg=="));
+         return "getApplicationEnabledSetting";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -628,7 +628,7 @@ class MethodProxies {
 
    static class SetApplicationBlockedSettingAsUser extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMaIAJgHgY5Lwg2MW8FMBRlEQYqIz4uIGkgLD9qHhodLwZbD2cKLD9vJ1RF"));
+         return "setApplicationBlockedSettingAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -644,7 +644,7 @@ class MethodProxies {
 
    static class DeleteApplicationCacheFiles extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguDmgaMCtlASQsKhccP24gBi9lJxoALRg2LGIIICxsHgo8"));
+         return "deleteApplicationCacheFiles";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -680,7 +680,7 @@ class MethodProxies {
 
    static final class GetPackageInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAUcDmkVNFo="));
+         return "getPackageInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -715,7 +715,7 @@ class MethodProxies {
 
    static class GetPermissionInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFNARgDgYpIy0cDW8bLCZrNwZF"));
+         return "getPermissionInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -732,7 +732,7 @@ class MethodProxies {
 
    static class GetPermissionGroupInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFNARgDgYpIy0cDW8bEgRlJCg7OxgcImAjSFo="));
+         return "getPermissionGroupInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -749,7 +749,7 @@ class MethodProxies {
 
    static class ClearPackagePersistentPreferredActivities extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4EM2saFkx9DigxLwc6PWIzGgRsJx46KgguKmYbODVuDjguLBdfJ2sbJDVsAR4hJQgMIG4FMFo="));
+         return "clearPackagePersistentPreferredActivities";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -761,7 +761,7 @@ class MethodProxies {
 
    static class ResolveService extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWozHj5iDyg/Iz4+MW4FGlo="));
+         return "resolveService";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -787,7 +787,7 @@ class MethodProxies {
 
    static class QueryIntentActivities extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAglgNwo/Kj42E24KBi9vNx4/IxguDw=="));
+         return "queryIntentActivities";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -827,13 +827,13 @@ class MethodProxies {
 
    static class GetPackageGidsEtc extends GetPackageGids {
       public String getMethodName() {
-         return super.getMethodName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcqOQ=="));
+         return super.getMethodName() + "Etc";
       }
    }
 
    static class IsPackageForzen extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2AmsVLCF9Djg/ID1fKGgVGiY="));
+         return "isPackageForzen";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -847,7 +847,7 @@ class MethodProxies {
 
    static class GetPermissions extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFNARgDgYpIy0cDW8aAlo="));
+         return "getPermissions";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -858,7 +858,7 @@ class MethodProxies {
 
    static class QueryIntentServices extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAglgNwo/Kj42AWkgRT5qATAgKT5SVg=="));
+         return "queryIntentServices";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -911,7 +911,7 @@ class MethodProxies {
 
    static class ResolveContentProvider extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWozHj5iDCg1Kj42PW8aBkxsNwY9IxgqJ2EzSFo="));
+         return "resolveContentProvider";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -933,7 +933,7 @@ class MethodProxies {
 
    static class ClearPackagePreferredActivities extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4EM2saFkx9DigxLwc6PWIwRStrNyg5KS4uIGUKND9vATgiIz42J2wjSFo="));
+         return "clearPackagePreferredActivities";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -944,7 +944,7 @@ class MethodProxies {
 
    static class RevokeRuntimePermission extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uLmozQStpNzA2LBccD2kmTStsNw4aKT02I2AgRVo="));
+         return "revokeRuntimePermission";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -960,7 +960,7 @@ class MethodProxies {
 
    static class GetPackageGids extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAU6MWkwAlo="));
+         return "getPackageGids";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -980,7 +980,7 @@ class MethodProxies {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAUcDmoKBjdlEQIgKS5SVg=="));
+         return "getPackageInstaller";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -995,72 +995,72 @@ class MethodProxies {
             }
 
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-               VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDAY2Iy42OW8zOCtsN1RF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoJIFo=")) + method.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl8HJnsFSFo=")) + Arrays.toString(args));
+               VLog.e("PackageInstaller", "call " + method.getName() + " -> " + Arrays.toString(args));
                String var4 = method.getName();
                byte var5 = -1;
                switch (var4.hashCode()) {
                   case -1776922004:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRgAA2wKFi9gNDhF")))) {
+                     if (var4.equals("toString")) {
                         var5 = 12;
                      }
                      break;
                   case -663066834:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczNANhJAY1KjscDmkVNFo=")))) {
+                     if (var4.equals("getSessionInfo")) {
                         var5 = 6;
                      }
                      break;
                   case -652885011:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtpJDApIy0cDW8bQQJsHx4qLD4cVg==")))) {
+                     if (var4.equals("updateSessionAppIcon")) {
                         var5 = 2;
                      }
                      break;
                   case -403218424:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwfLwdbCG4VQSlqJ1RF")))) {
+                     if (var4.equals("registerCallback")) {
                         var5 = 9;
                      }
                      break;
                   case -298116903:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcwMDdiJDAwOy0ML2oFLCVlNDBF")))) {
+                     if (var4.equals("getStagedSessions")) {
                         var5 = 0;
                      }
                      break;
                   case -93516191:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggMP2ojMCVgNSg/Iy4qMW8FMFo=")))) {
+                     if (var4.equals("abandonSession")) {
                         var5 = 4;
                      }
                      break;
                   case -63461894:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtpJDApIy0cDW8VSFo=")))) {
+                     if (var4.equals("createSession")) {
                         var5 = 1;
                      }
                      break;
                   case 938656808:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRpJDApIy0cDW8aAlo=")))) {
+                     if (var4.equals("getAllSessions")) {
                         var5 = 7;
                      }
                      break;
                   case 1170196863:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGcFNARgDgYpIy0cDW8aAl9rDjAwLAcqVg==")))) {
+                     if (var4.equals("setPermissionsResult")) {
                         var5 = 11;
                      }
                      break;
                   case 1238099456:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtpJDApIy0cDW8bQQJsHwIsLS4uKA==")))) {
+                     if (var4.equals("updateSessionAppLabel")) {
                         var5 = 3;
                      }
                      break;
                   case 1568181855:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIaAl5iASgpKQdfDmoFSFo=")))) {
+                     if (var4.equals("getMySessions")) {
                         var5 = 8;
                      }
                      break;
                   case 1738611873:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcKmgVPC9hJwo/IzsqOW8zOCpoATAi")))) {
+                     if (var4.equals("unregisterCallback")) {
                         var5 = 10;
                      }
                      break;
                   case 1788161260:
-                     if (var4.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy06M2omLCthJygzKi0YVg==")))) {
+                     if (var4.equals("openSession")) {
                         var5 = 5;
                      }
                }
@@ -1133,10 +1133,10 @@ class MethodProxies {
                      vInstaller.setPermissionsResult(sessionId, accepted);
                      return 0;
                   case 12:
-                     return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDAY2Iy42OW8zOCtsN1RF"));
+                     return "PackageInstaller";
                   default:
-                     VLog.printStackTrace(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDAY2Iy42OW8zOCtsN1RF")));
-                     throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4ALHsKLAVhESQ1Iz41OmIzQSlqJzguLhYYKmEjFiRsHl0uLF9XL2sKMAZqNy83MTkiVg==")) + method.getName());
+                     VLog.printStackTrace("PackageInstaller");
+                     throw new RuntimeException("Not support PackageInstaller method : " + method.getName());
                }
             }
          });
@@ -1145,13 +1145,13 @@ class MethodProxies {
 
    static class GetPackageUidEtc extends GetPackageUid {
       public String getMethodName() {
-         return super.getMethodName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcqOQ=="));
+         return super.getMethodName() + "Etc";
       }
    }
 
    static class GetActivityInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLAZjATwzLBgcXm8VHiU="));
+         return "getActivityInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1183,7 +1183,7 @@ class MethodProxies {
 
    static class GetPackageUid extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAYMMWkzSFo="));
+         return "getPackageUid";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1200,7 +1200,7 @@ class MethodProxies {
 
    static class GetServiceInfo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczNARmNAY5KAUcDmkVNFo="));
+         return "getServiceInfo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1229,7 +1229,7 @@ class MethodProxies {
 
    static class RemovePackageFromPreferred extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtpHiA5KS0iM2khHgRlJw4RKS4uImIFMDVuDjBF"));
+         return "removePackageFromPreferred";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1240,7 +1240,7 @@ class MethodProxies {
 
    static class GetComponentEnabledSetting extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzGiNhHh42KAcYLmEjMDdoNwIgLgU2J2YVFixsNDxF"));
+         return "getComponentEnabledSetting";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1251,7 +1251,7 @@ class MethodProxies {
 
    static class GetPreferredActivities extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFitiNDAqIz0MPmYjAgZqDiQaKggYJ2EjSFo="));
+         return "getPreferredActivities";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1262,11 +1262,11 @@ class MethodProxies {
 
    static class GetInstallerPackageName extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLH0VBgNmHiAoKhcMKGIzQSlqJzguLhYcO2AKLFo="));
+         return "getInstallerPackageName";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmUVGiZrER4bLj5SVg=="));
+         return "com.android.vending";
       }
 
       public boolean isEnable() {
@@ -1276,7 +1276,7 @@ class MethodProxies {
 
    static class IsPackageAvailable extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2AmsVLCF9Djg/Jwg+OWwjODdoNwIg"));
+         return "isPackageAvailable";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1296,7 +1296,7 @@ class MethodProxies {
 
    static class CanForwardTo extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGAjGgRmJCAqKBY2DQ=="));
+         return "canForwardTo";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1312,7 +1312,7 @@ class MethodProxies {
 
    static class GetUidForSharedUser extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQVAixqNB4qOy0AOWoVGixnDjAgKS5SVg=="));
+         return "getUidForSharedUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1327,7 +1327,7 @@ class MethodProxies {
 
    static class GetSharedLibraries extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczRTdhNDAwIhccOGoVQQRqASg6"));
+         return "getSharedLibraries";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1348,7 +1348,7 @@ class MethodProxies {
 
    static class CheckPackageStartable extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQUx9DigxLwc6PWIKBjdsNCwsLS4EJw=="));
+         return "checkPackageStartable";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1368,7 +1368,7 @@ class MethodProxies {
 
    static class FreeStorageAndNotify extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT0MM2gYLAZgJyw7KC0ME28VBgBlJCwaLi0YVg=="));
+         return "freeStorageAndNotify";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1387,7 +1387,7 @@ class MethodProxies {
 
    static class FreeStorage extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT0MM2gYLAZgJyw7KC0MVg=="));
+         return "freeStorage";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {

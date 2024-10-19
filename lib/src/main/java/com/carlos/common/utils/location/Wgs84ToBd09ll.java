@@ -15,7 +15,7 @@ public class Wgs84ToBd09ll {
       double theta = Math.atan2(y, x) - 3.0E-6 * Math.cos(x * x_PI);
       double gg_lng = z * Math.cos(theta);
       double gg_lat = z * Math.sin(theta);
-      return gg_lng + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")) + gg_lat;
+      return gg_lng + "," + gg_lat;
    }
 
    private String gcj02tobd09(double lng, double lat) {
@@ -23,7 +23,7 @@ public class Wgs84ToBd09ll {
       double theta = Math.atan2(lat, lng) + 3.0E-6 * Math.cos(lng * x_PI);
       double bd_lng = z * Math.cos(theta) + 0.0065;
       double bd_lat = z * Math.sin(theta) + 0.006;
-      return bd_lng + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")) + bd_lat;
+      return bd_lng + "," + bd_lat;
    }
 
    private String wgs84togcj02(double lng, double lat) {
@@ -37,7 +37,7 @@ public class Wgs84ToBd09ll {
       dlng = dlng * 180.0 / (a / sqrtmagic * Math.cos(radlat) * PI);
       double mglat = lat + dlat;
       double mglng = lng + dlng;
-      return mglng + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")) + mglat;
+      return mglng + "," + mglat;
    }
 
    private String gcj02towgs84(double lng, double lat) {
@@ -51,7 +51,7 @@ public class Wgs84ToBd09ll {
       dlng = dlng * 180.0 / (a / sqrtmagic * Math.cos(radlat) * PI);
       double mglat = lat + dlat;
       double mglng = lng + dlng;
-      return mglat + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")) + mglng;
+      return mglat + "," + mglng;
    }
 
    public String wgs84tobd09(double lng, double lat) {
@@ -69,7 +69,7 @@ public class Wgs84ToBd09ll {
       double theta = Math.atan2(mglat, mglng) + 3.0E-6 * Math.cos(mglng * x_PI);
       double bd_lng = z * Math.cos(theta) + 0.0065;
       double bd_lat = z * Math.sin(theta) + 0.006;
-      return bd_lng + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")) + bd_lat;
+      return bd_lng + "," + bd_lat;
    }
 
    private double transformlat(double lng, double lat) {

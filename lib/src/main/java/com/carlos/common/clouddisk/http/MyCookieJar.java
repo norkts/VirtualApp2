@@ -43,12 +43,12 @@ public class MyCookieJar implements CookieJar {
    }
 
    public static void print() {
-      Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AD2UzAis=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoFSFo=")));
+      Log.d("cookie", "null");
       Iterator<Cookie> it = cache.iterator();
 
       while(it.hasNext()) {
          Cookie s = (Cookie)it.next();
-         Log.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AD2UzAis=")), s.toString());
+         Log.d("cookie", s.toString());
       }
 
    }

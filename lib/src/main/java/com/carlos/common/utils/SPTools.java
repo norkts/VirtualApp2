@@ -13,8 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class SPTools {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JC4AD2U2LCB9ASw/KBYmKGkjHitsNygbLT4uDw=="));
-   private static final String FILE_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5fP28jNCxpESw/KD0MKGkjMClrDjBF"));
+   private static final String TAG = "KookSharedPreferences";
+   private static final String FILE_NAME = "sharedPreferences";
    private static SharedPreferences mSharedPreferences;
    private static SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener;
 
@@ -90,7 +90,7 @@ public class SPTools {
       editor.putInt(keyname, values.size());
 
       for(int i = 0; i < values.size(); ++i) {
-         editor.putInt(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i, (Integer)values.get(i));
+         editor.putInt(keyname + "_" + i, (Integer)values.get(i));
       }
 
       boolean b = editor.commit();
@@ -153,9 +153,9 @@ public class SPTools {
       int environNums = shared.getInt(keyname, 0);
 
       for(int i = 0; i < environNums; ++i) {
-         String key = keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i;
+         String key = keyname + "_" + i;
          if (shared.contains(key)) {
-            int environItem = shared.getInt(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i, 0);
+            int environItem = shared.getInt(keyname + "_" + i, 0);
             environmentList.add(environItem);
          }
       }
@@ -169,7 +169,7 @@ public class SPTools {
       editor.putInt(keyname, values.size());
 
       for(int i = 0; i < values.size(); ++i) {
-         editor.putString(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i, (String)values.get(i));
+         editor.putString(keyname + "_" + i, (String)values.get(i));
       }
 
       boolean b = editor.commit();
@@ -184,9 +184,9 @@ public class SPTools {
       int environNums = shared.getInt(keyname, 0);
 
       for(int i = 0; i < environNums; ++i) {
-         String key = keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i;
+         String key = keyname + "_" + i;
          if (shared.contains(key)) {
-            String environItem = shared.getString(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i, (String)null);
+            String environItem = shared.getString(keyname + "_" + i, (String)null);
             environmentList.add(environItem);
          }
       }
@@ -209,7 +209,7 @@ public class SPTools {
    public static void removeListItem(Context context, String keyname, Object value) {
       if (value instanceof String || value instanceof Integer) {
          try {
-            throw new Exception(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+DmwVNyhYKyUhAhoVXEcsMRVAFT0yAD9cKUsaGilqVyIvXwkCLBVJNzRnNCwbJQdfLg==")));
+            throw new Exception("value 类型必须是 int 或者 String");
          } catch (Exception var8) {
             Exception e = var8;
             e.printStackTrace();
@@ -222,15 +222,15 @@ public class SPTools {
 
       for(int i = 0; i < environNums; ++i) {
          if (value instanceof Integer) {
-            int environItem = shared.getInt(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i, 0);
+            int environItem = shared.getInt(keyname + "_" + i, 0);
             if (environItem == (Integer)value) {
-               editor.remove(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i);
+               editor.remove(keyname + "_" + i);
                editor.commit();
             }
          } else if (value instanceof String) {
-            String environItem = shared.getString(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i, (String)null);
+            String environItem = shared.getString(keyname + "_" + i, (String)null);
             if (environItem.equals((String)value)) {
-               editor.remove(keyname + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jy5SVg==")) + i);
+               editor.remove(keyname + "_" + i);
                editor.commit();
             }
          }

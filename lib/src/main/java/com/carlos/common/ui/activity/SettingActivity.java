@@ -58,17 +58,17 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
    }
 
    public static void copy(String content, Context context) {
-      ClipboardManager cmb = (ClipboardManager)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ECW8FFiV9ASww")));
+      ClipboardManager cmb = (ClipboardManager)context.getSystemService("clipboard");
       cmb.setText(content.trim());
-      Toasty.success(context, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByEBAEYBLRFYFT0qAhsNUkctEz4=")), 1);
+      Toasty.success(context, "编码已复制", 1);
    }
 
    public void initData() {
       DeviceInfo instance = DeviceInfo.getInstance(this);
-      this.toolbar_title.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcZJkYGHyY=")));
-      this.txtVersionCode.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PFsrOxg7MQkdFj0JXlo7GFUzSFo=")) + instance.getVersionName(this) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAhSVg==")) + instance.getVersionCode());
-      this.txtQQNumber.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcdLUYHEz9YED0hA0A/AEcWDzFBFR8pAD8BAWkLPyNEEyVTARs7L0EHGx1GAl48HgoFM0QHISZ/Pw86EyYrPBorMSxVPAsVWCU7L1ozSFo=")));
-      this.activationTv.setText(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BwsdEkYsPTFYNgcuAgkjEw==")));
+      this.toolbar_title.setText("设置");
+      this.txtVersionCode.setText("(当前版本" + instance.getVersionName(this) + ")" + instance.getVersionCode());
+      this.txtQQNumber.setText("请点击联系客服QQ 后续持续更新,请多多关注");
+      this.activationTv.setText("激活状态");
       this.activationTv.setOnClickListener((view) -> {
          this.devicesNo.setText(instance.getDevicesNo());
          copy(instance.getDevicesNo(), this);
@@ -76,7 +76,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
    }
 
    public static String timeMillisToFormat(long timestamp) {
-      String time = (new SimpleDateFormat(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KAcYJ2lWMT8bHF0NAgpYX2kzAC4YKysrOwZdIlQvIChsFg9MXBcYD0EvOQA=")))).format(new Date(timestamp));
+      String time = (new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒")).format(new Date(timestamp));
       return time;
    }
 
@@ -96,20 +96,20 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
       } else {
          String updateUrl;
          if (view.getId() == id.txtAddFriend) {
-            if (isAppInstall(this.getPackageManager(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8jNCpqAQIgKRc+Vg==")))) {
-               updateUrl = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwc+L2wwIDd3MBE1KQdWDW4FFjdvVwYqIwg+CmwjFgZlHg02IwdXO3swNAVqIAEvCTotOHsJNyV1N1RF"));
-               this.startActivity(new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xIBZmDzxF")), Uri.parse(updateUrl)));
+            if (isAppInstall(this.getPackageManager(), "com.tencent.mobileqq")) {
+               updateUrl = "mqqwpa://im/chat?chat_type=wpa&uin=82319214";
+               this.startActivity(new Intent("android.intent.action.VIEW", Uri.parse(updateUrl)));
             } else {
-               Toasty.info(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BlcdLUZaAwlZXy0VOwYgPVVaRy4GXyIuWAwAVg=="))).show();
+               Toasty.info(this, "请安装QQ客户端").show();
             }
          } else if (view.getId() == id.relaQuestions) {
-            Toasty.success(this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxsBEkZJB0hYXh83KQcYMw=="))).show();
+            Toasty.success(this, "开发中ing").show();
          } else if (view.getId() == id.relaUpdate) {
             if (this.isUpgrade()) {
                if (this.mSoftVersions != null) {
                   updateUrl = this.mSoftVersions.getUpdateUrl();
                   Uri uri = Uri.parse(updateUrl);
-                  Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xIBZmDzxF")), uri);
+                  Intent intent = new Intent("android.intent.action.VIEW", uri);
                   this.startActivity(intent);
                }
             } else {

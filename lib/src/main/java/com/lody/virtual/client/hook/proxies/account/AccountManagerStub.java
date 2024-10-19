@@ -21,15 +21,15 @@ public class AccountManagerStub extends BinderInvocationProxy {
    private static VAccountManager Mgr = VAccountManager.get();
 
    public AccountManagerStub() {
-      super(IAccountManager.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmEVRF")));
+      super(IAccountManager.Stub.asInterface, "account");
    }
 
    public void inject() throws Throwable {
       super.inject();
 
       try {
-         AccountManager accountManager = (AccountManager)this.getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmEVRF")));
-         Reflect.on((Object)accountManager).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwU2M28gOC99JDBF")), ((BinderInvocationStub)this.getInvocationStub()).getProxyInterface());
+         AccountManager accountManager = (AccountManager)this.getContext().getSystemService("account");
+         Reflect.on((Object)accountManager).set("mService", ((BinderInvocationStub)this.getInvocationStub()).getProxyInterface());
       } catch (Throwable var2) {
          Throwable e = var2;
          e.printStackTrace();
@@ -95,7 +95,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcKmgVPC9hJwo/IzsiP24FNAVlNCxTIxc2CmIKRSBlN1RF"));
+         return "unregisterAccountListener";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -115,7 +115,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwRLy0qDWUjMAZ9ER46KgguKmIFMFo="));
+         return "registerAccountListener";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -135,7 +135,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMFBhHgo7LBcMEWoVGixrARo/Ixg+KGEhNCBlJywiKQgqVg=="));
+         return "startUpdateCredentialsSession";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -155,7 +155,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMBFiHgoRLy0qDWUjMAZkJyg6KT4YKWAzSFo="));
+         return "startAddAccountSession";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -175,7 +175,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMVLClgJzA2LBY+MWoFLCpqAQIaKgcYVg=="));
+         return "setAccountVisibility";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -194,7 +194,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJCljJCA9KAgqE28VBlNqDjAaLS4YKGMFFgZmNFk7IC4YJWUgNARsAVRF"));
+         return "getPackagesAndVisibilityForAccount";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -213,7 +213,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBgqE28VBlNqDjAaLS4YKGMFFgZmNFk7JD5bJWojJDFoEVRF"));
+         return "getAccountsAndVisibilityForPackage";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -232,7 +232,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGMVLClgJzA2LBUMImozOC9oJx4/LAcYXmMFFitiNBo8Ki5fI2UVAiBpEVRF"));
+         return "addAccountExplicitlyWithVisibility";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -251,7 +251,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBY+MWoFLCpqAQIaKgcYVg=="));
+         return "getAccountVisibility";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -270,7 +270,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YCGUaLCBpJDApIy0cDW8bQQNnDjAgKS5SVg=="));
+         return "finishSessionAsUser";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -287,7 +287,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
    @TargetApi(26)
    private static class isCredentialsUpdateSuggested extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2E28jNCxiDlkgKQciCGoIGgJrETg/LhU2CWIgJCBlJzAuLz5SVg=="));
+         return "isCredentialsUpdateSuggested";
       }
 
       public Object call(Object obj, Method method, Object... objArr) throws Throwable {
@@ -301,7 +301,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uCGsVEitpJBo7Iz0MPmYjAillJCgbKgY+D24FNCBlN1RF"));
+         return "renameSharedAccountAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -322,7 +322,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFitmNAY1LAgqQG4jPCs="));
+         return "getPreviousName";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -341,7 +341,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uCGsVEitlDig5Ki4MDmUzSFo="));
+         return "renameAccount";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -363,7 +363,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtpJBo7Iz0MPmYjAillJCgbKgY+D24FNCBlN1RF"));
+         return "removeSharedAccountAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -383,7 +383,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGczRTdhNDAwJwcqP28KGiZvHjACKTsuD2IFMFo="));
+         return "getSharedAccountsAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -402,7 +402,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGczRTdhNDAwJwcqP28KGiZvHzg6Ihc2J2EzSFo="));
+         return "addSharedAccountAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -422,7 +422,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaNAZjHwo1KS0MDmczQSprAQJF"));
+         return "getAuthTokenLabel";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -444,7 +444,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHCAvLBcAPW8aBi9oJzg/LhgqVg=="));
+         return "accountAuthenticated";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -463,7 +463,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGgjAgRgDCgqKAc2PW8aBi9oAQI6JRc2XGEgLDU="));
+         return "confirmCredentialsAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -486,7 +486,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQgqCWwIIARgJyQ/Iz42MWkgAlo="));
+         return "editProperties";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -508,7 +508,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtlJyw/KBcMDmUzLDdlHjBF"));
+         return "updateCredentials";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -532,7 +532,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGMVLClgJzA2LBUiL30gAitsN1RF"));
+         return "addAccountAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -557,7 +557,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGMVLClgJzA2LBhSVg=="));
+         return "addAccount";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -582,7 +582,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaNAZjHwo1KS0MDg=="));
+         return "getAuthToken";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -607,7 +607,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtlASQsOxcMKG8jLANsJx4cLC5SVg=="));
+         return "updateAppPermission";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -630,7 +630,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQaLCthMgo7LBciVg=="));
+         return "setUserData";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -652,7 +652,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4EM2saFkx9ASgpLC1fKGkzSFo="));
+         return "clearPassword";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -672,7 +672,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGcFJANhJzg1Iz02Vg=="));
+         return "setPassword";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -693,7 +693,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMaNAZjHwo1KS0MDg=="));
+         return "setAuthToken";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -715,7 +715,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhguM2UxJAVmHhpLKi0EPW8VSFo="));
+         return "peekAuthToken";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -735,7 +735,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLmsVHi9iHiAgKAUiLWUzFlFlJ10gLC5SVg=="));
+         return "invalidateAuthToken";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -756,7 +756,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AKGkbJCl9JB4vKj42AG8IGgNrDgpF"));
+         return "copyAccountToUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -779,7 +779,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtlDig5Ki4MDmUxGjBsEQIaLT4YCmAVGlo="));
+         return "removeAccountExplicitly";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -798,7 +798,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtlDig5Ki4MDmUxQQNnDjAgKS5SVg=="));
+         return "removeAccountAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -820,7 +820,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtlDig5Ki4MDmUzSFo="));
+         return "removeAccount";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -842,7 +842,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGMVLClgJzA2LBUMImozOC9oJx4/LAcYVg=="));
+         return "addAccountExplicitly";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -863,7 +863,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBgqEmghHitoDiwwKS4uDw=="));
+         return "getAccountsByFeatures";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -885,7 +885,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBg+KWAjNDdmETAqKAgqVg=="));
+         return "hasFeatures";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -907,7 +907,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBgqE2oIGgNrDgpF"));
+         return "getAccountsAsUser";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -923,7 +923,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
 
    private static class getAccountByTypeAndFeatures extends MethodProxy {
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBUuIX0wLAJrDzgbLgYiJ30FFjBlNAo8"));
+         return "getAccountByTypeAndFeatures";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -938,7 +938,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBgqEmgmBj9sEShILD0MQH0KNC5pDjwu"));
+         return "getAccountsByTypeForPackage";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -958,7 +958,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBgqWW8KRUxoATAiLRgmJw=="));
+         return "getAccountsForPackage";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -977,7 +977,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVLClgJzA2LBgqVg=="));
+         return "getAccounts";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -996,7 +996,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaNAZjHjA2LBccP24gBiVsMiw0KQguDw=="));
+         return "getAuthenticatorTypes";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1014,7 +1014,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQaLCthMgo7LBciVg=="));
+         return "getUserData";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {
@@ -1034,7 +1034,7 @@ public class AccountManagerStub extends BinderInvocationProxy {
       }
 
       public String getMethodName() {
-         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcFJANhJzg1Iz02Vg=="));
+         return "getPassword";
       }
 
       public Object call(Object who, Method method, Object... args) throws Throwable {

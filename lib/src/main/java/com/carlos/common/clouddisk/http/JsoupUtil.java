@@ -41,8 +41,8 @@ public class JsoupUtil {
          return null;
       } else {
          Document doc = Jsoup.parseBodyFragment(html);
-         Element image = doc.select(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgIPQ=="))).first();
-         return image == null ? null : image.attr(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0MOQ==")));
+         Element image = doc.select("img").first();
+         return image == null ? null : image.attr("src");
       }
    }
 }

@@ -40,11 +40,11 @@ public class ShadowJobWorkService extends Service {
       if (intent != null) {
          String action = intent.getAction();
          JobParameters jobParams;
-         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUVGiZONyggLwguLmQVNCo=")).equals(action)) {
-            jobParams = (JobParameters)intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOmcFJAR9Dl0p")));
+         if ("action.startJob".equals(action)) {
+            jobParams = (JobParameters)intent.getParcelableExtra("jobParams");
             this.startJob(jobParams);
-         } else if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUVGiZONyggKi4mXW8FRVo=")).equals(action)) {
-            jobParams = (JobParameters)intent.getParcelableExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOmcFJAR9Dl0p")));
+         } else if ("action.stopJob".equals(action)) {
+            jobParams = (JobParameters)intent.getParcelableExtra("jobParams");
             this.stopJob(jobParams);
          }
       }
@@ -54,15 +54,15 @@ public class ShadowJobWorkService extends Service {
 
    public static void startJob(Context context, JobParameters jobParams) {
       Intent intent = new Intent(context, ShadowJobWorkService.class);
-      intent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUVGiZONyggLwguLmQVNCo=")));
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOmcFJAR9Dl0p")), jobParams);
+      intent.setAction("action.startJob");
+      intent.putExtra("jobParams", jobParams);
       context.startService(intent);
    }
 
    public static void stopJob(Context context, JobParameters jobParams) {
       Intent intent = new Intent(context, ShadowJobWorkService.class);
-      intent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUVGiZONyggKi4mXW8FRVo=")));
-      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOmcFJAR9Dl0p")), jobParams);
+      intent.setAction("action.stopJob");
+      intent.putExtra("jobParams", jobParams);
       context.startService(intent);
    }
 
@@ -80,11 +80,11 @@ public class ShadowJobWorkService extends Service {
    public void onCreate() {
       super.onCreate();
       InvocationStubManager.getInstance().checkEnv(ActivityManagerStub.class);
-      this.mScheduler = (JobScheduler)this.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4AOm8zLCBiDgovKhcMKA==")));
+      this.mScheduler = (JobScheduler)this.getSystemService("jobscheduler");
    }
 
    public void onDestroy() {
-      VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEcLCwqJ2EjFjVsJxpF")));
+      VLog.i(TAG, "ShadowJobService:onDestroy");
       synchronized(this.mJobSessions) {
          int i = this.mJobSessions.size() - 1;
 
@@ -132,7 +132,7 @@ public class ShadowJobWorkService extends Service {
                service.setComponent(new ComponentName(key.packageName, config.serviceName));
 
                try {
-                  VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEpIxgcUmIFMDFvDiwuPl8AD3VSID5qNwoWJF9aLGUjSFo=")), service.getComponent(), jobId);
+                  VLog.i(TAG, "ShadowJobService:binService:%s, jobId=%s", service.getComponent(), jobId);
                   bound = VActivityManager.get().bindService(this, service, session, 5, VUserHandle.getUserId(key.vuid));
                } catch (Throwable var16) {
                   Throwable e = var16;
@@ -159,7 +159,7 @@ public class ShadowJobWorkService extends Service {
       synchronized(this.mJobSessions) {
          JobSession session = (JobSession)this.mJobSessions.get(jobId);
          if (session != null) {
-            VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qD28LTSV9MwU/KBhSVg==")), jobId);
+            VLog.i(TAG, "stopJob:%d", jobId);
             session.stopSessionLocked();
          }
 
@@ -184,31 +184,31 @@ public class ShadowJobWorkService extends Service {
 
       public void acknowledgeStartMessage(int jobId, boolean ongoing) throws RemoteException {
          this.isWorking = true;
-         VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEsLT5bKmAjJDduDjAgLysYCmgKFiBiESgcJy0mLm4JHTFpN1RF")), this.jobId);
+         VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:acknowledgeStartMessage:%d", this.jobId);
          this.clientCallback.acknowledgeStartMessage(this.jobId, ongoing);
       }
 
       public void acknowledgeStopMessage(int jobId, boolean reschedule) throws RemoteException {
          this.isWorking = false;
-         VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEsLT5bKmAjJDduDjAgLysYCmUgIEhoHjAcOwc+LHs0FjI=")), this.jobId);
+         VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:acknowledgeStopMessage:%d", this.jobId);
          this.clientCallback.acknowledgeStopMessage(this.jobId, reschedule);
       }
 
       public void jobFinished(int jobId, boolean reschedule) throws RemoteException {
          this.isWorking = false;
-         VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEhLD4MBGMKRSxlJAYuLzk5J2sVSFo=")), this.jobId);
+         VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:jobFinished:%d", this.jobId);
          this.clientCallback.jobFinished(this.jobId, reschedule);
       }
 
       public boolean completeWork(int jobId, int workId) throws RemoteException {
-         VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEqLD4IDmAaLD9uDzweLBg9PnsFMFo=")), this.jobId);
+         VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:completeWork:%d", this.jobId);
          return this.clientCallback.completeWork(this.jobId, workId);
       }
 
       public JobWorkItem dequeueWork(int jobId) throws RemoteException {
          try {
             this.lastWorkItem = null;
-            VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEvLhc+CWIFLCBiJFk7KgM5J2sVSFo=")), this.jobId);
+            VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:dequeueWork:%d", this.jobId);
             JobWorkItem workItem = this.clientCallback.dequeueWork(this.jobId);
             if (workItem != null) {
                this.lastWorkItem = JobWorkItemCompat.parse(workItem);
@@ -220,7 +220,7 @@ public class ShadowJobWorkService extends Service {
          } catch (Exception var3) {
             Exception e = var3;
             e.printStackTrace();
-            VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEvLhc+CWIFLCBiJFk7KgM6Vg==")) + e);
+            VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:dequeueWork:" + e);
          }
 
          return null;
@@ -228,9 +228,9 @@ public class ShadowJobWorkService extends Service {
 
       public void startJob(boolean wait) {
          if (this.isWorking) {
-            VLog.w(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClE6Kgg+CGYYHippMwEuLzoiJm8KMzRlHjM3IC0YOW8gBgJpAVRF")), this.jobId);
+            VLog.w(ShadowJobWorkService.TAG, "ShadowJobService:startJob:%d,but is working", this.jobId);
          } else {
-            VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClE6Kgg+CGYYHippMwEuLz5SVg==")), this.jobId);
+            VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:startJob:%d", this.jobId);
             if (this.clientJobService == null) {
                if (!wait) {
                   ShadowJobWorkService.this.emptyCallback(this.clientCallback, this.jobId);
@@ -245,7 +245,7 @@ public class ShadowJobWorkService extends Service {
                } catch (RemoteException var5) {
                   RemoteException e = var5;
                   this.forceFinishJob();
-                  Log.e(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClE6Kgg+CGYYHippN1RF")), e);
+                  Log.e(ShadowJobWorkService.TAG, "ShadowJobService:startJob", e);
                }
 
             }
@@ -253,7 +253,7 @@ public class ShadowJobWorkService extends Service {
       }
 
       public void onServiceConnected(ComponentName name, IBinder service) {
-         VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClEcLCs2J2EzICxpJAoCKQgqKmsFLCBoES8tDgguVg==")), name);
+         VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:onServiceConnected:%s", name);
          this.clientJobService = IJobService.Stub.asInterface(service);
          this.startJob(false);
       }
@@ -295,7 +295,7 @@ public class ShadowJobWorkService extends Service {
       }
 
       void stopSessionLocked() {
-         VLog.i(ShadowJobWorkService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fP2gFGj1rNB46Oy0MKGUVLClrClE6KggADmkgLDZlJBoeKV45J2sVSFo=")), this.jobId);
+         VLog.i(ShadowJobWorkService.TAG, "ShadowJobService:stopSession:%d", this.jobId);
          if (this.clientJobService != null) {
             try {
                this.clientJobService.stopJob(this.jobParams);

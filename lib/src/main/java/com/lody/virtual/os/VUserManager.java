@@ -12,12 +12,12 @@ import com.lody.virtual.server.interfaces.IUserManager;
 import java.util.List;
 
 public class VUserManager {
-   private static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITsuKWgaFg19Dlk7KC0MKA=="));
+   private static String TAG = "VUserManager";
    private IUserManager mService;
    private static final VUserManager sInstance = new VUserManager();
 
    private Object getRemoteInterface() {
-      return IUserManager.Stub.asInterface(ServiceManagerNative.getService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo="))));
+      return IUserManager.Stub.asInterface(ServiceManagerNative.getService("user"));
    }
 
    public IUserManager getService() {
@@ -49,7 +49,7 @@ public class VUserManager {
          return this.getService().getUserInfo(this.getUserHandle()).name;
       } catch (RemoteException var2) {
          RemoteException re = var2;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TQVsJyg5PQgcO2AKLFo=")), re);
+         Log.w(TAG, "Could not get user name", re);
          return "";
       }
    }
@@ -63,7 +63,7 @@ public class VUserManager {
          return this.getService().getUserInfo(handle);
       } catch (RemoteException var3) {
          RemoteException re = var3;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TQVsJyg5PQgYKmIwAlo=")), re);
+         Log.w(TAG, "Could not get user info", re);
          return null;
       }
    }
@@ -82,7 +82,7 @@ public class VUserManager {
          return this.getService().createUser(name, flags);
       } catch (RemoteException var4) {
          RemoteException re = var4;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxcqKGkjQQZrDTwsPQcuD2IFMFo=")), re);
+         Log.w(TAG, "Could not create a user", re);
          return null;
       }
    }
@@ -98,7 +98,7 @@ public class VUserManager {
       } catch (RemoteException var2) {
          RemoteException re = var2;
          re.printStackTrace();
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TQVsJyg5PQgEI2EjFlo=")), re);
+         Log.w(TAG, "Could not get user list", re);
          return null;
       }
    }
@@ -108,7 +108,7 @@ public class VUserManager {
          return this.getService().getUsers(excludeDying);
       } catch (RemoteException var3) {
          RemoteException re = var3;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TQVsJyg5PQgEI2EjFlo=")), re);
+         Log.w(TAG, "Could not get user list", re);
          return null;
       }
    }
@@ -118,7 +118,7 @@ public class VUserManager {
          return this.getService().removeUser(handle);
       } catch (RemoteException var3) {
          RemoteException re = var3;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxguPW8jND5rDTwwKT4uCEsVSFo=")), re);
+         Log.w(TAG, "Could not remove user ", re);
          return false;
       }
    }
@@ -128,7 +128,7 @@ public class VUserManager {
          this.getService().setUserName(handle, name);
       } catch (RemoteException var4) {
          RemoteException re = var4;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxgqPWU3TQZqESsrKhc2J2E0OClpDlEuOD5SVg==")), re);
+         Log.w(TAG, "Could not set the user name ", re);
       }
 
    }
@@ -138,7 +138,7 @@ public class VUserManager {
          this.getService().setUserIcon(handle, icon);
       } catch (RemoteException var4) {
          RemoteException re = var4;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxgqPWU3TQZqESsrKhc2J2E0OCxpJFkdOD5SVg==")), re);
+         Log.w(TAG, "Could not set the user icon ", re);
       }
 
    }
@@ -148,7 +148,7 @@ public class VUserManager {
          return this.getService().getUserIcon(handle);
       } catch (RemoteException var3) {
          RemoteException re = var3;
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TQZqESsrKhc2J2E0OCxpJFkdOD5SVg==")), re);
+         Log.w(TAG, "Could not get the user icon ", re);
          return null;
       }
    }
@@ -157,7 +157,7 @@ public class VUserManager {
       try {
          this.getService().setGuestEnabled(enable);
       } catch (RemoteException var3) {
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxcqMm4jMC1rDTwuKhguD2ZTOCRpJCweIy4qCngVJCJrER47OwcqIGwaBiJoI1EZIyo6Vg==")) + enable);
+         Log.w(TAG, "Could not change guest account availability to " + enable);
       }
 
    }
@@ -166,7 +166,7 @@ public class VUserManager {
       try {
          return this.getService().isGuestEnabled();
       } catch (RemoteException var2) {
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxguPWUwRS9rDiQgPQgmCWIFND95HgodKC5fKGsFMzRvNCwoIBc2Vg==")));
+         Log.w(TAG, "Could not retrieve guest enabled state");
          return false;
       }
    }
@@ -175,7 +175,7 @@ public class VUserManager {
       try {
          this.getService().wipeUser(handle);
       } catch (RemoteException var3) {
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxg6MWozBShvDjAgKSo6Vg==")) + handle);
+         Log.w(TAG, "Could not wipe user " + handle);
       }
 
    }
@@ -188,7 +188,7 @@ public class VUserManager {
       try {
          return this.getService().getUserSerialNumber(handle);
       } catch (RemoteException var3) {
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TQNrDgoaLRgDJGAzLChpNAo7OD4EKWw3IC9vNygbDRhSVg==")) + handle);
+         Log.w(TAG, "Could not get serial number for user " + handle);
          return -1;
       }
    }
@@ -197,7 +197,7 @@ public class VUserManager {
       try {
          return this.getService().getUserHandle(userSerialNumber);
       } catch (RemoteException var3) {
-         Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxc6PWU3TVNnDjAgKSxfO2AwFjduCiAvKQdeJG8KLD9vIzxF")) + userSerialNumber);
+         Log.w(TAG, "Could not get VUserHandle for user " + userSerialNumber);
          return -1;
       }
    }

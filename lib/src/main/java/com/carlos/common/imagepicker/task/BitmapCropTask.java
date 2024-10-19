@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
-   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4YLGoVJAJlJyw1IxY2OWoFJFo="));
+   private static final String TAG = "BitmapCropTask";
    private Bitmap mViewBitmap;
    private final RectF mCropRect;
    private final RectF mCurrentImageRect;
@@ -59,14 +59,14 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
    @Nullable
    protected Throwable doInBackground(Void... params) {
       if (this.mViewBitmap == null) {
-         return new NullPointerException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YM2wxFi9mHl07I14mMWoJTSZvAQId")));
+         return new NullPointerException("ViewBitmap is null");
       } else if (this.mViewBitmap.isRecycled()) {
-         return new NullPointerException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YM2wxFi9mHl07I14mMWoJTQRrATA0LT4EJ2IVSFo=")));
+         return new NullPointerException("ViewBitmap is recycled");
       } else if (this.mCurrentImageRect.isEmpty()) {
-         return new NullPointerException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji0uKm8jNCZmHAY3Lwc6PWIVGilvVjwaKTo6J2AFOD9rAVRF")));
+         return new NullPointerException("CurrentImageRect is empty");
       } else {
          float resizeScale = this.resize();
-         Log.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4YLGoVJAJlJyw1IxY2OWoFJyhrEQZPLCwMO30gEiJlNFk+KRgbJA==")));
+         Log.i("VirtualApp", "BitmapCropTask doInBackground ");
 
          try {
             this.crop(resizeScale);
@@ -74,7 +74,7 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
             return null;
          } catch (Throwable var4) {
             Throwable throwable = var4;
-            Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), throwable.toString());
+            Log.e("VirtualApp", throwable.toString());
             return throwable;
          }
       }
@@ -111,7 +111,7 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
       this.mCroppedImageWidth = Math.round(this.mCropRect.width() / this.mCurrentScale);
       this.mCroppedImageHeight = Math.round(this.mCropRect.height() / this.mCurrentScale);
       boolean shouldCrop = this.shouldCrop(this.mCroppedImageWidth, this.mCroppedImageHeight);
-      Log.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii5fD2wVHixLHigqKi4lIH4zSFo=")) + shouldCrop);
+      Log.i(TAG, "Should crop: " + shouldCrop);
       if (shouldCrop) {
          boolean cropped = cropCImg(this.mImageInputPath, this.mImageOutputPath, this.cropOffsetX, this.cropOffsetY, this.mCroppedImageWidth, this.mCroppedImageHeight, this.mCurrentAngle, resizeScale, this.mCompressFormat.ordinal(), this.mCompressQuality, this.mExifInfo.getExifDegrees(), this.mExifInfo.getExifTranslation());
          if (cropped && this.mCompressFormat.equals(CompressFormat.JPEG)) {
@@ -134,7 +134,7 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
    public static native boolean cropCImg(String var0, String var1, int var2, int var3, int var4, int var5, float var6, float var7, int var8, int var9, int var10, int var11) throws IOException, OutOfMemoryError;
 
    protected void onPostExecute(@Nullable Throwable t) {
-      Log.i(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCAsIxhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4YLGoVJAJlJyw1IxY2OWoFJyhlJxoRLD02CmoFBiBpJwo9LypXVg==")) + (this.mCropCallback == null) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsIMCBhNB4tLwcuCGkkIFo=")) + (t == null));
+      Log.i("VirtualApp", "BitmapCropTask onPostExecute " + (this.mCropCallback == null) + "    Throwable:" + (t == null));
       if (this.mCropCallback != null) {
          if (t == null) {
             Uri uri = Uri.fromFile(new File(this.mImageOutputPath));
@@ -147,6 +147,6 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Throwable> {
    }
 
    static {
-      System.loadLibrary(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADWoVGiY=")));
+      System.loadLibrary("common");
    }
 }

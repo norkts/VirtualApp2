@@ -230,7 +230,7 @@ public class PhotoViewAttacher implements View.OnTouchListener, View.OnLayoutCha
 
    public boolean setDisplayMatrix(Matrix finalMatrix) {
       if (finalMatrix == null) {
-         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Owg+LG8jAjBLHig7Kj0YDWU3TSprDTwbKhgEKA==")));
+         throw new IllegalArgumentException("Matrix cannot be null");
       } else if (this.mImageView.getDrawable() == null) {
          return false;
       } else {
@@ -404,7 +404,7 @@ public class PhotoViewAttacher implements View.OnTouchListener, View.OnLayoutCha
          }
 
       } else {
-         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii42P2oFNyhgATApLF4mOGknTT1qDiwZIxgbJGYaBiB5ESgqKRgIJ3gVGjJ7AQ4wJjwuKmkKQTF+N105LV86DWsaRV59JCAoKAhSVg==")));
+         throw new IllegalArgumentException("Scale must be within the range of minScale and maxScale");
       }
    }
 
