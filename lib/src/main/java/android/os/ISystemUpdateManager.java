@@ -8,12 +8,12 @@ public interface ISystemUpdateManager extends IInterface {
    void updateSystemUpdateInfo(PersistableBundle var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements ISystemUpdateManager {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10MHFw5OhYdBwAfIxUKPgcGIhMeCAgLAQ==");
+      private static final String DESCRIPTOR = "android.os.ISystemUpdateManager";
       static final int TRANSACTION_retrieveSystemUpdateInfo = 1;
       static final int TRANSACTION_updateSystemUpdateInfo = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10MHFw5OhYdBwAfIxUKPgcGIhMeCAgLAQ=="));
+         this.attachInterface(this, "android.os.ISystemUpdateManager");
       }
 
       public static ISystemUpdateManager asInterface(IBinder obj) {
@@ -66,7 +66,7 @@ public interface ISystemUpdateManager extends IInterface {
 
       public static boolean setDefaultImpl(ISystemUpdateManager impl) {
          if (ISystemUpdateManager.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ISystemUpdateManager.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -92,7 +92,7 @@ public interface ISystemUpdateManager extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10MHFw5OhYdBwAfIxUKPgcGIhMeCAgLAQ==");
+            return "android.os.ISystemUpdateManager";
          }
 
          public Bundle retrieveSystemUpdateInfo() throws RemoteException {
@@ -101,7 +101,7 @@ public interface ISystemUpdateManager extends IInterface {
 
             Bundle _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10MHFw5OhYdBwAfIxUKPgcGIhMeCAgLAQ=="));
+               _data.writeInterfaceToken("android.os.ISystemUpdateManager");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && ISystemUpdateManager.Stub.getDefaultImpl() != null) {
                   Bundle var5 = ISystemUpdateManager.Stub.getDefaultImpl().retrieveSystemUpdateInfo();
@@ -127,7 +127,7 @@ public interface ISystemUpdateManager extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10MHFw5OhYdBwAfIxUKPgcGIhMeCAgLAQ=="));
+               _data.writeInterfaceToken("android.os.ISystemUpdateManager");
                if (data != null) {
                   _data.writeInt(1);
                   data.writeToParcel(_data, 0);

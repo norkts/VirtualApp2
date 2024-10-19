@@ -18,7 +18,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class HYXDControllerImpl extends IHYXDController.Stub implements ClientActivityLifecycle, Runnable {
-   String TAG = StringFog.decrypt("OzwqMiYBMQcRAB4cDB0nHhUe");
+   String TAG = "HYXDControllerImpl";
    public static final int VIEW_ACTION_WD = 1;
    private Queue<Unpack> queue = new ConcurrentLinkedQueue();
    Thread threadProcess;
@@ -68,8 +68,8 @@ public class HYXDControllerImpl extends IHYXDController.Stub implements ClientAc
          File file = this.getCurrentActivity().getFilesDir().getParentFile();
          int callingPid = Binder.getCallingPid();
          boolean directory = file.isDirectory();
-         Log.d(StringFog.decrypt("JSRfOCQ6FiUmQjopMSs="), StringFog.decrypt("AwQGHl8=") + file.getAbsolutePath() + StringFog.decrypt("U0VSEgwcOhAXAAAJhtP0") + directory + StringFog.decrypt("U0VSVkVOLxoHVQ==") + callingPid);
-         HYXDNative.init(callingPid, file.getPath() + StringFog.decrypt("XAYTFQ0LDRYQGh4E"));
+         Log.d("VA-NATIVE-HYXD", "path:" + file.getAbsolutePath() + "   directory：" + directory + "      pid:" + callingPid);
+         HYXDNative.init(callingPid, file.getPath() + "/cacheResult");
          this.threadProcess = new Thread(this);
          this.threadProcess.start();
          this.isInit = true;
@@ -84,8 +84,8 @@ public class HYXDControllerImpl extends IHYXDController.Stub implements ClientAc
          File file = this.getCurrentActivity().getFilesDir().getParentFile();
          int callingPid = Binder.getCallingPid();
          boolean directory = file.isDirectory();
-         Log.d(StringFog.decrypt("JSRfOCQ6FiUmQjopMSs="), StringFog.decrypt("AwQGHl8=") + file.getAbsolutePath() + StringFog.decrypt("U0VSEgwcOhAXAAAJhtP0") + directory + StringFog.decrypt("U0VSVkVOLxoHVQ==") + callingPid);
-         HYXDNative.init(callingPid, file.getPath() + StringFog.decrypt("XAYTFQ0LDRYQGh4E"));
+         Log.d("VA-NATIVE-HYXD", "path:" + file.getAbsolutePath() + "   directory：" + directory + "      pid:" + callingPid);
+         HYXDNative.init(callingPid, file.getPath() + "/cacheResult");
          this.threadProcess = new Thread(this);
          this.threadProcess.start();
       }
@@ -110,7 +110,7 @@ public class HYXDControllerImpl extends IHYXDController.Stub implements ClientAc
                }
 
                Unpack unpack = (Unpack)this.queue.poll();
-               HVLog.d(StringFog.decrypt("lfrXkfnluebXiv71j/relejckd79ue3/Tw==") + unpack.toString());
+               HVLog.d("查看整包数据结果 " + unpack.toString());
                HYXDNative.searchWrite(unpack.searchValue, unpack.writeValue, unpack.permission);
             } catch (Exception var4) {
                Exception e = var4;
@@ -133,7 +133,7 @@ public class HYXDControllerImpl extends IHYXDController.Stub implements ClientAc
       }
 
       public String toString() {
-         return StringFog.decrypt("JgsCFwYFJAAGDgATATkPHxAXS0I=") + this.searchValue + '\'' + StringFog.decrypt("X0UFBAwaOiUCAwcVVEg=") + this.writeValue + '\'' + StringFog.decrypt("X0UCExcDNgAQBh0eVA==") + this.permission + '}';
+         return "Unpack{searchValue=\'" + this.searchValue + '\'' + ", writeValue=\'" + this.writeValue + '\'' + ", permission=" + this.permission + '}';
       }
    }
 }

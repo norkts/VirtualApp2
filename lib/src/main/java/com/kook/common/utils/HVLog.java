@@ -17,15 +17,15 @@ import java.util.List;
 
 public class HVLog {
    private static Context mContext;
-   private static String SIMPLE_NAME = StringFog.decrypt("AAAAAEENEg==");
+   private static String SIMPLE_NAME = "kooklog";
    public static Boolean LOG_SWITCH = true;
    private static Boolean LOG_WRITE_TO_FILE = false;
-   public static String LOG_PATH_SDCARD_DIR = StringFog.decrypt("RBwLCEwQEUh5DgwVDg==");
+   public static String LOG_PATH_SDCARD_DIR = "/sdcard/Theme";
    private static int SDCARD_LOG_FILE_SAVE_DAYS = 0;
    private static String LOG_FILE_NAME = "";
-   private static SimpleDateFormat myLogSdf = new SimpleDateFormat(StringFog.decrypt("EhYWEgAvOEpJAkkwI1UCBhcRBg=="));
-   private static SimpleDateFormat logfile = new SimpleDateFormat(StringFog.decrypt("EhYWEgAvOEpJAg=="));
-   public static String TAG = StringFog.decrypt("AAAAAEENEkp/CQQVBAwE");
+   private static SimpleDateFormat myLogSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+   private static SimpleDateFormat logfile = new SimpleDateFormat("yyyy-MM-dd");
+   public static String TAG = "kooklog-Rommock";
    public static boolean DEBUG = true;
 
    public static void w(Object msg) {
@@ -144,7 +144,7 @@ public class HVLog {
       String className = getSimpleName(element.getClassName());
       String methodName = element.getMethodName();
       int lineNumber = element.getLineNumber();
-      String tag = TAG + StringFog.decrypt("RjQ=") + className + StringFog.decrypt("NjQ=") + methodName + StringFog.decrypt("NjQ=") + lineNumber + StringFog.decrypt("Ng==");
+      String tag = TAG + "-[" + className + "][" + methodName + "][" + lineNumber + "]";
       return tag;
    }
 
@@ -153,9 +153,9 @@ public class HVLog {
          if (!TAG.equals(tag)) {
             boolean bit = false;
             if (bit) {
-               tag = TAG + StringFog.decrypt("Rg==") + tag;
+               tag = TAG + "-" + tag;
             } else {
-               tag = TAG + StringFog.decrypt("Rg==") + tag;
+               tag = TAG + "-" + tag;
             }
          }
 
@@ -209,7 +209,7 @@ public class HVLog {
       } catch (IOException var10) {
          IOException e = var10;
          e.printStackTrace();
-         Log.e(TAG, StringFog.decrypt("BwAIS8jk7IKow4zE6YrX0xc=") + e.toString());
+         Log.e(TAG, "log 写入异常:" + e.toString());
       }
 
    }
@@ -234,15 +234,15 @@ public class HVLog {
    public static void printException(String subtag, Exception e) {
       StackTraceElement[] stackTrace = e.getStackTrace();
       Throwable cause = e.getCause();
-      d(subtag, StringFog.decrypt("KRoGB0lMIyJ/NSA3JUE8L2Y9PCl5RlRY") + VERSION.SDK_INT);
+      d(subtag, "Build.VERSION.SDK_INT = " + VERSION.SDK_INT);
       if (cause != null) {
          String stackTraceString = Log.getStackTraceString(cause);
-         e(subtag, StringFog.decrypt("jtPtjpXaVQRMExodUQ==") + stackTraceString);
+         e(subtag, "异常 cause:" + stackTraceString);
       } else {
-         Log.e(subtag, StringFog.decrypt("jtPtjpXaTw==") + e.toString() + StringFog.decrypt("S09PSw0BFBJeA0kRGE8BHkEOVVg=") + (cause == null));
+         Log.e(subtag, "异常:" + e.toString() + "     cause is null ?" + (cause == null));
 
          for(int i = 0; i < stackTrace.length; ++i) {
-            e(subtag, StringFog.decrypt("LhcMDl0WHAhDRgxC") + stackTrace[i].toString());
+            e(subtag, "Exception e:" + stackTrace[i].toString());
          }
       }
 
@@ -251,15 +251,15 @@ public class HVLog {
    public static void printException(Exception e) {
       StackTraceElement[] stackTrace = e.getStackTrace();
       Throwable cause = e.getCause();
-      d(StringFog.decrypt("KRoGB0lMIyJ/NSA3JUE8L2Y9PCl5RlRY") + VERSION.SDK_INT);
+      d("Build.VERSION.SDK_INT = " + VERSION.SDK_INT);
       if (cause != null) {
          String stackTraceString = Log.getStackTraceString(cause);
-         e(StringFog.decrypt("jtPtjpXaVQRMExodQx8dAkMWMB9OAxkMAgABQhc=") + stackTraceString);
+         e("异常 cause(printException):" + stackTraceString);
       } else {
-         e(StringFog.decrypt("jtPtjpXaTw==") + e.toString() + StringFog.decrypt("S09PSw0BFBJeA0kRGE8BHkEOVVg=") + (cause == null));
+         e("异常:" + e.toString() + "     cause is null ?" + (cause == null));
 
          for(int i = 0; i < stackTrace.length; ++i) {
-            e(StringFog.decrypt("LhcMDl0WHAhDRgxC") + stackTrace[i].toString());
+            e("Exception e:" + stackTrace[i].toString());
          }
       }
 
@@ -267,14 +267,14 @@ public class HVLog {
 
    public static void printThrowable(Throwable throwable) {
       String stackTraceString = Log.getStackTraceString(throwable);
-      d(StringFog.decrypt("KRoGB0lMIyJ/NSA3JUE8L2Y9PCl5RlRY") + VERSION.SDK_INT);
-      e(TAG, StringFog.decrypt("Gx0GBVk2HRVCEQgaBwpPDhc=") + stackTraceString);
+      d("Build.VERSION.SDK_INT = " + VERSION.SDK_INT);
+      e(TAG, "printThrowable e:" + stackTraceString);
    }
 
    public static void printThrowable(String subtag, Throwable throwable) {
       String stackTraceString = Log.getStackTraceString(throwable);
-      d(StringFog.decrypt("KRoGB0lMIyJ/NSA3JUE8L2Y9PCl5RlRY") + VERSION.SDK_INT);
-      e(subtag, StringFog.decrypt("Gx0GBVk2HRVCEQgaBwpPDhc=") + stackTraceString);
+      d("Build.VERSION.SDK_INT = " + VERSION.SDK_INT);
+      e(subtag, "printThrowable e:" + stackTraceString);
    }
 
    public static void printInfo() {
@@ -283,7 +283,7 @@ public class HVLog {
       if (stackElements != null) {
          for(int i = 0; i < stackElements.length; ++i) {
             StackTraceElement stackTraceElement = stackElements[i];
-            String output = String.format(StringFog.decrypt("ThxHQhdHBksNQxpYQ0ocQg=="), stackTraceElement.getMethodName(), stackTraceElement.getLineNumber(), getSimpleName(stackTraceElement.getClassName()), getPackageName(stackTraceElement.getClassName()));
+            String output = String.format("%s():%s, %s (%s)", stackTraceElement.getMethodName(), stackTraceElement.getLineNumber(), getSimpleName(stackTraceElement.getClassName()), getPackageName(stackTraceElement.getClassName()));
             Log.i(TAG, output);
          }
       }
@@ -296,7 +296,7 @@ public class HVLog {
       if (stackElements != null) {
          for(int i = 0; i < stackElements.length; ++i) {
             StackTraceElement stackTraceElement = stackElements[i];
-            String output = String.format(StringFog.decrypt("ThxHQhdHBksNQxpYQ0ocQg=="), stackTraceElement.getMethodName(), stackTraceElement.getLineNumber(), getSimpleName(stackTraceElement.getClassName()), getPackageName(stackTraceElement.getClassName()));
+            String output = String.format("%s():%s, %s (%s)", stackTraceElement.getMethodName(), stackTraceElement.getLineNumber(), getSimpleName(stackTraceElement.getClassName()), getPackageName(stackTraceElement.getClassName()));
             i(tag, output);
          }
       }
@@ -321,8 +321,8 @@ public class HVLog {
 
    static Context getApplication() {
       try {
-         Class<?> activityThreadClass = Class.forName(StringFog.decrypt("CgELGUILEUlMFhlWKgwbAlsLAR55DhsdCgs="));
-         Method currentApplicationMethod = activityThreadClass.getMethod(StringFog.decrypt("CBodGUgMASZdFgURCA4bAkIM"));
+         Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
+         Method currentApplicationMethod = activityThreadClass.getMethod("currentApplication");
          Object application = currentApplicationMethod.invoke((Object)null);
          return (Context)application;
       } catch (ClassNotFoundException var3) {

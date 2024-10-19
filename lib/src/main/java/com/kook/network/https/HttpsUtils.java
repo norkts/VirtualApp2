@@ -25,7 +25,7 @@ public class HttpsUtils {
       try {
          TrustManager[] trustManagers = prepareTrustManager(certificates);
          KeyManager[] keyManagers = prepareKeyManager(bksFile, password);
-         SSLContext sslContext = SSLContext.getInstance(StringFog.decrypt("ODwj"));
+         SSLContext sslContext = SSLContext.getInstance("SSL");
          sslContext.init(keyManagers, new TrustManager[]{new MyTrustManager(chooseTrustManager(trustManagers))}, new SecureRandom());
          return sslContext.getSocketFactory();
       } catch (NoSuchAlgorithmException var6) {
@@ -43,7 +43,7 @@ public class HttpsUtils {
    private static TrustManager[] prepareTrustManager(InputStream... certificates) {
       if (certificates != null && certificates.length > 0) {
          try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance(StringFog.decrypt("M0FaWxQ="));
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load((KeyStore.LoadStoreParameter)null);
             int index = 0;
@@ -88,7 +88,7 @@ public class HttpsUtils {
    private static KeyManager[] prepareKeyManager(InputStream bksFile, String password) {
       try {
          if (bksFile != null && password != null) {
-            KeyStore clientKeyStore = KeyStore.getInstance(StringFog.decrypt("KSQ8"));
+            KeyStore clientKeyStore = KeyStore.getInstance("BKS");
             clientKeyStore.load(bksFile, password.toCharArray());
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(clientKeyStore, password.toCharArray());
@@ -137,7 +137,7 @@ public class HttpsUtils {
       SSLContext sslContext = null;
 
       try {
-         sslContext = SSLContext.getInstance(StringFog.decrypt("ODwj"));
+         sslContext = SSLContext.getInstance("SSL");
          X509TrustManager[] xTrustArray = new X509TrustManager[]{initTrustManager()};
          sslContext.init((KeyManager[])null, xTrustArray, new SecureRandom());
       } catch (Exception var2) {

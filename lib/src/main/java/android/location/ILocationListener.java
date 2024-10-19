@@ -18,14 +18,14 @@ public interface ILocationListener extends IInterface {
    void onProviderDisabled(String var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements ILocationListener {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA==");
+      private static final String DESCRIPTOR = "android.location.ILocationListener";
       static final int TRANSACTION_onLocationChanged = 1;
       static final int TRANSACTION_onStatusChanged = 2;
       static final int TRANSACTION_onProviderEnabled = 3;
       static final int TRANSACTION_onProviderDisabled = 4;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA=="));
+         this.attachInterface(this, "android.location.ILocationListener");
       }
 
       public static ILocationListener asInterface(IBinder obj) {
@@ -92,7 +92,7 @@ public interface ILocationListener extends IInterface {
 
       public static boolean setDefaultImpl(ILocationListener impl) {
          if (ILocationListener.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ILocationListener.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -118,7 +118,7 @@ public interface ILocationListener extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA==");
+            return "android.location.ILocationListener";
          }
 
          public void onLocationChanged(Location location) throws RemoteException {
@@ -126,7 +126,7 @@ public interface ILocationListener extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA=="));
+               _data.writeInterfaceToken("android.location.ILocationListener");
                if (location != null) {
                   _data.writeInt(1);
                   location.writeToParcel(_data, 0);
@@ -153,7 +153,7 @@ public interface ILocationListener extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA=="));
+               _data.writeInterfaceToken("android.location.ILocationListener");
                _data.writeString(provider);
                _data.writeInt(status);
                if (extras != null) {
@@ -182,7 +182,7 @@ public interface ILocationListener extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA=="));
+               _data.writeInterfaceToken("android.location.ILocationListener");
                _data.writeString(provider);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || ILocationListener.Stub.getDefaultImpl() == null) {
@@ -203,7 +203,7 @@ public interface ILocationListener extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10PABERHQYBHUs7OgoNPgcKABw8ABwaFgsXBA=="));
+               _data.writeInterfaceToken("android.location.ILocationListener");
                _data.writeString(provider);
                boolean _status = this.mRemote.transact(4, _data, _reply, 0);
                if (_status || ILocationListener.Stub.getDefaultImpl() == null) {

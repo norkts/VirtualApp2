@@ -24,7 +24,7 @@ public class ReflectUtil {
          InstantiationException e = var5;
          e.printStackTrace();
       } catch (InvocationTargetException var6) {
-         throw new AgencyException(StringFog.decrypt("NwpSGAoafxcMTwEEGw4AFABSGRULLRIXBh0eSQYAUxEaE0UNMB0QGwAFChsBAUs="));
+         throw new AgencyException("Do not do strange operation in the constructor.");
       }
 
       return instance;

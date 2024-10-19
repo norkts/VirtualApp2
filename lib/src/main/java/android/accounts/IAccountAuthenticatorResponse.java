@@ -16,13 +16,13 @@ public interface IAccountAuthenticatorResponse extends IInterface {
    void onError(int var1, String var2) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IAccountAuthenticatorResponse {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAExCgEABgEdFg==");
+      private static final String DESCRIPTOR = "android.accounts.IAccountAuthenticatorResponse";
       static final int TRANSACTION_onResult = 1;
       static final int TRANSACTION_onRequestContinued = 2;
       static final int TRANSACTION_onError = 3;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAExCgEABgEdFg=="));
+         this.attachInterface(this, "android.accounts.IAccountAuthenticatorResponse");
       }
 
       public static IAccountAuthenticatorResponse asInterface(IBinder obj) {
@@ -75,7 +75,7 @@ public interface IAccountAuthenticatorResponse extends IInterface {
 
       public static boolean setDefaultImpl(IAccountAuthenticatorResponse impl) {
          if (IAccountAuthenticatorResponse.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IAccountAuthenticatorResponse.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -101,7 +101,7 @@ public interface IAccountAuthenticatorResponse extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAExCgEABgEdFg==");
+            return "android.accounts.IAccountAuthenticatorResponse";
          }
 
          public void onResult(Bundle value) throws RemoteException {
@@ -109,7 +109,7 @@ public interface IAccountAuthenticatorResponse extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAExCgEABgEdFg=="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticatorResponse");
                if (value != null) {
                   _data.writeInt(1);
                   value.writeToParcel(_data, 0);
@@ -136,7 +136,7 @@ public interface IAccountAuthenticatorResponse extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAExCgEABgEdFg=="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticatorResponse");
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (_status || IAccountAuthenticatorResponse.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -156,7 +156,7 @@ public interface IAccountAuthenticatorResponse extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAExCgEABgEdFg=="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticatorResponse");
                _data.writeInt(errorCode);
                _data.writeString(errorMessage);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);

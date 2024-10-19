@@ -7,7 +7,7 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class NetworkSecurityConfigProvider {
-   public static Class<?> TYPE = RefClass.load(NetworkSecurityConfigProvider.class, StringFog.decrypt("EgsWBAoHO10QChEFGwYaCkscExFAPBwNCRsXRyELBxIdBA49OhAWHRsEECwBHQMbETUcMAUKCxcC"));
+   public static Class<?> TYPE = RefClass.load(NetworkSecurityConfigProvider.class, "android.security.net.config.NetworkSecurityConfigProvider");
    @MethodParams({Context.class})
    public static RefStaticMethod<Void> install;
 }

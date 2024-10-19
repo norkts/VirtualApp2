@@ -6,5 +6,5 @@ import mirror.RefStaticObject;
 
 public class FrameworkPackageUserState {
    public static RefStaticObject<Object> DEFAULT;
-   public static Class<?> TYPE = RefClass.load(FrameworkPackageUserState.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWBUFOF0lHRMdDBgBAQ4iFwYFPhQGOgEVGzwaEhEX"));
+   public static Class<?> TYPE = RefClass.load(FrameworkPackageUserState.class, "android.content.pm.pkg.FrameworkPackageUserState");
 }

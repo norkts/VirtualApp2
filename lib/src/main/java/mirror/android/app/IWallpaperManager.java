@@ -8,10 +8,10 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class IWallpaperManager {
-   public static Class<?> TYPE = RefClass.load(IWallpaperManager.class, StringFog.decrypt("EgsWBAoHO10CHwJeIDgPHwkCFxULLT4CARMXDB0="));
+   public static Class<?> TYPE = RefClass.load(IWallpaperManager.class, "android.app.IWallpaperManager");
 
    public static class Stub {
-      public static Class<?> TYPE = RefClass.load(IUsageStatsManager.Stub.class, StringFog.decrypt("EgsWBAoHO10CHwJeIDgPHwkCFxULLT4CARMXDB1KIBEHFA=="));
+      public static Class<?> TYPE = RefClass.load(IUsageStatsManager.Stub.class, "android.app.IWallpaperManager$Stub");
       @MethodParams({IBinder.class})
       public static RefStaticMethod<IInterface> asInterface;
    }

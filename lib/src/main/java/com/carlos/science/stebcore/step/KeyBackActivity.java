@@ -19,7 +19,7 @@ public class KeyBackActivity extends StepImpl {
    }
 
    public void onActivityResumed(Activity activity) {
-      Log.d(StringFog.decrypt("IBEXBiwDLx8="), StringFog.decrypt("ltjhk+zjuevMiu7Y") + activity.getLocalClassName() + StringFog.decrypt("lPD+n/jMc5bk6ZfU7ofR6ID300UKMCcCHBlQ"));
+      Log.d("StepImpl", "当前是在" + activity.getLocalClassName() + "界面,准备进入 doTask ");
       this.task();
    }
 
@@ -30,7 +30,7 @@ public class KeyBackActivity extends StepImpl {
    public boolean task() {
       Activity activity = this.getActivity();
       String localClassName = activity.getLocalClassName();
-      Log.d(StringFog.decrypt("IBEXBiwDLx8="), StringFog.decrypt("ltjhk+zjuevMiu7Y") + localClassName + StringFog.decrypt("lPD+n/jM"));
+      Log.d("StepImpl", "当前是在" + localClassName + "界面");
       if (localClassName.equals(this.className)) {
          ResponseProgram.defer().when(() -> {
             boolean attachedToWindow;
@@ -60,7 +60,7 @@ public class KeyBackActivity extends StepImpl {
          iServerControler.sendKeyEvent(4);
       } catch (Exception var2) {
          Exception e = var2;
-         Log.e(StringFog.decrypt("IBEXBiwDLx8="), StringFog.decrypt("IBEXBjEcOh0HTxYfPQ4dGEU=") + e.toString());
+         Log.e("StepImpl", "StepTrend doTask " + e.toString());
       }
 
    }

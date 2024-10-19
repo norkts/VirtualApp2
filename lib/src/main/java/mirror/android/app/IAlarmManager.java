@@ -8,10 +8,10 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class IAlarmManager {
-   public static Class<?> TYPE = RefClass.load(IAlarmManager.class, StringFog.decrypt("EgsWBAoHO10CHwJeIC4CEhcfOwQAPhQGHQ=="));
+   public static Class<?> TYPE = RefClass.load(IAlarmManager.class, "android.app.IAlarmManager");
 
    public static class Stub {
-      public static Class<?> TYPE = RefClass.load(Stub.class, StringFog.decrypt("EgsWBAoHO10CHwJeIC4CEhcfOwQAPhQGHVYjHRoM"));
+      public static Class<?> TYPE = RefClass.load(Stub.class, "android.app.IAlarmManager$Stub");
       @MethodParams({IBinder.class})
       public static RefStaticMethod<IInterface> asInterface;
    }

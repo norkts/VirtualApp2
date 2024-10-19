@@ -11,11 +11,11 @@ public interface IPermission extends IInterface {
    void addOnPermissionsChangeListener() throws RemoteException;
 
    public abstract static class Stub extends Binder implements IPermission {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10TCgAdABwdGgocWCw+OgEOBgEDAAAA");
+      private static final String DESCRIPTOR = "android.permission.IPermission";
       static final int TRANSACTION_addOnPermissionsChangeListener = 1;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10TCgAdABwdGgocWCw+OgEOBgEDAAAA"));
+         this.attachInterface(this, "android.permission.IPermission");
       }
 
       public static IPermission asInterface(IBinder obj) {
@@ -49,7 +49,7 @@ public interface IPermission extends IInterface {
 
       public static boolean setDefaultImpl(IPermission impl) {
          if (IPermission.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IPermission.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -75,7 +75,7 @@ public interface IPermission extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10TCgAdABwdGgocWCw+OgEOBgEDAAAA");
+            return "android.permission.IPermission";
          }
 
          public void addOnPermissionsChangeListener() throws RemoteException {
@@ -83,7 +83,7 @@ public interface IPermission extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10TCgAdABwdGgocWCw+OgEOBgEDAAAA"));
+               _data.writeInterfaceToken("android.permission.IPermission");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IPermission.Stub.getDefaultImpl() != null) {
                   IPermission.Stub.getDefaultImpl().addOnPermissionsChangeListener();

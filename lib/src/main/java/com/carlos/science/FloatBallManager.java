@@ -45,14 +45,14 @@ public class FloatBallManager {
    }
 
    public FloatBallManager(Context application, ServerController serverController, FloatBallCfg ballCfg, FloatMenuCfg menuCfg) {
-      this.TAG = StringFog.decrypt("NQkdFxEsPh8PIhMeCAgLAQ==");
+      this.TAG = "FloatBallManager";
       this.isShowing = false;
       this.menuItems = new ArrayList();
       this.tabChilds = new ArrayList();
       this.mLayoutInflater = LayoutInflater.from(application);
       this.mContext = application.getApplicationContext();
       FloatBallUtil.inSingleActivity = false;
-      this.mWindowManager = (WindowManager)this.mContext.getSystemService(StringFog.decrypt("BAwcEgoZ"));
+      this.mWindowManager = (WindowManager)this.mContext.getSystemService("window");
       this.computeScreenSize();
       this.floatBall = new FloatBall(this.mContext, this, ballCfg);
       this.floatMenu = new FloatMenu(this.mContext, this, menuCfg);
@@ -151,8 +151,8 @@ public class FloatBallManager {
    }
 
    public void show() {
-      HVLog.d(this.TAG, StringFog.decrypt("AA0dAUUHLCALAAUZBwhOSUU=") + this.isShowing);
-      SPTools.getLong(this.getContext(), StringFog.decrypt("BQwCAgwDOg=="));
+      HVLog.d(this.TAG, "show isShowing : " + this.isShowing);
+      SPTools.getLong(this.getContext(), "viptime");
       if (!this.isShowing) {
          this.isShowing = true;
          this.floatBall.attachToWindow(this.mWindowManager);
@@ -167,7 +167,7 @@ public class FloatBallManager {
    }
 
    public void reset() {
-      HVLog.d(this.TAG, StringFog.decrypt("AQABExE="));
+      HVLog.d(this.TAG, "reset");
       this.floatBall.setVisibility(0);
       this.floatBall.postSleepRunnable();
       this.floatBall.attachToWindow(this.mWindowManager);
@@ -178,7 +178,7 @@ public class FloatBallManager {
 
    public void onFloatBallClick() {
       if (this.menuItems != null && this.menuItems.size() > 0 || this.tabChilds != null && this.tabChilds.size() > 0) {
-         HVLog.d(this.TAG, StringFog.decrypt("NQkdFxEsPh8PIhMeCAgLAUUdGCMCMBIXLRMcBSwCGgYZVgQaKxIAByYfPgYAFwoF"));
+         HVLog.d(this.TAG, "FloatBallManager onFloatBallClick attachToWindow");
          if (!this.floatTab.isAdded()) {
             this.floatTab.attachToWindow(this.mWindowManager);
             this.floatBall.detachFromWindow(this.mWindowManager);
@@ -187,7 +187,7 @@ public class FloatBallManager {
             this.floatBall.attachToWindow(this.mWindowManager);
          }
       } else {
-         HVLog.d(this.TAG, StringFog.decrypt("NQkdFxEsPh8PIhMeCAgLAUUdGCMCMBIXLRMcBSwCGgYZ"));
+         HVLog.d(this.TAG, "FloatBallManager onFloatBallClick");
          if (this.mFloatballClickListener != null) {
             this.mFloatballClickListener.onFloatBallClick();
          }
@@ -204,7 +204,7 @@ public class FloatBallManager {
    }
 
    public void hide() {
-      HVLog.d(this.TAG, StringFog.decrypt("GwwWE0VONgAwBx0HAAEJU1g=") + this.isShowing);
+      HVLog.d(this.TAG, "hide  isShowing =" + this.isShowing);
       if (this.isShowing) {
          this.isShowing = false;
          this.floatBall.detachFromWindow(this.mWindowManager);

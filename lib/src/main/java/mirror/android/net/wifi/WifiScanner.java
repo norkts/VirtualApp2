@@ -9,6 +9,6 @@ public final class WifiScanner {
    public static RefStaticObject<String> GET_AVAILABLE_CHANNELS_EXTRA;
 
    static {
-      RefClass.load(WifiScanner.class, StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGkslHwMHDBACARwVGw=="));
+      RefClass.load(WifiScanner.class, "android.net.wifi.WifiScanner");
    }
 }

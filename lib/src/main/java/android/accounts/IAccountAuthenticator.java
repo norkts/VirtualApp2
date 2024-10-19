@@ -30,7 +30,7 @@ public interface IAccountAuthenticator extends IInterface {
    void addAccountFromCredentials(IAccountAuthenticatorResponse var1, Account var2, Bundle var3) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IAccountAuthenticator {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE=");
+      private static final String DESCRIPTOR = "android.accounts.IAccountAuthenticator";
       static final int TRANSACTION_addAccount = 1;
       static final int TRANSACTION_confirmCredentials = 2;
       static final int TRANSACTION_getAuthToken = 3;
@@ -43,7 +43,7 @@ public interface IAccountAuthenticator extends IInterface {
       static final int TRANSACTION_addAccountFromCredentials = 10;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+         this.attachInterface(this, "android.accounts.IAccountAuthenticator");
       }
 
       public static IAccountAuthenticator asInterface(IBinder obj) {
@@ -219,7 +219,7 @@ public interface IAccountAuthenticator extends IInterface {
 
       public static boolean setDefaultImpl(IAccountAuthenticator impl) {
          if (IAccountAuthenticator.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IAccountAuthenticator.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -245,7 +245,7 @@ public interface IAccountAuthenticator extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE=");
+            return "android.accounts.IAccountAuthenticator";
          }
 
          public void addAccount(IAccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws RemoteException {
@@ -253,7 +253,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                _data.writeString(accountType);
                _data.writeString(authTokenType);
@@ -284,7 +284,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);
@@ -319,7 +319,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);
@@ -355,7 +355,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                _data.writeString(authTokenType);
                boolean _status = this.mRemote.transact(4, _data, _reply, 0);
@@ -377,7 +377,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);
@@ -413,7 +413,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                _data.writeString(accountType);
                boolean _status = this.mRemote.transact(6, _data, _reply, 0);
@@ -435,7 +435,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);
@@ -464,7 +464,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);
@@ -492,7 +492,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);
@@ -520,7 +520,7 @@ public interface IAccountAuthenticator extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CDBEfHAEaAEs7NwYNMAYNGzMFHQcLHREbFQQaMAE="));
+               _data.writeInterfaceToken("android.accounts.IAccountAuthenticator");
                _data.writeStrongBinder(response != null ? response.asBinder() : null);
                if (account != null) {
                   _data.writeInt(1);

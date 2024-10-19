@@ -16,7 +16,7 @@ import okio.Buffer;
 import okio.BufferedSource;
 
 public class DecryptionInterceptor implements Interceptor {
-   private static String INTERCEPTOR = StringFog.decrypt("AgEbDl8BEBdZCRtVGB8=");
+   private static String INTERCEPTOR = "interceptor-sp";
    public Context mContext;
    public String mBaseUrl;
 
@@ -44,7 +44,7 @@ public class DecryptionInterceptor implements Interceptor {
       SharedPreferences sharedPreferences = this.mContext.getSharedPreferences(INTERCEPTOR, 0);
       SharedPreferences.Editor editor = sharedPreferences.edit();
       editor.putString(requestUrl, encryptContent);
-      HVLog.d(StringFog.decrypt("GQoeHkgRATJfClM=") + requestUrl + StringFog.decrypt("S09PS0gMFhVUFh07BAEbDkMWTw==") + encryptContent);
+      HVLog.d("requestUrl:" + requestUrl + "    encryptContent:" + encryptContent);
       if (VERSION.SDK_INT >= 9) {
          editor.apply();
       }
@@ -54,7 +54,7 @@ public class DecryptionInterceptor implements Interceptor {
    public static String getPersistent(Context context, String requestUrl, boolean encrypt) {
       SharedPreferences sharedPreferences = context.getSharedPreferences(INTERCEPTOR, 4);
       String encryptContent = sharedPreferences.getString(requestUrl, (String)null);
-      return encrypt ? CipherUtil.decrypt(StringFog.decrypt("IwcFWR1QQUkdXkdIXUJfXA=="), encryptContent) : encryptContent;
+      return encrypt ? CipherUtil.decrypt("Hhj2024.08.06-07", encryptContent) : encryptContent;
    }
 
    public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -62,7 +62,7 @@ public class DecryptionInterceptor implements Interceptor {
       String requestUrl = request.url().toString();
       Response response = chain.proceed(request);
       int code = response.code();
-      HVLog.d(StringFog.decrypt("g8DYjZzgkPSgg9PsUQ==") + code);
+      HVLog.d("请求响应:" + code);
       ResponseBody responseBody;
       if (code == 200) {
          responseBody = response.body();
@@ -72,7 +72,7 @@ public class DecryptionInterceptor implements Interceptor {
          String encryptedString = buffer.clone().readString(StandardCharsets.UTF_8);
          String encryptContent = this.removeQuotes(encryptedString);
          this.setPersistent(requestUrl, encryptContent);
-         String desDecrypt = CipherUtil.decrypt(StringFog.decrypt("IwcFWR1QQUkdXkdIXUJfXA=="), encryptContent);
+         String desDecrypt = CipherUtil.decrypt("Hhj2024.08.06-07", encryptContent);
          ResponseBody newResponseBody = ResponseBody.create(responseBody.contentType(), desDecrypt);
          return response.newBuilder().body(newResponseBody).build();
       } else {

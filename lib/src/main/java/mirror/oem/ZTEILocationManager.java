@@ -6,6 +6,6 @@ import mirror.RefClass;
 import mirror.RefObject;
 
 public class ZTEILocationManager {
-   public static Class<?> TYPE = RefClass.load(ZTEILocationManager.class, StringFog.decrypt("EAofWB8aOl0QChEFGwYaCksoIiAnExwADgYZBgEjEgsTEQAc"));
+   public static Class<?> TYPE = RefClass.load(ZTEILocationManager.class, "com.zte.security.ZTEILocationManager");
    public static RefObject<IInterface> mILocationManager;
 }

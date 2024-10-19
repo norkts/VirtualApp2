@@ -11,11 +11,11 @@ public interface ILearnController extends IInterface {
    void debugLearn() throws RemoteException;
 
    public abstract static class Stub extends Binder implements ILearnController {
-      private static final String DESCRIPTOR = StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeBwAcHgQeWCwiOhIRATEfBxscHAkeExc=");
+      private static final String DESCRIPTOR = "com.kook.controller.client.normal.ILearnController";
       static final int TRANSACTION_debugLearn = 1;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeBwAcHgQeWCwiOhIRATEfBxscHAkeExc="));
+         this.attachInterface(this, "com.kook.controller.client.normal.ILearnController");
       }
 
       public static ILearnController asInterface(IBinder obj) {
@@ -49,7 +49,7 @@ public interface ILearnController extends IInterface {
 
       public static boolean setDefaultImpl(ILearnController impl) {
          if (ILearnController.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ILearnController.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -75,7 +75,7 @@ public interface ILearnController extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeBwAcHgQeWCwiOhIRATEfBxscHAkeExc=");
+            return "com.kook.controller.client.normal.ILearnController";
          }
 
          public void debugLearn() throws RemoteException {
@@ -83,7 +83,7 @@ public interface ILearnController extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeBwAcHgQeWCwiOhIRATEfBxscHAkeExc="));
+               _data.writeInterfaceToken("com.kook.controller.client.normal.ILearnController");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && ILearnController.Stub.getDefaultImpl() != null) {
                   ILearnController.Stub.getDefaultImpl().debugLearn();

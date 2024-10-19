@@ -28,7 +28,7 @@ public class FloatBallUtil {
          if (sdkInt < 19) {
             layoutParams.type = 2002;
          } else if (sdkInt < 25) {
-            if (StringFog.decrypt("KwwTGQgH").equalsIgnoreCase(Build.MANUFACTURER)) {
+            if ("Xiaomi".equalsIgnoreCase(Build.MANUFACTURER)) {
                layoutParams.type = 2002;
             } else {
                layoutParams.type = 2005;

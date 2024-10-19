@@ -28,7 +28,7 @@ public class FeaturesStepController extends StepControllerImpl<StepImpl> {
 
    public Activity getCurrentActivity() {
       if (this.clientActivityLifecycle == null) {
-         HVLog.d(StringFog.decrypt("UyMXFxEbLRYQPAYVGSwBHREAGQkCOgFDCBcEKhocAQAcAiQNKxoVBgYJSQwCGgAcAiQNKxoVBgYJJQYIFgYLFQkLfxoQTxwFBQNO"));
+         HVLog.d(" FeaturesStepController getCurrentActivity clientActivityLifecycle is null ");
       }
 
       return this.clientActivityLifecycle.getCurrentActivity();
@@ -39,7 +39,7 @@ public class FeaturesStepController extends StepControllerImpl<StepImpl> {
    }
 
    public IBinder getCallBackIBinder() {
-      HVLog.d(StringFog.decrypt("UyMXFxEbLRYQPAYVGSwBHREAGQkCOgFDCBcEKg4CHycTFQ4nHRoNCxcCSQwPHwkwFwYFFjEKARYVG1U=") + this.callBackIBinder);
+      HVLog.d(" FeaturesStepController getCallBackIBinder callBackIBinder:" + this.callBackIBinder);
       return this.callBackIBinder;
    }
 
@@ -58,7 +58,7 @@ public class FeaturesStepController extends StepControllerImpl<StepImpl> {
          this.mCurrentStep = currentStep;
          currentStep.doTask();
          if (!currentStep.finishStep) {
-            HVLog.d(StringFog.decrypt("IBEXBiYBMQcRAB4cDB0nHhUe"), StringFog.decrypt("lerikcHUsM/5hu7wgcnvlvnakMjLttnHT1U=") + currentStep.getTitle() + StringFog.decrypt("VEWU/8KG/v+Gwf6W4f+L4+uaxuaJy9sFBhwZGgdGWoPv04LVzJX+8JTdzIbE1w=="));
+            HVLog.d("StepControllerImpl", "提示：需要在步骤 \'" + currentStep.getTitle() + "\' 执行完成后调用finish()来结束步骤");
          }
       }
 
@@ -69,7 +69,7 @@ public class FeaturesStepController extends StepControllerImpl<StepImpl> {
          Thread.sleep(time);
       } catch (InterruptedException var4) {
          InterruptedException e = var4;
-         HVLog.i(StringFog.decrypt("IBEXBiYBMQcRAB4cDB0nHhUe"), StringFog.decrypt("Fh0RExUaNhwNTxdK") + e.toString());
+         HVLog.i("StepControllerImpl", "exception e:" + e.toString());
       }
 
    }
@@ -79,7 +79,7 @@ public class FeaturesStepController extends StepControllerImpl<StepImpl> {
    }
 
    public void fastForward() {
-      HVLog.i(StringFog.decrypt("IBEXBiYBMQcRAB4cDB0nHhUe"), StringFog.decrypt("lcjXn8/Ku8jth83pgOjiltnyk8LlufrEh9P8"));
+      HVLog.i("StepControllerImpl", "步骤从这里开始执行");
       IStepInfo<StepImpl> topStep = this.getTopStepInfo();
       this.doTask(topStep);
    }

@@ -13,19 +13,19 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ReceiverLog extends BroadcastReceiver {
-   public static String LOG_LEVEL = StringFog.decrypt("BwAIJ0gUEAs=");
-   public static String LOG_TAG = StringFog.decrypt("BwAIP0wF");
-   private static String SYSTEM_SETTINGS_KEY = StringFog.decrypt("Hw4INEELBhNyDQwB");
+   public static String LOG_LEVEL = "logLevel";
+   public static String LOG_TAG = "logTag";
+   private static String SYSTEM_SETTINGS_KEY = "tag_list_key";
    Context mContext;
    private static SharedPreferences mSharedPreferences;
-   private static final String FILE_NAME = StringFog.decrypt("GAcOGUgGJRVIAAwKDgEMDl4=");
+   private static final String FILE_NAME = "sharedPreferences";
 
    public void onReceive(Context context, Intent intent) {
       this.mContext = context;
-      Log.d(StringFog.decrypt("AAAAAEENEg=="), StringFog.decrypt("OQoMDkQUEBVhCQ5YBAE9Dk4HHBFI"));
+      Log.d("kooklog", "ReceiverLog onReceive");
       if (intent.hasExtra(LOG_LEVEL)) {
          int logLevel = intent.getIntExtra(LOG_LEVEL, 0);
-         Log.d(StringFog.decrypt("AAAAAEENEg=="), StringFog.decrypt("BwAIJ0gUEAsX") + logLevel);
+         Log.d("kooklog", "logLevel:" + logLevel);
          putInt(context, LOG_LEVEL, logLevel);
       }
 
@@ -38,14 +38,14 @@ public class ReceiverLog extends BroadcastReceiver {
       }
 
       ((List)logTagList).add(logTag);
-      String listAsString = TextUtils.join(StringFog.decrypt("Rw=="), (Iterable)logTagList);
+      String listAsString = TextUtils.join(",", (Iterable)logTagList);
       System.putString(context.getContentResolver(), SYSTEM_SETTINGS_KEY, listAsString);
    }
 
    public static List<String> getLogTag(Context context) {
       String listAsString = System.getString(context.getContentResolver(), SYSTEM_SETTINGS_KEY);
       if (listAsString != null) {
-         List<String> myList = Arrays.asList(listAsString.split(StringFog.decrypt("Rw==")));
+         List<String> myList = Arrays.asList(listAsString.split(","));
          return myList;
       } else {
          return null;

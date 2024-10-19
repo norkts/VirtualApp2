@@ -17,13 +17,13 @@ public interface ISyncAdapter extends IInterface {
    void initialize(Account var1, String var2) throws RemoteException;
 
    public abstract static class Stub extends Binder implements ISyncAdapter {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHhcCHwYVGw==");
+      private static final String DESCRIPTOR = "android.content.ISyncAdapter";
       static final int TRANSACTION_startSync = 1;
       static final int TRANSACTION_cancelSync = 2;
       static final int TRANSACTION_initialize = 3;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHhcCHwYVGw=="));
+         this.attachInterface(this, "android.content.ISyncAdapter");
       }
 
       public static ISyncAdapter asInterface(IBinder obj) {
@@ -94,7 +94,7 @@ public interface ISyncAdapter extends IInterface {
 
       public static boolean setDefaultImpl(ISyncAdapter impl) {
          if (ISyncAdapter.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ISyncAdapter.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -120,7 +120,7 @@ public interface ISyncAdapter extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHhcCHwYVGw==");
+            return "android.content.ISyncAdapter";
          }
 
          public void startSync(ISyncContext syncContext, String authority, Account account, Bundle extras) throws RemoteException {
@@ -128,7 +128,7 @@ public interface ISyncAdapter extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHhcCHwYVGw=="));
+               _data.writeInterfaceToken("android.content.ISyncAdapter");
                _data.writeStrongBinder(syncContext != null ? syncContext.asBinder() : null);
                _data.writeString(authority);
                if (account != null) {
@@ -164,7 +164,7 @@ public interface ISyncAdapter extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHhcCHwYVGw=="));
+               _data.writeInterfaceToken("android.content.ISyncAdapter");
                _data.writeStrongBinder(syncContext != null ? syncContext.asBinder() : null);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (_status || ISyncAdapter.Stub.getDefaultImpl() == null) {
@@ -185,7 +185,7 @@ public interface ISyncAdapter extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHhcCHwYVGw=="));
+               _data.writeInterfaceToken("android.content.ISyncAdapter");
                if (account != null) {
                   _data.writeInt(1);
                   account.writeToParcel(_data, 0);

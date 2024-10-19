@@ -26,7 +26,7 @@ public class SyncStatusInfo implements Parcelable {
    public boolean pending;
    public boolean initialize;
    private ArrayList<Long> periodicSyncTimes;
-   private static final String TAG = StringFog.decrypt("IBwcFQ==");
+   private static final String TAG = "Sync";
    public static final Parcelable.Creator<SyncStatusInfo> CREATOR = new Parcelable.Creator<SyncStatusInfo>() {
       public SyncStatusInfo createFromParcel(Parcel in) {
          return new SyncStatusInfo(in);
@@ -83,7 +83,7 @@ public class SyncStatusInfo implements Parcelable {
    public SyncStatusInfo(Parcel parcel) {
       int version = parcel.readInt();
       if (version != 2 && version != 1) {
-         Log.w(StringFog.decrypt("IBwcFTYaPgcWHDseDwA="), StringFog.decrypt("JgsZGAoZMVMVCgADAAAASUU=") + version);
+         Log.w("SyncStatusInfo", "Unknown version: " + version);
       }
 
       this.authorityId = parcel.readInt();

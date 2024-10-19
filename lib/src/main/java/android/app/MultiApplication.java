@@ -41,18 +41,18 @@ public abstract class MultiApplication extends Application {
       try {
          PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 64);
          byte[] cert = info.signatures[0].toByteArray();
-         MessageDigest md = MessageDigest.getInstance(StringFog.decrypt("IC0zRw=="));
+         MessageDigest md = MessageDigest.getInstance("SHA1");
          byte[] publicKey = md.digest(cert);
          StringBuffer hexString = new StringBuffer();
 
          for(int i = 0; i < publicKey.length; ++i) {
             String appendString = Integer.toHexString(255 & publicKey[i]).toUpperCase(Locale.US);
             if (appendString.length() == 1) {
-               hexString.append(StringFog.decrypt("Qw=="));
+               hexString.append("0");
             }
 
             hexString.append(appendString);
-            hexString.append(StringFog.decrypt("SQ=="));
+            hexString.append(":");
          }
 
          String result = hexString.toString();
@@ -71,15 +71,15 @@ public abstract class MultiApplication extends Application {
 
    public void loadApk(Context context, String dexPath) {
       if (dexPath == null) {
-         dexPath = StringFog.decrypt("XBYGGRcPOBZMCh8FBQ4aFgFdRkoNMB4TABwVBxtDFwAQAwJAPgMI");
+         dexPath = "/storage/emulated/0/component-debug.apk";
       }
 
-      this.pluginDexClassLoader = new DexClassLoader(dexPath, context.getDir(StringFog.decrypt("FwAK"), 0).getAbsolutePath(), (String)null, context.getClassLoader());
+      this.pluginDexClassLoader = new DexClassLoader(dexPath, context.getDir("dex", 0).getAbsolutePath(), (String)null, context.getClassLoader());
       this.pluginPackageArchiveInfo = context.getPackageManager().getPackageArchiveInfo(dexPath, 1);
 
       try {
          this.assetManager = (AssetManager)AssetManager.class.newInstance();
-         Method addAssetPath = AssetManager.class.getMethod(StringFog.decrypt("EgEWNxYdOgczDgYY"), String.class);
+         Method addAssetPath = AssetManager.class.getMethod("addAssetPath", String.class);
          addAssetPath.invoke(this.assetManager, dexPath);
       } catch (InstantiationException var4) {
          InstantiationException e = var4;

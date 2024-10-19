@@ -35,7 +35,7 @@ public interface IPackageInstallerSession extends IInterface {
    void setChecksums(String var1, Checksum[] var2, byte[] var3) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IPackageInstallerSession {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw==");
+      private static final String DESCRIPTOR = "android.content.pm.IPackageInstallerSession";
       static final int TRANSACTION_setClientProgress = 1;
       static final int TRANSACTION_addClientProgress = 2;
       static final int TRANSACTION_getNames = 3;
@@ -50,7 +50,7 @@ public interface IPackageInstallerSession extends IInterface {
       static final int TRANSACTION_setChecksums = 12;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+         this.attachInterface(this, "android.content.pm.IPackageInstallerSession");
       }
 
       public static IPackageInstallerSession asInterface(IBinder obj) {
@@ -181,7 +181,7 @@ public interface IPackageInstallerSession extends IInterface {
 
       public static boolean setDefaultImpl(IPackageInstallerSession impl) {
          if (IPackageInstallerSession.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IPackageInstallerSession.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -207,7 +207,7 @@ public interface IPackageInstallerSession extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw==");
+            return "android.content.pm.IPackageInstallerSession";
          }
 
          public void setClientProgress(float progress) throws RemoteException {
@@ -215,7 +215,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                _data.writeFloat(progress);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IPackageInstallerSession.Stub.getDefaultImpl() != null) {
@@ -236,7 +236,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                _data.writeFloat(progress);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (!_status && IPackageInstallerSession.Stub.getDefaultImpl() != null) {
@@ -258,7 +258,7 @@ public interface IPackageInstallerSession extends IInterface {
 
             String[] var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IPackageInstallerSession.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -281,7 +281,7 @@ public interface IPackageInstallerSession extends IInterface {
 
             ParcelFileDescriptor _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                _data.writeString(name);
                _data.writeLong(offsetBytes);
                _data.writeLong(lengthBytes);
@@ -311,7 +311,7 @@ public interface IPackageInstallerSession extends IInterface {
 
             ParcelFileDescriptor _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                _data.writeString(name);
                boolean _status = this.mRemote.transact(5, _data, _reply, 0);
                if (!_status && IPackageInstallerSession.Stub.getDefaultImpl() != null) {
@@ -338,7 +338,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                _data.writeString(splitName);
                boolean _status = this.mRemote.transact(6, _data, _reply, 0);
                if (_status || IPackageInstallerSession.Stub.getDefaultImpl() == null) {
@@ -359,7 +359,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                boolean _status = this.mRemote.transact(7, _data, _reply, 0);
                if (_status || IPackageInstallerSession.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -379,7 +379,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                if (statusReceiver != null) {
                   _data.writeInt(1);
                   statusReceiver.writeToParcel(_data, 0);
@@ -406,7 +406,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                boolean _status = this.mRemote.transact(9, _data, _reply, 0);
                if (_status || IPackageInstallerSession.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -427,7 +427,7 @@ public interface IPackageInstallerSession extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                boolean _status = this.mRemote.transact(10, _data, _reply, 0);
                if (!_status && IPackageInstallerSession.Stub.getDefaultImpl() != null) {
                   boolean var5 = IPackageInstallerSession.Stub.getDefaultImpl().isMultiPackage();
@@ -450,7 +450,7 @@ public interface IPackageInstallerSession extends IInterface {
 
             DataLoaderParamsParcel var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                boolean _status = this.mRemote.transact(11, _data, _reply, 0);
                if (_status || IPackageInstallerSession.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -478,7 +478,7 @@ public interface IPackageInstallerSession extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVIAEdBwQeGgAcDBYQHBsfBw=="));
+               _data.writeInterfaceToken("android.content.pm.IPackageInstallerSession");
                _data.writeString(name);
                _data.writeTypedArray(checksums, 0);
                _data.writeByteArray(signature);

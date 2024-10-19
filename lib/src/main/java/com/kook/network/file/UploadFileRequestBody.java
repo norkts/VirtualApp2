@@ -19,8 +19,8 @@ public class UploadFileRequestBody extends RequestBody {
    private FileUploadObserver<ResponseBody> mFileUploadObserver;
 
    public UploadFileRequestBody(File file, FileUploadObserver<ResponseBody> fileUploadObserver) {
-      this.mRequestBody = RequestBody.create(MediaType.parse(StringFog.decrypt("BhoDH0QSFBVZSQ8XGQJCD0wWFA==")), file);
-      MultipartBody.Part body = Part.createFormData(StringFog.decrypt("DQYDDg=="), file.getName(), this.mRequestBody);
+      this.mRequestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+      MultipartBody.Part body = Part.createFormData("file", file.getName(), this.mRequestBody);
       this.mFileUploadObserver = fileUploadObserver;
    }
 

@@ -15,13 +15,13 @@ public interface ITaobaoController extends IInterface {
    void testFun(IBinder var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements ITaobaoController {
-      private static final String DESCRIPTOR = StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHQ4BEQQdWCw6PhwBDh0zBgEaAQoeGgAc");
+      private static final String DESCRIPTOR = "com.kook.controller.client.taobao.ITaobaoController";
       static final int TRANSACTION_checkLogin = 1;
       static final int TRANSACTION_doLogin = 2;
       static final int TRANSACTION_testFun = 3;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHQ4BEQQdWCw6PhwBDh0zBgEaAQoeGgAc"));
+         this.attachInterface(this, "com.kook.controller.client.taobao.ITaobaoController");
       }
 
       public static ITaobaoController asInterface(IBinder obj) {
@@ -70,7 +70,7 @@ public interface ITaobaoController extends IInterface {
 
       public static boolean setDefaultImpl(ITaobaoController impl) {
          if (ITaobaoController.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ITaobaoController.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -96,7 +96,7 @@ public interface ITaobaoController extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHQ4BEQQdWCw6PhwBDh0zBgEaAQoeGgAc");
+            return "com.kook.controller.client.taobao.ITaobaoController";
          }
 
          public boolean checkLogin(IBinder ibinder) throws RemoteException {
@@ -105,7 +105,7 @@ public interface ITaobaoController extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHQ4BEQQdWCw6PhwBDh0zBgEaAQoeGgAc"));
+               _data.writeInterfaceToken("com.kook.controller.client.taobao.ITaobaoController");
                _data.writeStrongBinder(ibinder);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && ITaobaoController.Stub.getDefaultImpl() != null) {
@@ -128,7 +128,7 @@ public interface ITaobaoController extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHQ4BEQQdWCw6PhwBDh0zBgEaAQoeGgAc"));
+               _data.writeInterfaceToken("com.kook.controller.client.taobao.ITaobaoController");
                _data.writeStrongBinder(ibinder);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (_status || ITaobaoController.Stub.getDefaultImpl() == null) {
@@ -149,7 +149,7 @@ public interface ITaobaoController extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHQ4BEQQdWCw6PhwBDh0zBgEaAQoeGgAc"));
+               _data.writeInterfaceToken("com.kook.controller.client.taobao.ITaobaoController");
                _data.writeStrongBinder(ibinder);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || ITaobaoController.Stub.getDefaultImpl() == null) {

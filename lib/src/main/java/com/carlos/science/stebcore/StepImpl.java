@@ -12,7 +12,7 @@ import com.kook.controller.server.IServerController;
 import org.jdeferred.Promise;
 
 public abstract class StepImpl implements IStep {
-   protected static final String TAG = StringFog.decrypt("IBEXBiwDLx8=");
+   protected static final String TAG = "StepImpl";
    private IStepInfo<StepImpl> mStepInfo;
    public boolean finishStep = false;
    IStepController mIStepController;
@@ -41,7 +41,7 @@ public abstract class StepImpl implements IStep {
    }
 
    public IBinder getCallBackIBinder() {
-      Log.d(TAG, StringFog.decrypt("FAAGNQQCMzECDBk5KwYAFwAAVggnDAcGHzEfBxscHAkeExdU") + this.mIStepController);
+      Log.d(TAG, "getCallBackIBinder mIStepController:" + this.mIStepController);
       return this.mIStepController.getCallBackIBinder();
    }
 
@@ -86,12 +86,12 @@ public abstract class StepImpl implements IStep {
 
    public final void finish() {
       if (this.finishStep) {
-         Log.i(TAG, StringFog.decrypt("lcjXn8/Kfw==") + this.getClass().getName() + StringFog.decrypt("U0VV") + this.getTitle() + StringFog.decrypt("VEWXwdeJ5PyE1OGW9PCGzOKWzOM="));
+         Log.i(TAG, "步骤 " + this.getClass().getName() + "  \'" + this.getTitle() + "\' 已经结束过了");
       } else {
-         Log.i(TAG, StringFog.decrypt("lN7hkPjxus7wivv9j8LLms/WVg==") + this.getClass().getName() + StringFog.decrypt("U0VV") + this.getTitle() + StringFog.decrypt("VA=="));
-         if (this.getClass().getName().equals(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWDYaOgMzAAEZHQYBHSocNQkHPBg="))) {
+         Log.i(TAG, "结束当前步骤 " + this.getClass().getName() + "  \'" + this.getTitle() + "\'");
+         if (this.getClass().getName().equals("com.kook.controller.client.wechat.StepPositionOnClick")) {
             HVLog.printInfo();
-            Log.i(TAG, StringFog.decrypt("WU9YXE9EdVlJRVhaQ0VEWU9YXE9Ot8zeh8raSYfe8ILm3kWL//WFz/pQQ0VEWU9YXE9EdVlJRVhaQ0VEWU9YXA=="));
+            Log.i(TAG, "******************** 追踪 调用 堆栈 **********************");
          }
 
          this.getController().finishCurrentStep();
@@ -114,7 +114,7 @@ public abstract class StepImpl implements IStep {
          Thread.sleep(time);
       } catch (InterruptedException var4) {
          InterruptedException e = var4;
-         Log.i(TAG, StringFog.decrypt("Fh0RExUaNhwNTxdK") + e.toString());
+         Log.i(TAG, "exception e:" + e.toString());
       }
 
    }

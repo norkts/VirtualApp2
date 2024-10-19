@@ -19,7 +19,7 @@ public interface IJobCallback extends IInterface {
    void jobFinished(int var1, boolean var2) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IJobCallback {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg==");
+      private static final String DESCRIPTOR = "android.app.job.IJobCallback";
       static final int TRANSACTION_acknowledgeStartMessage = 1;
       static final int TRANSACTION_acknowledgeStopMessage = 2;
       static final int TRANSACTION_dequeueWork = 3;
@@ -27,7 +27,7 @@ public interface IJobCallback extends IInterface {
       static final int TRANSACTION_jobFinished = 5;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg=="));
+         this.attachInterface(this, "android.app.job.IJobCallback");
       }
 
       public static IJobCallback asInterface(IBinder obj) {
@@ -98,7 +98,7 @@ public interface IJobCallback extends IInterface {
 
       public static boolean setDefaultImpl(IJobCallback impl) {
          if (IJobCallback.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IJobCallback.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -124,7 +124,7 @@ public interface IJobCallback extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg==");
+            return "android.app.job.IJobCallback";
          }
 
          public void acknowledgeStartMessage(int jobId, boolean ongoing) throws RemoteException {
@@ -132,7 +132,7 @@ public interface IJobCallback extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg=="));
+               _data.writeInterfaceToken("android.app.job.IJobCallback");
                _data.writeInt(jobId);
                _data.writeInt(ongoing ? 1 : 0);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
@@ -154,7 +154,7 @@ public interface IJobCallback extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg=="));
+               _data.writeInterfaceToken("android.app.job.IJobCallback");
                _data.writeInt(jobId);
                _data.writeInt(reschedule ? 1 : 0);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
@@ -177,7 +177,7 @@ public interface IJobCallback extends IInterface {
 
             JobWorkItem var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg=="));
+               _data.writeInterfaceToken("android.app.job.IJobCallback");
                _data.writeInt(jobId);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IJobCallback.Stub.getDefaultImpl() == null) {
@@ -207,7 +207,7 @@ public interface IJobCallback extends IInterface {
 
             boolean var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg=="));
+               _data.writeInterfaceToken("android.app.job.IJobCallback");
                _data.writeInt(jobId);
                _data.writeInt(workId);
                boolean _status = this.mRemote.transact(4, _data, _reply, 0);
@@ -231,7 +231,7 @@ public interface IJobCallback extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQctPh8PDRMTAg=="));
+               _data.writeInterfaceToken("android.app.job.IJobCallback");
                _data.writeInt(jobId);
                _data.writeInt(reschedule ? 1 : 0);
                boolean _status = this.mRemote.transact(5, _data, _reply, 0);

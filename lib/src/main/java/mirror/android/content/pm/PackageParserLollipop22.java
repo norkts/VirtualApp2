@@ -15,7 +15,7 @@ import mirror.RefMethod;
 import mirror.RefStaticMethod;
 
 public class PackageParserLollipop22 {
-   public static Class<?> TYPE = RefClass.load(PackageParserLollipop22.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWDUPPBgCCBcgCB0dFhc="));
+   public static Class<?> TYPE = RefClass.load(PackageParserLollipop22.class, "android.content.pm.PackageParser");
    @MethodReflectParams({"android.content.pm.PackageParser$Package", "int"})
    public static RefMethod<Void> collectCertificates;
    public static RefConstructor<android.content.pm.PackageParser> ctor;

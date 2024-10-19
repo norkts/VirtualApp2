@@ -11,11 +11,11 @@ public interface ISyncStatusObserver extends IInterface {
    void onStatusChanged(int var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements ISyncStatusObserver {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNDAcCGwcDJg0dFhcEExc=");
+      private static final String DESCRIPTOR = "android.content.ISyncStatusObserver";
       static final int TRANSACTION_onStatusChanged = 1;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNDAcCGwcDJg0dFhcEExc="));
+         this.attachInterface(this, "android.content.ISyncStatusObserver");
       }
 
       public static ISyncStatusObserver asInterface(IBinder obj) {
@@ -50,7 +50,7 @@ public interface ISyncStatusObserver extends IInterface {
 
       public static boolean setDefaultImpl(ISyncStatusObserver impl) {
          if (ISyncStatusObserver.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ISyncStatusObserver.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -76,7 +76,7 @@ public interface ISyncStatusObserver extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNDAcCGwcDJg0dFhcEExc=");
+            return "android.content.ISyncStatusObserver";
          }
 
          public void onStatusChanged(int which) throws RemoteException {
@@ -84,7 +84,7 @@ public interface ISyncStatusObserver extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNDAcCGwcDJg0dFhcEExc="));
+               _data.writeInterfaceToken("android.content.ISyncStatusObserver");
                _data.writeInt(which);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && ISyncStatusObserver.Stub.getDefaultImpl() != null) {

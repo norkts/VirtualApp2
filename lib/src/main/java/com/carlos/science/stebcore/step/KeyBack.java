@@ -36,7 +36,7 @@ public class KeyBack extends StepImpl {
          iServerControler.sendKeyEvent(4);
       } catch (Exception var2) {
          Exception e = var2;
-         Log.e(StringFog.decrypt("IBEXBiwDLx8="), StringFog.decrypt("IBEXBjEcOh0HTxYfPQ4dGEU=") + e.toString());
+         Log.e("StepImpl", "StepTrend doTask " + e.toString());
       }
 
    }

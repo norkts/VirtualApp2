@@ -27,7 +27,7 @@ public class FileDownloadService {
    private FileDownloadService(IDownloadListener listener) {
       this.mListener = listener;
       OkHttpClient OkhttpClient = (new OkHttpClient.Builder()).addInterceptor(new DownloadInterceptor(listener)).connectTimeout(5L, TimeUnit.SECONDS).readTimeout(5L, TimeUnit.SECONDS).writeTimeout(5L, TimeUnit.SECONDS).build();
-      Retrofit retrofitClient = (new Retrofit.Builder()).client(OkhttpClient).addConverterFactory(GsonConverterFactory.create((new GsonBuilder()).create())).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).baseUrl(StringFog.decrypt("AxsbGxdNWhBaEUcTBAAECEIQEEleDx0dUVdfWBVNEQZZBxodGRkKGQI=")).build();
+      Retrofit retrofitClient = (new Retrofit.Builder()).client(OkhttpClient).addConverterFactory(GsonConverterFactory.create((new GsonBuilder()).create())).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).baseUrl("http://www.kookcore.site:8038/dataserver/").build();
       this.mApiService = (IApiService)retrofitClient.create(IApiService.class);
    }
 
@@ -52,11 +52,11 @@ public class FileDownloadService {
       }).observeOn(AndroidSchedulers.mainThread()).subscribe((response) -> {
          if (this.mListener != null) {
             this.mListener.onDownloadSuccess();
-            HVLog.d(StringFog.decrypt("jef/jqf9kMOpgfn+"));
+            HVLog.d("成功处理");
          }
 
       }, (throwable) -> {
-         HVLog.d(StringFog.decrypt("S4b78sXN2oKJ4o7o7Q=="));
+         HVLog.d(" 错误处理");
       });
    }
 
@@ -68,11 +68,11 @@ public class FileDownloadService {
       }).observeOn(AndroidSchedulers.mainThread()).subscribe((response) -> {
          if (this.mListener != null) {
             this.mListener.onDownloadSuccess();
-            HVLog.d(StringFog.decrypt("jef/jqf9kMOpgfn+"));
+            HVLog.d("成功处理");
          }
 
       }, (throwable) -> {
-         HVLog.d(StringFog.decrypt("S4b78sXN2oKJ4o7o7Q=="));
+         HVLog.d(" 错误处理");
       });
    }
 
@@ -99,7 +99,7 @@ public class FileDownloadService {
          this.mListener.onDownloadSuccess();
       } catch (Exception var7) {
          Exception exception = var7;
-         HVLog.e(StringFog.decrypt("jtPtjpXakdiMgOjXUQ==") + filePath);
+         HVLog.e("异常信息:" + filePath);
          this.mListener.onDownloadFail(exception);
          if (file.exists()) {
             file.deleteOnExit();

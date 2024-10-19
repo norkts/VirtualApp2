@@ -28,7 +28,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class LearnControllerImpl extends ILearnController.Stub implements ClientActivityLifecycle {
-   String TAG = StringFog.decrypt("PwATBAstMB0XHR0cBQocOggCGg==");
+   String TAG = "LearnControllerImpl";
    Handler mHandler;
    Activity mCurrentActivity;
    IServerController mIServerController;
@@ -53,7 +53,7 @@ public class LearnControllerImpl extends ILearnController.Stub implements Client
    };
    ViewTreeObserver.OnWindowFocusChangeListener onWindowFocusChangeListener = new ViewTreeObserver.OnWindowFocusChangeListener() {
       public void onWindowFocusChanged(boolean focus) {
-         HVLog.d(LearnControllerImpl.this.TAG, StringFog.decrypt("HAslHwsKMAQlABEFGiwGEgsVEwFOORwAGgFK") + focus);
+         HVLog.d(LearnControllerImpl.this.TAG, "onWindowFocusChanged focus:" + focus);
          if (focus) {
             LearnControllerImpl.this.onSubscribe = new Observable.OnSubscribe<Activity>() {
                public void call(Subscriber<? super Activity> subscriber) {
@@ -79,7 +79,7 @@ public class LearnControllerImpl extends ILearnController.Stub implements Client
    public FeaturesStepController getFeaturesStepController(IBinder iBinder, boolean hasNeedCallBack) {
       if (this.mFeaturesStepController == null) {
          if (iBinder == null && hasNeedCallBack) {
-            throw new NullPointerException(StringFog.decrypt("lv7sntXtfxohBhwUDB1Ol93/nubTu8vZAQccBU8="));
+            throw new NullPointerException("回调 iBinder 不能为null ");
          }
 
          this.mFeaturesStepController = new FeaturesStepController(this, iBinder);
@@ -150,13 +150,13 @@ public class LearnControllerImpl extends ILearnController.Stub implements Client
       try {
          IOException e;
          try {
-            HVLog.i(this.TAG, StringFog.decrypt("l97XnsTiu8vZiv/ljdLjm8rJk+r4ueXki8nGjOnrlsvLmdniu8vjid7RgcDVl93ykPDat9LvgM7q"));
+            HVLog.i(this.TAG, "以行为单位读取文件内容，一次读一整行：");
             reader = new BufferedReader(new FileReader(file));
             e = null;
 
             String tempString;
             for(int line = 1; (tempString = reader.readLine()) != null; ++line) {
-               HVLog.d(StringFog.decrypt("BwQVKRYB"), StringFog.decrypt("HwwcE0U=") + line + StringFog.decrypt("SUU=") + tempString);
+               HVLog.d("tag_so", "line " + line + ": " + tempString);
             }
 
             reader.close();

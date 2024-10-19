@@ -4,5 +4,5 @@ import com.lody.virtual.StringFog;
 import mirror.RefClass;
 
 public class Os {
-   public static Class<?> TYPE = RefClass.load(Os.class, StringFog.decrypt("HwwQFQocOl0KAFw/Gg=="));
+   public static Class<?> TYPE = RefClass.load(Os.class, "libcore.io.Os");
 }

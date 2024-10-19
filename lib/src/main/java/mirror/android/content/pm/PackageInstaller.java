@@ -13,7 +13,7 @@ import mirror.RefObject;
 
 public class PackageInstaller {
    public static class SessionParamsMarshmallow {
-      public static Class<?> TYPE = RefClass.load(SessionParamsMarshmallow.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWDUPPBgCCBc5BxwaEgkeExdKDBYQHBsfBz8PAQQfBQ=="));
+      public static Class<?> TYPE = RefClass.load(SessionParamsMarshmallow.class, "android.content.pm.PackageInstaller$SessionParams");
       public static RefObject<String> abiOverride;
       public static RefObject<Bitmap> appIcon;
       public static RefLong appIconLastModified;
@@ -30,7 +30,7 @@ public class PackageInstaller {
    }
 
    public static class SessionParamsLOLLIPOP {
-      public static Class<?> TYPE = RefClass.load(SessionParamsLOLLIPOP.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWDUPPBgCCBc5BxwaEgkeExdKDBYQHBsfBz8PAQQfBQ=="));
+      public static Class<?> TYPE = RefClass.load(SessionParamsLOLLIPOP.class, "android.content.pm.PackageInstaller$SessionParams");
       public static RefObject<String> abiOverride;
       public static RefObject<Bitmap> appIcon;
       public static RefLong appIconLastModified;
@@ -45,7 +45,7 @@ public class PackageInstaller {
    }
 
    public static class SessionInfo {
-      public static Class<?> TYPE = RefClass.load(SessionInfo.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWDUPPBgCCBc5BxwaEgkeExdKDBYQHBsfByYAFQo="));
+      public static Class<?> TYPE = RefClass.load(SessionInfo.class, "android.content.pm.PackageInstaller$SessionInfo");
       public static RefBoolean active;
       public static RefObject<Bitmap> appIcon;
       public static RefObject<CharSequence> appLabel;

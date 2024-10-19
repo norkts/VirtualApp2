@@ -18,7 +18,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class EventService extends Service implements Runnable {
-   String TAG = StringFog.decrypt("NhMXGBE9OgEVBhEV");
+   String TAG = "EventService";
    Thread threadProcess;
    private Queue<Event> queue = new ConcurrentLinkedQueue();
    private boolean EVENT_FLAG = false;
@@ -56,7 +56,7 @@ public abstract class EventService extends Service implements Runnable {
       if (!this.isMainThread()) {
          return this.virtualClick(centerX, centerY);
       } else {
-         HVLog.i(this.TAG, StringFog.decrypt("mvjskt3VuMnciNr7j/zjl9ju"));
+         HVLog.i(this.TAG, "非主线程操作");
          Event event = new Event(3);
          event.centerx = centerX;
          event.centery = centerY;
@@ -105,7 +105,7 @@ public abstract class EventService extends Service implements Runnable {
          centerX = rect.centerX();
          centerY = rect.centerY();
          if (centerX < 0 || centerY < 0) {
-            HVLog.e(this.TAG, StringFog.decrypt("U4DP5YDn0gUKCgVQjdfjlvnak9Thusr2h/7zjPTal93fk+rBt9TiQ5Xy0IrpyIDWx43a+g=="));
+            HVLog.e(this.TAG, " 当前view 不在屏幕范围中可见,点击失败");
             return false;
          }
       }
@@ -153,7 +153,7 @@ public abstract class EventService extends Service implements Runnable {
                this.EVENT_FLAG = false;
             } catch (Exception var4) {
                Exception e = var4;
-               HVLog.i(this.TAG, StringFog.decrypt("Fh0RExUaNhwNTxdK") + e.toString());
+               HVLog.i(this.TAG, "exception e:" + e.toString());
             }
          }
       }
@@ -191,13 +191,13 @@ public abstract class EventService extends Service implements Runnable {
       this.invokeInjectInputEventMethod(motionEvent, 1);
       motionEvent = makeMotionEvent(downTime, eventTime + 2L, 1, (float)centerX, (float)centerY);
       this.invokeInjectInputEventMethod(motionEvent, 2);
-      HVLog.e(this.TAG, StringFog.decrypt("MAocAhcBMx8GHSEVGxkHEAAwFxYLfwUKHQYFCAMtHwwRHUWG3+SF+MRQUw==") + (System.currentTimeMillis() - currentTimeMillis) + StringFog.decrypt("U0VSVgYLMQcGHSpK") + centerX + StringFog.decrypt("U0VSVgYLMQcGHStK") + centerY + StringFog.decrypt("U0VSVoP28JbzyZfswYvWyILIyYLG1FND") + (Looper.getMainLooper() == Looper.myLooper()));
+      HVLog.e(this.TAG, "ControllerServiceBase virtualClick 耗时 :" + (System.currentTimeMillis() - currentTimeMillis) + "    centerX:" + centerX + "    centerY:" + centerY + "    是否在主线程  " + (Looper.getMainLooper() == Looper.myLooper()));
       return true;
    }
 
    public boolean isMainThread() {
       boolean isMainLooper = Looper.getMainLooper() == Looper.myLooper();
-      HVLog.d(this.TAG, StringFog.decrypt("GhY/FwwAExwMHxcCSQsLFUUAExEbLR1DGwAFDFU=") + isMainLooper);
+      HVLog.d(this.TAG, "isMainLooper def return true:" + isMainLooper);
       return true;
    }
 
@@ -235,7 +235,7 @@ public abstract class EventService extends Service implements Runnable {
          return true;
       } catch (Exception var15) {
          Exception e = var15;
-         HVLog.i(this.TAG, StringFog.decrypt("BQwAAhAPMycMGhEYSQoWEAACAgwBMVMGVQ==") + e.toString());
+         HVLog.i(this.TAG, "virtualTouch exception e:" + e.toString());
          return false;
       }
    }
@@ -245,7 +245,7 @@ public abstract class EventService extends Service implements Runnable {
          Thread.sleep(time);
       } catch (InterruptedException var4) {
          InterruptedException e = var4;
-         HVLog.i(this.TAG, StringFog.decrypt("Fh0RExUaNhwNTxdK") + e.toString());
+         HVLog.i(this.TAG, "exception e:" + e.toString());
       }
 
    }
@@ -255,49 +255,49 @@ public abstract class EventService extends Service implements Runnable {
 
       try {
          if (this.clazzInputManager == null) {
-            this.clazzInputManager = Class.forName(StringFog.decrypt("EgsWBAoHO10LDgAUHg4cFksbGBUbK10qAQIFHSIPHQQVExc="));
+            this.clazzInputManager = Class.forName("android.hardware.input.InputManager");
          }
 
          if (this.getInstanceMethod == null) {
-            this.getInstanceMethod = this.clazzInputManager.getMethod(StringFog.decrypt("FAAGPwsdKxINDBc="));
+            this.getInstanceMethod = this.clazzInputManager.getMethod("getInstance");
             this.objectInputManager = this.getInstanceMethod.invoke(this.clazzInputManager);
          }
 
          if (this.injectInputEventMethod == null) {
-            this.injectInputEventMethod = this.clazzInputManager.getMethod(StringFog.decrypt("GgsYEwYaFh0TGgY1HwoABw=="), InputEvent.class, Integer.TYPE);
+            this.injectInputEventMethod = this.clazzInputManager.getMethod("injectInputEvent", InputEvent.class, Integer.TYPE);
          }
 
          if (this.objectInputManager != null) {
             this.injectInputEventMethod.invoke(this.objectInputManager, event, mode);
-            this.recycleMethod = event.getClass().getMethod(StringFog.decrypt("AQARDwYCOg=="));
+            this.recycleMethod = event.getClass().getMethod("recycle");
             this.recycleMethod.invoke(event);
          } else {
-            HVLog.e(this.TAG, StringFog.decrypt("HAcYEwYaFh0TGgY9CAEPFAAAVgwdfx0WAx4="));
+            HVLog.e(this.TAG, "objectInputManager is null");
          }
       } catch (IllegalAccessException var5) {
          IllegalAccessException e = var5;
          isException = true;
-         HVLog.e(this.TAG, StringFog.decrypt("UyweGgAJPh8iDBEVGhwrCwYXBhEHMB1D") + e.toString());
+         HVLog.e(this.TAG, " IllegalAccessException " + e.toString());
       } catch (InvocationTargetException var6) {
          InvocationTargetException e = var6;
          isException = true;
-         HVLog.e(this.TAG, StringFog.decrypt("UywcAAoNPgcKABwkCB0JFhE3DgYLLwcKABxQ") + e.toString());
+         HVLog.e(this.TAG, " InvocationTargetException " + e.toString());
       } catch (NoSuchMethodException var7) {
          NoSuchMethodException e = var7;
          isException = true;
-         HVLog.e(this.TAG, StringFog.decrypt("UysdJRANNz4GGxofDSoWEAACAgwBMVM=") + e.toString());
+         HVLog.e(this.TAG, " NoSuchMethodException " + e.toString());
       } catch (ClassNotFoundException var8) {
          ClassNotFoundException e = var8;
          isException = true;
-         HVLog.e(this.TAG, StringFog.decrypt("UyYeFxYdERwXKR0FBwsrCwYXBhEHMB1D") + e.toString());
+         HVLog.e(this.TAG, " ClassNotFoundException " + e.toString());
       } catch (SecurityException var9) {
          SecurityException e = var9;
          isException = true;
-         HVLog.e(this.TAG, StringFog.decrypt("UzYXFRAcNgcaKgoTDB8aGgocVg==") + e.toString());
+         HVLog.e(this.TAG, " SecurityException " + e.toString());
       }
 
       if (isException) {
-         HVLog.e(this.TAG, StringFog.decrypt("U4DO9IDW55T565Xy0Ij09wAEEwsaf0k=") + event);
+         HVLog.e(this.TAG, " 异常的点的event :" + event);
       }
 
    }

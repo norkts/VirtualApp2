@@ -21,11 +21,11 @@ public class ClientControlerServiceCache {
    }
 
    public static IBinder getService(String name) {
-      return sCache.containsKey(name) ? (IBinder)sCache.get(name) : (IBinder)sCache.get(StringFog.decrypt("FwAU"));
+      return sCache.containsKey(name) ? (IBinder)sCache.get(name) : (IBinder)sCache.get("def");
    }
 
    static {
-      addService(StringFog.decrypt("FwAU"), LearnControllerImpl.get());
-      addService(StringFog.decrypt("EAofWAsLKxYCHBdeARYWF0sXAQQA"), HYXDControllerImpl.get());
+      addService("def", LearnControllerImpl.get());
+      addService("com.netease.hyxd.ewan", HYXDControllerImpl.get());
    }
 }

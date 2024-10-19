@@ -13,12 +13,12 @@ public interface ISyncContext extends IInterface {
    void onFinished(SyncResult var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements ISyncContext {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHBwNGxcIHQ==");
+      private static final String DESCRIPTOR = "android.content.ISyncContext";
       static final int TRANSACTION_sendHeartbeat = 1;
       static final int TRANSACTION_onFinished = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHBwNGxcIHQ=="));
+         this.attachInterface(this, "android.content.ISyncContext");
       }
 
       public static ISyncContext asInterface(IBinder obj) {
@@ -64,7 +64,7 @@ public interface ISyncContext extends IInterface {
 
       public static boolean setDefaultImpl(ISyncContext impl) {
          if (ISyncContext.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ISyncContext.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -90,7 +90,7 @@ public interface ISyncContext extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHBwNGxcIHQ==");
+            return "android.content.ISyncContext";
          }
 
          public void sendHeartbeat() throws RemoteException {
@@ -98,7 +98,7 @@ public interface ISyncContext extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHBwNGxcIHQ=="));
+               _data.writeInterfaceToken("android.content.ISyncContext");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && ISyncContext.Stub.getDefaultImpl() != null) {
                   ISyncContext.Stub.getDefaultImpl().sendHeartbeat();
@@ -118,7 +118,7 @@ public interface ISyncContext extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwhDwsNHBwNGxcIHQ=="));
+               _data.writeInterfaceToken("android.content.ISyncContext");
                if (result != null) {
                   _data.writeInt(1);
                   result.writeToParcel(_data, 0);

@@ -14,7 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ForegroundCallbacks implements Application.ActivityLifecycleCallbacks {
    public static final long CHECK_DELAY = 500L;
-   public static final String TAG = StringFog.decrypt("NQoAEwIcMAYNCzERBQMMEgYZBQ==");
+   public static final String TAG = "ForegroundCallbacks";
    private static ForegroundCallbacks instance;
    private boolean foreground = false;
    private boolean paused = true;
@@ -23,7 +23,7 @@ public class ForegroundCallbacks implements Application.ActivityLifecycleCallbac
       public void dispatchMessage(Message msg) {
          if (ForegroundCallbacks.this.foreground && ForegroundCallbacks.this.paused) {
             ForegroundCallbacks.this.foreground = false;
-            HVLog.d(StringFog.decrypt("NQkdFxE5Nh0HAAUjDB0YGgYXBQ=="), StringFog.decrypt("BAAcAkUMPhAICAAfHAEK"));
+            HVLog.d("FloatWindowServices", "went background");
             Iterator var2 = ForegroundCallbacks.this.listeners.iterator();
 
             while(var2.hasNext()) {
@@ -33,11 +33,11 @@ public class ForegroundCallbacks implements Application.ActivityLifecycleCallbac
                   listener.onBecameBackground();
                } catch (Exception var5) {
                   Exception exc = var5;
-                  HVLog.d(StringFog.decrypt("NQoAEwIcMAYNCzERBQMMEgYZBQ=="), StringFog.decrypt("PwwBAgAAOgFDGxoCDBhOFh0RExUaNhwNTkg=") + exc.toString());
+                  HVLog.d("ForegroundCallbacks", "Listener threw exception!:" + exc.toString());
                }
             }
          } else {
-            HVLog.d(StringFog.decrypt("NQoAEwIcMAYNCzERBQMMEgYZBQ=="), StringFog.decrypt("ABEbGglOORwRChUCBhoAFw=="));
+            HVLog.d("ForegroundCallbacks", "still foreground");
          }
 
       }
@@ -69,7 +69,7 @@ public class ForegroundCallbacks implements Application.ActivityLifecycleCallbac
             init((Application)appCtx);
          }
 
-         throw new IllegalStateException(StringFog.decrypt("NQoAEwIcMAYNC1IZGk8AHBFSHwsHKxoCAxsDDAtOEgsWVgYPMR0MG1IfCxsPGgtSAg0LfzITHx4ZCg4aGgocVgoMNRYAGw=="));
+         throw new IllegalStateException("Foreground is not initialised and cannot obtain the Application object");
       } else {
          return instance;
       }
@@ -77,7 +77,7 @@ public class ForegroundCallbacks implements Application.ActivityLifecycleCallbac
 
    public static ForegroundCallbacks get() {
       if (instance == null) {
-         throw new IllegalStateException(StringFog.decrypt("NQoAEwIcMAYNC1IZGk8AHBFSHwsHKxoCAxsDDAtOXkUbGBMBNBZDDgZQBQoPABFSGQsNOlMUBgYYSR8PAQQfExELLRoQChZQAAEHB0oVExE="));
+         throw new IllegalStateException("Foreground is not initialised - invoke at least once with parameterised init/get");
       } else {
          return instance;
       }
@@ -103,10 +103,10 @@ public class ForegroundCallbacks implements Application.ActivityLifecycleCallbac
       this.paused = false;
       boolean wasBackground = !this.foreground;
       this.foreground = true;
-      HVLog.d(TAG, StringFog.decrypt("HAszFREHKRoXFiAVGhoDFgFSFQ0LPBhZ") + this.check);
+      HVLog.d(TAG, "onActivityResumed check:" + this.check);
       this.handler.removeMessages(1);
       if (wasBackground) {
-         HVLog.d(TAG, StringFog.decrypt("BAAcAkUIMAEGCAAfHAEK"));
+         HVLog.d(TAG, "went foreground");
          Iterator var3 = this.listeners.iterator();
 
          while(var3.hasNext()) {
@@ -116,18 +116,18 @@ public class ForegroundCallbacks implements Application.ActivityLifecycleCallbac
                listener.onBecameForeground(activity);
             } catch (Exception var6) {
                Exception exc = var6;
-               HVLog.d(TAG, StringFog.decrypt("PwwBAgAAOgFDGxoCDBhOFh0RExUaNhwNTkg=") + exc.toString());
+               HVLog.d(TAG, "Listener threw exception!:" + exc.toString());
             }
          }
       } else {
-         HVLog.d(TAG, StringFog.decrypt("ABEbGglOORwRChUCBhoAFw=="));
+         HVLog.d(TAG, "still foreground");
       }
 
    }
 
    public void onActivityPaused(Activity activity) {
       this.paused = true;
-      HVLog.d(TAG, StringFog.decrypt("HAszFREHKRoXFiIRHBwLF0URHgANNEk=") + this.check);
+      HVLog.d(TAG, "onActivityPaused check:" + this.check);
       this.handler.removeMessages(1);
       Message message = this.handler.obtainMessage(1);
       this.handler.sendMessageDelayed(message, 500L);

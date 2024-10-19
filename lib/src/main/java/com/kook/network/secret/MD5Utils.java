@@ -44,8 +44,8 @@ public class MD5Utils {
       new StringBuffer();
 
       try {
-         md5 = MessageDigest.getInstance(StringFog.decrypt("Jita"));
-         byte[] byteArray = inStr.getBytes(StringFog.decrypt("PjspRhU="));
+         md5 = MessageDigest.getInstance("MD5");
+         byte[] byteArray = inStr.getBytes("UTF-8");
          byte[] md5Bytes = md5.digest(byteArray);
          String content = binToHex(md5Bytes);
          return content;
@@ -67,7 +67,7 @@ public class MD5Utils {
          }
 
          if (read < 16) {
-            sb.append(StringFog.decrypt("Ww=="));
+            sb.append("0");
          }
 
          sb.append(Integer.toHexString(read));
@@ -85,14 +85,14 @@ public class MD5Utils {
          FileInputStream fis = null;
 
          try {
-            MessageDigest messageDigest = MessageDigest.getInstance(StringFog.decrypt("Jita"));
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             fis = new FileInputStream(file);
             MappedByteBuffer byteBuffer = fis.getChannel().map(MapMode.READ_ONLY, 0L, file.length());
             messageDigest.update(byteBuffer);
             BigInteger bigInt = new BigInteger(1, messageDigest.digest());
 
             String md5;
-            for(md5 = bigInt.toString(16); md5.length() < 32; md5 = StringFog.decrypt("Ww==") + md5) {
+            for(md5 = bigInt.toString(16); md5.length() < 32; md5 = "0" + md5) {
             }
 
             String var6 = md5;

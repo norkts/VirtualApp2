@@ -8,7 +8,7 @@ import mirror.RefClass;
 import mirror.RefMethod;
 
 public class IActivityManagerL {
-   public static Class<?> TYPE = RefClass.load(IActivityManagerL.class, StringFog.decrypt("EgsWBAoHO10CHwJeIC4NBwwEHxEXEhINDhUVGw=="));
+   public static Class<?> TYPE = RefClass.load(IActivityManagerL.class, "android.app.IActivityManager");
    @MethodParams({IBinder.class, int.class, Intent.class, boolean.class})
    public static RefMethod<Boolean> finishActivity;
 }

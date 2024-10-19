@@ -8,10 +8,10 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class ICrossProfileApps {
-   public static Class<?> TYPE = RefClass.load(ICrossProfileApps.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCwtLRwQHCICBgkHHwAzBhUd"));
+   public static Class<?> TYPE = RefClass.load(ICrossProfileApps.class, "android.content.pm.ICrossProfileApps");
 
    public static class Stub {
-      public static Class<?> TYPE = RefClass.load(Stub.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCwtLRwQHCICBgkHHwAzBhUdeyAXGhA="));
+      public static Class<?> TYPE = RefClass.load(Stub.class, "android.content.pm.ICrossProfileApps$Stub");
       @MethodParams({IBinder.class})
       public static RefStaticMethod<IInterface> asInterface;
    }

@@ -6,9 +6,9 @@ import com.kook.common.utils.HVLog;
 import mirror.dalvik.system.VMRuntime;
 
 public class HYXDNative {
-   private static final String TAG = StringFog.decrypt("OzwqMisPKxoVCg==");
-   private static final String LIB_NAME = StringFog.decrypt("GxwKEg==");
-   private static final String LIB_NAME_64 = StringFog.decrypt("GxwKEjpYaw==");
+   private static final String TAG = "HYXDNative";
+   private static final String LIB_NAME = "hyxd";
+   private static final String LIB_NAME_64 = "hyxd_64";
 
    public static boolean is64bit() {
       if (VERSION.SDK_INT < 21) {
@@ -30,9 +30,9 @@ public class HYXDNative {
    static {
       try {
          if (is64bit()) {
-            System.loadLibrary(StringFog.decrypt("GxwKEjpYaw=="));
+            System.loadLibrary("hyxd_64");
          } else {
-            System.loadLibrary(StringFog.decrypt("GxwKEg=="));
+            System.loadLibrary("hyxd");
          }
       } catch (Throwable var1) {
          Throwable e = var1;

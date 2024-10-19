@@ -13,12 +13,12 @@ public interface IJobService extends IInterface {
    void stopJob(JobParameters var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IJobService {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQc9OgEVBhEV");
+      private static final String DESCRIPTOR = "android.app.job.IJobService";
       static final int TRANSACTION_startJob = 1;
       static final int TRANSACTION_stopJob = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQc9OgEVBhEV"));
+         this.attachInterface(this, "android.app.job.IJobService");
       }
 
       public static IJobService asInterface(IBinder obj) {
@@ -70,7 +70,7 @@ public interface IJobService extends IInterface {
 
       public static boolean setDefaultImpl(IJobService impl) {
          if (IJobService.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IJobService.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -96,7 +96,7 @@ public interface IJobService extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQc9OgEVBhEV");
+            return "android.app.job.IJobService";
          }
 
          public void startJob(JobParameters jobParams) throws RemoteException {
@@ -104,7 +104,7 @@ public interface IJobService extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQc9OgEVBhEV"));
+               _data.writeInterfaceToken("android.app.job.IJobService");
                if (jobParams != null) {
                   _data.writeInt(1);
                   jobParams.writeToParcel(_data, 0);
@@ -131,7 +131,7 @@ public interface IJobService extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10CHwJeAwAMXSw4GQc9OgEVBhEV"));
+               _data.writeInterfaceToken("android.app.job.IJobService");
                if (jobParams != null) {
                   _data.writeInt(1);
                   jobParams.writeToParcel(_data, 0);

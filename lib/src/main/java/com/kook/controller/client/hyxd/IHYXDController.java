@@ -13,12 +13,12 @@ public interface IHYXDController extends IInterface {
    boolean memoryTest() throws RemoteException;
 
    public abstract static class Stub extends Binder implements IHYXDController {
-      private static final String DESCRIPTOR = StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeARYWF0s7Pjw2GzAMAQYCBgMCFhc=");
+      private static final String DESCRIPTOR = "com.kook.controller.client.hyxd.IHYXDController";
       static final int TRANSACTION_memorySRWData = 1;
       static final int TRANSACTION_memoryTest = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeARYWF0s7Pjw2GzAMAQYCBgMCFhc="));
+         this.attachInterface(this, "com.kook.controller.client.hyxd.IHYXDController");
       }
 
       public static IHYXDController asInterface(IBinder obj) {
@@ -62,7 +62,7 @@ public interface IHYXDController extends IInterface {
 
       public static boolean setDefaultImpl(IHYXDController impl) {
          if (IHYXDController.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IHYXDController.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -88,7 +88,7 @@ public interface IHYXDController extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeARYWF0s7Pjw2GzAMAQYCBgMCFhc=");
+            return "com.kook.controller.client.hyxd.IHYXDController";
          }
 
          public boolean memorySRWData(String searchValue, String writeValue, boolean permission) throws RemoteException {
@@ -97,7 +97,7 @@ public interface IHYXDController extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeARYWF0s7Pjw2GzAMAQYCBgMCFhc="));
+               _data.writeInterfaceToken("com.kook.controller.client.hyxd.IHYXDController");
                _data.writeString(searchValue);
                _data.writeString(writeValue);
                _data.writeInt(permission ? 1 : 0);
@@ -123,7 +123,7 @@ public interface IHYXDController extends IInterface {
 
             boolean var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeARYWF0s7Pjw2GzAMAQYCBgMCFhc="));
+               _data.writeInterfaceToken("com.kook.controller.client.hyxd.IHYXDController");
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (_status || IHYXDController.Stub.getDefaultImpl() == null) {
                   _reply.readException();

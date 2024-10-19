@@ -15,12 +15,12 @@ public interface IWifiScanner extends IInterface {
    Bundle getAvailableChannels(int var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IWifiScanner {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINiAADhweDB0=");
+      private static final String DESCRIPTOR = "android.net.wifi.IWifiScanner";
       static final int TRANSACTION_getMessenger = 1;
       static final int TRANSACTION_getAvailableChannels = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINiAADhweDB0="));
+         this.attachInterface(this, "android.net.wifi.IWifiScanner");
       }
 
       public static IWifiScanner asInterface(IBinder obj) {
@@ -74,7 +74,7 @@ public interface IWifiScanner extends IInterface {
 
       public static boolean setDefaultImpl(IWifiScanner impl) {
          if (IWifiScanner.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IWifiScanner.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -100,7 +100,7 @@ public interface IWifiScanner extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINiAADhweDB0=");
+            return "android.net.wifi.IWifiScanner";
          }
 
          public Messenger getMessenger() throws RemoteException {
@@ -109,7 +109,7 @@ public interface IWifiScanner extends IInterface {
 
             Messenger _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINiAADhweDB0="));
+               _data.writeInterfaceToken("android.net.wifi.IWifiScanner");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IWifiScanner.Stub.getDefaultImpl() != null) {
                   Messenger var5 = IWifiScanner.Stub.getDefaultImpl().getMessenger();
@@ -136,7 +136,7 @@ public interface IWifiScanner extends IInterface {
 
             Bundle _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINiAADhweDB0="));
+               _data.writeInterfaceToken("android.net.wifi.IWifiScanner");
                _data.writeInt(band);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (!_status && IWifiScanner.Stub.getDefaultImpl() != null) {

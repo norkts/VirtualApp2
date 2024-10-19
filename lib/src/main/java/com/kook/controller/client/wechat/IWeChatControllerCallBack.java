@@ -20,7 +20,7 @@ public interface IWeChatControllerCallBack extends IInterface {
    void setSendChatMsgSuccess(int var1, boolean var2) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IWeChatControllerCallBack {
-      private static final String DESCRIPTOR = StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ=");
+      private static final String DESCRIPTOR = "com.kook.controller.client.wechat.IWeChatControllerCallBack";
       static final int TRANSACTION_syncScanGroupChatData = 1;
       static final int TRANSACTION_getSendChatPosition = 2;
       static final int TRANSACTION_getSendChatName = 3;
@@ -28,7 +28,7 @@ public interface IWeChatControllerCallBack extends IInterface {
       static final int TRANSACTION_setSendChatMsgSuccess = 5;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ="));
+         this.attachInterface(this, "com.kook.controller.client.wechat.IWeChatControllerCallBack");
       }
 
       public static IWeChatControllerCallBack asInterface(IBinder obj) {
@@ -91,7 +91,7 @@ public interface IWeChatControllerCallBack extends IInterface {
 
       public static boolean setDefaultImpl(IWeChatControllerCallBack impl) {
          if (IWeChatControllerCallBack.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IWeChatControllerCallBack.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -117,7 +117,7 @@ public interface IWeChatControllerCallBack extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ=");
+            return "com.kook.controller.client.wechat.IWeChatControllerCallBack";
          }
 
          public void syncScanGroupChatData(Map groupChat) throws RemoteException {
@@ -125,7 +125,7 @@ public interface IWeChatControllerCallBack extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ="));
+               _data.writeInterfaceToken("com.kook.controller.client.wechat.IWeChatControllerCallBack");
                _data.writeMap(groupChat);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IWeChatControllerCallBack.Stub.getDefaultImpl() != null) {
@@ -147,7 +147,7 @@ public interface IWeChatControllerCallBack extends IInterface {
 
             int _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ="));
+               _data.writeInterfaceToken("com.kook.controller.client.wechat.IWeChatControllerCallBack");
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (!_status && IWeChatControllerCallBack.Stub.getDefaultImpl() != null) {
                   int var5 = IWeChatControllerCallBack.Stub.getDefaultImpl().getSendChatPosition();
@@ -170,7 +170,7 @@ public interface IWeChatControllerCallBack extends IInterface {
 
             String var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ="));
+               _data.writeInterfaceToken("com.kook.controller.client.wechat.IWeChatControllerCallBack");
                _data.writeInt(position);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IWeChatControllerCallBack.Stub.getDefaultImpl() == null) {
@@ -194,7 +194,7 @@ public interface IWeChatControllerCallBack extends IInterface {
 
             String var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ="));
+               _data.writeInterfaceToken("com.kook.controller.client.wechat.IWeChatControllerCallBack");
                boolean _status = this.mRemote.transact(4, _data, _reply, 0);
                if (_status || IWeChatControllerCallBack.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -216,7 +216,7 @@ public interface IWeChatControllerCallBack extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsNMxoGAQZeHgoNGwQGWCw5OjALDgYzBgEaAQoeGgAcHBIPAzARCgQ="));
+               _data.writeInterfaceToken("com.kook.controller.client.wechat.IWeChatControllerCallBack");
                _data.writeInt(position);
                _data.writeInt(success ? 1 : 0);
                boolean _status = this.mRemote.transact(5, _data, _reply, 0);

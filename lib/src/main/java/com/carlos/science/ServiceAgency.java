@@ -21,10 +21,10 @@ public class ServiceAgency {
    public <T> T getServiceFromMap(Class<T> tClass) {
       if (!this.isServiceConfigExists) {
          try {
-            Class.forName(StringFog.decrypt("EAofWA4BMBhNDB0eHR0BHwkXBEsIMxwCGxEfBxscHAkeExdADBYRGRsTDCwBHQMbEQ=="));
+            Class.forName("com.kook.controller.floatcontroller.ServiceConfig");
             this.isServiceConfigExists = true;
          } catch (ClassNotFoundException var8) {
-            throw new AgencyException(StringFog.decrypt("PQpSFQkPLABDDhweBhsPBwBSAQwaN1MwCgAGAAwLMgIXGBFA"));
+            throw new AgencyException("No class annotate with ServiceAgent.");
          }
       }
 
@@ -51,7 +51,7 @@ public class ServiceAgency {
       }
 
       if (service == null) {
-         throw new AgencyException(StringFog.decrypt("PQpSFQkPLABDBh8ABQoDFgsGBUU=") + tClass.getName() + StringFog.decrypt("UwQcEkUPMR0MGxMEDAtOBAwGHkU9OgEVBhEVKAgLHRFc"));
+         throw new AgencyException("No class implements " + tClass.getName() + " and annotated with ServiceAgent.");
       } else {
          return service;
       }

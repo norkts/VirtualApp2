@@ -28,7 +28,7 @@ import mirror.RefStaticMethod;
 import mirror.RefStaticObject;
 
 public class ActivityThread {
-   public static Class<?> TYPE = RefClass.load(ActivityThread.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhY="));
+   public static Class<?> TYPE = RefClass.load(ActivityThread.class, "android.app.ActivityThread");
    public static RefStaticObject<Boolean> USE_CACHE;
    public static RefStaticMethod<Object> currentActivityThread;
    public static RefMethod<String> getProcessName;
@@ -63,7 +63,7 @@ public class ActivityThread {
       try {
          Object currentActivityThread = ActivityThread.currentActivityThread.call();
          Method declaredMethod;
-         if (currentActivityThread != null && (declaredMethod = currentActivityThread.getClass().getDeclaredMethod(StringFog.decrypt("GwQcEgkLERYUJhwEDAEa"), obj.getClass(), List.class)) != null) {
+         if (currentActivityThread != null && (declaredMethod = currentActivityThread.getClass().getDeclaredMethod("handleNewIntent", obj.getClass(), List.class)) != null) {
             declaredMethod.setAccessible(true);
             declaredMethod.invoke(currentActivityThread, obj, list);
          }
@@ -83,14 +83,14 @@ public class ActivityThread {
    }
 
    public static class H {
-      public static Class<?> TYPE = RefClass.load(H.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhZUIQ=="));
+      public static Class<?> TYPE = RefClass.load(H.class, "android.app.ActivityThread$H");
       public static RefStaticInt LAUNCH_ACTIVITY;
       public static RefStaticInt EXECUTE_TRANSACTION;
       public static RefStaticInt SCHEDULE_CRASH;
    }
 
    public static class AppBindData {
-      public static Class<?> TYPE = RefClass.load(AppBindData.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhZUKB8eMQwcEiEPKxI="));
+      public static Class<?> TYPE = RefClass.load(AppBindData.class, "android.app.ActivityThread$AppBindData");
       public static RefObject<ApplicationInfo> appInfo;
       public static RefObject<Object> info;
       public static RefObject<String> processName;
@@ -99,19 +99,19 @@ public class ActivityThread {
    }
 
    public static class ProviderKeyJBMR1 {
-      public static Class<?> TYPE = RefClass.load(ProviderKeyJBMR1.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhZUOR0BBQwWExclOgo="));
+      public static Class<?> TYPE = RefClass.load(ProviderKeyJBMR1.class, "android.app.ActivityThread$ProviderKey");
       @MethodParams({String.class, int.class})
       public static RefConstructor<?> ctor;
    }
 
    public static class ProviderClientRecordJB {
-      public static Class<?> TYPE = RefClass.load(ProviderClientRecordJB.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhZUOR0BBQwWExctMxoGAQYiDAwBAQE="));
+      public static Class<?> TYPE = RefClass.load(ProviderClientRecordJB.class, "android.app.ActivityThread$ProviderClientRecord");
       public static RefObject<Object> mHolder;
       public static RefObject<IInterface> mProvider;
    }
 
    public static class ProviderClientRecord {
-      public static Class<?> TYPE = RefClass.load(ProviderClientRecord.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhZUOR0BBQwWExctMxoGAQYiDAwBAQE="));
+      public static Class<?> TYPE = RefClass.load(ProviderClientRecord.class, "android.app.ActivityThread$ProviderClientRecord");
       @MethodReflectParams({"android.app.ActivityThread", "java.lang.String", "android.content.IContentProvider", "android.content.ContentProvider"})
       public static RefConstructor<?> ctor;
       public static RefObject<String> mName;
@@ -119,7 +119,7 @@ public class ActivityThread {
    }
 
    public static class ActivityClientRecord {
-      public static Class<?> TYPE = RefClass.load(ActivityClientRecord.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw6NwEGDhZUKAwaGhMbAhwtMxoGAQYiDAwBAQE="));
+      public static Class<?> TYPE = RefClass.load(ActivityClientRecord.class, "android.app.ActivityThread$ActivityClientRecord");
       public static RefObject<android.app.Activity> activity;
       public static RefObject<ActivityInfo> activityInfo;
       public static RefObject<Intent> intent;

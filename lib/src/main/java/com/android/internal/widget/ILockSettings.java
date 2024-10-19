@@ -13,12 +13,12 @@ public interface ILockSettings extends IInterface {
    int[] getRecoverySecretTypes() throws RemoteException;
 
    public abstract static class Stub extends Binder implements ILockSettings {
-      private static final String DESCRIPTOR = StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlAKBoHCBcERyYiHAYZJQAaKxoNCAE=");
+      private static final String DESCRIPTOR = "com.android.internal.widget.ILockSettings";
       static final int TRANSACTION_setRecoverySecretTypes = 1;
       static final int TRANSACTION_getRecoverySecretTypes = 2;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlAKBoHCBcERyYiHAYZJQAaKxoNCAE="));
+         this.attachInterface(this, "com.android.internal.widget.ILockSettings");
       }
 
       public static ILockSettings asInterface(IBinder obj) {
@@ -60,7 +60,7 @@ public interface ILockSettings extends IInterface {
 
       public static boolean setDefaultImpl(ILockSettings impl) {
          if (ILockSettings.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             ILockSettings.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -86,7 +86,7 @@ public interface ILockSettings extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlAKBoHCBcERyYiHAYZJQAaKxoNCAE=");
+            return "com.android.internal.widget.ILockSettings";
          }
 
          public void setRecoverySecretTypes(int[] secretTypes) throws RemoteException {
@@ -94,7 +94,7 @@ public interface ILockSettings extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlAKBoHCBcERyYiHAYZJQAaKxoNCAE="));
+               _data.writeInterfaceToken("com.android.internal.widget.ILockSettings");
                _data.writeIntArray(secretTypes);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && ILockSettings.Stub.getDefaultImpl() != null) {
@@ -116,7 +116,7 @@ public interface ILockSettings extends IInterface {
 
             int[] _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlAKBoHCBcERyYiHAYZJQAaKxoNCAE="));
+               _data.writeInterfaceToken("com.android.internal.widget.ILockSettings");
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
                if (!_status && ILockSettings.Stub.getDefaultImpl() != null) {
                   int[] var5 = ILockSettings.Stub.getDefaultImpl().getRecoverySecretTypes();

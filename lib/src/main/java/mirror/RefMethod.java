@@ -19,7 +19,7 @@ public class RefMethod<T> {
             if (clazz.getClassLoader() == this.getClass().getClassLoader()) {
                try {
                   Class.forName(clazz.getName());
-                  type = (Class)clazz.getField(StringFog.decrypt("JzwiMw==")).get((Object)null);
+                  type = (Class)clazz.getField("TYPE").get((Object)null);
                   types[i] = type;
                } catch (Throwable var9) {
                   Throwable e = var9;

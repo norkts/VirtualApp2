@@ -11,11 +11,11 @@ public interface IPackageDataObserver extends IInterface {
    void onRemoveCompleted(String var1, boolean var2) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IPackageDataObserver {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVLQ4aEioQBQAcKRYR");
+      private static final String DESCRIPTOR = "android.content.pm.IPackageDataObserver";
       static final int TRANSACTION_onRemoveCompleted = 1;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVLQ4aEioQBQAcKRYR"));
+         this.attachInterface(this, "android.content.pm.IPackageDataObserver");
       }
 
       public static IPackageDataObserver asInterface(IBinder obj) {
@@ -51,7 +51,7 @@ public interface IPackageDataObserver extends IInterface {
 
       public static boolean setDefaultImpl(IPackageDataObserver impl) {
          if (IPackageDataObserver.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IPackageDataObserver.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -77,7 +77,7 @@ public interface IPackageDataObserver extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVLQ4aEioQBQAcKRYR");
+            return "android.content.pm.IPackageDataObserver";
          }
 
          public void onRemoveCompleted(String packageName, boolean succeeded) throws RemoteException {
@@ -85,7 +85,7 @@ public interface IPackageDataObserver extends IInterface {
             Parcel _reply = Parcel.obtain();
 
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw+PhAIDhUVLQ4aEioQBQAcKRYR"));
+               _data.writeInterfaceToken("android.content.pm.IPackageDataObserver");
                _data.writeString(packageName);
                _data.writeInt(succeeded ? 1 : 0);
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);

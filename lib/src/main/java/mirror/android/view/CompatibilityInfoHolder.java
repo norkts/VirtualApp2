@@ -6,7 +6,7 @@ import mirror.RefClass;
 import mirror.RefMethod;
 
 public class CompatibilityInfoHolder {
-   public static Class<?> Class = RefClass.load(CompatibilityInfoHolder.class, StringFog.decrypt("EgsWBAoHO10VBhcHRywBHhUTAgwMNh8KGws5BwkBOwoeEgAc"));
+   public static Class<?> Class = RefClass.load(CompatibilityInfoHolder.class, "android.view.CompatibilityInfoHolder");
    @MethodReflectParams({"android.content.res.CompatibilityInfo"})
    public static RefMethod<Void> set;
 }

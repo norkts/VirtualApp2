@@ -27,14 +27,14 @@ public final class RequestCreator {
    }
 
    public static Retrofit getRetrofitClient(Context context, String baseUrl) {
-      if (baseUrl != null && !baseUrl.endsWith(StringFog.decrypt("RA=="))) {
-         baseUrl = baseUrl + StringFog.decrypt("RA==");
+      if (baseUrl != null && !baseUrl.endsWith("/")) {
+         baseUrl = baseUrl + "/";
       }
 
       if (RETROFIT_CLIENT != null) {
-         HVLog.d(StringFog.decrypt("DAobOUgWBwhLDx07BwYKBVlCFwZeAzwKB1U=") + baseUrl + StringFog.decrypt("S09POWg2JyhrLz0nKCMmLmM2WwVMFQwtGQNV") + RETROFIT_CLIENT.baseUrl());
+         HVLog.d("getRetrofitClient baseUrl:" + baseUrl + "   RETROFIT_CLIENT.baseUrl:" + RETROFIT_CLIENT.baseUrl());
       } else {
-         HVLog.d(StringFog.decrypt("DAobOUgWBwhLDx07BwYKBVlCFwZeAzwKB1U=") + baseUrl);
+         HVLog.d("getRetrofitClient baseUrl:" + baseUrl);
       }
 
       if (OK_HTTP_CLIENT == null) {

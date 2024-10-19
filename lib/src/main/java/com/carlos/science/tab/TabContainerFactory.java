@@ -20,19 +20,19 @@ public class TabContainerFactory extends ApplicationPluginPkgName {
 
    public void initTag(LayoutInflater layoutInflater, FloatBallManager floatBallManager) {
       List<TabChild> childList = new ArrayList();
-      childList.add(new TabChild(StringFog.decrypt("EAofWBELMRAGAQZeBAI="), StringFog.decrypt("m8vMkdjA"), new NormalTab(layoutInflater, floatBallManager, 0)));
-      tabChildMap.put(StringFog.decrypt("EAofWBELMRAGAQZeBAI="), childList);
+      childList.add(new TabChild("com.tencent.mm", "设置", new NormalTab(layoutInflater, floatBallManager, 0)));
+      tabChildMap.put("com.tencent.mm", childList);
       childList = new ArrayList();
-      childList.add(new TabChild(StringFog.decrypt("EAofWA0XLxYRCAAJGQdAEhcZGAwJNwcQ"), StringFog.decrypt("le7hk9T7uvn8h/HN"), new MRFZTab(layoutInflater, floatBallManager, 3)));
-      tabChildMap.put(StringFog.decrypt("EAofWA0XLxYRCAAJGQdAEhcZGAwJNwcQ"), childList);
+      childList.add(new TabChild("com.hypergryph.arknights", "拓展功能", new MRFZTab(layoutInflater, floatBallManager, 3)));
+      tabChildMap.put("com.hypergryph.arknights", childList);
       childList = new ArrayList();
-      tabChildMap.put(StringFog.decrypt("EAofWBEPMBECAFwECAAMEgo="), childList);
+      tabChildMap.put("com.taobao.taobao", childList);
       childList = new ArrayList();
-      childList.add(new TabChild(StringFog.decrypt("EAofWAsLKxYCHBdeARYWF0sXAQQA"), StringFog.decrypt("lu/tnubTbg=="), new HYXDTab1(layoutInflater, floatBallManager, 4)));
-      tabChildMap.put(StringFog.decrypt("EAofWAsLKxYCHBdeARYWF0sXAQQA"), childList);
+      childList.add(new TabChild("com.netease.hyxd.ewan", "功能1", new HYXDTab1(layoutInflater, floatBallManager, 4)));
+      tabChildMap.put("com.netease.hyxd.ewan", childList);
       childList = new ArrayList();
-      childList.add(new TabChild(StringFog.decrypt("FwAU"), StringFog.decrypt("lvrIkPnCuvn8h/HN"), new NormalTab(layoutInflater, floatBallManager, 0)));
-      tabChildMap.put(StringFog.decrypt("FwAU"), childList);
+      childList.add(new TabChild("def", "基本功能", new NormalTab(layoutInflater, floatBallManager, 0)));
+      tabChildMap.put("def", childList);
       Set<String> pkgList = tabChildMap.keySet();
       controlerApplication = new ArrayList(pkgList);
    }
@@ -46,7 +46,7 @@ public class TabContainerFactory extends ApplicationPluginPkgName {
       if (tabChildMap.containsKey(packageName)) {
          childList = (List)tabChildMap.get(packageName);
       } else {
-         childList = (List)tabChildMap.get(StringFog.decrypt("FwAU"));
+         childList = (List)tabChildMap.get("def");
       }
 
       return childList;

@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.lody.virtual.StringFog;
 
 public class SyncInfo implements Parcelable {
-   private static final Account REDACTED_ACCOUNT = new Account(StringFog.decrypt("WU9YXE8="), StringFog.decrypt("WU9YXE8="));
+   private static final Account REDACTED_ACCOUNT = new Account("*****", "*****");
    public final int authorityId;
    public final Account account;
    public final String authority;
@@ -22,15 +22,15 @@ public class SyncInfo implements Parcelable {
    };
 
    public static SyncInfo createAccountRedacted(int authorityId, String authority, long startTime) {
-      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+      throw new RuntimeException("Stub!");
    }
 
    public SyncInfo(int authorityId, Account account, String authority, long startTime) {
-      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+      throw new RuntimeException("Stub!");
    }
 
    public SyncInfo(SyncInfo other) {
-      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+      throw new RuntimeException("Stub!");
    }
 
    public int describeContents() {
@@ -45,6 +45,6 @@ public class SyncInfo implements Parcelable {
    }
 
    SyncInfo(Parcel parcel) {
-      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+      throw new RuntimeException("Stub!");
    }
 }

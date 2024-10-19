@@ -7,6 +7,6 @@ public class ApplicationConfig {
    private static ApplicationConfig sInstance;
 
    public static void setDefaultInstance(ApplicationConfig config) {
-      Log.e(StringFog.decrypt("IRAcAgwDOiAXGhA="), StringFog.decrypt("GgsEGQ4LfwAXGhBQDxoAEBEbGQtP"));
+      Log.e("RuntimeStub", "invoke stub function!");
    }
 }

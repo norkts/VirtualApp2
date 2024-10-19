@@ -7,7 +7,7 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class SurfaceControl {
-   public static Class<?> TYPE = RefClass.load(SurfaceControl.class, StringFog.decrypt("EgsWBAoHO10VBhcHRzwbAQMTFQAtMB0XHR0c"));
+   public static Class<?> TYPE = RefClass.load(SurfaceControl.class, "android.view.SurfaceControl");
    @MethodParams({int.class, int.class})
    public static RefStaticMethod<Bitmap> screnshot;
 }

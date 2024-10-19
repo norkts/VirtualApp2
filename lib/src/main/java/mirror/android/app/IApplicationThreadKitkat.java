@@ -11,7 +11,7 @@ import mirror.RefMethod;
 import mirror.android.content.res.CompatibilityInfo;
 
 public class IApplicationThreadKitkat {
-   public static Class<?> TYPE = RefClass.load(IApplicationThreadKitkat.class, StringFog.decrypt("EgsWBAoHO10CHwJeIC4eAwkbFQQaNhwNOxoCDA4K"));
+   public static Class<?> TYPE = RefClass.load(IApplicationThreadKitkat.class, "android.app.IApplicationThread");
    @MethodReflectParams({"android.content.Intent", "android.content.pm.ActivityInfo", "android.content.res.CompatibilityInfo", "int", "java.lang.String", "android.os.Bundle", "boolean", "int", "int"})
    public static RefMethod<Void> scheduleReceiver;
    @MethodParams({IBinder.class, ServiceInfo.class, CompatibilityInfo.class, int.class})

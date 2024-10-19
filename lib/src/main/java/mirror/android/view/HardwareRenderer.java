@@ -7,7 +7,7 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class HardwareRenderer {
-   public static Class<?> TYPE = RefClass.load(HardwareRenderer.class, StringFog.decrypt("EgsWBAoHO10VBhcHRycPAQEFFxcLDRYNCxcCDB0="));
+   public static Class<?> TYPE = RefClass.load(HardwareRenderer.class, "android.view.HardwareRenderer");
    @MethodParams({File.class})
    public static RefStaticMethod<Void> setupDiskCache;
 }

@@ -35,11 +35,11 @@ public class FileUploadService {
 
    public void uploadDevices(File file, String deviceNo, String uploadVersion, FileUploadObserver<ResponseBody> fileUploadObserver) {
       Map<String, RequestBody> params = new HashMap();
-      params.put(StringFog.decrypt("M0IiLxg="), RequestBody.create(MediaType.parse(StringFog.decrypt("BhoDH0QSFBVZSQ8XGQJCD0wWFA==")), MD5Utils.fileMD5Sync(file)));
-      params.put(StringFog.decrypt("DwoZAk4HOwg="), RequestBody.create(MediaType.parse(StringFog.decrypt("BhoDH0QSFBVZSQ8XGQJCD0wWFA==")), deviceNo));
-      params.put(StringFog.decrypt("Hh8DBEwGIwJfFQAXBQ=="), RequestBody.create(MediaType.parse(StringFog.decrypt("BhoDH0QSFBVZSQ8XGQJCD0wWFA==")), uploadVersion));
-      RequestBody requestFile = RequestBody.create(MediaType.parse(StringFog.decrypt("BhoDH0QSFBVZSQ8XGQJCD0wWFA==")), file);
-      MultipartBody.Part body = Part.createFormData(StringFog.decrypt("DQYDDg=="), file.getName(), requestFile);
+      params.put("X-MD5", RequestBody.create(MediaType.parse("multipart/form-data"), MD5Utils.fileMD5Sync(file)));
+      params.put("deviceNo", RequestBody.create(MediaType.parse("multipart/form-data"), deviceNo));
+      params.put("uploadVersion", RequestBody.create(MediaType.parse("multipart/form-data"), uploadVersion));
+      RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+      MultipartBody.Part body = Part.createFormData("file", file.getName(), requestFile);
       mApiService.uploadDevices(body, params).filter((responseBody) -> {
          return this.handleResponse(responseBody);
       }).compose(HttpManager.io_main()).doOnError(new ErrorAction()).subscribe(fileUploadObserver);
@@ -48,9 +48,9 @@ public class FileUploadService {
    public void uploadAvatar2(File file, String usercode, FileUploadObserver<ResponseBody> fileUploadObserver) {
       Map<String, RequestBody> uploadInfo = new ArrayMap();
       UploadFileRequestBody uploadFileRequestBody = new UploadFileRequestBody(file, fileUploadObserver);
-      uploadInfo.put(StringFog.decrypt("AgIODEhATkdLDwUdBQ4CDhBA") + file.getName() + "", uploadFileRequestBody);
+      uploadInfo.put("image\"; filename=\"" + file.getName() + "", uploadFileRequestBody);
       if (!TextUtils.isEmpty(usercode)) {
-         uploadInfo.put(StringFog.decrypt("HhwKGU4NEQI="), RequestBody.create(MediaType.parse(StringFog.decrypt("HwoXHwISGQZECA==")), usercode.trim()));
+         uploadInfo.put("usercode", RequestBody.create(MediaType.parse("text/plain"), usercode.trim()));
       }
 
       mApiService.uploadAvatar2(uploadInfo).filter((responseBody) -> {
@@ -64,14 +64,14 @@ public class FileUploadService {
       try {
          source.request(Long.MAX_VALUE);
          Buffer buffer = source.buffer();
-         Charset charset = Charset.forName(StringFog.decrypt("PjspRhU="));
+         Charset charset = Charset.forName("UTF-8");
          MediaType contentType = responseBody.contentType();
          if (contentType != null) {
             charset = contentType.charset(charset);
          }
 
          String body = buffer.clone().readString(charset);
-         HVLog.d(StringFog.decrypt("jfDKjLHpndi5g/LmjvTxjbDHkv2pRkkaBAsWUQ==") + body);
+         HVLog.d("查看返回回来的  body:" + body);
          MessageEntity messageEntity = (MessageEntity)JSON.parseObject(body, MessageEntity.class);
          if (messageEntity.getCode() != 4000) {
             throw new ApiException(messageEntity.getMsg(), String.valueOf(messageEntity.getCode()), messageEntity.getCode());

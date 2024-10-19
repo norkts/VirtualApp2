@@ -11,7 +11,7 @@ import com.carlos.science.stebcore.StepImpl;
 import com.kook.controller.server.IServerController;
 
 public abstract class OnClick extends StepImpl {
-   protected String TAG = StringFog.decrypt("PAsxGgwNNA==");
+   protected String TAG = "OnClick";
    protected int tryMax = 5;
    protected boolean doubleClick = false;
 
@@ -29,14 +29,14 @@ public abstract class OnClick extends StepImpl {
 
             this.sleep(400L);
             center = this.getLocCenterByView();
-            Log.d(this.TAG, StringFog.decrypt("luP/kMnPusP+h93lHwYLBEWV7OGK4v6E0tw="));
+            Log.d(this.TAG, "再次尝试view 的位置");
             if (center != null) {
                break;
             }
          }
 
          if (center == null) {
-            Log.d(this.TAG, StringFog.decrypt("m9rrn+LiuezGifvOjOfelP/2AAwLKFOG1eaYxsqI68qWzt8AKh8PQ5T56YvV1o3N74zp0xAGAQYVG0+I+uiU7soAKh8P"));
+            Log.d(this.TAG, "这里查找到的view 应该是为null,所以这里center 才是null");
             return false;
          }
       }
@@ -57,7 +57,7 @@ public abstract class OnClick extends StepImpl {
       } catch (RemoteException var6) {
          RemoteException e = var6;
          e.printStackTrace();
-         Log.e(this.TAG, StringFog.decrypt("IBEXGyYCNhAITxYfPQ4dGEUXDgYLLwcKABxK") + e.toString());
+         Log.e(this.TAG, "StemClick doTask exception:" + e.toString());
       }
 
       return true;

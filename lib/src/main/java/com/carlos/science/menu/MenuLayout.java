@@ -80,7 +80,7 @@ public class MenuLayout extends ViewGroup implements ICarrier {
 
    public MenuLayout(Context context, AttributeSet attrs) {
       super(context, attrs);
-      this.TAG = StringFog.decrypt("PgAcAykPJhwWGw==");
+      this.TAG = "MenuLayout";
       this.mChildPadding = 5;
       this.mExpanded = false;
       this.isMoving = false;
@@ -198,7 +198,7 @@ public class MenuLayout extends ViewGroup implements ICarrier {
    }
 
    public void onDone() {
-      Log.v(this.TAG, StringFog.decrypt("HAs2GQsL"));
+      Log.v(this.TAG, "onDone");
       this.isMoving = false;
       if (!this.mExpanded) {
          FloatMenu floatMenu = (FloatMenu)this.getParent();
@@ -212,7 +212,7 @@ public class MenuLayout extends ViewGroup implements ICarrier {
    }
 
    public void setArc(float fromDegrees, float toDegrees, int position) {
-      Log.d(this.TAG, StringFog.decrypt("AAAGNxcNf5vN0Zfe84rS1IDI0A=="));
+      Log.d(this.TAG, "setArc 设定弧度");
       this.position = position;
       if (this.mFromDegrees != fromDegrees || this.mToDegrees != toDegrees) {
          this.mFromDegrees = fromDegrees;

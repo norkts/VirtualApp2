@@ -18,8 +18,8 @@ public class HttpManager {
    private static ApiService mApiService;
    DateTimeFormatter formatter;
    ZonedDateTime zonedDateTime;
-   private final String decryptPrefix = StringFog.decrypt("LgEMMA==");
-   private final String decryptSuffix = StringFog.decrypt("Ng==");
+   private final String decryptPrefix = "Enc[";
+   private final String decryptSuffix = "]";
 
    public static HttpManager getInstance(Context context, String baseUrl) {
       mApiService = (ApiService)RequestCreator.getRetrofitClient(context, baseUrl).create(ApiService.class);
@@ -28,9 +28,9 @@ public class HttpManager {
 
    public String getDate(long time) {
       if (this.formatter == null || this.zonedDateTime == null) {
-         ZoneId beijingZoneId = ZoneId.of(StringFog.decrypt("KhwGCgIxHQZDAQEZAg=="));
+         ZoneId beijingZoneId = ZoneId.of("Asia/Shanghai");
          this.zonedDateTime = ZonedDateTime.now(beijingZoneId);
-         this.formatter = DateTimeFormatter.ofPattern(StringFog.decrypt("EhYWEgAvOEpJAkkwI1UCBhcRBg=="));
+         this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
       }
 
       String formattedDateTime = this.zonedDateTime.format(this.formatter);
@@ -48,27 +48,27 @@ public class HttpManager {
    }
 
    public Observable<MessageEntity> syncLogOrConfigAction(String devicesNo, String channelNo, String applicationId, String applicationName, String packgeName, int versionCode, boolean isRequestConfigUrl, String content) {
-      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt(StringFog.decrypt("IwcFWR1QQUkdXkdIXUJfXA=="), content));
+      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt("Hhj2024.08.06-07", content));
       int requestConfig = isRequestConfigUrl ? 1 : 0;
-      HVLog.d(StringFog.decrypt("DwoZAk4HBilCXA==") + devicesNo + StringFog.decrypt("S09PCEUDGwlICicXUQ==") + channelNo + StringFog.decrypt("S09PS0wSBQtEBQgMAgABIklY") + applicationId + StringFog.decrypt("S09PS0wSBQtEBQgMAgABJUwPEF0=") + applicationName + StringFog.decrypt("S09PSw0SFARGAQw2CgIKUQ==") + packgeName + StringFog.decrypt("S09PS1sHBxRECQc7BAsKUQ==") + versionCode + StringFog.decrypt("S09PS04NGxNICB1C") + content);
+      HVLog.d("devicesNo:" + devicesNo + "   channelNo:" + channelNo + "    applicationId:" + applicationId + "    applicationName:" + applicationName + "     packgeName:" + packgeName + "    versionCode:" + versionCode + "    content:" + content);
       return mApiService.syncDevicesLogAction(devicesNo, channelNo, applicationId, applicationName, packgeName, versionCode, requestConfig, encrypt).compose(io_main());
    }
 
    public Observable<MessageEntity> syncAddDevices(String model, String manufacturer, String product, String channelNo, String devicesNo, String cardNumber, String uploadVersion, String uploadNote, String leaveme, String content) {
-      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt(StringFog.decrypt("IwcFWR1QQUkdXkdIXUJfXA=="), content));
-      HVLog.d(StringFog.decrypt("BgALDkFY") + model + StringFog.decrypt("S09PBkwMAAFMBR0NGQodUQ==") + manufacturer + StringFog.decrypt("S09PS10QGgNYBR1C") + product + StringFog.decrypt("S09PS04KFAlDAwU2BFU=") + channelNo + StringFog.decrypt("S09PSw0GEBFEBQwLJQBV") + devicesNo + StringFog.decrypt("S09PS04DBwNjEwQaDh1V") + cardNumber + StringFog.decrypt("S09PS0EHFBFICwxC") + leaveme + StringFog.decrypt("S09PS04NGxNICB1C") + content);
+      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt("Hhj2024.08.06-07", content));
+      HVLog.d("model:" + model + "   manufacturer:" + manufacturer + "    product:" + product + "    channelNo:" + channelNo + "     devicesNo:" + devicesNo + "    cardNumber:" + cardNumber + "    leaveme:" + leaveme + "    content:" + content);
       return mApiService.syncAddDevices(model, manufacturer, product, channelNo, devicesNo, cardNumber, uploadVersion, uploadNote, leaveme, encrypt).compose(io_main());
    }
 
    public Observable<MessageEntity> syncCheckDevices(String model, String manufacturer, String product, String channelNo, String devicesNo, String cardNumber, String uploadVersion, String leaveme, String content) {
-      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt(StringFog.decrypt("IwcFWR1QQUkdXkdIXUJfXA=="), content));
-      HVLog.d(StringFog.decrypt("BgALDkFY") + model + StringFog.decrypt("S09PBkwMAAFMBR0NGQodUQ==") + manufacturer + StringFog.decrypt("S09PS10QGgNYBR1C") + product + StringFog.decrypt("S09PS04KFAlDAwU2BFU=") + channelNo + StringFog.decrypt("S09PSw0GEBFEBQwLJQBV") + devicesNo + StringFog.decrypt("S09PS04DBwNjEwQaDh1V") + cardNumber + StringFog.decrypt("S09PHl0OGgZJMAwKGAYABQ==") + uploadVersion + StringFog.decrypt("S09PS0EHFBFICwxC") + leaveme + StringFog.decrypt("S09PS04NGxNICB1C") + content);
+      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt("Hhj2024.08.06-07", content));
+      HVLog.d("model:" + model + "   manufacturer:" + manufacturer + "    product:" + product + "    channelNo:" + channelNo + "     devicesNo:" + devicesNo + "    cardNumber:" + cardNumber + "   uploadVersion" + uploadVersion + "    leaveme:" + leaveme + "    content:" + content);
       return mApiService.syncCheckDevices(model, manufacturer, product, channelNo, devicesNo, cardNumber, uploadVersion, leaveme, encrypt).compose(io_main());
    }
 
    public Observable<MessageEntity> syncRandomDevices(String channelNo, String devicesNo, String packageName, String content) {
-      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt(StringFog.decrypt("IwcFWR1QQUkdXkdIXUJfXA=="), content));
-      HVLog.d(StringFog.decrypt("S09PS04KFAlDAwU2BFU=") + channelNo + StringFog.decrypt("S09PSw0GEBFEBQwLJQBV") + devicesNo + StringFog.decrypt("S09PS10DFgxMAQw2CgIKUQ==") + packageName + StringFog.decrypt("S09PS04NGxNICB1C") + content);
+      String encrypt = this.comboEncryptPrefix(CipherUtil.encrypt("Hhj2024.08.06-07", content));
+      HVLog.d("    channelNo:" + channelNo + "     devicesNo:" + devicesNo + "    packageName:" + packageName + "    content:" + content);
       return mApiService.syncRandomDevices(channelNo, devicesNo, packageName, encrypt).compose(io_main());
    }
 

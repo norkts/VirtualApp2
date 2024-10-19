@@ -11,7 +11,7 @@ import mirror.RefStaticObject;
 
 public class ParceledListSlice {
    public static RefStaticObject<Parcelable.Creator> CREATOR;
-   public static Class<?> TYPE = RefClass.load(ParceledListSlice.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWDUPLRAGAxcUJQYdBzYeHwYL"));
+   public static Class<?> TYPE = RefClass.load(ParceledListSlice.class, "android.content.pm.ParceledListSlice");
    public static RefMethod<Boolean> append;
    public static RefConstructor<Parcelable> ctor;
    @MethodParams({List.class})

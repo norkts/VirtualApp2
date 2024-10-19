@@ -6,10 +6,10 @@ import mirror.RefStaticInt;
 import mirror.RefStaticObject;
 
 public final class R_Hide {
-   public static Class<?> TYPE = RefClass.load(R_Hide.class, StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlADQ=="));
+   public static Class<?> TYPE = RefClass.load(R_Hide.class, "com.android.internal.R");
 
    public static class styleable {
-      public static Class<?> TYPE = RefClass.load(styleable.class, StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlADVcQGwscDA4MHwA="));
+      public static Class<?> TYPE = RefClass.load(styleable.class, "com.android.internal.R$styleable");
       public static RefStaticObject<int[]> AccountAuthenticator;
       public static RefStaticInt AccountAuthenticator_accountPreferences;
       public static RefStaticInt AccountAuthenticator_accountType;
@@ -39,7 +39,7 @@ public final class R_Hide {
    }
 
    public static class drawable {
-      public static Class<?> TYPE = RefClass.load(id.class, StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlADVcHHRMHCA0CFg=="));
+      public static Class<?> TYPE = RefClass.load(id.class, "com.android.internal.R$drawable");
       public static RefStaticInt popup_full_dark;
       public static RefStaticInt popup_top_dark;
       public static RefStaticInt popup_bottom_dark;
@@ -52,12 +52,12 @@ public final class R_Hide {
    }
 
    public static class layout {
-      public static Class<?> TYPE = RefClass.load(id.class, StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlADVcPDgsfHBs="));
+      public static Class<?> TYPE = RefClass.load(id.class, "com.android.internal.R$layout");
       public static RefStaticInt resolver_list;
    }
 
    public static class id {
-      public static Class<?> TYPE = RefClass.load(id.class, StringFog.decrypt("EAofWAQAOwEMBhZeAAEaFhccFwlADVcKCw=="));
+      public static Class<?> TYPE = RefClass.load(id.class, "com.android.internal.R$id");
       public static RefStaticInt icon;
       public static RefStaticInt contentPanel;
       public static RefStaticInt topPanel;

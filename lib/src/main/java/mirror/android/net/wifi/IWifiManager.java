@@ -8,10 +8,10 @@ import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class IWifiManager {
-   public static Class<?> TYPE = RefClass.load(IWifiManager.class, StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINj4CARMXDB0="));
+   public static Class<?> TYPE = RefClass.load(IWifiManager.class, "android.net.wifi.IWifiManager");
 
    public static class Stub {
-      public static Class<?> TYPE = RefClass.load(Stub.class, StringFog.decrypt("EgsWBAoHO10NCgZeHgYIGks7IQwINj4CARMXDB1KIBEHFA=="));
+      public static Class<?> TYPE = RefClass.load(Stub.class, "android.net.wifi.IWifiManager$Stub");
       @MethodParams({IBinder.class})
       public static RefStaticMethod<IInterface> asInterface;
    }

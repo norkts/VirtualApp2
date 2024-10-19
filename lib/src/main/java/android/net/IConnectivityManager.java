@@ -25,7 +25,7 @@ public interface IConnectivityManager extends IInterface {
    LinkProperties getLinkProperties(int var1) throws RemoteException;
 
    public abstract static class Stub extends Binder implements IConnectivityManager {
-      private static final String DESCRIPTOR = StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc=");
+      private static final String DESCRIPTOR = "android.net.IConnectivityManager";
       static final int TRANSACTION_getActiveNetworkInfo = 1;
       static final int TRANSACTION_getActiveNetworkInfoForUid = 2;
       static final int TRANSACTION_getNetworkInfo = 3;
@@ -36,7 +36,7 @@ public interface IConnectivityManager extends IInterface {
       static final int TRANSACTION_getLinkProperties = 8;
 
       public Stub() {
-         this.attachInterface(this, StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+         this.attachInterface(this, "android.net.IConnectivityManager");
       }
 
       public static IConnectivityManager asInterface(IBinder obj) {
@@ -150,7 +150,7 @@ public interface IConnectivityManager extends IInterface {
 
       public static boolean setDefaultImpl(IConnectivityManager impl) {
          if (IConnectivityManager.Stub.Proxy.sDefaultImpl != null) {
-            throw new IllegalStateException(StringFog.decrypt("AAAGMgAIPgYPGzsdGQNGWkURFwkCOhdDGwUZCgo="));
+            throw new IllegalStateException("setDefaultImpl() called twice");
          } else if (impl != null) {
             IConnectivityManager.Stub.Proxy.sDefaultImpl = impl;
             return true;
@@ -176,7 +176,7 @@ public interface IConnectivityManager extends IInterface {
          }
 
          public String getInterfaceDescriptor() {
-            return StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc=");
+            return "android.net.IConnectivityManager";
          }
 
          public NetworkInfo getActiveNetworkInfo() throws RemoteException {
@@ -185,7 +185,7 @@ public interface IConnectivityManager extends IInterface {
 
             NetworkInfo _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                boolean _status = this.mRemote.transact(1, _data, _reply, 0);
                if (!_status && IConnectivityManager.Stub.getDefaultImpl() != null) {
                   NetworkInfo var5 = IConnectivityManager.Stub.getDefaultImpl().getActiveNetworkInfo();
@@ -212,7 +212,7 @@ public interface IConnectivityManager extends IInterface {
 
             NetworkInfo _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                _data.writeInt(uid);
                _data.writeInt(ignoreBlocked ? 1 : 0);
                boolean _status = this.mRemote.transact(2, _data, _reply, 0);
@@ -241,7 +241,7 @@ public interface IConnectivityManager extends IInterface {
 
             NetworkInfo var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                _data.writeInt(networkType);
                boolean _status = this.mRemote.transact(3, _data, _reply, 0);
                if (_status || IConnectivityManager.Stub.getDefaultImpl() == null) {
@@ -271,7 +271,7 @@ public interface IConnectivityManager extends IInterface {
 
             NetworkInfo[] _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                boolean _status = this.mRemote.transact(4, _data, _reply, 0);
                if (!_status && IConnectivityManager.Stub.getDefaultImpl() != null) {
                   NetworkInfo[] var5 = IConnectivityManager.Stub.getDefaultImpl().getAllNetworkInfo();
@@ -294,7 +294,7 @@ public interface IConnectivityManager extends IInterface {
 
             boolean _result;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                boolean _status = this.mRemote.transact(5, _data, _reply, 0);
                if (!_status && IConnectivityManager.Stub.getDefaultImpl() != null) {
                   boolean var5 = IConnectivityManager.Stub.getDefaultImpl().isActiveNetworkMetered();
@@ -317,7 +317,7 @@ public interface IConnectivityManager extends IInterface {
 
             boolean var7;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                _data.writeInt(networkType);
                _data.writeInt(address);
                boolean _status = this.mRemote.transact(6, _data, _reply, 0);
@@ -342,7 +342,7 @@ public interface IConnectivityManager extends IInterface {
 
             LinkProperties var5;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                boolean _status = this.mRemote.transact(7, _data, _reply, 0);
                if (_status || IConnectivityManager.Stub.getDefaultImpl() == null) {
                   _reply.readException();
@@ -371,7 +371,7 @@ public interface IConnectivityManager extends IInterface {
 
             LinkProperties var6;
             try {
-               _data.writeInterfaceToken(StringFog.decrypt("EgsWBAoHO10NCgZeICwBHQsXFREHKRoXFj8RBw4JFhc="));
+               _data.writeInterfaceToken("android.net.IConnectivityManager");
                _data.writeInt(networkType);
                boolean _status = this.mRemote.transact(8, _data, _reply, 0);
                if (_status || IConnectivityManager.Stub.getDefaultImpl() == null) {

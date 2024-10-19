@@ -11,9 +11,9 @@ import mirror.RefMethod;
 import mirror.RefObject;
 
 public class AttributionSource {
-   private static final String TAG = StringFog.decrypt("MhEGBAwMKgcKABwjBhocEAA=");
-   public static Class<?> TYPE = RefClass.load(AttributionSource.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSQGAhcHPQYXBh0eOgAbAQYX"));
-   public static Class<?> TYPE_COMP = RefClass.load(AttributionSource.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSQGAhcHPQYXBh0eOgAbAQYXUgQX"));
+   private static final String TAG = "AttributionSource";
+   public static Class<?> TYPE = RefClass.load(AttributionSource.class, "android.content.AttributionSource");
+   public static Class<?> TYPE_COMP = RefClass.load(AttributionSource.class, "android.content.AttributionSource$ay");
    @MethodParams({Object.class})
    public static RefMethod<Boolean> equals;
    public static RefMethod<String> getAttributionTag;
@@ -64,7 +64,7 @@ public class AttributionSource {
 
          return withToken2;
       } else {
-         Log.w(TAG, StringFog.decrypt("HQAFPwsdKxINDBdQGwoKBgYXVgMPNh8GC14CDBsbAQtSGBACMw=="));
+         Log.w(TAG, "newInstance reduce failed,return null");
          return null;
       }
    }
@@ -84,7 +84,7 @@ public class AttributionSource {
       }
 
       Class<AttributionSource> cls = AttributionSource.class;
-      TYPE = RefClass.load(cls, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSQGAhcHPQYXBh0eOgAbAQYX"));
-      TYPE_COMP = RefClass.load(cls, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSQGAhcHPQYXBh0eOgAbAQYXUg=="));
+      TYPE = RefClass.load(cls, "android.content.AttributionSource");
+      TYPE_COMP = RefClass.load(cls, "android.content.AttributionSource$");
    }
 }

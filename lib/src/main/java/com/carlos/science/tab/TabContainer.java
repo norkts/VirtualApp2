@@ -112,7 +112,7 @@ public abstract class TabContainer implements View.OnClickListener, CompoundButt
       if (this.mHandler != null) {
          this.mHandler.post(runnable);
       } else {
-         throw new NullPointerException(StringFog.decrypt("OwQcEgkLLVMKHFIeHAMC"));
+         throw new NullPointerException("Handler is null");
       }
    }
 

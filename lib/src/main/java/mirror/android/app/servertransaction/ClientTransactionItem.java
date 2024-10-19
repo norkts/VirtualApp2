@@ -6,6 +6,6 @@ import mirror.RefClass;
 import mirror.RefMethod;
 
 public class ClientTransactionItem {
-   public static Class<?> TYPE = RefClass.load(ClientTransactionItem.class, StringFog.decrypt("EgsWBAoHO10CHwJeGgocBQAAAhcPMQACDAYZBgFAMAkbEwsaCwECAQERChsHHAs7AgAD"));
+   public static Class<?> TYPE = RefClass.load(ClientTransactionItem.class, "android.app.servertransaction.ClientTransactionItem");
    public static RefMethod<IBinder> getActivityToken;
 }
