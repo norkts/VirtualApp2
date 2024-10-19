@@ -75,9 +75,10 @@ public final class HiddenApiBypass {
          try {
             Object runtime = ((Method)getRuntime.get()).invoke((Object)null);
             ((Executable)setHiddenApiExemptions.get()).setAccessible(true);
-            ((Method)setHiddenApiExemptions.get()).invoke(runtime, signaturePrefixes);
+            ((Method)setHiddenApiExemptions.get()).invoke(runtime, new Object[]{signaturePrefixes});
             return true;
          } catch (InvocationTargetException | IllegalAccessException var5) {
+            var5.printStackTrace();
          }
       }
 

@@ -292,7 +292,7 @@ public class Reflect {
    }
 
    public Reflect call(String name) throws ReflectException {
-      return this.call(name);
+      return this.call(name,new Object[0]);
    }
 
    public Reflect call(String name, Object... args) throws ReflectException {
@@ -367,7 +367,7 @@ public class Reflect {
    }
 
    public Reflect create() throws ReflectException {
-      return this.create();
+      return this.create(new Object[0]);
    }
 
    public Reflect create(Object... args) throws ReflectException {

@@ -11,17 +11,12 @@ public class TextServicesManagerServiceStub extends BinderInvocationProxy {
    }
 
    protected void onBindMethods() {
-      access$001(this);
+      super.onBindMethods();
       this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("getCurrentSpellChecker"));
       this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("getCurrentSpellCheckerSubtype"));
       this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("getSpellCheckerService"));
       this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("finishSpellCheckerService"));
       this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("isSpellCheckerEnabled"));
       this.addMethodProxy(new ReplaceFirstUserIdMethodProxy("getEnabledSpellCheckers"));
-   }
-
-   // $FF: synthetic method
-   static void access$001(TextServicesManagerServiceStub x0) {
-      x0.onBindMethods();
    }
 }

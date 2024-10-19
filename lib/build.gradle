@@ -36,6 +36,11 @@ android {
             minifyEnabled false
         }
     }
+    sourceSets{
+        main {
+            jniLibs {"src/main/libs"}
+        }
+    }
     externalNativeBuild {
         ndkBuild {
             path file("src/main/jni/Android.mk")

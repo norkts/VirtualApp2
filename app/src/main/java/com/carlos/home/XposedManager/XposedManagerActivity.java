@@ -58,8 +58,6 @@ public class XposedManagerActivity extends VActivity {
         }
         initXposedGlobalSettings();
         initModuleList();
-
-        VirtualCore.get().registerObserver(new XPosedModuleObserver());
     }
 
     private void initXposedGlobalSettings() {
