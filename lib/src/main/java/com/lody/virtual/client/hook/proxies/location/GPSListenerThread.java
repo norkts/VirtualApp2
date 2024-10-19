@@ -156,14 +156,14 @@ class GPSListenerThread extends TimerTask {
                   this.notifyMNmeaListener((Map)LocationManager.mNmeaListeners.get(transport));
                }
 
-               listeners = (Map)LocationManager.mListeners.get(transport);
+               Map listeners2 = (Map)LocationManager.mListeners.get(transport);
                if (gpsStatusListeners != null && !gpsStatusListeners.isEmpty()) {
-                  if (listeners != null && !listeners.isEmpty()) {
-                     this.notifyLocation(listeners);
+                  if (listeners2 != null && !listeners2.isEmpty()) {
+                     this.notifyLocation(listeners2);
                   } else {
                      this.handler.postDelayed(new Runnable() {
                         public void run() {
-                           GPSListenerThread.this.notifyLocation(listeners);
+                           GPSListenerThread.this.notifyLocation(listeners2);
                         }
                      }, 100L);
                   }

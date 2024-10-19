@@ -324,8 +324,7 @@ public final class VirtualCore {
             try {
                context.registerReceiver(this.mDownloadCompleteReceiver, filter);
             } catch (Throwable var9) {
-               Throwable e = var9;
-               e.printStackTrace();
+                var9.printStackTrace();
             }
          }
 

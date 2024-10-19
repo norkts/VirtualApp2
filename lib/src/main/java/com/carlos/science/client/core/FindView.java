@@ -110,10 +110,10 @@ public class FindView {
             Iterator var9 = views.iterator();
 
             while(var9.hasNext()) {
-               viewById = (View)var9.next();
-               View viewById = viewById.findViewById(targetViewId);
-               if (viewById != null) {
-                  viewList.add(viewById);
+               View viewById2 = (View)var9.next();
+               View viewById3 = viewById2.findViewById(targetViewId);
+               if (viewById3 != null) {
+                  viewList.add(viewById3);
                }
             }
 

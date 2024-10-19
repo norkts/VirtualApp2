@@ -12,7 +12,7 @@ public class RefObject<T> {
 
    public T get(Object object) {
       try {
-         return this.field.get(object);
+         return (T)this.field.get(object);
       } catch (Exception var3) {
          Exception e = var3;
          e.printStackTrace();

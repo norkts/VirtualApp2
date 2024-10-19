@@ -112,43 +112,43 @@ public interface IContentService extends IInterface {
          Account _arg0;
          String _arg1;
          int _arg2;
-         Bundle _arg2;
-         boolean _result;
-         Uri _arg0;
+         Bundle bundle_arg2;
+         boolean b_result;
+         Uri uri_arg0;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               IContentObserver _arg0 = IContentObserver.Stub.asInterface(data.readStrongBinder());
-               this.unregisterContentObserver(_arg0);
+               IContentObserver iContentObserver_arg0 = IContentObserver.Stub.asInterface(data.readStrongBinder());
+               this.unregisterContentObserver(iContentObserver_arg0);
                reply.writeNoException();
                return true;
             case 2:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Uri)Uri.CREATOR.createFromParcel(data);
+                  uri_arg0 = (Uri)Uri.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  uri_arg0 = null;
                }
 
-               boolean _arg1 = 0 != data.readInt();
-               IContentObserver _arg2 = IContentObserver.Stub.asInterface(data.readStrongBinder());
+               boolean b_arg1 = 0 != data.readInt();
+               IContentObserver iContentObserver_arg2 = IContentObserver.Stub.asInterface(data.readStrongBinder());
                int _arg3 = data.readInt();
-               this.registerContentObserver(_arg0, _arg1, _arg2, _arg3);
+               this.registerContentObserver(uri_arg0, b_arg1, iContentObserver_arg2, _arg3);
                reply.writeNoException();
                return true;
             case 3:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Uri)Uri.CREATOR.createFromParcel(data);
+                  uri_arg0 = (Uri)Uri.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  uri_arg0 = null;
                }
 
-               IContentObserver _arg1 = IContentObserver.Stub.asInterface(data.readStrongBinder());
+               IContentObserver iContentObserver_arg1 = IContentObserver.Stub.asInterface(data.readStrongBinder());
                _result = 0 != data.readInt();
-               boolean _arg3 = 0 != data.readInt();
+               boolean b_arg3 = 0 != data.readInt();
                int _arg4 = data.readInt();
-               this.notifyChange(_arg0, _arg1, _result, _arg3, _arg4);
+               this.notifyChange(uri_arg0, iContentObserver_arg1, _result, b_arg3, _arg4);
                reply.writeNoException();
                return true;
             case 4:
@@ -161,24 +161,24 @@ public interface IContentService extends IInterface {
 
                _arg1 = data.readString();
                if (0 != data.readInt()) {
-                  _arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  bundle_arg2 = null;
                }
 
-               this.requestSync(_arg0, _arg1, _arg2);
+               this.requestSync(_arg0, _arg1, bundle_arg2);
                reply.writeNoException();
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               SyncRequest _arg0;
+               SyncRequest syncRequest_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (SyncRequest)SyncRequest.CREATOR.createFromParcel(data);
+                  syncRequest_arg0 = (SyncRequest)SyncRequest.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  syncRequest_arg0 = null;
                }
 
-               this.sync(_arg0);
+               this.sync(syncRequest_arg0);
                reply.writeNoException();
                return true;
             case 6:
@@ -228,9 +228,9 @@ public interface IContentService extends IInterface {
                }
 
                _arg1 = data.readString();
-               List<PeriodicSync> _result = this.getPeriodicSyncs(_arg0, _arg1);
+               List<PeriodicSync> list_result = this.getPeriodicSyncs(_arg0, _arg1);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 10:
                data.enforceInterface(descriptor);
@@ -242,13 +242,13 @@ public interface IContentService extends IInterface {
 
                _arg1 = data.readString();
                if (0 != data.readInt()) {
-                  _arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  bundle_arg2 = null;
                }
 
-               long _arg3 = data.readLong();
-               this.addPeriodicSync(_arg0, _arg1, _arg2, _arg3);
+               long l_arg3 = data.readLong();
+               this.addPeriodicSync(_arg0, _arg1, bundle_arg2, l_arg3);
                reply.writeNoException();
                return true;
             case 11:
@@ -261,12 +261,12 @@ public interface IContentService extends IInterface {
 
                _arg1 = data.readString();
                if (0 != data.readInt()) {
-                  _arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  bundle_arg2 = null;
                }
 
-               this.removePeriodicSync(_arg0, _arg1, _arg2);
+               this.removePeriodicSync(_arg0, _arg1, bundle_arg2);
                reply.writeNoException();
                return true;
             case 12:
@@ -322,15 +322,15 @@ public interface IContentService extends IInterface {
                return true;
             case 17:
                data.enforceInterface(descriptor);
-               List<SyncInfo> _result = this.getCurrentSyncs();
+               List<SyncInfo> syncInfos_result = this.getCurrentSyncs();
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(syncInfos_result);
                return true;
             case 18:
                data.enforceInterface(descriptor);
-               SyncAdapterType[] _result = this.getSyncAdapterTypes();
+               SyncAdapterType[] syncAdapterTypes_result = this.getSyncAdapterTypes();
                reply.writeNoException();
-               reply.writeTypedArray(_result, 1);
+               reply.writeTypedArray(syncAdapterTypes_result, 1);
                return true;
             case 19:
                data.enforceInterface(descriptor);
@@ -341,11 +341,11 @@ public interface IContentService extends IInterface {
                }
 
                _arg1 = data.readString();
-               SyncStatusInfo _result = this.getSyncStatus(_arg0, _arg1);
+               SyncStatusInfo syncStatus_result = this.getSyncStatus(_arg0, _arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (syncStatus_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  syncStatus_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -366,15 +366,15 @@ public interface IContentService extends IInterface {
                return true;
             case 21:
                data.enforceInterface(descriptor);
-               int _arg0 = data.readInt();
-               ISyncStatusObserver _arg1 = ISyncStatusObserver.Stub.asInterface(data.readStrongBinder());
-               this.addStatusChangeListener(_arg0, _arg1);
+               int i_arg0 = data.readInt();
+               ISyncStatusObserver iSyncStatusObserver_arg1 = ISyncStatusObserver.Stub.asInterface(data.readStrongBinder());
+               this.addStatusChangeListener(i_arg0, iSyncStatusObserver_arg1);
                reply.writeNoException();
                return true;
             case 22:
                data.enforceInterface(descriptor);
-               ISyncStatusObserver _arg0 = ISyncStatusObserver.Stub.asInterface(data.readStrongBinder());
-               this.removeStatusChangeListener(_arg0);
+               ISyncStatusObserver iSyncStatusObserver_arg0 = ISyncStatusObserver.Stub.asInterface(data.readStrongBinder());
+               this.removeStatusChangeListener(iSyncStatusObserver_arg0);
                reply.writeNoException();
                return true;
             case 1598968902:

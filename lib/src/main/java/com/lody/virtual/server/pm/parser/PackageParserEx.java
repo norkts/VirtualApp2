@@ -135,7 +135,7 @@ public class PackageParserEx {
          p.recycle();
       }
 
-      return is;
+      return null;
    }
 
    public static void readSignature(VPackage pkg) {

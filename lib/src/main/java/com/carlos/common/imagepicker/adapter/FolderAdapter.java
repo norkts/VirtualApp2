@@ -21,7 +21,7 @@ import com.kook.librelease.R.layout;
 import java.io.File;
 import java.util.ArrayList;
 
-public class FolderAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder> {
    private Context mContext;
    private ArrayList<Folder> mFolders;
    private LayoutInflater mInflater;

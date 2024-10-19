@@ -96,21 +96,21 @@ public interface IAppManager extends IInterface {
 
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
-         String _arg0;
+         String _args0;
          int _arg1;
          boolean _result;
          IPackageObserver _arg0;
-         int _arg0;
-         boolean _result;
-         String _arg1;
-         List _result;
+         int _argInt0;
+         boolean _resultBoolean;
+         String _args1;
+         List _resultList;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               int[] _result = this.getPackageInstalledUsers(_arg0);
+               _args0 = data.readString();
+               int[] _resultArr = this.getPackageInstalledUsers(_args0);
                reply.writeNoException();
-               reply.writeIntArray(_result);
+               reply.writeIntArray(_resultArr);
                return true;
             case 2:
                data.enforceInterface(descriptor);
@@ -119,20 +119,20 @@ public interface IAppManager extends IInterface {
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = this.getUidForSharedUser(_arg0);
+               _args0 = data.readString();
+               _arg1 = this.getUidForSharedUser(_args0);
                reply.writeNoException();
                reply.writeInt(_arg1);
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               _args0 = data.readString();
                _arg1 = data.readInt();
-               InstalledAppInfo _result = this.getInstalledAppInfo(_arg0, _arg1);
+               InstalledAppInfo installedAppInfo = this.getInstalledAppInfo(_args0, _arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (installedAppInfo != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  installedAppInfo.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -140,25 +140,25 @@ public interface IAppManager extends IInterface {
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               Uri _arg0;
+               Uri uri;
                if (0 != data.readInt()) {
-                  _arg0 = (Uri)Uri.CREATOR.createFromParcel(data);
+                  uri = (Uri)Uri.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  uri = null;
                }
 
-               VAppInstallerParams _arg1;
+               VAppInstallerParams vAppInstallerParams;
                if (0 != data.readInt()) {
-                  _arg1 = (VAppInstallerParams)VAppInstallerParams.CREATOR.createFromParcel(data);
+                  vAppInstallerParams = (VAppInstallerParams)VAppInstallerParams.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  vAppInstallerParams = null;
                }
 
-               VAppInstallerResult _result = this.installPackage(_arg0, _arg1);
+               VAppInstallerResult vAppInstallerResult = this.installPackage(uri, vAppInstallerParams);
                reply.writeNoException();
-               if (_result != null) {
+               if (vAppInstallerResult != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vAppInstallerResult.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -166,83 +166,83 @@ public interface IAppManager extends IInterface {
                return true;
             case 6:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
-               _result = this.isPackageLaunched(_arg0, _arg1);
+               _argInt0 = data.readInt();
+               _args1 = data.readString();
+               _result = this.isPackageLaunched(_argInt0, _args1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
+               _argInt0 = data.readInt();
+               _args1 = data.readString();
                _result = 0 != data.readInt();
-               this.setPackageHidden(_arg0, _arg1, _result);
+               this.setPackageHidden(_argInt0, _args1, _result);
                reply.writeNoException();
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
-               _result = this.installPackageAsUser(_arg0, _arg1);
+               _argInt0 = data.readInt();
+               _args1 = data.readString();
+               _result = this.installPackageAsUser(_argInt0, _args1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 9:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               _args0 = data.readString();
                _arg1 = data.readInt();
-               _result = this.uninstallPackageAsUser(_arg0, _arg1);
+               _result = this.uninstallPackageAsUser(_args0, _arg1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.uninstallPackage(_arg0);
+               _args0 = data.readString();
+               _result = this.uninstallPackage(_args0);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 11:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _result = this.getInstalledApps(_arg0);
+               _argInt0 = data.readInt();
+               List<InstalledAppInfo> installedAppInfos = this.getInstalledApps(_argInt0);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(installedAppInfos);
                return true;
             case 12:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               _argInt0 = data.readInt();
                _arg1 = data.readInt();
-               List<InstalledAppInfo> _result = this.getInstalledAppsAsUser(_arg0, _arg1);
+               List<InstalledAppInfo> installedAppInfoList = this.getInstalledAppsAsUser(_argInt0, _arg1);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(installedAppInfoList);
                return true;
             case 13:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.getInstalledSplitNames(_arg0);
+               _args0 = data.readString();
+               List<String> splitNames = this.getInstalledSplitNames(_args0);
                reply.writeNoException();
-               reply.writeStringList(_result);
+               reply.writeStringList(splitNames);
                return true;
             case 14:
                data.enforceInterface(descriptor);
-               _arg0 = this.getInstalledAppCount();
+               int installedAppCount = this.getInstalledAppCount();
                reply.writeNoException();
-               reply.writeInt(_arg0);
+               reply.writeInt(installedAppCount);
                return true;
             case 15:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.isAppInstalled(_arg0);
+               _args0 = data.readString();
+               _result = this.isAppInstalled(_args0);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 16:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
-               _result = this.isAppInstalledAsUser(_arg0, _arg1);
+               _argInt0 = data.readInt();
+               _args1 = data.readString();
+               _result = this.isAppInstalledAsUser(_argInt0, _args1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
@@ -260,16 +260,16 @@ public interface IAppManager extends IInterface {
                return true;
             case 19:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.isRunInExtProcess(_arg0);
+               _args0 = data.readString();
+               _result = this.isRunInExtProcess(_args0);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 20:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               _args0 = data.readString();
                _arg1 = data.readInt();
-               _result = this.cleanPackageData(_arg0, _arg1);
+               _result = this.cleanPackageData(_args0, _arg1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;

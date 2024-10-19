@@ -1,6 +1,6 @@
 package com.lody.virtual.client;
 
-import [Ljava.lang.ThreadGroup;;
+import java.lang.ThreadGroup;;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
@@ -321,7 +321,7 @@ public final class VClient extends IVClient.Stub {
 
       VDeviceConfig deviceConfig = this.getDeviceConfig();
       VDeviceManager.get().applyBuildProp(deviceConfig);
-      ActivityThread.mInitialApplication.set(VirtualCore.mainThread(), (Object)null);
+      ActivityThread.mInitialApplication.set(VirtualCore.mainThread(), null);
       AppBindData data = new AppBindData();
       InstalledAppInfo info = VirtualCore.get().getInstalledAppInfo(packageName, 0);
       if (info == null) {
@@ -674,7 +674,7 @@ public final class VClient extends IVClient.Stub {
       } else {
          ThreadGroup[] groups = (ThreadGroup[])ThreadGroupN.groups.get(root);
          synchronized(groups) {
-            ThreadGroup[] newGroups = (ThreadGroup[])((ThreadGroup;)groups).clone();
+            ThreadGroup[] newGroups = (ThreadGroup[])(groups).clone();
             ThreadGroupN.groups.set(newRoot, newGroups);
             ThreadGroupN.groups.set(root, new ThreadGroup[]{newRoot});
             ThreadGroup[] var15 = newGroups;
@@ -956,7 +956,7 @@ public final class VClient extends IVClient.Stub {
       if (BuildCompat.isOreo()) {
          Object holder = Settings.NameValueCacheOreo.mProviderHolder.get(cache);
          if (holder != null) {
-            Settings.ContentProviderHolder.mContentProvider.set(holder, (Object)null);
+            Settings.ContentProviderHolder.mContentProvider.set(holder, null);
          }
       } else {
          Settings.NameValueCache.mContentProvider.set(cache, (Object)null);

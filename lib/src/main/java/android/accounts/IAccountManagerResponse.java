@@ -52,9 +52,9 @@ public interface IAccountManagerResponse extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               int _arg0 = data.readInt();
+               int i_arg0 = data.readInt();
                String _arg1 = data.readString();
-               this.onError(_arg0, _arg1);
+               this.onError(i_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 1598968902:

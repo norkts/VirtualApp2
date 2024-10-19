@@ -200,7 +200,7 @@ public final class LocalList extends FixedSizeList {
                Entry endEntry = (Entry)this.result.get(endAt);
                if (endEntry.getAddress() == address) {
                   if (endEntry.matches(startedLocal)) {
-                     this.result.set(endAt, (Object)null);
+                     this.result.set(endAt, null);
                      ++this.nullResultCount;
                      this.regs.put(startedLocal);
                      this.endIndices[regNum] = -1;
@@ -264,7 +264,7 @@ public final class LocalList extends FixedSizeList {
          }
 
          this.regs.remove(endedLocal);
-         this.result.set(at, (Object)null);
+         this.result.set(at, null);
          ++this.nullResultCount;
          int regNum = endedLocal.getReg();
          boolean found = false;

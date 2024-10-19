@@ -39,7 +39,7 @@ public class RefStaticMethod<T> {
          Class<?>[] types = new Class[typeNames.length];
          Class<?>[] types2 = new Class[typeNames.length];
 
-         for(int i = 0; i < typeNames.length; ++i) {
+         for(i = 0; i < typeNames.length; ++i) {
             Class<?> type = getProtoType(typeNames[i]);
             if (type == null) {
                try {
@@ -125,7 +125,7 @@ public class RefStaticMethod<T> {
       T obj = null;
 
       try {
-         obj = this.method.invoke((Object)null, params);
+         obj = (T) this.method.invoke((Object)null, params);
       } catch (Exception var4) {
          Exception e = var4;
          e.printStackTrace();
@@ -136,7 +136,7 @@ public class RefStaticMethod<T> {
 
    public T callWithException(Object... params) throws Throwable {
       try {
-         return this.method.invoke((Object)null, params);
+         return (T)this.method.invoke(null, params);
       } catch (InvocationTargetException var3) {
          InvocationTargetException e = var3;
          if (e.getCause() != null) {

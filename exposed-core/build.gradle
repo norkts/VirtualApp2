@@ -22,7 +22,8 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':libepic')
+    implementation project(":libepic")
+    compileOnly 'me.weishu.exposed:exposed-xposedapi:0.4.5'
     api fileTree(dir: 'libs', include: ['*.jar'])
     api 'com.getkeepsafe.relinker:relinker:1.4.5' // for load library
 }

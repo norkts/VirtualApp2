@@ -52,9 +52,9 @@ public interface IBinderProxyService extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               IBinder _result = this.getService();
+               IBinder binder_result = this.getService();
                reply.writeNoException();
-               reply.writeStrongBinder(_result);
+               reply.writeStrongBinder(binder_result);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

@@ -88,7 +88,7 @@ public final class Code {
       if (!local.type.equals(expectedType)) {
          throw new IllegalArgumentException("requested " + expectedType + " but was " + local.type);
       } else {
-         return local;
+         return (Local<T>)local;
       }
    }
 
@@ -109,7 +109,7 @@ public final class Code {
          Iterator var4 = this.parameters.iterator();
 
          while(var4.hasNext()) {
-            Local<?> local = (Local)var4.next();
+            local = (Local)var4.next();
             CstInteger paramConstant = CstInteger.make(reg - firstParamReg);
             reg += local.initialize(reg);
             moveParameterInstructions.add(new PlainCstInsn(Rops.opMoveParam(local.type.ropType), this.sourcePosition, local.spec(), RegisterSpecList.EMPTY, paramConstant));

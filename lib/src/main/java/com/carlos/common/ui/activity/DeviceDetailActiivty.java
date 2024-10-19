@@ -21,6 +21,7 @@ import com.carlos.common.ui.adapter.bean.DeviceData;
 import com.carlos.common.widget.MainFunBtn;
 import com.carlos.libcommon.StringFog;
 import com.kook.common.utils.HVLog;
+import com.kook.librelease.R;
 import com.kook.librelease.R.id;
 import com.kook.librelease.R.layout;
 import com.kook.librelease.R.menu;
@@ -121,7 +122,7 @@ public class DeviceDetailActiivty extends VActivity {
    }
 
    public boolean onCreateOptionsMenu(Menu menu) {
-      this.getMenuInflater().inflate(menu.menu_device, menu);
+      this.getMenuInflater().inflate(R.menu.menu_device, menu);
       return true;
    }
 
@@ -267,7 +268,6 @@ public class DeviceDetailActiivty extends VActivity {
       StringBuilder sb = new StringBuilder(1000);
       BufferedReader reader = new BufferedReader(new FileReader(filePath));
       char[] buf = new char[1024];
-      int numRead = false;
 
       int numRead;
       while((numRead = reader.read(buf)) != -1) {

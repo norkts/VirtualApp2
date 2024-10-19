@@ -36,7 +36,7 @@ public class MethodInvocationStub<T> {
             proxyInterfaces = MethodParameterUtils.getAllInterface(baseInterface.getClass());
          }
 
-         this.mProxyInterface = Proxy.newProxyInstance(baseInterface.getClass().getClassLoader(), proxyInterfaces, new HookInvocationHandler());
+         this.mProxyInterface = (T)Proxy.newProxyInstance(baseInterface.getClass().getClassLoader(), proxyInterfaces, new HookInvocationHandler());
       }
 
    }
@@ -86,8 +86,8 @@ public class MethodInvocationStub<T> {
    }
 
    public <H extends MethodProxy> H getMethodProxy(String name) {
-      H proxy = (MethodProxy)this.mInternalMethodProxies.get(name);
-      return proxy == null ? this.mDefaultProxy : proxy;
+      H proxy = (H)this.mInternalMethodProxies.get(name);
+      return proxy == null ? (H)this.mDefaultProxy : proxy;
    }
 
    public void setDefaultMethodProxy(MethodProxy proxy) {

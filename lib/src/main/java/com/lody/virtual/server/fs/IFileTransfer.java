@@ -50,11 +50,11 @@ public interface IFileTransfer extends IInterface {
             case 2:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
-               ParcelFileDescriptor _result = this.openFile(_arg0);
+               ParcelFileDescriptor parcelFileDescriptor_result = this.openFile(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (parcelFileDescriptor_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  parcelFileDescriptor_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }

@@ -52,10 +52,10 @@ public interface IPackageDeleteObserver2 extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               String _arg0 = data.readString();
+               String s_arg0 = data.readString();
                int _arg1 = data.readInt();
                String _arg2 = data.readString();
-               this.onPackageDeleted(_arg0, _arg1, _arg2);
+               this.onPackageDeleted(s_arg0, _arg1, _arg2);
                reply.writeNoException();
                return true;
             case 1598968902:

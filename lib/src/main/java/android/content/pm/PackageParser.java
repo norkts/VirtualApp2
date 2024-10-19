@@ -42,10 +42,8 @@ public class PackageParser {
          SparseArray<int[]> splitDependencies = new SparseArray();
          splitDependencies.put(0, new int[]{-1});
 
-         int splitIdx;
          int i;
-         int splitIdx;
-         for(splitIdx = 0; splitIdx < pkg.splitNames.length; ++splitIdx) {
+         for(int splitIdx = 0; splitIdx < pkg.splitNames.length; ++splitIdx) {
             if (pkg.isFeatureSplits[splitIdx]) {
                String splitDependency = pkg.usesSplitNames[splitIdx];
                if (splitDependency != null) {
@@ -63,8 +61,7 @@ public class PackageParser {
             }
          }
 
-         splitIdx = 0;
-
+         int splitIdx = 0;
          int targetSplitIdx;
          for(i = pkg.splitNames.length; splitIdx < i; ++splitIdx) {
             if (!pkg.isFeatureSplits[splitIdx]) {

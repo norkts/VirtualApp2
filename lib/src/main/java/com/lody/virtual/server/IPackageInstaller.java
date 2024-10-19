@@ -72,69 +72,69 @@ public interface IPackageInstaller extends IInterface {
 
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
-         int _arg0;
-         int _arg2;
+         int i_arg0;
+         int i_arg2;
          String _arg0;
-         IPackageInstallerCallback _arg0;
+         IPackageInstallerCallback pic_arg0;
          String _arg1;
-         int _arg1;
+         int i_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               SessionParams _arg0;
+               SessionParams sp_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (SessionParams)SessionParams.CREATOR.createFromParcel(data);
+                  sp_arg0 = (SessionParams)SessionParams.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  sp_arg0 = null;
                }
 
                _arg1 = data.readString();
-               _arg2 = data.readInt();
-               int _result = this.createSession(_arg0, _arg1, _arg2);
+               i_arg2 = data.readInt();
+               int _result = this.createSession(sp_arg0, _arg1, i_arg2);
                reply.writeNoException();
                reply.writeInt(_result);
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               Bitmap _arg1;
+               i_arg0 = data.readInt();
+               Bitmap bitmap_arg1;
                if (0 != data.readInt()) {
-                  _arg1 = (Bitmap)Bitmap.CREATOR.createFromParcel(data);
+                  bitmap_arg1 = (Bitmap)Bitmap.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  bitmap_arg1 = null;
                }
 
-               this.updateSessionAppIcon(_arg0, _arg1);
+               this.updateSessionAppIcon(i_arg0, bitmap_arg1);
                reply.writeNoException();
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               this.updateSessionAppLabel(_arg0, _arg1);
+               this.updateSessionAppLabel(i_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               this.abandonSession(_arg0);
+               i_arg0 = data.readInt();
+               this.abandonSession(i_arg0);
                reply.writeNoException();
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               android.content.pm.IPackageInstallerSession _result = this.openSession(_arg0);
+               i_arg0 = data.readInt();
+               android.content.pm.IPackageInstallerSession pis_result = this.openSession(i_arg0);
                reply.writeNoException();
-               reply.writeStrongBinder(_result != null ? _result.asBinder() : null);
+               reply.writeStrongBinder(pis_result != null ? pis_result.asBinder() : null);
                return true;
             case 6:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               SessionInfo _result = this.getSessionInfo(_arg0);
+               i_arg0 = data.readInt();
+               SessionInfo si_result = this.getSessionInfo(i_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (si_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  si_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -142,12 +142,12 @@ public interface IPackageInstaller extends IInterface {
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               VParceledListSlice _result = this.getAllSessions(_arg0);
+               i_arg0 = data.readInt();
+               VParceledListSlice vls_result = this.getAllSessions(i_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (vls_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vls_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -156,12 +156,12 @@ public interface IPackageInstaller extends IInterface {
             case 8:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
-               _arg1 = data.readInt();
-               VParceledListSlice _result = this.getMySessions(_arg0, _arg1);
+               i_arg1 = data.readInt();
+               vls_result = this.getMySessions(_arg0, i_arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (vls_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vls_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -169,22 +169,22 @@ public interface IPackageInstaller extends IInterface {
                return true;
             case 9:
                data.enforceInterface(descriptor);
-               _arg0 = IPackageInstallerCallback.Stub.asInterface(data.readStrongBinder());
-               _arg1 = data.readInt();
-               this.registerCallback(_arg0, _arg1);
+               pic_arg0 = IPackageInstallerCallback.Stub.asInterface(data.readStrongBinder());
+               i_arg1 = data.readInt();
+               this.registerCallback(pic_arg0, i_arg1);
                reply.writeNoException();
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               _arg0 = IPackageInstallerCallback.Stub.asInterface(data.readStrongBinder());
-               this.unregisterCallback(_arg0);
+               pic_arg0 = IPackageInstallerCallback.Stub.asInterface(data.readStrongBinder());
+               this.unregisterCallback(pic_arg0);
                reply.writeNoException();
                return true;
             case 11:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
                _arg1 = data.readString();
-               _arg2 = data.readInt();
+               i_arg2 = data.readInt();
                IntentSender _arg3;
                if (0 != data.readInt()) {
                   _arg3 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
@@ -193,14 +193,14 @@ public interface IPackageInstaller extends IInterface {
                }
 
                int _arg4 = data.readInt();
-               this.uninstall(_arg0, _arg1, _arg2, _arg3, _arg4);
+               this.uninstall(_arg0, _arg1, i_arg2, _arg3, _arg4);
                reply.writeNoException();
                return true;
             case 12:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               boolean _arg1 = 0 != data.readInt();
-               this.setPermissionsResult(_arg0, _arg1);
+               i_arg0 = data.readInt();
+               boolean b_arg1 = 0 != data.readInt();
+               this.setPermissionsResult(i_arg0, b_arg1);
                reply.writeNoException();
                return true;
             case 1598968902:

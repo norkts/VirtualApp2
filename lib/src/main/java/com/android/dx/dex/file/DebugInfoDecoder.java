@@ -134,18 +134,18 @@ public class DebugInfoDecoder {
                   reg = Leb128.readUnsignedLeb128(bs);
                   nameIdx = this.readStringIndex(bs);
                   typeIdx = this.readStringIndex(bs);
-                  LocalEntry le = new LocalEntry(this.address, true, reg, nameIdx, typeIdx, 0);
-                  this.locals.add(le);
-                  this.lastEntryForReg[reg] = le;
+                  LocalEntry le1 = new LocalEntry(this.address, true, reg, nameIdx, typeIdx, 0);
+                  this.locals.add(le1);
+                  this.lastEntryForReg[reg] = le1;
                   break;
                case 4:
                   reg = Leb128.readUnsignedLeb128(bs);
                   nameIdx = this.readStringIndex(bs);
                   typeIdx = this.readStringIndex(bs);
                   int sigIdx = this.readStringIndex(bs);
-                  LocalEntry le = new LocalEntry(this.address, true, reg, nameIdx, typeIdx, sigIdx);
-                  this.locals.add(le);
-                  this.lastEntryForReg[reg] = le;
+                  LocalEntry le2 = new LocalEntry(this.address, true, reg, nameIdx, typeIdx, sigIdx);
+                  this.locals.add(le2);
+                  this.lastEntryForReg[reg] = le2;
                   break;
                case 5:
                   reg = Leb128.readUnsignedLeb128(bs);
@@ -238,10 +238,10 @@ public class DebugInfoDecoder {
 
                int i;
                LocalEntry e2;
-               int i;
+               int i2;
                for(i = 0; i < decodedSz; ++i) {
-                  LocalEntry entry = (LocalEntry)decodedLocals.get(i);
-                  int idx = entry.nameIndex;
+                  LocalEntry entry2 = (LocalEntry)decodedLocals.get(i);
+                  int idx = entry2.nameIndex;
                   if (idx < 0 || idx == thisStringIdx) {
                      for(i = i + 1; i < decodedSz; ++i) {
                         e2 = (LocalEntry)decodedLocals.get(i);
@@ -249,7 +249,7 @@ public class DebugInfoDecoder {
                            break;
                         }
 
-                        if (entry.reg == e2.reg && e2.isStart) {
+                        if (entry2.reg == e2.reg && e2.isStart) {
                            decodedLocals.set(i, e2);
                            decodedLocals.remove(i);
                            --decodedSz;

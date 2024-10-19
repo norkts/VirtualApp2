@@ -606,7 +606,6 @@ public class OtherUtils {
    }
 
    public static boolean isLoactionEnabled(Context context) {
-      int locationMode = false;
       if (VERSION.SDK_INT >= 19) {
          int locationMode;
          try {

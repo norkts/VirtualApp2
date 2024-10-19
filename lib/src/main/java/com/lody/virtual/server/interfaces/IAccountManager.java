@@ -145,35 +145,35 @@ public interface IAccountManager extends IInterface {
          Account _arg1;
          String _arg2;
          Bundle _arg3;
-         IAccountManagerResponse _arg0;
-         String[] _arg0;
-         boolean _arg2;
-         String _arg1;
-         Bundle _arg5;
-         boolean _arg3;
-         String[] _arg3;
-         boolean _result;
-         Account _arg2;
+         IAccountManagerResponse ia_arg0;
+         String[] sarr_arg0;
+         boolean b_arg2;
+         String s_arg1;
+         Bundle bundle_arg5;
+         boolean b_arg3;
+         String[] sarr_arg3;
+         boolean b_result;
+         Account account_arg2;
          int _result;
          boolean _arg5;
          Bundle _arg6;
-         String _arg3;
-         IAccountManagerResponse _arg1;
+         String s_arg3;
+         IAccountManagerResponse ia_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               AuthenticatorDescription[] _result = this.getAuthenticatorTypes(_arg0);
+               AuthenticatorDescription[] authenticatorDescriptions_result = this.getAuthenticatorTypes(_arg0);
                reply.writeNoException();
-               reply.writeTypedArray(_result, 1);
+               reply.writeTypedArray(authenticatorDescriptions_result, 1);
                return true;
             case 2:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                _arg2 = data.readString();
-               _arg3 = data.createStringArray();
-               this.getAccountsByFeatures(_arg0, _arg1, _arg2, _arg3);
+               sarr_arg3 = data.createStringArray();
+               this.getAccountsByFeatures(_arg0, ia_arg1, _arg2, sarr_arg3);
                reply.writeNoException();
                return true;
             case 3:
@@ -192,23 +192,23 @@ public interface IAccountManager extends IInterface {
             case 4:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readString();
-               Account[] _result = this.getAccounts(_arg0, _arg1);
+               s_arg1 = data.readString();
+               Account[] accounts_result = this.getAccounts(_arg0, s_arg1);
                reply.writeNoException();
-               reply.writeTypedArray(_result, 1);
+               reply.writeTypedArray(accounts_result, 1);
                return true;
             case 5:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
-                  _arg2 = (Account)Account.CREATOR.createFromParcel(data);
+                  account_arg2 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  account_arg2 = null;
                }
 
-               _arg3 = data.readString();
-               _result = 0 != data.readInt();
+               s_arg3 = data.readString();
+               b_result = 0 != data.readInt();
                _arg5 = 0 != data.readInt();
                if (0 != data.readInt()) {
                   _arg6 = (Bundle)Bundle.CREATOR.createFromParcel(data);
@@ -216,7 +216,7 @@ public interface IAccountManager extends IInterface {
                   _arg6 = null;
                }
 
-               this.getAuthToken(_arg0, _arg1, _arg2, _arg3, _result, _arg5, _arg6);
+               this.getAuthToken(_arg0, ia_arg1, account_arg2, s_arg3, b_result, _arg5, _arg6);
                reply.writeNoException();
                return true;
             case 6:
@@ -242,8 +242,8 @@ public interface IAccountManager extends IInterface {
                }
 
                _arg2 = data.readString();
-               _arg3 = data.readString();
-               this.setAuthToken(_arg0, _arg1, _arg2, _arg3);
+               s_arg3 = data.readString();
+               this.setAuthToken(_arg0, _arg1, _arg2, s_arg3);
                reply.writeNoException();
                return true;
             case 8:
@@ -256,61 +256,61 @@ public interface IAccountManager extends IInterface {
                }
 
                _arg2 = data.readString();
-               _arg3 = data.readString();
-               this.setUserData(_arg0, _arg1, _arg2, _arg3);
+               s_arg3 = data.readString();
+               this.setUserData(_arg0, _arg1, _arg2, s_arg3);
                reply.writeNoException();
                return true;
             case 9:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
-                  _arg2 = (Account)Account.CREATOR.createFromParcel(data);
+                  account_arg2 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  account_arg2 = null;
                }
 
-               _arg3 = data.createStringArray();
-               this.hasFeatures(_arg0, _arg1, _arg2, _arg3);
+               sarr_arg3 = data.createStringArray();
+               this.hasFeatures(_arg0, ia_arg1, account_arg2, sarr_arg3);
                reply.writeNoException();
                return true;
             case 10:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
-                  _arg2 = (Account)Account.CREATOR.createFromParcel(data);
+                  account_arg2 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  account_arg2 = null;
                }
 
-               _arg3 = data.readString();
-               _result = 0 != data.readInt();
+               s_arg3 = data.readString();
+               b_result = 0 != data.readInt();
                if (0 != data.readInt()) {
-                  _arg5 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg5 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg5 = null;
+                  bundle_arg5 = null;
                }
 
-               this.updateCredentials(_arg0, _arg1, _arg2, _arg3, _result, _arg5);
+               this.updateCredentials(_arg0, ia_arg1, account_arg2, s_arg3, b_result, bundle_arg5);
                reply.writeNoException();
                return true;
             case 11:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                _arg2 = data.readString();
-               _arg3 = 0 != data.readInt();
-               this.editProperties(_arg0, _arg1, _arg2, _arg3);
+               b_arg3 = 0 != data.readInt();
+               this.editProperties(_arg0, ia_arg1, _arg2, b_arg3);
                reply.writeNoException();
                return true;
             case 12:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                _arg2 = data.readString();
-               _arg3 = data.readString();
-               this.getAuthTokenLabel(_arg0, _arg1, _arg2, _arg3);
+               s_arg3 = data.readString();
+               this.getAuthTokenLabel(_arg0, ia_arg1, _arg2, s_arg3);
                reply.writeNoException();
                return true;
             case 13:
@@ -323,9 +323,9 @@ public interface IAccountManager extends IInterface {
                }
 
                _arg2 = data.readString();
-               _arg3 = this.getUserData(_arg0, _arg1, _arg2);
+               s_arg3 = this.getUserData(_arg0, _arg1, _arg2);
                reply.writeNoException();
-               reply.writeString(_arg3);
+               reply.writeString(s_arg3);
                return true;
             case 14:
                data.enforceInterface(descriptor);
@@ -343,11 +343,11 @@ public interface IAccountManager extends IInterface {
             case 15:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
-                  _arg2 = (Account)Account.CREATOR.createFromParcel(data);
+                  account_arg2 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  account_arg2 = null;
                }
 
                if (0 != data.readInt()) {
@@ -356,16 +356,16 @@ public interface IAccountManager extends IInterface {
                   _arg3 = null;
                }
 
-               _result = 0 != data.readInt();
-               this.confirmCredentials(_arg0, _arg1, _arg2, _arg3, _result);
+               b_result = 0 != data.readInt();
+               this.confirmCredentials(_arg0, ia_arg1, account_arg2, _arg3, b_result);
                reply.writeNoException();
                return true;
             case 16:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                _arg2 = data.readString();
-               _arg3 = data.readString();
+               s_arg3 = data.readString();
                String[] _arg4 = data.createStringArray();
                _arg5 = 0 != data.readInt();
                if (0 != data.readInt()) {
@@ -374,7 +374,7 @@ public interface IAccountManager extends IInterface {
                   _arg6 = null;
                }
 
-               this.addAccount(_arg0, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6);
+               this.addAccount(_arg0, ia_arg1, _arg2, s_arg3, _arg4, _arg5, _arg6);
                reply.writeNoException();
                return true;
             case 17:
@@ -393,9 +393,9 @@ public interface IAccountManager extends IInterface {
                   _arg3 = null;
                }
 
-               _result = this.addAccountExplicitly(_arg0, _arg1, _arg2, _arg3);
+               b_result = this.addAccountExplicitly(_arg0, _arg1, _arg2, _arg3);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 18:
                data.enforceInterface(descriptor);
@@ -406,36 +406,36 @@ public interface IAccountManager extends IInterface {
                   _arg1 = null;
                }
 
-               _arg2 = this.removeAccountExplicitly(_arg0, _arg1);
+               b_arg2 = this.removeAccountExplicitly(_arg0, _arg1);
                reply.writeNoException();
-               reply.writeInt(_arg2 ? 1 : 0);
+               reply.writeInt(b_arg2 ? 1 : 0);
                return true;
             case 19:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
-                  _arg2 = (Account)Account.CREATOR.createFromParcel(data);
+                  account_arg2 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  account_arg2 = null;
                }
 
-               _arg3 = data.readString();
-               this.renameAccount(_arg0, _arg1, _arg2, _arg3);
+               s_arg3 = data.readString();
+               this.renameAccount(_arg0, ia_arg1, account_arg2, s_arg3);
                reply.writeNoException();
                return true;
             case 20:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg1 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
-                  _arg2 = (Account)Account.CREATOR.createFromParcel(data);
+                  account_arg2 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  account_arg2 = null;
                }
 
-               _arg3 = 0 != data.readInt();
-               this.removeAccount(_arg0, _arg1, _arg2, _arg3);
+               b_arg3 = 0 != data.readInt();
+               this.removeAccount(_arg0, ia_arg1, account_arg2, b_arg3);
                reply.writeNoException();
                return true;
             case 21:
@@ -459,16 +459,16 @@ public interface IAccountManager extends IInterface {
                   _arg1 = null;
                }
 
-               _arg2 = this.accountAuthenticated(_arg0, _arg1);
+               b_arg2 = this.accountAuthenticated(_arg0, _arg1);
                reply.writeNoException();
-               reply.writeInt(_arg2 ? 1 : 0);
+               reply.writeInt(b_arg2 ? 1 : 0);
                return true;
             case 23:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _arg2 = data.readString();
-               this.invalidateAuthToken(_arg0, _arg1, _arg2);
+               this.invalidateAuthToken(_arg0, s_arg1, _arg2);
                reply.writeNoException();
                return true;
             case 24:
@@ -481,9 +481,9 @@ public interface IAccountManager extends IInterface {
                }
 
                _arg2 = data.readString();
-               _arg3 = this.peekAuthToken(_arg0, _arg1, _arg2);
+               s_arg3 = this.peekAuthToken(_arg0, _arg1, _arg2);
                reply.writeNoException();
-               reply.writeString(_arg3);
+               reply.writeString(s_arg3);
                return true;
             case 25:
                data.enforceInterface(descriptor);
@@ -496,9 +496,9 @@ public interface IAccountManager extends IInterface {
 
                _arg2 = data.readString();
                _result = data.readInt();
-               _result = this.setAccountVisibility(_arg0, _arg1, _arg2, _result);
+               b_result = this.setAccountVisibility(_arg0, _arg1, _arg2, _result);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 26:
                data.enforceInterface(descriptor);
@@ -516,23 +516,23 @@ public interface IAccountManager extends IInterface {
                return true;
             case 27:
                data.enforceInterface(descriptor);
-               _arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
-               _arg1 = data.readString();
-               _arg2 = data.readString();
-               _arg3 = data.createStringArray();
-               _result = 0 != data.readInt();
+               ia_arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               s_arg1 = data.readString();
+               String s_arg2 = data.readString();
+               sarr_arg3 = data.createStringArray();
+               b_result = 0 != data.readInt();
                if (0 != data.readInt()) {
-                  _arg5 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg5 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg5 = null;
+                  bundle_arg5 = null;
                }
 
-               this.startAddAccountSession(_arg0, _arg1, _arg2, _arg3, _result, _arg5);
+               this.startAddAccountSession(ia_arg0, s_arg1, s_arg2, sarr_arg3, b_result, bundle_arg5);
                reply.writeNoException();
                return true;
             case 28:
                data.enforceInterface(descriptor);
-               _arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
                   _arg1 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
@@ -540,27 +540,27 @@ public interface IAccountManager extends IInterface {
                }
 
                _arg2 = data.readString();
-               _arg3 = 0 != data.readInt();
-               Bundle _arg4;
+               b_arg3 = 0 != data.readInt();
+               Bundle bundle_arg4;
                if (0 != data.readInt()) {
-                  _arg4 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg4 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg4 = null;
+                  bundle_arg4 = null;
                }
 
-               this.startUpdateCredentialsSession(_arg0, _arg1, _arg2, _arg3, _arg4);
+               this.startUpdateCredentialsSession(ia_arg0, _arg1, _arg2, b_arg3, bundle_arg4);
                reply.writeNoException();
                return true;
             case 29:
                data.enforceInterface(descriptor);
-               _arg0 = data.createStringArray();
-               this.registerAccountListener(_arg0);
+               sarr_arg0 = data.createStringArray();
+               this.registerAccountListener(sarr_arg0);
                reply.writeNoException();
                return true;
             case 30:
                data.enforceInterface(descriptor);
-               _arg0 = data.createStringArray();
-               this.unregisterAccountListener(_arg0);
+               sarr_arg0 = data.createStringArray();
+               this.unregisterAccountListener(sarr_arg0);
                reply.writeNoException();
                return true;
             case 31:
@@ -572,43 +572,43 @@ public interface IAccountManager extends IInterface {
                   _arg1 = null;
                }
 
-               Map _result = this.getPackagesAndVisibilityForAccount(_arg0, _arg1);
+               Map map_result = this.getPackagesAndVisibilityForAccount(_arg0, _arg1);
                reply.writeNoException();
-               reply.writeMap(_result);
+               reply.writeMap(map_result);
                return true;
             case 32:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _arg2 = data.readString();
-               Map _result = this.getAccountsAndVisibilityForPackage(_arg0, _arg1, _arg2);
+               map_result = this.getAccountsAndVisibilityForPackage(_arg0, s_arg1, _arg2);
                reply.writeNoException();
-               reply.writeMap(_result);
+               reply.writeMap(map_result);
                return true;
             case 33:
                data.enforceInterface(descriptor);
-               _arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
-               Bundle _arg1;
+               ia_arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               Bundle bundle_arg1;
                if (0 != data.readInt()) {
-                  _arg1 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg1 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  bundle_arg1 = null;
                }
 
-               _arg2 = 0 != data.readInt();
+               b_arg2 = 0 != data.readInt();
                if (0 != data.readInt()) {
                   _arg3 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
                   _arg3 = null;
                }
 
-               int _arg4 = data.readInt();
-               this.finishSessionAsUser(_arg0, _arg1, _arg2, _arg3, _arg4);
+               int i_arg4 = data.readInt();
+               this.finishSessionAsUser(ia_arg0, bundle_arg1, b_arg2, _arg3, i_arg4);
                reply.writeNoException();
                return true;
             case 34:
                data.enforceInterface(descriptor);
-               _arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
+               ia_arg0 = IAccountManagerResponse.Stub.asInterface(data.readStrongBinder());
                if (0 != data.readInt()) {
                   _arg1 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
@@ -616,7 +616,7 @@ public interface IAccountManager extends IInterface {
                }
 
                _arg2 = data.readString();
-               this.isCredentialsUpdateSuggested(_arg0, _arg1, _arg2);
+               this.isCredentialsUpdateSuggested(ia_arg0, _arg1, _arg2);
                reply.writeNoException();
                return true;
             case 35:
@@ -636,10 +636,10 @@ public interface IAccountManager extends IInterface {
                }
 
                ClassLoader cl = this.getClass().getClassLoader();
-               Map _arg4 = data.readHashMap(cl);
-               boolean _result = this.addAccountExplicitlyWithVisibility(_arg0, _arg1, _arg2, _arg3, _arg4);
+               Map map_arg4 = data.readHashMap(cl);
+               b_result = this.addAccountExplicitlyWithVisibility(_arg0, _arg1, _arg2, _arg3, map_arg4);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

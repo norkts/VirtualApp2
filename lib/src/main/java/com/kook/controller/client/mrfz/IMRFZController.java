@@ -48,8 +48,8 @@ public interface IMRFZController extends IInterface {
             case 2:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               float _arg1 = data.readFloat();
-               this.setViewValue(_arg0, _arg1);
+               float f_arg1 = data.readFloat();
+               this.setViewValue(_arg0, f_arg1);
                reply.writeNoException();
                return true;
             case 1598968902:

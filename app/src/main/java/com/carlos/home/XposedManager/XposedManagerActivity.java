@@ -1,5 +1,8 @@
 package com.carlos.home.XposedManager;
 
+import static com.lody.virtual.os.VUserHandle.getUserId;
+
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -17,9 +20,15 @@ import com.carlos.common.utils.ResponseProgram;
 import com.google.android.material.appbar.AppBarLayout;
 import com.carlos.home.models.AppData;
 import com.carlos.home.repo.AppRepository;
+import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.client.ipc.VPackageManager;
+import com.swift.sandhook.SandHook;
+import com.swift.sandhook.xposedcompat.XposedCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.weishu.exposed.ExposedBridge;
 
 public class XposedManagerActivity extends VActivity {
 
@@ -49,6 +58,8 @@ public class XposedManagerActivity extends VActivity {
         }
         initXposedGlobalSettings();
         initModuleList();
+
+        VirtualCore.get().registerObserver(new XPosedModuleObserver());
     }
 
     private void initXposedGlobalSettings() {
@@ -80,7 +91,6 @@ public class XposedManagerActivity extends VActivity {
                 });
 
         recyclerView.setAdapter(adapter);
-
     }
 
 }

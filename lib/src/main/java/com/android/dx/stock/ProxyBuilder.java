@@ -127,9 +127,9 @@ public final class ProxyBuilder<T> {
          throw new IllegalArgumentException("No constructor for " + this.baseClass.getName() + " with parameter types " + Arrays.toString(this.constructorArgTypes));
       }
 
-      Object result;
+      T result;
       try {
-         result = constructor.newInstance(this.constructorArgValues);
+         result = (T)constructor.newInstance(this.constructorArgValues);
       } catch (InstantiationException var5) {
          InstantiationException e = var5;
          throw new AssertionError(e);
@@ -142,7 +142,7 @@ public final class ProxyBuilder<T> {
       }
 
       setInvocationHandler(result, this.handler);
-      return result;
+      return (T)result;
    }
 
    public Class<? extends T> buildProxyClass() throws IOException {
@@ -211,7 +211,7 @@ public final class ProxyBuilder<T> {
    }
 
    private Class<? extends T> loadClass(ClassLoader classLoader, String generatedName) throws ClassNotFoundException {
-      return classLoader.loadClass(generatedName);
+      return (Class<? extends T>)classLoader.loadClass(generatedName);
    }
 
    private static RuntimeException launderCause(InvocationTargetException e) {
@@ -346,7 +346,7 @@ public final class ProxyBuilder<T> {
          code.loadConstant(argsLength, argTypes.length);
          code.newArray(args, argsLength);
          code.iget(handlerField, localHandler, localThis);
-         code.loadConstant(nullHandler, (Object)null);
+         code.loadConstant(nullHandler,null);
          Label handlerNullCase = new Label();
          code.compare(Comparison.EQ, handlerNullCase, nullHandler, localHandler);
 
@@ -388,7 +388,7 @@ public final class ProxyBuilder<T> {
             superThis = superCode.getThis(generatedType);
             Local<?>[] superArgs = new Local[argClasses.length];
 
-            for(int i = 0; i < superArgs.length; ++i) {
+            for(i = 0; i < superArgs.length; ++i) {
                superArgs[i] = superCode.getParameter(i, argTypes[i]);
             }
 
@@ -471,7 +471,7 @@ public final class ProxyBuilder<T> {
    }
 
    private static <T> Constructor<T>[] getConstructorsToOverwrite(Class<T> clazz) {
-      return clazz.getDeclaredConstructors();
+      return (Constructor<T>[])clazz.getDeclaredConstructors();
    }
 
    private TypeId<?>[] getInterfacesAsTypeIds() {
@@ -508,7 +508,7 @@ public final class ProxyBuilder<T> {
       Iterator var8 = this.interfaces.iterator();
 
       while(var8.hasNext()) {
-         Class<?> c = (Class)var8.next();
+         c = (Class)var8.next();
          this.getMethodsToProxy(methodsToProxy, seenFinalMethods, c);
       }
 

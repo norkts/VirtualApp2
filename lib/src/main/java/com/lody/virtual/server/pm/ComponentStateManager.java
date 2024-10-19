@@ -37,7 +37,7 @@ public class ComponentStateManager {
       }
 
       public void clear(String packageName) {
-         Map<String, Integer> all = this.sharedPreferences.getAll();
+         Map<String, Integer> all = (Map<String, Integer>)this.sharedPreferences.getAll();
          if (all != null) {
             Iterator var3 = all.keySet().iterator();
 

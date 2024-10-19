@@ -181,30 +181,30 @@ public interface IActivityManager extends IInterface {
          String _arg2;
          String _result;
          int _arg5;
-         String _arg0;
-         Intent _arg0;
-         boolean _arg1;
-         String _arg1;
-         int _arg2;
-         boolean _result;
-         int _result;
-         IBinder _arg0;
-         IBinder _arg2;
-         Bundle _arg3;
-         String _arg4;
-         ComponentName _result;
-         IBinder _arg1;
+         String s_arg0;
+         Intent intent_arg0;
+         boolean b_arg1;
+         String s_arg1;
+         int i_arg2;
+         boolean b_result;
+         int u_result;
+         IBinder binder_arg0;
+         IBinder binder_arg2;
+         Bundle bundle_arg3;
+         String s_arg4;
+         ComponentName cn_result;
+         IBinder bind_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readString();
-               _arg2 = data.readInt();
-               ClientConfig _result = this.initProcess(_arg0, _arg1, _arg2);
+               s_arg0 = data.readString();
+               s_arg1 = data.readString();
+               i_arg2 = data.readInt();
+               ClientConfig cc_result = this.initProcess(s_arg0, s_arg1, i_arg2);
                reply.writeNoException();
-               if (_result != null) {
+               if (cc_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  cc_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -212,9 +212,9 @@ public interface IActivityManager extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               this.appDoneExecuting(_arg0, _arg1);
+               s_arg0 = data.readString();
+               int i_arg1 = data.readInt();
+               this.appDoneExecuting(s_arg0, i_arg1);
                reply.writeNoException();
                return true;
             case 3:
@@ -225,12 +225,12 @@ public interface IActivityManager extends IInterface {
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               boolean _arg0 = 0 != data.readInt();
-               _arg1 = data.readString();
-               _arg2 = data.readInt();
-               _result = data.readInt();
-               _arg4 = data.readString();
-               _arg5 = this.checkPermission(_arg0, _arg1, _arg2, _result, _arg4);
+               boolean b_arg0 = 0 != data.readInt();
+               s_arg1 = data.readString();
+               i_arg2 = data.readInt();
+               int i_result = data.readInt();
+               s_arg4 = data.readString();
+               _arg5 = this.checkPermission(b_arg0, s_arg1, i_arg2, i_result, s_arg4);
                reply.writeNoException();
                reply.writeInt(_arg5);
                return true;
@@ -261,40 +261,40 @@ public interface IActivityManager extends IInterface {
                return true;
             case 9:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = this.isAppProcess(_arg0);
+               s_arg0 = data.readString();
+               b_arg1 = this.isAppProcess(s_arg0);
                reply.writeNoException();
-               reply.writeInt(_arg1 ? 1 : 0);
+               reply.writeInt(b_arg1 ? 1 : 0);
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               _result = 0 != data.readInt();
-               boolean _result = this.isAppRunning(_arg0, _arg1, _result);
+               s_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               b_result = 0 != data.readInt();
+               boolean b1_result = this.isAppRunning(s_arg0, i_arg1, b_result);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b1_result ? 1 : 0);
                return true;
             case 11:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = this.isAppPid(_arg0);
+               b_arg1 = this.isAppPid(_arg0);
                reply.writeNoException();
-               reply.writeInt(_arg1 ? 1 : 0);
+               reply.writeInt(b_arg1 ? 1 : 0);
                return true;
             case 12:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = this.getAppProcessName(_arg0);
+               s_arg1 = this.getAppProcessName(_arg0);
                reply.writeNoException();
-               reply.writeString(_arg1);
+               reply.writeString(s_arg1);
                return true;
             case 13:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               List<String> _result = this.getProcessPkgList(_arg0);
+               List<String> list_result = this.getProcessPkgList(_arg0);
                reply.writeNoException();
-               reply.writeStringList(_result);
+               reply.writeStringList(list_result);
                return true;
             case 14:
                data.enforceInterface(descriptor);
@@ -303,16 +303,16 @@ public interface IActivityManager extends IInterface {
                return true;
             case 15:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               this.killAppByPkg(_arg0, _arg1);
+               s_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               this.killAppByPkg(s_arg0, i_arg1);
                reply.writeNoException();
                return true;
             case 16:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
-               this.killApplicationProcess(_arg0, _arg1);
+               this.killApplicationProcess(s_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 17:
@@ -323,116 +323,116 @@ public interface IActivityManager extends IInterface {
             case 18:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = this.getInitialPackage(_arg0);
+               s_arg1 = this.getInitialPackage(_arg0);
                reply.writeNoException();
-               reply.writeString(_arg1);
+               reply.writeString(s_arg1);
                return true;
             case 19:
                data.enforceInterface(descriptor);
-               Intent[] _arg0 = (Intent[])data.createTypedArray(Intent.CREATOR);
-               String[] _arg1 = data.createStringArray();
-               _arg2 = data.readStrongBinder();
+               Intent[] intents_arg0 = (Intent[])data.createTypedArray(Intent.CREATOR);
+               String[] strs_arg1 = data.createStringArray();
+               binder_arg2 = data.readStrongBinder();
                if (0 != data.readInt()) {
-                  _arg3 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg3 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg3 = null;
+                  bundle_arg3 = null;
                }
 
-               _arg4 = data.readString();
+               s_arg4 = data.readString();
                _arg5 = data.readInt();
-               int _result = this.startActivities(_arg0, _arg1, _arg2, _arg3, _arg4, _arg5);
+               i_result = this.startActivities(intents_arg0, strs_arg1, binder_arg2, bundle_arg3, s_arg4, _arg5);
                reply.writeNoException();
-               reply.writeInt(_result);
+               reply.writeInt(i_result);
                return true;
             case 20:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  intent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intent_arg0 = null;
                }
 
-               ActivityInfo _arg1;
+               ActivityInfo activityInfo_arg1;
                if (0 != data.readInt()) {
-                  _arg1 = (ActivityInfo)ActivityInfo.CREATOR.createFromParcel(data);
+                  activityInfo_arg1 = (ActivityInfo)ActivityInfo.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  activityInfo_arg1 = null;
                }
 
-               _arg2 = data.readStrongBinder();
+               binder_arg2 = data.readStrongBinder();
                if (0 != data.readInt()) {
-                  _arg3 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg3 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg3 = null;
+                  bundle_arg3 = null;
                }
 
-               _arg4 = data.readString();
+               s_arg4 = data.readString();
                _arg5 = data.readInt();
                String _arg6 = data.readString();
                int _arg7 = data.readInt();
-               int _result = this.startActivity(_arg0, _arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7);
+               i_result = this.startActivity(intent_arg0, activityInfo_arg1, binder_arg2, bundle_arg3, s_arg4, _arg5, _arg6, _arg7);
                reply.writeNoException();
-               reply.writeInt(_result);
+               reply.writeInt(i_result);
                return true;
             case 21:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  intent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intent_arg0 = null;
                }
 
-               _arg1 = this.startActivityFromHistory(_arg0);
+               _arg1 = this.startActivityFromHistory(intent_arg0);
                reply.writeNoException();
                reply.writeInt(_arg1);
                return true;
             case 22:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               _result = this.finishActivityAffinity(_arg0, _arg1);
+               IBinder binder_arg1 = data.readStrongBinder();
+               b_result = this.finishActivityAffinity(_arg0, binder_arg1);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 23:
                data.enforceInterface(descriptor);
-               _arg0 = data.readStrongBinder();
-               _arg1 = data.readStrongBinder();
-               _arg2 = data.readInt();
-               this.onActivityCreated(_arg0, _arg1, _arg2);
+               binder_arg0 = data.readStrongBinder();
+               binder_arg1 = data.readStrongBinder();
+               i_arg2 = data.readInt();
+               this.onActivityCreated(binder_arg0, binder_arg1, i_arg2);
                reply.writeNoException();
                return true;
             case 24:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               this.onActivityResumed(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               this.onActivityResumed(_arg0, binder_arg1);
                reply.writeNoException();
                return true;
             case 25:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               _result = this.onActivityDestroyed(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               b_result = this.onActivityDestroyed(_arg0, binder_arg1);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 26:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               this.onActivityFinish(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               this.onActivityFinish(_arg0, binder_arg1);
                reply.writeNoException();
                return true;
             case 27:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               _result = this.getActivityClassForToken(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               cn_result = this.getActivityClassForToken(_arg0, binder_arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (cn_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  cn_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -441,20 +441,20 @@ public interface IActivityManager extends IInterface {
             case 28:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               _arg2 = this.getCallingPackage(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               _arg2 = this.getCallingPackage(_arg0, binder_arg1);
                reply.writeNoException();
                reply.writeString(_arg2);
                return true;
             case 29:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               _result = this.getCallingActivity(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               cn_result = this.getCallingActivity(_arg0, binder_arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (cn_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  cn_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -463,11 +463,11 @@ public interface IActivityManager extends IInterface {
             case 30:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               AppTaskInfo _result = this.getTaskInfo(_arg0);
+               AppTaskInfo appTaskInfo_result = this.getTaskInfo(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (appTaskInfo_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  appTaskInfo_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -476,59 +476,59 @@ public interface IActivityManager extends IInterface {
             case 31:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readStrongBinder();
-               _arg2 = this.getPackageForToken(_arg0, _arg1);
+               binder_arg1 = data.readStrongBinder();
+               _arg2 = this.getPackageForToken(_arg0, binder_arg1);
                reply.writeNoException();
                reply.writeString(_arg2);
                return true;
             case 32:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               ProviderInfo _arg1;
+               ProviderInfo providerInfo_arg1;
                if (0 != data.readInt()) {
-                  _arg1 = (ProviderInfo)ProviderInfo.CREATOR.createFromParcel(data);
+                  providerInfo_arg1 = (ProviderInfo)ProviderInfo.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  providerInfo_arg1 = null;
                }
 
-               _arg2 = this.acquireProviderClient(_arg0, _arg1);
+               binder_arg2 = this.acquireProviderClient(_arg0, providerInfo_arg1);
                reply.writeNoException();
-               reply.writeStrongBinder(_arg2);
+               reply.writeStrongBinder(binder_arg2);
                return true;
             case 33:
                data.enforceInterface(descriptor);
-               _arg0 = data.readStrongBinder();
-               _arg1 = this.broadcastFinish(_arg0);
+               binder_arg0 = data.readStrongBinder();
+               b_arg1 = this.broadcastFinish(binder_arg0);
                reply.writeNoException();
-               reply.writeInt(_arg1 ? 1 : 0);
+               reply.writeInt(b_arg1 ? 1 : 0);
                return true;
             case 34:
                data.enforceInterface(descriptor);
-               IntentSenderData _arg0;
+               IntentSenderData intentSenderData_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (IntentSenderData)IntentSenderData.CREATOR.createFromParcel(data);
+                  intentSenderData_arg0 = (IntentSenderData)IntentSenderData.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intentSenderData_arg0 = null;
                }
 
                _arg1 = data.readInt();
-               this.addOrUpdateIntentSender(_arg0, _arg1);
+               this.addOrUpdateIntentSender(intentSenderData_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 35:
                data.enforceInterface(descriptor);
-               _arg0 = data.readStrongBinder();
-               this.removeIntentSender(_arg0);
+               binder_arg0 = data.readStrongBinder();
+               this.removeIntentSender(binder_arg0);
                reply.writeNoException();
                return true;
             case 36:
                data.enforceInterface(descriptor);
-               _arg0 = data.readStrongBinder();
-               IntentSenderData _result = this.getIntentSender(_arg0);
+               binder_arg0 = data.readStrongBinder();
+               IntentSenderData intentSender_result = this.getIntentSender(binder_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (intentSender_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  intentSender_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -536,51 +536,51 @@ public interface IActivityManager extends IInterface {
                return true;
             case 37:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readString();
-               _arg2 = data.readInt();
-               this.processRestarted(_arg0, _arg1, _arg2);
+               s_arg0 = data.readString();
+               s_arg1 = data.readString();
+               i_arg2 = data.readInt();
+               this.processRestarted(s_arg0, s_arg1, i_arg2);
                reply.writeNoException();
                return true;
             case 38:
                data.enforceInterface(descriptor);
-               BadgerInfo _arg0;
+               BadgerInfo badgerInfo_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (BadgerInfo)BadgerInfo.CREATOR.createFromParcel(data);
+                  badgerInfo_arg0 = (BadgerInfo)BadgerInfo.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  badgerInfo_arg0 = null;
                }
 
-               this.notifyBadgerChange(_arg0);
+               this.notifyBadgerChange(badgerInfo_arg0);
                reply.writeNoException();
                return true;
             case 39:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = 0 != data.readInt();
-               _arg2 = data.readInt();
-               this.setAppInactive(_arg0, _arg1, _arg2);
+               s_arg0 = data.readString();
+               b_arg1 = 0 != data.readInt();
+               i_arg2 = data.readInt();
+               this.setAppInactive(s_arg0, b_arg1, i_arg2);
                reply.writeNoException();
                return true;
             case 40:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
-               _result = this.isAppInactive(_arg0, _arg1);
+               b_result = this.isAppInactive(s_arg0, _arg1);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 41:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               _arg2 = data.readInt();
-               _result = data.readInt();
-               VParceledListSlice _result = this.getServices(_arg0, _arg1, _arg2, _result);
+               s_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               i_arg2 = data.readInt();
+               i_result = data.readInt();
+               VParceledListSlice vls_result = this.getServices(s_arg0, i_arg1, i_arg2, i_result);
                reply.writeNoException();
-               if (_result != null) {
+               if (vls_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vls_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -589,22 +589,22 @@ public interface IActivityManager extends IInterface {
             case 42:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  intent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intent_arg0 = null;
                }
 
-               this.handleDownloadCompleteIntent(_arg0);
+               this.handleDownloadCompleteIntent(intent_arg0);
                reply.writeNoException();
                return true;
             case 43:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
                _arg2 = data.readString();
-               _result = this.getAppPid(_arg0, _arg1, _arg2);
+               i_result = this.getAppPid(s_arg0, _arg1, _arg2);
                reply.writeNoException();
-               reply.writeInt(_result);
+               reply.writeInt(i_result);
                return true;
             case 44:
                data.enforceInterface(descriptor);

@@ -38,6 +38,7 @@ import com.carlos.common.utils.location.CoordinateBean;
 import com.carlos.common.utils.location.PositionConvertUtil;
 import com.carlos.libcommon.StringFog;
 import com.kook.common.utils.HVLog;
+import com.kook.librelease.R;
 import com.kook.librelease.R.id;
 import com.kook.librelease.R.layout;
 import com.kook.librelease.R.menu;
@@ -183,7 +184,8 @@ public class GDChooseLocationActivity extends VActivity implements GeocodeSearch
    }
 
    public boolean onCreateOptionsMenu(Menu menu) {
-      this.getMenuInflater().inflate(menu.map_menu, menu);
+      //FIXME
+      this.getMenuInflater().inflate(R.menu.map_menu, menu);
       MenuItem menuItem = menu.findItem(id.action_search);
       this.mSearchMenuItem = menuItem;
       this.mSearchMenuItem.setEnabled(!this.mMocking);

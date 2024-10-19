@@ -154,7 +154,7 @@ public class ClassUtils {
             try {
                classes.add(Class.forName(className));
             } catch (Exception var5) {
-               classes.add((Object)null);
+               classes.add(null);
             }
          }
 
@@ -172,7 +172,7 @@ public class ClassUtils {
          while(var2.hasNext()) {
             Class<?> cls = (Class)var2.next();
             if (cls == null) {
-               classNames.add((Object)null);
+               classNames.add(null);
             } else {
                classNames.add(cls.getName());
             }

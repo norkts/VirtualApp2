@@ -1,6 +1,6 @@
 package com.android.dx;
 
-import [Lcom.android.dx.TypeId;;
+import com.android.dx.TypeId;
 import com.android.dx.rop.type.StdTypeList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +11,7 @@ final class TypeList {
    final StdTypeList ropTypes;
 
    TypeList(TypeId<?>[] types) {
-      this.types = (TypeId[])((TypeId;)types).clone();
+      this.types = (TypeId[])(types).clone();
       this.ropTypes = new StdTypeList(types.length);
 
       for(int i = 0; i < types.length; ++i) {

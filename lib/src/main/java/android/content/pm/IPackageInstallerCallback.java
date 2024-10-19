@@ -70,8 +70,8 @@ public interface IPackageInstallerCallback extends IInterface {
             case 4:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               float _arg1 = data.readFloat();
-               this.onSessionProgressChanged(_arg0, _arg1);
+               float f_arg1 = data.readFloat();
+               this.onSessionProgressChanged(_arg0, f_arg1);
                reply.writeNoException();
                return true;
             case 5:

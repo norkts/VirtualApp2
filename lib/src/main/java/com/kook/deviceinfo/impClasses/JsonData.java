@@ -67,8 +67,7 @@ public class JsonData {
                this.channels = object.getString("CHANNELS");
             }
          } catch (JSONException var4) {
-            JSONException e = var4;
-            e.printStackTrace();
+            var4.printStackTrace();
          }
       }
 

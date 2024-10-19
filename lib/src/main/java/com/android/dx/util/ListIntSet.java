@@ -35,7 +35,7 @@ public class ListIntSet implements IntSet {
          ListIntSet o = (ListIntSet)other;
          i = this.ints.size();
          int szOther = o.ints.size();
-         int i = 0;
+         int wi = 0;
          int j = 0;
 
          while(j < szOther && i < i) {

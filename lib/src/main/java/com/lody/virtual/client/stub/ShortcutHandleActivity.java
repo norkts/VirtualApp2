@@ -48,8 +48,7 @@ public class ShortcutHandleActivity extends Activity implements AppLauncherCallb
                try {
                   VActivityManager.get().startActivity(targetIntent, userId);
                } catch (Throwable var9) {
-                  Throwable e = var9;
-                  e.printStackTrace();
+                  var9.printStackTrace();
                }
             } else {
                splashIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmsIRVRmDB4T")), targetIntent);

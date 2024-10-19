@@ -923,7 +923,7 @@ public final class DexMerger {
                   this.updateIndex(offsets[dex], DexMerger.this.indexMaps[dex], indexes[dex]++, outCount);
                }
 
-               this.write((Comparable)first.getKey());
+               this.write(first.getKey());
             }
 
             this.getSection(DexMerger.this.contentsOut).size = outCount;

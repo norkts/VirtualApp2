@@ -45,13 +45,11 @@ public interface IJobCallback extends IInterface {
 
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
-         int _arg0;
-         boolean _arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = 0 != data.readInt();
+               int _arg0 = data.readInt();
+               boolean _arg1 = 0 != data.readInt();
                this.acknowledgeStartMessage(_arg0, _arg1);
                reply.writeNoException();
                return true;
@@ -78,10 +76,10 @@ public interface IJobCallback extends IInterface {
             case 4:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               int _arg1 = data.readInt();
-               boolean _result = this.completeWork(_arg0, _arg1);
+               int _arg2 = data.readInt();
+               boolean _result2 = this.completeWork(_arg0, _arg2);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(_result2 ? 1 : 0);
                return true;
             case 5:
                data.enforceInterface(descriptor);

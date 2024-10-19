@@ -142,11 +142,11 @@ public class VPackage implements Parcelable {
       dest.writeInt(this.activities.size());
       Iterator var3 = this.activities.iterator();
 
-      ActivityComponent component;
+
       Iterator var5;
-      ActivityIntentInfo info;
+
       while(var3.hasNext()) {
-         component = (ActivityComponent)var3.next();
+         ActivityComponent component = (ActivityComponent)var3.next();
          dest.writeParcelable(component.info, 0);
          dest.writeString(component.className);
          dest.writeBundle(component.metaData);
@@ -155,7 +155,7 @@ public class VPackage implements Parcelable {
             var5 = component.intents.iterator();
 
             while(var5.hasNext()) {
-               info = (ActivityIntentInfo)var5.next();
+               ActivityIntentInfo info = (ActivityIntentInfo)var5.next();
                info.writeToParcel(dest, flags);
             }
          }
@@ -165,7 +165,7 @@ public class VPackage implements Parcelable {
       var3 = this.receivers.iterator();
 
       while(var3.hasNext()) {
-         component = (ActivityComponent)var3.next();
+         ActivityComponent component = (ActivityComponent)var3.next();
          dest.writeParcelable(component.info, 0);
          dest.writeString(component.className);
          dest.writeBundle(component.metaData);
@@ -174,7 +174,7 @@ public class VPackage implements Parcelable {
             var5 = component.intents.iterator();
 
             while(var5.hasNext()) {
-               info = (ActivityIntentInfo)var5.next();
+               ActivityIntentInfo info = (ActivityIntentInfo)var5.next();
                info.writeToParcel(dest, flags);
             }
          }
@@ -184,17 +184,17 @@ public class VPackage implements Parcelable {
       var3 = this.providers.iterator();
 
       while(var3.hasNext()) {
-         ProviderComponent component = (ProviderComponent)var3.next();
-         dest.writeParcelable(component.info, 0);
-         dest.writeString(component.className);
-         dest.writeBundle(component.metaData);
-         dest.writeInt(component.intents != null ? component.intents.size() : 0);
-         if (component.intents != null) {
-            var5 = component.intents.iterator();
+         ProviderComponent component1 = (ProviderComponent)var3.next();
+         dest.writeParcelable(component1.info, 0);
+         dest.writeString(component1.className);
+         dest.writeBundle(component1.metaData);
+         dest.writeInt(component1.intents != null ? component1.intents.size() : 0);
+         if (component1.intents != null) {
+            var5 = component1.intents.iterator();
 
             while(var5.hasNext()) {
-               ProviderIntentInfo info = (ProviderIntentInfo)var5.next();
-               info.writeToParcel(dest, flags);
+               ProviderIntentInfo info1 = (ProviderIntentInfo)var5.next();
+               info1.writeToParcel(dest, flags);
             }
          }
       }
@@ -203,13 +203,13 @@ public class VPackage implements Parcelable {
       var3 = this.services.iterator();
 
       while(var3.hasNext()) {
-         ServiceComponent component = (ServiceComponent)var3.next();
-         dest.writeParcelable(component.info, 0);
-         dest.writeString(component.className);
-         dest.writeBundle(component.metaData);
-         dest.writeInt(component.intents != null ? component.intents.size() : 0);
-         if (component.intents != null) {
-            var5 = component.intents.iterator();
+         ServiceComponent component1 = (ServiceComponent)var3.next();
+         dest.writeParcelable(component1.info, 0);
+         dest.writeString(component1.className);
+         dest.writeBundle(component1.metaData);
+         dest.writeInt(component1.intents != null ? component1.intents.size() : 0);
+         if (component1.intents != null) {
+            var5 = component1.intents.iterator();
 
             while(var5.hasNext()) {
                ServiceIntentInfo info = (ServiceIntentInfo)var5.next();

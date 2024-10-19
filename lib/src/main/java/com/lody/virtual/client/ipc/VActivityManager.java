@@ -597,13 +597,13 @@ public class VActivityManager {
          service.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASg/IzxfMWk2NFo=")), userId);
          return context.bindService(service, connection, flags);
       } else {
-         ServiceConnection connection = this.getDelegate(connection);
+         ServiceConnection delegateConnection = this.getDelegate(connection);
          ServiceInfo serviceInfo = VirtualCore.get().resolveServiceInfo(service, userId);
          if (serviceInfo != null) {
             ClientConfig clientConfig = get().initProcess(serviceInfo.packageName, serviceInfo.processName, userId);
-            IServiceConnection conn = ServiceConnectionProxy.getDispatcher(context, connection, flags);
+            IServiceConnection conn = ServiceConnectionProxy.getDispatcher(context, delegateConnection, flags);
             Intent intent = IntentBuilder.createBindProxyServiceIntent(clientConfig.vpid, clientConfig.isExt, serviceInfo, service, flags, userId, conn);
-            return context.bindService(intent, connection, flags);
+            return context.bindService(intent, delegateConnection, flags);
          } else {
             return false;
          }

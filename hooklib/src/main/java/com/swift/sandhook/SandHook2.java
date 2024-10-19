@@ -20,19 +20,19 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SandHook {
+public class SandHook2 {
 
     static Map<Member,HookWrapper.HookEntity> globalHookEntityMap = new ConcurrentHashMap<>();
     static Map<Method,HookWrapper.HookEntity> globalBackupMap = new ConcurrentHashMap<>();
 
     private static HookModeCallBack hookModeCallBack;
     public static void setHookModeCallBack(HookModeCallBack hookModeCallBack) {
-        SandHook.hookModeCallBack = hookModeCallBack;
+        SandHook2.hookModeCallBack = hookModeCallBack;
     }
 
     private static HookResultCallBack hookResultCallBack;
     public static void setHookResultCallBack(HookResultCallBack hookResultCallBack) {
-        SandHook.hookResultCallBack = hookResultCallBack;
+        SandHook2.hookResultCallBack = hookResultCallBack;
     }
 
     public static Class artMethodClass;
@@ -234,7 +234,7 @@ public class SandHook {
             return null;
         }
         long threadSelf = getThreadId();
-        return getObjectNative(threadSelf, address);
+        return SandHook.getObjectNative(threadSelf, address);
     }
 
     public static boolean canGetObjectAddress() {
@@ -374,37 +374,6 @@ public class SandHook {
             return false;
         }
     }
-
-    private static native boolean initNative(int sdk, boolean debug);
-
-    public static native void setHookMode(int hookMode);
-
-    //default on!
-    public static native void setInlineSafeCheck(boolean check);
-    public static native void skipAllSafeCheck(boolean skip);
-
-    private static native int hookMethod(Member originMethod, Method hookMethod, Method backupMethod, int hookMode);
-
-    public static native void ensureMethodCached(Method hook, Method backup);
-    public static native void ensureDeclareClass(Member origin, Method backup);
-
-    public static native boolean compileMethod(Member member);
-    public static native boolean deCompileMethod(Member member, boolean disableJit);
-
-    public static native boolean canGetObject();
-    public static native Object getObjectNative(long thread, long address);
-
-    public static native boolean is64Bit();
-
-    public static native boolean disableVMInline();
-
-    public static native boolean disableDex2oatInline(boolean disableDex2oat);
-
-    public static native boolean setNativeEntry(Member origin, Member hook, long nativeEntry);
-
-    public static native boolean initForPendingHook();
-
-    public static native void MakeInitializedClassVisibilyInitialized(long self);
 
     @FunctionalInterface
     public interface HookModeCallBack {

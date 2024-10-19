@@ -54,10 +54,9 @@ public final class SwitchData extends VariableSizeInsn {
          out.writeInt(i);
          int caseAt = 0;
 
-         for(int i = 0; i < outSz; ++i) {
+         for(i = 0; i < outSz; ++i) {
             int outCase = i + i;
             int oneCase = this.cases.get(caseAt);
-            int relTarget;
             if (oneCase > outCase) {
                relTarget = defaultTarget;
             } else {

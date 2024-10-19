@@ -52,52 +52,52 @@ public interface INotificationManager extends IInterface {
          int _arg1;
          String _arg2;
          int _arg3;
-         int _arg0;
-         String _arg1;
+         int i_arg0;
+         String s_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
+               i_arg0 = data.readInt();
+               s_arg1 = data.readString();
                _arg2 = data.readString();
                _arg3 = data.readInt();
-               int _result = this.dealNotificationId(_arg0, _arg1, _arg2, _arg3);
+               int _result = this.dealNotificationId(i_arg0, s_arg1, _arg2, _arg3);
                reply.writeNoException();
                reply.writeInt(_result);
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
+               i_arg0 = data.readInt();
+               s_arg1 = data.readString();
                _arg2 = data.readString();
                _arg3 = data.readInt();
-               String _result = this.dealNotificationTag(_arg0, _arg1, _arg2, _arg3);
+               String dealNotificationTag_result = this.dealNotificationTag(i_arg0, s_arg1, _arg2, _arg3);
                reply.writeNoException();
-               reply.writeString(_result);
+               reply.writeString(dealNotificationTag_result);
                return true;
             case 3:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
                _arg1 = data.readInt();
-               boolean _result = this.areNotificationsEnabledForPackage(_arg0, _arg1);
+               boolean b_result = this.areNotificationsEnabledForPackage(_arg0, _arg1);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 4:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
-               boolean _arg1 = 0 != data.readInt();
-               int _arg2 = data.readInt();
-               this.setNotificationsEnabledForPackage(_arg0, _arg1, _arg2);
+               boolean b_arg1 = 0 != data.readInt();
+               int i_arg2 = data.readInt();
+               this.setNotificationsEnabledForPackage(_arg0, b_arg1, i_arg2);
                reply.writeNoException();
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = data.readString();
+               i_arg0 = data.readInt();
+               s_arg1 = data.readString();
                _arg2 = data.readString();
                _arg3 = data.readInt();
-               this.addNotification(_arg0, _arg1, _arg2, _arg3);
+               this.addNotification(i_arg0, s_arg1, _arg2, _arg3);
                reply.writeNoException();
                return true;
             case 6:

@@ -252,7 +252,7 @@ public final class InvocationStubManager {
    }
 
    public <T extends IInjector> T findInjector(Class<T> clazz) {
-      return (IInjector)this.mInjectors.get(clazz);
+      return (T)this.mInjectors.get(clazz);
    }
 
    public <T extends IInjector> void checkEnv(Class<T> clazz) {
@@ -287,6 +287,6 @@ public final class InvocationStubManager {
 
    public <T extends IInjector, H extends MethodInvocationStub> H getInvocationStub(Class<T> injectorClass) {
       T injector = this.findInjector(injectorClass);
-      return injector instanceof MethodInvocationProxy ? ((MethodInvocationProxy)injector).getInvocationStub() : null;
+      return injector instanceof MethodInvocationProxy ? (H)((MethodInvocationProxy)injector).getInvocationStub() : null;
    }
 }

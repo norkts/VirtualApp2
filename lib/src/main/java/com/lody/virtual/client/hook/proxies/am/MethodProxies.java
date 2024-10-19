@@ -1700,7 +1700,7 @@ public class MethodProxies {
                   Throwable th = var10;
                   FileUtils.closeQuietly(inputStream);
                   FileUtils.closeQuietly(outputStream);
-                  throw th;
+                  throw new RuntimeException(th);
                }
             }
          }

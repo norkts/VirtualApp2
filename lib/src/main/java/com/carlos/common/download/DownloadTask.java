@@ -95,7 +95,7 @@ public class DownloadTask extends Handler {
          this.isDownloading = true;
 
          try {
-            this.mHttpUtil.getContentLength(this.mPoint.getUrl(), new Callback() {
+            this.mHttpUtil.getContentLength(this.mPoint.getUrl(), new okhttp3.Callback () {
                public void onFailure(Call call, IOException e) {
                   DownloadTask.this.mListner.onCancel();
                }
@@ -110,11 +110,9 @@ public class DownloadTask extends Handler {
                      try {
                         fos = new FileOutputStream(file);
                         byte[] bytes = new byte[1024];
-                        int lenx = false;
                         long fileSize = response.body().contentLength();
                         HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgYLC9nNDMi")) + fileSize);
                         long sum = 0L;
-                        int porSize = false;
 
                         int len;
                         while((len = is.read(bytes)) != -1) {
@@ -169,7 +167,7 @@ public class DownloadTask extends Handler {
          }
 
          this.isDownloading = true;
-         this.mHttpUtil.getContentLength(this.mPoint.getUrl(), new Callback() {
+         this.mHttpUtil.getContentLength(this.mPoint.getUrl(), new okhttp3.Callback () {
             public void onResponse(Call call, Response response) throws IOException {
                HVLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMzJLEVRF")) + response.code() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("DgQ6CW8xMCVmJFkoKi0iPmwjMC1+N1RF")) + DownloadTask.this.isDownloading + "\t" + DownloadTask.this.mPoint.getUrl());
                if (response.code() != 200) {
@@ -241,7 +239,7 @@ public class DownloadTask extends Handler {
       }
 
       final long finalStartIndex = newStartIndex;
-      this.mHttpUtil.downloadFileByRange(this.mPoint.getUrl(), finalStartIndex, endIndex, new Callback() {
+      this.mHttpUtil.downloadFileByRange(this.mPoint.getUrl(), finalStartIndex, endIndex, new okhttp3.Callback () {
          public void onResponse(Call call, Response response) throws IOException {
             Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgpLLwgqCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgALWojHiV9Dg0iPxhSVg==")) + response.code() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("DgQ6CW8xMCVmJFkoKi0iPmwjMC1+N1RF")) + DownloadTask.this.isDownloading + "\t" + DownloadTask.this.mPoint.getUrl());
             if (response.code() != 206) {
@@ -252,7 +250,6 @@ public class DownloadTask extends Handler {
                RandomAccessFile tmpAccessFile = new RandomAccessFile(DownloadTask.this.mTmpFile, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mVg==")));
                tmpAccessFile.seek(finalStartIndex);
                byte[] buffer = new byte[4096];
-               int length = true;
                int total = 0;
                long progress = 0L;
 
@@ -319,7 +316,7 @@ public class DownloadTask extends Handler {
             var9 = false;
          } finally {
             if (var9) {
-               for(int i = 0; i < length; ++i) {
+               for(i = 0; i < length; ++i) {
                   closeables[i] = null;
                }
 

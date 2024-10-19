@@ -34,6 +34,10 @@ public class XposedCompat {
 
     private static ClassLoader sandHookXposedClassLoader;
 
+    public static void init(){
+        SandHook2.init();
+    }
+
 
     public static void loadModule(String modulePath, String moduleOdexDir, String moduleSoPath,ClassLoader classLoader) {
         XposedInit.loadModule(modulePath, moduleOdexDir, moduleSoPath, classLoader);

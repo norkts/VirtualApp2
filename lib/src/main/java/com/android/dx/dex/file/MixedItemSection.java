@@ -95,7 +95,7 @@ public final class MixedItemSection extends Section {
       this.throwIfPrepared();
       OffsettedItem result = (OffsettedItem)this.interns.get(item);
       if (result != null) {
-         return result;
+         return (T)result;
       } else {
          this.add(item);
          this.interns.put(item, item);
@@ -107,7 +107,7 @@ public final class MixedItemSection extends Section {
       this.throwIfNotPrepared();
       OffsettedItem result = (OffsettedItem)this.interns.get(item);
       if (result != null) {
-         return result;
+         return (T)result;
       } else {
          throw new NoSuchElementException(item.toString());
       }

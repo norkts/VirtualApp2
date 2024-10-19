@@ -14,6 +14,7 @@ import com.lody.virtual.client.ipc.VirtualLocationManager;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.VDeviceConfig;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public abstract class MethodProxy {
    private boolean enable = true;
@@ -70,7 +71,7 @@ public abstract class MethodProxy {
 
          for(int i = 0; i < args.length; ++i) {
             Object o = args[i];
-            if (o == 0) {
+            if (Objects.equals(o, 0)) {
                pos = i;
             }
          }
@@ -86,7 +87,7 @@ public abstract class MethodProxy {
       if (getRealUserId() != 0) {
          for(int i = 0; i < args.length; ++i) {
             Object o = args[i];
-            if (o == 0) {
+            if (Objects.equals(o, 0)) {
                args[i] = getRealUserId();
                return;
             }

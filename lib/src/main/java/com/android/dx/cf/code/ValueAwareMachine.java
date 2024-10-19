@@ -245,7 +245,7 @@ public class ValueAwareMachine extends BaseMachine {
                frame.makeInitialized(type);
             }
 
-            Type type = ((TypeBearer)this.getAuxCst()).getType();
+            type = ((TypeBearer)this.getAuxCst()).getType();
             if (type == Type.VOID) {
                this.clearResult();
             } else {

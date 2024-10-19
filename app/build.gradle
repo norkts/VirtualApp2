@@ -110,8 +110,10 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation(name:'lib-release', ext:'aar')
-    implementation project(":xposedcompat")
+//    implementation(name:'lib-release', ext:'aar')
+    implementation project(':lib')
+    implementation project(':exposed-core')
+
     //Android Lib
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -156,5 +158,5 @@ dependencies {
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation files('libs/pinyin4j-2.5.0.jar')
-
+    testImplementation 'junit:junit:4.13.2'
 }

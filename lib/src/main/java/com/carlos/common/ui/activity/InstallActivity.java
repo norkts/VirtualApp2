@@ -77,7 +77,6 @@ public class InstallActivity extends AppCompatActivity {
       PackageInstaller.Session session = null;
       PackageInstaller packageInstaller = this.getPackageManager().getPackageInstaller();
       PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(1);
-      int sessionId = false;
       int sessionId = packageInstaller.createSession(params);
       session = packageInstaller.openSession(sessionId);
       return session;

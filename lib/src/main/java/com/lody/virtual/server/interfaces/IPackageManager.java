@@ -143,65 +143,65 @@ public interface IPackageManager extends IInterface {
 
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
-         ComponentName _arg0;
-         int _arg1;
+         ComponentName cn_arg0;
+         int i_arg0;
          int _result;
-         int _arg3;
-         List _result;
-         String[] _result;
-         String _arg1;
-         String _arg0;
-         List _result;
-         int _arg0;
-         ProviderInfo _result;
-         ResolveInfo _result;
-         VParceledListSlice _result;
-         Intent _arg0;
-         ActivityInfo _result;
+         int i_arg1;
+         List list_result;
+         String[] sarr_result;
+         String s_arg0;
+         String s1_arg0;
+         List list_result1;
+         int int_arg0;
+         ProviderInfo pi_result;
+         ResolveInfo ri_result;
+         VParceledListSlice vls_result;
+         Intent intent_arg0;
+         ActivityInfo ai_result;
          String _arg2;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               _result = this.getPackageUid(_arg0, _arg1);
+               s1_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               _result = this.getPackageUid(s1_arg0, i_arg1);
                reply.writeNoException();
                reply.writeInt(_result);
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _result = this.getPackagesForUid(_arg0);
+               i_arg0 = data.readInt();
+               sarr_result = this.getPackagesForUid(i_arg0);
                reply.writeNoException();
-               reply.writeStringArray(_result);
+               reply.writeStringArray(sarr_result);
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.getSharedLibraries(_arg0);
+               s_arg0 = data.readString();
+               list_result = this.getSharedLibraries(s_arg0);
                reply.writeNoException();
-               reply.writeStringList(_result);
+               reply.writeStringList(list_result);
                return true;
             case 4:
                data.enforceInterface(descriptor);
                boolean _arg0 = 0 != data.readInt();
-               _arg1 = data.readString();
+               String s_arg1 = data.readString();
                _arg2 = data.readString();
-               _arg3 = data.readInt();
-               int _result = this.checkPermission(_arg0, _arg1, _arg2, _arg3);
+               int int_arg3 = data.readInt();
+               int int_result = this.checkPermission(_arg0, s_arg1, _arg2, int_arg3);
                reply.writeNoException();
-               reply.writeInt(_result);
+               reply.writeInt(int_result);
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               _result = data.readInt();
-               PackageInfo _result = this.getPackageInfo(_arg0, _arg1, _result);
+               s_arg0 = data.readString();
+               int _arg1 = data.readInt();
+               int_arg0 = data.readInt();
+               PackageInfo pki_result = this.getPackageInfo(s_arg0, _arg1, int_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (pki_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  pki_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -210,18 +210,18 @@ public interface IPackageManager extends IInterface {
             case 6:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _arg1 = data.readInt();
                _result = data.readInt();
-               _result = this.getActivityInfo(_arg0, _arg1, _result);
+               ai_result = this.getActivityInfo(cn_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (ai_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  ai_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -230,38 +230,38 @@ public interface IPackageManager extends IInterface {
             case 7:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
-               Intent _arg1;
+               Intent intent_arg1;
                if (0 != data.readInt()) {
-                  _arg1 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  intent_arg1 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  intent_arg1 = null;
                }
 
                _arg2 = data.readString();
-               boolean _result = this.activitySupportsIntent(_arg0, _arg1, _arg2);
+               boolean b_result = this.activitySupportsIntent(cn_arg0, intent_arg1, _arg2);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 8:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _arg1 = data.readInt();
                _result = data.readInt();
-               _result = this.getReceiverInfo(_arg0, _arg1, _result);
+               ai_result = this.getReceiverInfo(cn_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (ai_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  ai_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -270,18 +270,18 @@ public interface IPackageManager extends IInterface {
             case 9:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _arg1 = data.readInt();
                _result = data.readInt();
-               ServiceInfo _result = this.getServiceInfo(_arg0, _arg1, _result);
+               ServiceInfo si_result = this.getServiceInfo(cn_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (si_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  si_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -290,18 +290,18 @@ public interface IPackageManager extends IInterface {
             case 10:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _arg1 = data.readInt();
                _result = data.readInt();
-               _result = this.getProviderInfo(_arg0, _arg1, _result);
+               pi_result = this.getProviderInfo(cn_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (pi_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  pi_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -309,20 +309,21 @@ public interface IPackageManager extends IInterface {
                return true;
             case 11:
                data.enforceInterface(descriptor);
+               Intent inent_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  inent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  inent_arg0 = null;
                }
 
-               _arg1 = data.readString();
-               _result = data.readInt();
-               _arg3 = data.readInt();
-               _result = this.resolveIntent(_arg0, _arg1, _result, _arg3);
+               s_arg1 = data.readString();
+               int_result = data.readInt();
+               int _arg3 = data.readInt();
+               ri_result = this.resolveIntent(inent_arg0, s_arg1, int_result, _arg3);
                reply.writeNoException();
-               if (_result != null) {
+               if (ri_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  ri_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -330,50 +331,52 @@ public interface IPackageManager extends IInterface {
                return true;
             case 12:
                data.enforceInterface(descriptor);
+               ;
+
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  inent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  inent_arg0 = null;
                }
 
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _result = data.readInt();
                _arg3 = data.readInt();
-               _result = this.queryIntentActivities(_arg0, _arg1, _result, _arg3);
+               list_result = this.queryIntentActivities(inent_arg0, s_arg1, _result, _arg3);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 13:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  inent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  inent_arg0 = null;
                }
 
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _result = data.readInt();
                _arg3 = data.readInt();
-               _result = this.queryIntentReceivers(_arg0, _arg1, _result, _arg3);
+               list_result = this.queryIntentReceivers(inent_arg0, s_arg1, _result, _arg3);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 14:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  inent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  inent_arg0 = null;
                }
 
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _result = data.readInt();
                _arg3 = data.readInt();
-               _result = this.resolveService(_arg0, _arg1, _result, _arg3);
+               ri_result = this.resolveService(inent_arg0, s_arg1, _result, _arg3);
                reply.writeNoException();
-               if (_result != null) {
+               if (ri_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  ri_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -382,42 +385,42 @@ public interface IPackageManager extends IInterface {
             case 15:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  inent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  inent_arg0 = null;
                }
 
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _result = data.readInt();
                _arg3 = data.readInt();
-               _result = this.queryIntentServices(_arg0, _arg1, _result, _arg3);
+               list_result = this.queryIntentServices(inent_arg0, s_arg1, _result, _arg3);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 16:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  inent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  inent_arg0 = null;
                }
 
-               _arg1 = data.readString();
+               s_arg1 = data.readString();
                _result = data.readInt();
                _arg3 = data.readInt();
-               _result = this.queryIntentContentProviders(_arg0, _arg1, _result, _arg3);
+               list_result = this.queryIntentContentProviders(inent_arg0, s_arg1, _result, _arg3);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 17:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               int_arg0 = data.readInt();
                _arg1 = data.readInt();
-               _result = this.getInstalledPackages(_arg0, _arg1);
+               vls_result = this.getInstalledPackages(int_arg0, _arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (vls_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vls_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -425,13 +428,13 @@ public interface IPackageManager extends IInterface {
                return true;
             case 18:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               int_arg0 = data.readInt();
                _arg1 = data.readInt();
-               _result = this.getInstalledApplications(_arg0, _arg1);
+               vls_result = this.getInstalledApplications(int_arg0, _arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (vls_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vls_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -439,22 +442,22 @@ public interface IPackageManager extends IInterface {
                return true;
             case 19:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readString();
+               s_arg0 = data.readString();
+               s_arg1 = data.readString();
                _result = data.readInt();
-               List<ReceiverInfo> _result = this.getReceiverInfos(_arg0, _arg1, _result);
+               list_result = this.getReceiverInfos(s_arg0, s_arg1, _result);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 20:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               PermissionInfo _result = this.getPermissionInfo(_arg0, _arg1);
+               s_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               PermissionInfo pmi_result = this.getPermissionInfo(s_arg0, i_arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (pmi_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  pmi_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -462,21 +465,21 @@ public interface IPackageManager extends IInterface {
                return true;
             case 21:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               List<PermissionInfo> _result = this.queryPermissionsByGroup(_arg0, _arg1);
+               s_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               List<PermissionInfo> permissionInfoList_result = this.queryPermissionsByGroup(s_arg0, i_arg1);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(permissionInfoList_result);
                return true;
             case 22:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readInt();
-               PermissionGroupInfo _result = this.getPermissionGroupInfo(_arg0, _arg1);
+               s_arg0 = data.readString();
+               i_arg1 = data.readInt();
+               PermissionGroupInfo pg_result = this.getPermissionGroupInfo(s_arg0, i_arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (pg_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  pg_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -484,21 +487,21 @@ public interface IPackageManager extends IInterface {
                return true;
             case 23:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _result = this.getAllPermissionGroups(_arg0);
+               i_arg0 = data.readInt();
+               list_result = this.getAllPermissionGroups(i_arg0);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 24:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
                _result = data.readInt();
-               _result = this.resolveContentProvider(_arg0, _arg1, _result);
+               pi_result = this.resolveContentProvider(s_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (pi_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  pi_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -506,14 +509,14 @@ public interface IPackageManager extends IInterface {
                return true;
             case 25:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
                _result = data.readInt();
-               ApplicationInfo _result = this.getApplicationInfo(_arg0, _arg1, _result);
+               ApplicationInfo applicationInfo_result = this.getApplicationInfo(s_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (applicationInfo_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  applicationInfo_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -521,14 +524,14 @@ public interface IPackageManager extends IInterface {
                return true;
             case 26:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
                _result = data.readInt();
-               VParceledListSlice _result = this.queryContentProviders(_arg0, _arg1, _result);
+               vls_result = this.queryContentProviders(s_arg0, _arg1, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (vls_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vls_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -536,63 +539,63 @@ public interface IPackageManager extends IInterface {
                return true;
             case 27:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.querySharedPackages(_arg0);
+               s_arg0 = data.readString();
+               list_result = this.querySharedPackages(s_arg0);
                reply.writeNoException();
-               reply.writeStringList(_result);
+               reply.writeStringList(list_result);
                return true;
             case 28:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
-               _arg1 = this.getNameForUid(_arg0);
+               i_arg0 = data.readInt();
+               s_arg1 = this.getNameForUid(i_arg0);
                reply.writeNoException();
-               reply.writeString(_arg1);
+               reply.writeString(s_arg1);
                return true;
             case 29:
                data.enforceInterface(descriptor);
-               IBinder _result = this.getPackageInstaller();
+               IBinder bind_result = this.getPackageInstaller();
                reply.writeNoException();
-               reply.writeStrongBinder(_result);
+               reply.writeStrongBinder(bind_result);
                return true;
             case 30:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readString();
-               _result = this.checkSignatures(_arg0, _arg1);
+               s_arg0 = data.readString();
+               s_arg1 = data.readString();
+               _result = this.checkSignatures(s_arg0, s_arg1);
                reply.writeNoException();
                reply.writeInt(_result);
                return true;
             case 31:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _result = this.getDangerousPermissions(_arg0);
+               s_arg0 = data.readString();
+               sarr_result = this.getDangerousPermissions(s_arg0);
                reply.writeNoException();
-               reply.writeStringArray(_result);
+               reply.writeStringArray(sarr_result);
                return true;
             case 32:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _arg1 = data.readInt();
                _result = data.readInt();
                _arg3 = data.readInt();
-               this.setComponentEnabledSetting(_arg0, _arg1, _result, _arg3);
+               this.setComponentEnabledSetting(cn_arg0, _arg1, _result, _arg3);
                reply.writeNoException();
                return true;
             case 33:
                data.enforceInterface(descriptor);
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _arg1 = data.readInt();
-               _result = this.getComponentEnabledSetting(_arg0, _arg1);
+               _result = this.getComponentEnabledSetting(cn_arg0, _arg1);
                reply.writeNoException();
                reply.writeInt(_result);
                return true;

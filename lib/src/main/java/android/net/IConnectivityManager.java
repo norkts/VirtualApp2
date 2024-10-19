@@ -72,11 +72,11 @@ public interface IConnectivityManager extends IInterface {
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
                boolean _arg1 = 0 != data.readInt();
-               NetworkInfo _result = this.getActiveNetworkInfoForUid(_arg0, _arg1);
+               NetworkInfo _result2 = this.getActiveNetworkInfoForUid(_arg0, _arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (_result2 != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  _result2.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -85,11 +85,11 @@ public interface IConnectivityManager extends IInterface {
             case 3:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               NetworkInfo _result = this.getNetworkInfo(_arg0);
+               NetworkInfo _result8 = this.getNetworkInfo(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (_result8 != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  _result8.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -97,31 +97,31 @@ public interface IConnectivityManager extends IInterface {
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               NetworkInfo[] _result = this.getAllNetworkInfo();
+               NetworkInfo[] _result4 = this.getAllNetworkInfo();
                reply.writeNoException();
-               reply.writeTypedArray(_result, 1);
+               reply.writeTypedArray(_result4, 1);
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               boolean _result = this.isActiveNetworkMetered();
+               boolean _result3 = this.isActiveNetworkMetered();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(_result3 ? 1 : 0);
                return true;
             case 6:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               int _arg1 = data.readInt();
-               boolean _result = this.requestRouteToHostAddress(_arg0, _arg1);
+               int _arg2 = data.readInt();
+               boolean _result5 = this.requestRouteToHostAddress(_arg0, _arg2);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(_result5 ? 1 : 0);
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               LinkProperties _result = this.getActiveLinkProperties();
+               LinkProperties _result6 = this.getActiveLinkProperties();
                reply.writeNoException();
-               if (_result != null) {
+               if (_result6 != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  _result6.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -130,11 +130,11 @@ public interface IConnectivityManager extends IInterface {
             case 8:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               LinkProperties _result = this.getLinkProperties(_arg0);
+               LinkProperties _result7 = this.getLinkProperties(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (_result7 != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  _result7.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }

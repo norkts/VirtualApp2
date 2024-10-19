@@ -274,7 +274,7 @@ public class SCCP {
          this.branchWorklist.add(insn);
       } else {
          for(successorBlock = 0; successorBlock < block.getSuccessorList().size(); ++successorBlock) {
-            int successorBlock = block.getSuccessorList().get(successorBlock);
+            successorBlock = block.getSuccessorList().get(successorBlock);
             this.addBlockToWorklist((SsaBasicBlock)this.ssaMeth.getBlocks().get(successorBlock));
          }
       }

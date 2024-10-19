@@ -72,18 +72,18 @@ public interface IUserManager extends IInterface {
          String descriptor = DESCRIPTOR;
          int _arg0;
          int _result;
-         boolean _result;
+         boolean b_result;
          Bitmap _arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               String _arg0 = data.readString();
+               String s_arg0 = data.readString();
                _result = data.readInt();
-               VUserInfo _result = this.createUser(_arg0, _result);
+               VUserInfo v_result = this.createUser(s_arg0, _result);
                reply.writeNoException();
-               if (_result != null) {
+               if (v_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  v_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -92,15 +92,15 @@ public interface IUserManager extends IInterface {
             case 2:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               boolean _result = this.removeUser(_arg0);
+               boolean br_result = this.removeUser(_arg0);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(br_result ? 1 : 0);
                return true;
             case 3:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               String _arg1 = data.readString();
-               this.setUserName(_arg0, _arg1);
+               String s_arg1 = data.readString();
+               this.setUserName(_arg0, s_arg1);
                reply.writeNoException();
                return true;
             case 4:
@@ -130,19 +130,19 @@ public interface IUserManager extends IInterface {
                return true;
             case 6:
                data.enforceInterface(descriptor);
-               _result = 0 != data.readInt();
-               List<VUserInfo> _result = this.getUsers(_result);
+               b_result = 0 != data.readInt();
+               List<VUserInfo> list_result = this.getUsers(b_result);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 7:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               VUserInfo _result = this.getUserInfo(_arg0);
+               VUserInfo vu_result = this.getUserInfo(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (vu_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  vu_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -150,15 +150,15 @@ public interface IUserManager extends IInterface {
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               _result = 0 != data.readInt();
-               this.setGuestEnabled(_result);
+               b_result = 0 != data.readInt();
+               this.setGuestEnabled(b_result);
                reply.writeNoException();
                return true;
             case 9:
                data.enforceInterface(descriptor);
-               _result = this.isGuestEnabled();
+               b_result = this.isGuestEnabled();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 10:
                data.enforceInterface(descriptor);

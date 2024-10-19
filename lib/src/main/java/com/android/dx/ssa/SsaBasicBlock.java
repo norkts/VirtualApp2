@@ -354,7 +354,7 @@ public final class SsaBasicBlock {
          if (oldInsertPlace == insertPlace) {
             SsaInsn insnToSplit = null;
 
-            for(int i = insertPlace; i < sz; ++i) {
+            for(i = insertPlace; i < sz; ++i) {
                SsaInsn insn = (SsaInsn)toSchedule.get(i);
                if (checkRegUsed(regsUsedAsSources, insn.getResult()) && checkRegUsed(regsUsedAsResults, insn.getSources().get(0))) {
                   insnToSplit = insn;

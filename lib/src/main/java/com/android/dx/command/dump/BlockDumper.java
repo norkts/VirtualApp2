@@ -122,7 +122,7 @@ public class BlockDumper extends BaseDumper {
       for(end = 0; end < sz; ++end) {
          ByteBlock bb = list.get(end);
          int start = bb.getStart();
-         int end = bb.getEnd();
+         end = bb.getEnd();
          if (byteAt < start) {
             this.parsed(bytes, byteAt, start - byteAt, "dead code " + Hex.u2(byteAt) + ".." + Hex.u2(start));
          }

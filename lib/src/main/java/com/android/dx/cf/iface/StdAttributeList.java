@@ -45,8 +45,8 @@ public final class StdAttributeList extends FixedSizeList implements AttributeLi
             ++at;
 
             while(at < sz) {
-               Attribute att = this.get(at);
-               if (att.getName().equals(name)) {
+               Attribute attw = this.get(at);
+               if (attw.getName().equals(name)) {
                   return att;
                }
 

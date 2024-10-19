@@ -78,7 +78,7 @@ public final class XposedHelpers {
             fieldCache.put(fullFieldName, field);
             return field;
          } catch (NoSuchFieldException var4) {
-            fieldCache.put(fullFieldName, (Object)null);
+            fieldCache.put(fullFieldName, null);
             throw new NoSuchFieldError(fullFieldName);
          }
       }
@@ -186,7 +186,7 @@ public final class XposedHelpers {
             methodCache.put(fullMethodName, method);
             return method;
          } catch (NoSuchMethodException var5) {
-            methodCache.put(fullMethodName, (Object)null);
+            methodCache.put(fullMethodName, null);
             throw new NoSuchMethodError(fullMethodName);
          }
       }
@@ -262,7 +262,7 @@ public final class XposedHelpers {
                return bestMatch;
             } else {
                NoSuchMethodError e = new NoSuchMethodError(fullMethodName);
-               methodCache.put(fullMethodName, (Object)null);
+               methodCache.put(fullMethodName, null);
                throw e;
             }
          }
@@ -402,7 +402,7 @@ public final class XposedHelpers {
             constructorCache.put(fullConstructorName, constructor);
             return constructor;
          } catch (NoSuchMethodException var4) {
-            constructorCache.put(fullConstructorName, (Object)null);
+            constructorCache.put(fullConstructorName, null);
             throw new NoSuchMethodError(fullConstructorName);
          }
       }
@@ -456,7 +456,7 @@ public final class XposedHelpers {
                return bestMatch;
             } else {
                NoSuchMethodError e = new NoSuchMethodError(fullConstructorName);
-               constructorCache.put(fullConstructorName, (Object)null);
+               constructorCache.put(fullConstructorName, null);
                throw e;
             }
          }

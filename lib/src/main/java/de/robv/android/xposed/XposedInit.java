@@ -35,12 +35,12 @@ public final class XposedInit {
          Log.e("SandXposed", "  File does not exist");
       } else {
          DexFile dexFile;
-         IOException zipFile;
+         IOException exception;
          try {
             dexFile = new DexFile(modulePath);
          } catch (IOException var19) {
-            zipFile = var19;
-            Log.e("SandXposed", "  Cannot load module", zipFile);
+            exception = var19;
+            Log.e("SandXposed", "  Cannot load module", exception);
             return;
          }
 
@@ -55,10 +55,10 @@ public final class XposedInit {
             XposedHelpers.closeSilently(dexFile);
          } else {
             XposedHelpers.closeSilently(dexFile);
-            zipFile = null;
+            exception = null;
 
             InputStream is;
-            ZipFile zipFile;
+            ZipFile zipFile = null;
             try {
                zipFile = new ZipFile(modulePath);
                ZipEntry zipEntry = zipFile.getEntry("assets/xposed_init");

@@ -44,18 +44,18 @@ public interface IPackageObserver extends IInterface {
          String descriptor = DESCRIPTOR;
          int _arg0;
          String _arg1;
-         String _arg0;
+         String _arg0s;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               this.onPackageInstalled(_arg0);
+               _arg0s = data.readString();
+               this.onPackageInstalled(_arg0s);
                reply.writeNoException();
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               this.onPackageUninstalled(_arg0);
+               _arg0s = data.readString();
+               this.onPackageUninstalled(_arg0s);
                reply.writeNoException();
                return true;
             case 3:

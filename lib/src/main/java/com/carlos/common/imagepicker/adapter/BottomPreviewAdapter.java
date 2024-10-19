@@ -20,7 +20,7 @@ import com.kook.librelease.R.layout;
 import java.util.Iterator;
 import java.util.List;
 
-public class BottomPreviewAdapter extends RecyclerView.Adapter<CustomeHolder> {
+public class BottomPreviewAdapter extends RecyclerView.Adapter<BottomPreviewAdapter.CustomeHolder> {
    private Context context;
    private List<Image> imagesList;
    public OnItemClcikLitener onItemClcikLitener;

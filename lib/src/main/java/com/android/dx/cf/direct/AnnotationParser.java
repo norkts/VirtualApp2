@@ -252,17 +252,17 @@ public final class AnnotationParser {
             constNameIndex = value.getValue();
             return CstChar.make(value.getValue());
          case 68:
-            CstDouble value = (CstDouble)this.parseConstant();
-            return value;
+            CstDouble value3 = (CstDouble)this.parseConstant();
+            return value3;
          case 70:
-            CstFloat value = (CstFloat)this.parseConstant();
-            return value;
+            CstFloat value4 = (CstFloat)this.parseConstant();
+            return value4;
          case 73:
             value = (CstInteger)this.parseConstant();
             return value;
          case 74:
-            CstLong value = (CstLong)this.parseConstant();
-            return value;
+            CstLong value1 = (CstLong)this.parseConstant();
+            return value1;
          case 83:
             value = (CstInteger)this.parseConstant();
             return CstShort.make(value.getValue());
@@ -296,8 +296,8 @@ public final class AnnotationParser {
             return new CstArray(list);
          case 99:
             numValues = this.input.readUnsignedShort();
-            CstString value = (CstString)this.pool.get(numValues);
-            Type type = Type.internReturnType(value.getString());
+            CstString value2 = (CstString)this.pool.get(numValues);
+            Type type = Type.internReturnType(value2.getString());
             if (this.observer != null) {
                this.parsed(2, "class_info: " + type.toHuman());
             }

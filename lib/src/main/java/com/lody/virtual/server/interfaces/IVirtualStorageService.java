@@ -45,23 +45,23 @@ public interface IVirtualStorageService extends IInterface {
          String _arg0;
          int _arg1;
          boolean _result;
-         String _result;
+         String s_result;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
                _arg1 = data.readInt();
-               _result = data.readString();
-               this.setVirtualStorage(_arg0, _arg1, _result);
+               s_result = data.readString();
+               this.setVirtualStorage(_arg0, _arg1, s_result);
                reply.writeNoException();
                return true;
             case 2:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
                _arg1 = data.readInt();
-               _result = this.getVirtualStorage(_arg0, _arg1);
+               s_result = this.getVirtualStorage(_arg0, _arg1);
                reply.writeNoException();
-               reply.writeString(_result);
+               reply.writeString(s_result);
                return true;
             case 3:
                data.enforceInterface(descriptor);

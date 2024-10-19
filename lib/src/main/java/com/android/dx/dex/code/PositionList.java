@@ -40,7 +40,7 @@ public final class PositionList extends FixedSizeList {
 
             PositionList result = new PositionList(at);
 
-            for(int i = 0; i < at; ++i) {
+            for(i = 0; i < at; ++i) {
                result.set(i, arr[i]);
             }
 

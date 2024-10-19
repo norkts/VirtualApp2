@@ -54,7 +54,7 @@ public interface IJobService extends IInterface {
          String descriptor = DESCRIPTOR;
          int _arg0;
          JobInfo _arg1;
-         int _arg1;
+         int i_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
@@ -72,8 +72,8 @@ public interface IJobService extends IInterface {
             case 2:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readInt();
-               this.cancel(_arg0, _arg1);
+               i_arg1 = data.readInt();
+               this.cancel(_arg0, i_arg1);
                reply.writeNoException();
                return true;
             case 3:
@@ -85,19 +85,19 @@ public interface IJobService extends IInterface {
             case 4:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               List<JobInfo> _result = this.getAllPendingJobs(_arg0);
+               List<JobInfo> jobInfos_result = this.getAllPendingJobs(_arg0);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(jobInfos_result);
                return true;
             case 5:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = data.readInt();
-               JobInfo _result = this.getPendingJob(_arg0, _arg1);
+               i_arg1 = data.readInt();
+               JobInfo job_result = this.getPendingJob(_arg0, i_arg1);
                reply.writeNoException();
-               if (_result != null) {
+               if (job_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  job_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -119,9 +119,9 @@ public interface IJobService extends IInterface {
                   _arg2 = null;
                }
 
-               int _result = this.enqueue(_arg0, _arg1, _arg2);
+               int i_result = this.enqueue(_arg0, _arg1, _arg2);
                reply.writeNoException();
-               reply.writeInt(_result);
+               reply.writeInt(i_result);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

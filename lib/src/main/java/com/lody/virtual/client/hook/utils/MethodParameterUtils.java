@@ -13,7 +13,7 @@ public class MethodParameterUtils {
          return null;
       } else {
          int index = ArrayUtils.indexOfFirst(args, tClass);
-         return index != -1 ? args[index] : null;
+         return index != -1 ? (T)args[index] : null;
       }
    }
 

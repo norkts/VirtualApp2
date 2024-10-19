@@ -19,7 +19,7 @@ public class MD5Utils {
       InputStream is = null;
       if (input != null) {
          if (gzip) {
-            InputStream is = new GZIPInputStream(input);
+            is = new GZIPInputStream(input);
             BufferedInputStream bis = new BufferedInputStream(is);
             bis.mark(2);
             byte[] header = new byte[2];
@@ -59,7 +59,6 @@ public class MD5Utils {
 
    public static String binToHex(byte[] md) {
       StringBuffer sb = new StringBuffer("");
-      int read = false;
 
       for(int i = 0; i < md.length; ++i) {
          int read = md[i];

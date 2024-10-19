@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class BitmapLoadTask extends AsyncTask<Void, Void, BitmapWorkerResult> {
+public class BitmapLoadTask extends AsyncTask<Void, Void, BitmapLoadTask.BitmapWorkerResult> {
    private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4YLGoVJAJuJB4qKS0MKH0zQQNqJ1RF"));
    private final Context mContext;
    private Uri mInputUri;
@@ -132,7 +132,7 @@ public class BitmapLoadTask extends AsyncTask<Void, Void, BitmapWorkerResult> {
                } catch (IOException | NullPointerException var4) {
                   Exception e = var4;
                   Log.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AKGkVAiZiICQ+LwccCGkjBlo=")), e);
-                  throw e;
+                  throw new RuntimeException(e);
                }
             }
          } else if (!StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")).equals(inputUriScheme)) {
@@ -145,7 +145,7 @@ public class BitmapLoadTask extends AsyncTask<Void, Void, BitmapWorkerResult> {
          } catch (IOException | NullPointerException var5) {
             Exception e = var5;
             Log.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgozKj05OmkVQS9lESgv")), e);
-            throw e;
+            throw new RuntimeException(e);
          }
       }
 

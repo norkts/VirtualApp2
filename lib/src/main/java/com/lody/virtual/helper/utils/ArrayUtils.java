@@ -151,7 +151,7 @@ public class ArrayUtils {
 
    public static <T> T getFirst(Object[] args, Class<?> clazz) {
       int index = indexOfFirst(args, clazz);
-      return index != -1 ? args[index] : null;
+      return index != -1 ? (T)args[index] : null;
    }
 
    public static void checkOffsetAndCount(int arrayLength, int offset, int count) throws ArrayIndexOutOfBoundsException {

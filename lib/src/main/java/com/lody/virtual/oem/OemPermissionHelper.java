@@ -19,7 +19,7 @@ public class OemPermissionHelper {
       BuildCompat.ROMType romType = BuildCompat.getROMType();
       Intent intent;
       ComponentName component;
-      Intent intent;
+      Intent intent2;
       Iterator var5;
       switch (romType) {
          case EMUI:

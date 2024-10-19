@@ -169,8 +169,7 @@ public class FileTools {
          e = var7;
          e.printStackTrace();
       } catch (IOException var8) {
-         IOException e = var8;
-         e.printStackTrace();
+         var8.printStackTrace();
       }
 
       if (updateAlum) {
@@ -211,8 +210,7 @@ public class FileTools {
             new BufferedReader(inputreader);
             char[] chars = new char[1024];
 
-            int len;
-            for(int len = false; (len = inputreader.read(chars)) != -1; content = content + new String(chars, 0, len)) {
+            for(int len = 0; (len = inputreader.read(chars)) != -1; content = content + new String(chars, 0, len)) {
             }
 
             ((InputStream)instream).close();
@@ -308,7 +306,6 @@ public class FileTools {
    public static void copyFile(String oldPath, String newPath) {
       try {
          int bytesum = 0;
-         int byteread = false;
          File oldfile = new File(oldPath);
          HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxwnREZJRj5YEF5KAlcdCkdNGxdBX149PQArBhpSHlo=")) + newPath + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFGiRiHjwzKhcLDmkgFi9sJCw6MwQXPg==")) + oldfile.exists());
          if (oldfile.exists()) {
@@ -388,7 +385,6 @@ public class FileTools {
          }
 
          OutputStream os = new FileOutputStream(file);
-         int bytesRead = false;
          byte[] buffer = new byte[8192];
 
          int bytesRead;

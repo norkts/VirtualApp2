@@ -4,35 +4,35 @@ import com.carlos.libcommon.StringFog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 public class JsoupUtil {
    public static String LoginInfo(String html) {
-      return html == null ? null : Jsoup.clean(html, Whitelist.none());
+      return html == null ? null : Jsoup.clean(html, Safelist.none());
    }
 
    public static String getText(String html) {
-      return html == null ? null : Jsoup.clean(html, Whitelist.none());
+      return html == null ? null : Jsoup.clean(html, Safelist.none());
    }
 
    public static String getSimpleHtml(String html) {
-      return html == null ? null : Jsoup.clean(html, Whitelist.simpleText());
+      return html == null ? null : Jsoup.clean(html, Safelist.simpleText());
    }
 
    public static String getBasicHtml(String html) {
-      return html == null ? null : Jsoup.clean(html, Whitelist.basic());
+      return html == null ? null : Jsoup.clean(html, Safelist.basic());
    }
 
    public static String getBasicHtmlandimage(String html) {
-      return html == null ? null : Jsoup.clean(html, Whitelist.basicWithImages());
+      return html == null ? null : Jsoup.clean(html, Safelist.basicWithImages());
    }
 
    public static String getFullHtml(String html) {
-      return html == null ? null : Jsoup.clean(html, Whitelist.relaxed());
+      return html == null ? null : Jsoup.clean(html, Safelist.relaxed());
    }
 
    public static String clearTags(String html, String... tags) {
-      Whitelist wl = new Whitelist();
+      Safelist wl = new Safelist();
       return Jsoup.clean(html, wl.addTags(tags));
    }
 

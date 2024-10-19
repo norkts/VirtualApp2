@@ -86,7 +86,6 @@ public class MockLocationHelper {
 
             try {
                int length;
-               int i;
                if (GpsStatusL.setStatus != null) {
                   svCount = satalines.getSvCount();
                   length = satalines.getPrns().length;
@@ -94,7 +93,7 @@ public class MockLocationHelper {
                   azimuths = satalines.getAzimuths();
                   int[] ephemerisMask = new int[length];
 
-                  for(i = 0; i < length; ++i) {
+                  for(int i = 0; i < length; ++i) {
                      ephemerisMask[i] = satalines.getEphemerisMask();
                   }
 
@@ -114,7 +113,7 @@ public class MockLocationHelper {
                } else if (mirror.android.location.GpsStatus.setStatus != null) {
                   length = satalines.getEphemerisMask();
                   int almanacMask = satalines.getAlmanacMask();
-                  i = satalines.getUsedInFixMask();
+                  int i = satalines.getUsedInFixMask();
                   mirror.android.location.GpsStatus.setStatus.call(mGpsStatus, svCount, prns, snrs, elevations, azimuths, length, almanacMask, i);
                }
             } catch (Exception var14) {

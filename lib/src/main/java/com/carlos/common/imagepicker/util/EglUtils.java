@@ -73,7 +73,7 @@ public class EglUtils {
          javax.microedition.khronos.egl.EGLConfig config = configs[0];
          int[] surfAttr = new int[]{12375, 64, 12374, 64, 12344};
          javax.microedition.khronos.egl.EGLSurface surf = egl.eglCreatePbufferSurface(dpy, config, surfAttr);
-         int EGL_CONTEXT_CLIENT_VERSION = true;
+//         int EGL_CONTEXT_CLIENT_VERSION = true;
          int[] ctxAttrib = new int[]{12440, 1, 12344};
          javax.microedition.khronos.egl.EGLContext ctx = egl.eglCreateContext(dpy, config, EGL10.EGL_NO_CONTEXT, ctxAttrib);
          egl.eglMakeCurrent(dpy, surf, surf, ctx);

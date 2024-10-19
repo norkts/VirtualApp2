@@ -48,9 +48,9 @@ public interface IHYXDController extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               boolean _result = this.memoryTest();
+               boolean b_result = this.memoryTest();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

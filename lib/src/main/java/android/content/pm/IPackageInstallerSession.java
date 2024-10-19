@@ -69,18 +69,18 @@ public interface IPackageInstallerSession extends IInterface {
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
          String _arg0;
-         float _arg0;
+         float f_arg0;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readFloat();
-               this.setClientProgress(_arg0);
+               f_arg0 = data.readFloat();
+               this.setClientProgress(f_arg0);
                reply.writeNoException();
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readFloat();
-               this.addClientProgress(_arg0);
+               f_arg0 = data.readFloat();
+               this.addClientProgress(f_arg0);
                reply.writeNoException();
                return true;
             case 3:
@@ -94,11 +94,11 @@ public interface IPackageInstallerSession extends IInterface {
                _arg0 = data.readString();
                long _arg1 = data.readLong();
                long _arg2 = data.readLong();
-               ParcelFileDescriptor _result = this.openWrite(_arg0, _arg1, _arg2);
+               ParcelFileDescriptor _presult = this.openWrite(_arg0, _arg1, _arg2);
                reply.writeNoException();
-               if (_result != null) {
+               if (_presult != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  _presult.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -107,11 +107,11 @@ public interface IPackageInstallerSession extends IInterface {
             case 5:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
-               ParcelFileDescriptor _result = this.openRead(_arg0);
+               ParcelFileDescriptor p_result = this.openRead(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (p_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  p_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -130,14 +130,14 @@ public interface IPackageInstallerSession extends IInterface {
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               IntentSender _arg0;
+               IntentSender is_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
+                  is_arg0 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  is_arg0 = null;
                }
 
-               this.commit(_arg0);
+               this.commit(is_arg0);
                reply.writeNoException();
                return true;
             case 9:
@@ -147,17 +147,17 @@ public interface IPackageInstallerSession extends IInterface {
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               boolean _result = this.isMultiPackage();
+               boolean b_result = this.isMultiPackage();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 11:
                data.enforceInterface(descriptor);
-               DataLoaderParamsParcel _result = this.getDataLoaderParams();
+               DataLoaderParamsParcel dp_result = this.getDataLoaderParams();
                reply.writeNoException();
-               if (_result != null) {
+               if (dp_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  dp_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -166,9 +166,9 @@ public interface IPackageInstallerSession extends IInterface {
             case 12:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
-               Checksum[] _arg1 = (Checksum[])data.createTypedArray(Checksum.CREATOR);
-               byte[] _arg2 = data.createByteArray();
-               this.setChecksums(_arg0, _arg1, _arg2);
+               Checksum[] checksums = (Checksum[])data.createTypedArray(Checksum.CREATOR);
+               byte[] byteArray_arg2 = data.createByteArray();
+               this.setChecksums(_arg0, checksums, byteArray_arg2);
                reply.writeNoException();
                return true;
             case 1598968902:

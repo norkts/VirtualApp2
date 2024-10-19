@@ -61,16 +61,16 @@ public interface IServerController extends IInterface {
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
          int _arg0;
-         String _arg0;
-         boolean _arg0;
+         String s_arg0;
+         boolean b_arg0;
          int _arg1;
-         IBinder _arg1;
+         IBinder binder_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readStrongBinder();
-               this.setClientApplication(_arg0, _arg1);
+               s_arg0 = data.readString();
+               binder_arg1 = data.readStrongBinder();
+               this.setClientApplication(s_arg0, binder_arg1);
                reply.writeNoException();
                return true;
             case 2:
@@ -87,21 +87,21 @@ public interface IServerController extends IInterface {
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               _arg0 = 0 != data.readInt();
-               this.hideFloatWindow(_arg0);
+               b_arg0 = 0 != data.readInt();
+               this.hideFloatWindow(b_arg0);
                reply.writeNoException();
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               _arg0 = 0 != data.readInt();
-               this.setNeedAttach(_arg0);
+               b_arg0 = 0 != data.readInt();
+               this.setNeedAttach(b_arg0);
                reply.writeNoException();
                return true;
             case 6:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readStrongBinder();
-               this.show(_arg0, _arg1);
+               s_arg0 = data.readString();
+               binder_arg1 = data.readStrongBinder();
+               this.show(s_arg0, binder_arg1);
                reply.writeNoException();
                return true;
             case 7:
@@ -124,16 +124,16 @@ public interface IServerController extends IInterface {
                int _arg2 = data.readInt();
                int _arg3 = data.readInt();
                boolean _arg4 = 0 != data.readInt();
-               boolean _result = this.virtualTouch(_arg0, _arg1, _arg2, _arg3, _arg4);
+               boolean b_result = this.virtualTouch(_arg0, _arg1, _arg2, _arg3, _arg4);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 10:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               boolean _result = this.sendKeyEvent(_arg0);
+               b_result = this.sendKeyEvent(_arg0);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

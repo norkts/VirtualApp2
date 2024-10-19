@@ -26,7 +26,6 @@ public class FirstFitAllocator extends RegisterAllocator {
    public RegisterMapper allocateRegisters() {
       int oldRegCount = this.ssaMeth.getRegCount();
       BasicRegisterMapper mapper = new BasicRegisterMapper(oldRegCount);
-      int nextNewRegister = false;
       int nextNewRegister = this.ssaMeth.getParamWidth();
 
       for(int i = 0; i < oldRegCount; ++i) {
@@ -35,7 +34,6 @@ public class FirstFitAllocator extends RegisterAllocator {
             IntSet current = new BitIntSet(oldRegCount);
             this.interference.mergeInterferenceSet(i, current);
             boolean isPreslotted = false;
-            int newReg = false;
             int newReg;
             if (this.isDefinitionMoveParam(i)) {
                NormalSsaInsn defInsn = (NormalSsaInsn)this.ssaMeth.getDefinitionForRegister(i);

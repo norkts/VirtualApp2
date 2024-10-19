@@ -64,9 +64,9 @@ public class HttpsUtils {
             }
 
             trustManagerFactory = null;
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keyStore);
-            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+            TrustManagerFactory trustManagerFactory2 = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory2.init(keyStore);
+            TrustManager[] trustManagers = trustManagerFactory2.getTrustManagers();
             return trustManagers;
          } catch (NoSuchAlgorithmException var11) {
             var11.printStackTrace();

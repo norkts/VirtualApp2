@@ -45,18 +45,18 @@ public class VAccount implements Parcelable {
       this.authTokens = new HashMap(authTokensSize);
 
       int userDatasSize;
-      String key;
+
       for(userDatasSize = 0; userDatasSize < authTokensSize; ++userDatasSize) {
          String key = in.readString();
-         key = in.readString();
-         this.authTokens.put(key, key);
+         String key2 = in.readString();
+         this.authTokens.put(key, key2);
       }
 
       userDatasSize = in.readInt();
       this.userDatas = new HashMap(userDatasSize);
 
       for(int i = 0; i < userDatasSize; ++i) {
-         key = in.readString();
+         String key = in.readString();
          String value = in.readString();
          this.userDatas.put(key, value);
       }

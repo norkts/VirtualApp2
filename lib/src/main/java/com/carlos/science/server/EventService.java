@@ -204,7 +204,6 @@ public abstract class EventService extends Service implements Runnable {
    protected boolean virtualTouch(int fromX, int fromY, int toX, int toY, boolean direction) {
       try {
          int step = 20;
-         int y = false;
          int y;
          if (direction) {
             y = fromY;
@@ -365,12 +364,12 @@ public abstract class EventService extends Service implements Runnable {
    }
 
    private void injectMotionEvent(int inputSource, int action, long when, float x, float y, float pressure) {
-      float DEFAULT_SIZE = 1.0F;
-      int DEFAULT_META_STATE = false;
-      float DEFAULT_PRECISION_X = 1.0F;
-      float DEFAULT_PRECISION_Y = 1.0F;
-      int DEFAULT_DEVICE_ID = false;
-      int DEFAULT_EDGE_FLAGS = false;
+//      float DEFAULT_SIZE = 1.0F;
+//      int DEFAULT_META_STATE = false;
+//      float DEFAULT_PRECISION_X = 1.0F;
+//      float DEFAULT_PRECISION_Y = 1.0F;
+//      int DEFAULT_DEVICE_ID = false;
+//      int DEFAULT_EDGE_FLAGS = false;
       MotionEvent event = MotionEvent.obtain(when, when, action, x, y, pressure, 1.0F, 0, 1.0F, 1.0F, 0, 0);
       event.setSource(inputSource);
       this.invokeInjectInputEventMethod(event, 2);

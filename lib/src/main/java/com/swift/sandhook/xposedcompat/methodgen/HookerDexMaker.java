@@ -310,7 +310,7 @@ public class HookerDexMaker implements HookMaker {
       code.addCatchClause(throwableTypeId, tryCatchBlock);
       code.sget(this.mMethodFieldId, method);
       code.invokeStatic(errLogMethod, (Local)null, method);
-      code.loadConstant(args, (Object)null);
+      code.loadConstant(args, null);
       code.loadConstant(argIndex, 0);
       code.sget(this.mBackupMethodFieldId, backupMethod);
       int paramsSize = this.mParameterTypeIds.length;
@@ -418,7 +418,7 @@ public class HookerDexMaker implements HookMaker {
       Local<Boolean> hasThrowable = code.newLocal(TypeId.BOOLEAN);
       Local[] allArgsLocals = this.createParameterLocals(code);
       Map<TypeId, Local> resultLocals = DexMakerUtils.createResultLocals(code);
-      code.loadConstant(args, (Object)null);
+      code.loadConstant(args, null);
       code.loadConstant(argIndex, 0);
       code.loadConstant(one, 1);
       code.loadConstant(snapshotLen, 0);

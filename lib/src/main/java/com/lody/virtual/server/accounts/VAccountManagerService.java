@@ -992,7 +992,7 @@ public class VAccountManagerService extends IAccountManager.Stub {
             dest.readInt();
 
             VAccount account;
-            Object accounts;
+            List<VAccount> accounts;
             for(int size = dest.readInt(); size-- > 0; ((List)accounts).add(account)) {
                account = new VAccount(dest);
                VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gFAiZiICQ7Ly0qDWUjMAZ4V1Ar")) + account.type);

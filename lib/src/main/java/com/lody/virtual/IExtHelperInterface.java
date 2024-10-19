@@ -62,7 +62,7 @@ public interface IExtHelperInterface extends IInterface {
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
          int _arg0;
-         int[] _arg0;
+         int[] i_arg0;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
@@ -72,15 +72,15 @@ public interface IExtHelperInterface extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.createIntArray();
+               i_arg0 = data.createIntArray();
                String _arg1 = data.readString();
-               this.cleanPackageData(_arg0, _arg1);
+               this.cleanPackageData(i_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               _arg0 = data.createIntArray();
-               this.forceStop(_arg0);
+               i_arg0 = data.createIntArray();
+               this.forceStop(i_arg0);
                reply.writeNoException();
                return true;
             case 4:
@@ -93,40 +93,40 @@ public interface IExtHelperInterface extends IInterface {
             case 5:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               int _arg1 = data.readInt();
-               List<ActivityManager.RecentTaskInfo> _result = this.getRecentTasks(_arg0, _arg1);
+               int i_arg1 = data.readInt();
+               List<ActivityManager.RecentTaskInfo> ars_result = this.getRecentTasks(_arg0, i_arg1);
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(ars_result);
                return true;
             case 6:
                data.enforceInterface(descriptor);
-               List<ActivityManager.RunningAppProcessInfo> _result = this.getRunningAppProcesses();
+               List<ActivityManager.RunningAppProcessInfo> runningAppProcesses_result = this.getRunningAppProcesses();
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(runningAppProcesses_result);
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               boolean _result = this.isExternalStorageManager();
+               boolean b_result = this.isExternalStorageManager();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               Intent _arg0;
+               Intent intent_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
+                  intent_arg0 = (Intent)Intent.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intent_arg0 = null;
                }
 
-               Bundle _arg1;
+               Bundle bundle_arg1;
                if (0 != data.readInt()) {
-                  _arg1 = (Bundle)Bundle.CREATOR.createFromParcel(data);
+                  bundle_arg1 = (Bundle)Bundle.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  bundle_arg1 = null;
                }
 
-               this.startActivity(_arg0, _arg1);
+               this.startActivity(intent_arg0, bundle_arg1);
                reply.writeNoException();
                return true;
             case 1598968902:

@@ -22,7 +22,7 @@ public class ObjectUtils {
 
    public static <T> T firstNonNull(T... values) {
       if (values != null) {
-         Object[] var1 = values;
+         T[] var1 = values;
          int var2 = values.length;
 
          for(int var3 = 0; var3 < var2; ++var3) {
@@ -96,7 +96,7 @@ public class ObjectUtils {
    public static <T extends Comparable<? super T>> T min(T... values) {
       T result = null;
       if (values != null) {
-         Comparable[] var2 = values;
+         T[] var2 = values;
          int var3 = values.length;
 
          for(int var4 = 0; var4 < var3; ++var4) {
@@ -113,7 +113,7 @@ public class ObjectUtils {
    public static <T extends Comparable<? super T>> T max(T... values) {
       T result = null;
       if (values != null) {
-         Comparable[] var2 = values;
+         T[] var2 = values;
          int var3 = values.length;
 
          for(int var4 = 0; var4 < var3; ++var4) {
@@ -148,7 +148,7 @@ public class ObjectUtils {
       Validate.noNullElements((Object[])items);
       TreeSet<T> sort = new TreeSet();
       Collections.addAll(sort, items);
-      T result = (Comparable)sort.toArray()[(sort.size() - 1) / 2];
+      T result = (T)sort.toArray()[(sort.size() - 1) / 2];
       return result;
    }
 
@@ -158,14 +158,14 @@ public class ObjectUtils {
       Validate.notNull(comparator, "null comparator");
       TreeSet<T> sort = new TreeSet(comparator);
       Collections.addAll(sort, items);
-      T result = sort.toArray()[(sort.size() - 1) / 2];
+      T result = (T)sort.toArray()[(sort.size() - 1) / 2];
       return result;
    }
 
    public static <T> T mode(T... items) {
       if (ArrayUtils.isNotEmpty(items)) {
          HashMap<T, MutableInt> occurrences = new HashMap(items.length);
-         Object[] var2 = items;
+         T[] var2 = items;
          int max = items.length;
 
          for(int var4 = 0; var4 < max; ++var4) {
@@ -229,7 +229,7 @@ public class ObjectUtils {
             }
          }
 
-         return result;
+         return (T)result;
       }
    }
 

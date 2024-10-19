@@ -246,7 +246,7 @@ public class HookerDexMakerNew implements HookMaker {
       Local<Object> resultObj = code.newLocal(TypeId.OBJECT);
       Local[] allArgsLocals = this.createParameterLocals(code);
       Map<TypeId, Local> resultLocals = DexMakerUtils.createResultLocals(code);
-      code.loadConstant(args, (Object)null);
+      code.loadConstant(args, null);
       code.loadConstant(argIndex, 0);
       code.sget(this.mMethodFieldId, originMethod);
       code.sget(this.mBackupMethodFieldId, backupMethod);

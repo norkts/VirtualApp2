@@ -70,37 +70,37 @@ public interface IControllerService extends IInterface {
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
          int _arg0;
-         String _arg0;
+         String s_arg0;
          int _arg1;
-         String _arg1;
-         IServiceCallBack _arg0;
+         String s_arg1;
+         IServiceCallBack isc_arg0;
          boolean _result;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readString();
-               _result = this.picCompare(_arg0, _arg1);
+               s_arg0 = data.readString();
+               s_arg1 = data.readString();
+               _result = this.picCompare(s_arg0, s_arg1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _arg1 = data.readInt();
-               this.startCheck(_arg0, _arg1);
+               this.startCheck(s_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               _arg0 = IServiceCallBack.Stub.asInterface(data.readStrongBinder());
-               this.registerCallBack(_arg0);
+               isc_arg0 = IServiceCallBack.Stub.asInterface(data.readStrongBinder());
+               this.registerCallBack(isc_arg0);
                reply.writeNoException();
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               _arg0 = IServiceCallBack.Stub.asInterface(data.readStrongBinder());
-               this.unregisterCallBack(_arg0);
+               isc_arg0 = IServiceCallBack.Stub.asInterface(data.readStrongBinder());
+               this.unregisterCallBack(isc_arg0);
                reply.writeNoException();
                return true;
             case 5:
@@ -115,29 +115,29 @@ public interface IControllerService extends IInterface {
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               this.setOptionAction(_arg0);
+               s_arg0 = data.readString();
+               this.setOptionAction(s_arg0);
                reply.writeNoException();
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               _arg0 = this.getOptionAction();
+               s_arg0 = this.getOptionAction();
                reply.writeNoException();
-               reply.writeString(_arg0);
+               reply.writeString(s_arg0);
                return true;
             case 9:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               _arg1 = data.readString();
-               _result = this.killApp(_arg0, _arg1);
+               s_arg0 = data.readString();
+               s_arg1 = data.readString();
+               _result = this.killApp(s_arg0, s_arg1);
                reply.writeNoException();
                reply.writeInt(_result ? 1 : 0);
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               boolean _result = this.isAppOnForeground();
+               boolean b_result = this.isAppOnForeground();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 11:
                data.enforceInterface(descriptor);
@@ -154,16 +154,16 @@ public interface IControllerService extends IInterface {
                int _arg2 = data.readInt();
                int _arg3 = data.readInt();
                boolean _arg4 = 0 != data.readInt();
-               boolean _result = this.virtualTouch(_arg0, _arg1, _arg2, _arg3, _arg4);
+               b_result = this.virtualTouch(_arg0, _arg1, _arg2, _arg3, _arg4);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 13:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               boolean _result = this.sendKeyEvent(_arg0);
+               b_result = this.sendKeyEvent(_arg0);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

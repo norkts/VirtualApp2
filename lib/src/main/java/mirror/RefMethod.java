@@ -31,7 +31,6 @@ public class RefMethod<T> {
          this.method = cls.getDeclaredMethod(field.getName(), types);
          this.method.setAccessible(true);
       } else {
-         int i;
          if (field.isAnnotationPresent(MethodReflectParams.class)) {
             String[] typeNames = ((MethodReflectParams)field.getAnnotation(MethodReflectParams.class)).value();
             Class<?>[] types = new Class[typeNames.length];
@@ -74,7 +73,7 @@ public class RefMethod<T> {
 
    public T call(Object receiver, Object... args) {
       try {
-         return this.method.invoke(receiver, args);
+         return (T)this.method.invoke(receiver, args);
       } catch (InvocationTargetException var4) {
          InvocationTargetException e = var4;
          if (e.getCause() != null) {
@@ -92,7 +91,7 @@ public class RefMethod<T> {
 
    public T callWithException(Object receiver, Object... args) throws Throwable {
       try {
-         return this.method.invoke(receiver, args);
+         return (T)this.method.invoke(receiver, args);
       } catch (InvocationTargetException var4) {
          InvocationTargetException e = var4;
          if (e.getCause() != null) {

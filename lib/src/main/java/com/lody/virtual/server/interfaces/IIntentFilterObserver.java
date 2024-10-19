@@ -51,11 +51,11 @@ public interface IIntentFilterObserver extends IInterface {
                   _arg0 = null;
                }
 
-               Intent _result = this.filter(_arg0);
+               Intent intent_result = this.filter(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (intent_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  intent_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }

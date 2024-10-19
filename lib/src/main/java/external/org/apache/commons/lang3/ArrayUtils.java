@@ -1,6 +1,6 @@
 package external.org.apache.commons.lang3;
 
-import [Ljava.lang.Object;;
+import java.lang.Object;;
 import external.org.apache.commons.lang3.builder.EqualsBuilder;
 import external.org.apache.commons.lang3.builder.HashCodeBuilder;
 import external.org.apache.commons.lang3.builder.ToStringBuilder;
@@ -85,39 +85,39 @@ public class ArrayUtils {
    }
 
    public static <T> T[] clone(T[] array) {
-      return array == null ? null : (Object[])((Object;)array).clone();
+      return array == null ? null : (T[])array.clone();
    }
 
    public static long[] clone(long[] array) {
-      return array == null ? null : (long[])(([J)array).clone();
+      return array == null ? null : (long[])(array).clone();
    }
 
    public static int[] clone(int[] array) {
-      return array == null ? null : (int[])(([I)array).clone();
+      return array == null ? null : (int[])(array).clone();
    }
 
    public static short[] clone(short[] array) {
-      return array == null ? null : (short[])(([S)array).clone();
+      return array == null ? null : (short[])(array).clone();
    }
 
    public static char[] clone(char[] array) {
-      return array == null ? null : (char[])(([C)array).clone();
+      return array == null ? null : (char[])(array).clone();
    }
 
    public static byte[] clone(byte[] array) {
-      return array == null ? null : (byte[])(([B)array).clone();
+      return array == null ? null : (byte[])(array).clone();
    }
 
    public static double[] clone(double[] array) {
-      return array == null ? null : (double[])(([D)array).clone();
+      return array == null ? null : (double[])(array).clone();
    }
 
    public static float[] clone(float[] array) {
-      return array == null ? null : (float[])(([F)array).clone();
+      return array == null ? null : (float[])(array).clone();
    }
 
    public static boolean[] clone(boolean[] array) {
-      return array == null ? null : (boolean[])(([Z)array).clone();
+      return array == null ? null : (boolean[])(array).clone();
    }
 
    public static Object[] nullToEmpty(Object[] array) {
@@ -206,12 +206,12 @@ public class ArrayUtils {
 
          int newSize = endIndexExclusive - startIndexInclusive;
          Class<?> type = array.getClass().getComponentType();
-         Object[] subarray;
+         T[] subarray;
          if (newSize <= 0) {
-            subarray = (Object[])Array.newInstance(type, 0);
+            subarray = (T[])Array.newInstance(type, 0);
             return subarray;
          } else {
-            subarray = (Object[])Array.newInstance(type, newSize);
+            subarray = (T[])Array.newInstance(type, newSize);
             System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
             return subarray;
          }
@@ -1571,7 +1571,7 @@ public class ArrayUtils {
          return clone(array1);
       } else {
          Class<?> type1 = array1.getClass().getComponentType();
-         T[] joinedArray = (Object[])Array.newInstance(type1, array1.length + array2.length);
+         T[] joinedArray = (T[])Array.newInstance(type1, array1.length + array2.length);
          System.arraycopy(array1, 0, joinedArray, 0, array1.length);
 
          try {
@@ -1705,7 +1705,7 @@ public class ArrayUtils {
          type = element.getClass();
       }
 
-      T[] newArray = (Object[])copyArrayGrow1(array, type);
+      T[] newArray = (T[])copyArrayGrow1(array, type);
       newArray[newArray.length - 1] = element;
       return newArray;
    }
@@ -1781,7 +1781,7 @@ public class ArrayUtils {
          clss = element.getClass();
       }
 
-      T[] newArray = (Object[])add(array, index, element, clss);
+      T[] newArray = (T[])add(array, index, element, clss);
       return newArray;
    }
 
@@ -1844,7 +1844,7 @@ public class ArrayUtils {
    }
 
    public static <T> T[] remove(T[] array, int index) {
-      return (Object[])remove((Object)array, index);
+      return (T[])remove((Object)array, index);
    }
 
    public static <T> T[] removeElement(T[] array, Object element) {
@@ -1940,16 +1940,16 @@ public class ArrayUtils {
    }
 
    public static <T> T[] removeAll(T[] array, int... indices) {
-      return (Object[])removeAll((Object)array, clone(indices));
+      return (T[])removeAll((Object)array, clone(indices));
    }
 
    public static <T> T[] removeElements(T[] array, T... values) {
       if (!isEmpty(array) && !isEmpty(values)) {
          HashMap<T, MutableInt> occurrences = new HashMap(values.length);
-         Object[] var3 = values;
+         T[] var3 = values;
          int var4 = values.length;
 
-         Object v;
+         T v;
          for(int var5 = 0; var5 < var4; ++var5) {
             v = var3[var5];
             MutableInt count = (MutableInt)occurrences.get(v);

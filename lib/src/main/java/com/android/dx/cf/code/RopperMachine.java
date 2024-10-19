@@ -193,8 +193,8 @@ final class RopperMachine extends ValueAwareMachine {
          Insn insn = new ThrowingCstInsn(rop, pos, sources, this.catches, CstType.INT_ARRAY);
          this.insns.add(insn);
          rop = Rops.opMoveResult(Type.INT_ARRAY);
-         Insn insn = new PlainInsn(rop, pos, dimsReg, RegisterSpecList.EMPTY);
-         this.insns.add(insn);
+         Insn insn1 = new PlainInsn(rop, pos, dimsReg, RegisterSpecList.EMPTY);
+         this.insns.add(insn1);
          returnType = ((CstType)cst).getClassType();
 
          for(int i = 0; i < sourceCount; ++i) {
@@ -283,7 +283,7 @@ final class RopperMachine extends ValueAwareMachine {
       ArrayList<Constant> initValues = this.getInitValues();
       boolean canThrow = rop.canThrow();
       this.blockCanThrow |= canThrow;
-      Object insn;
+      Insn insn;
       if (cases != null) {
          if (cases.size() == 0) {
             insn = new PlainInsn(Rops.GOTO, pos, (RegisterSpec)null, RegisterSpecList.EMPTY);
@@ -338,8 +338,8 @@ final class RopperMachine extends ValueAwareMachine {
 
       if (initValues != null) {
          ++this.extraBlockCount;
-         Insn insn = new FillArrayDataInsn(Rops.FILL_ARRAY_DATA, pos, RegisterSpecList.make(((Insn)moveResult).getResult()), initValues, (Constant)cst);
-         this.insns.add(insn);
+         Insn insn2 = new FillArrayDataInsn(Rops.FILL_ARRAY_DATA, pos, RegisterSpecList.make(((Insn)moveResult).getResult()), initValues, (Constant)cst);
+         this.insns.add(insn2);
       }
 
    }
@@ -374,8 +374,8 @@ final class RopperMachine extends ValueAwareMachine {
 
                   obj = sources.get(0);
                   value = sources.get(1);
-                  RegisterSpec value = sources.get(2);
-                  sources.set(0, value);
+                  RegisterSpec registerSpec_value = sources.get(2);
+                  sources.set(0, registerSpec_value);
                   sources.set(1, obj);
                   sources.set(2, value);
                   break;

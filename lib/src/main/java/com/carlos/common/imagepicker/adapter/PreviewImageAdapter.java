@@ -18,7 +18,7 @@ import com.kook.librelease.R.layout;
 import java.io.File;
 import java.util.List;
 
-public class PreviewImageAdapter extends RecyclerView.Adapter<ImageHolder> {
+public class PreviewImageAdapter extends RecyclerView.Adapter<PreviewImageAdapter.ImageHolder> {
    private Context mContext;
    private List<Image> mImgList;
    public OnItemClcikLitener onItemClcikLitener;

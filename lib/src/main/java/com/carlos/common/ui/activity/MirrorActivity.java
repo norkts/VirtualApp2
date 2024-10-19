@@ -524,7 +524,8 @@ public class MirrorActivity extends VerifyActivity implements MirrorAdapter.OnAp
                                  public void onClick(View view, Dialog exitDialog) {
                                     exitDialog.dismiss();
                                     ClipboardManager cmb = (ClipboardManager)MirrorActivity.this.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ECW8FFiV9ASww")));
-                                    cmb.setText(desEncryptx);
+                                    //FIXME
+//                                    cmb.setText(desEncryptx);
                                     Toasty.success(MirrorActivity.this, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ByEBAEYBLRFYFT0qAhsNUkctEz4=")), 1).show();
                                  }
                               });

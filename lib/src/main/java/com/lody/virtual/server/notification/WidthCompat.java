@@ -69,7 +69,7 @@ class WidthCompat {
                int count = viewGroup.getChildCount();
 
                for(int i = 0; i < count; ++i) {
-                  View child = viewGroup.getChildAt(i);
+                  child = viewGroup.getChildAt(i);
                   if (FrameLayout.class.isInstance(child) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oxg+LGgaLAZrAQo/KgY+MWkgElo=")).equals(child.getClass().getName()) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4YImgbJCx9ASQgKQg+PWczQT9lJCg/")).equals(child.getClass().getName())) {
                      return width - child.getLeft() - child.getPaddingLeft() - child.getPaddingRight();
                   }

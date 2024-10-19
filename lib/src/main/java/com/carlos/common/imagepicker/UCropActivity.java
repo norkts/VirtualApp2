@@ -41,6 +41,7 @@ import com.carlos.common.imagepicker.view.UCropView;
 import com.carlos.common.imagepicker.view.widget.AspectRatioTextView;
 import com.carlos.common.imagepicker.view.widget.HorizontalProgressWheelView;
 import com.carlos.libcommon.StringFog;
+import com.kook.librelease.R;
 import com.kook.librelease.R.color;
 import com.kook.librelease.R.dimen;
 import com.kook.librelease.R.drawable;
@@ -145,7 +146,7 @@ public class UCropActivity extends AppCompatActivity {
    }
 
    public boolean onCreateOptionsMenu(Menu menu) {
-      this.getMenuInflater().inflate(menu.ucrop_menu_activity, menu);
+      this.getMenuInflater().inflate(R.menu.ucrop_menu_activity, menu);
       MenuItem menuItemLoader = menu.findItem(id.menu_loader);
       Drawable menuItemLoaderIcon = menuItemLoader.getIcon();
       if (menuItemLoaderIcon != null) {

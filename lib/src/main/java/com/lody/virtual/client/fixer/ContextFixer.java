@@ -36,7 +36,7 @@ public class ContextFixer {
             }
          }
 
-         ContextImpl.mPackageManager.set(context, (Object)null);
+         ContextImpl.mPackageManager.set(context, null);
 
          try {
             context.getPackageManager();

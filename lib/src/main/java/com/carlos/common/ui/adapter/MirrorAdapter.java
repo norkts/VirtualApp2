@@ -21,7 +21,7 @@ import com.lody.virtual.remote.VDeviceConfig;
 import com.lody.virtual.remote.vloc.VLocation;
 import java.util.List;
 
-public class MirrorAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class MirrorAdapter extends RecyclerView.Adapter<MirrorAdapter.ViewHolder> {
    private int VIEW_TYPE_NORMAL = 0;
    private int VIEW_TYPE_TV = 1;
    private int VIEW_TYPE_BTN = 2;

@@ -405,7 +405,6 @@ class ActivityStack {
             case TOP:
                int foundIndex = -1;
 
-               ActivityRecord r;
                for(int i = task.activities.size() - 1; i >= 0; --i) {
                   r = (ActivityRecord)task.activities.get(i);
                   if (r.component.equals(comp)) {

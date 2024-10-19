@@ -170,7 +170,6 @@ public final class ConstantPoolParser {
       } else {
          int at = this.offsets[idx];
 
-         Object cst;
          try {
             int tag = this.bytes.getUnsignedByte(at);
             int constantIndex;
@@ -241,8 +240,8 @@ public final class ConstantPoolParser {
                   kind = this.bytes.getUnsignedShort(at + 1);
                   descriptor = (CstString)this.parse0(kind, wasUtf8);
                   descriptorIndex = this.bytes.getUnsignedShort(at + 3);
-                  CstString descriptor = (CstString)this.parse0(descriptorIndex, wasUtf8);
-                  cst = new CstNat(descriptor, descriptor);
+                  CstString descriptor1 = (CstString)this.parse0(descriptorIndex, wasUtf8);
+                  cst = new CstNat(descriptor, descriptor1);
                   break;
                case 15:
                   kind = this.bytes.getUnsignedByte(at + 1);
@@ -284,8 +283,8 @@ public final class ConstantPoolParser {
                case 18:
                   kind = this.bytes.getUnsignedShort(at + 1);
                   constantIndex = this.bytes.getUnsignedShort(at + 3);
-                  CstNat nat = (CstNat)this.parse0(constantIndex, wasUtf8);
-                  cst = CstInvokeDynamic.make(kind, nat);
+                  CstNat nat1 = (CstNat)this.parse0(constantIndex, wasUtf8);
+                  cst = CstInvokeDynamic.make(kind, nat1);
             }
          } catch (ParseException var10) {
             ParseException ex = var10;

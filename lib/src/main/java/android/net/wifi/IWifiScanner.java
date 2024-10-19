@@ -54,11 +54,11 @@ public interface IWifiScanner extends IInterface {
             case 2:
                data.enforceInterface(descriptor);
                int _arg0 = data.readInt();
-               Bundle _result = this.getAvailableChannels(_arg0);
+               Bundle _result2 = this.getAvailableChannels(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (_result2 != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  _result2.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }

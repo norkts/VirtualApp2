@@ -207,7 +207,7 @@ public class Reflect {
    }
 
    public <T> T get() {
-      return this.object;
+      return (T)this.object;
    }
 
    public Reflect set(String name, Object value) throws ReflectException {
@@ -423,7 +423,7 @@ public class Reflect {
             }
          }
       };
-      return Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[]{proxyType}, handler);
+      return (P) Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[]{proxyType}, handler);
    }
 
    private boolean match(Class<?>[] declaredTypes, Class<?>[] actualTypes) {

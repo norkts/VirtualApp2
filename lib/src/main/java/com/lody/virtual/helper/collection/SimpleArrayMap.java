@@ -231,20 +231,20 @@ public class SimpleArrayMap<K, V> {
 
    public V get(Object key) {
       int index = this.indexOfKey(key);
-      return index >= 0 ? this.mArray[(index << 1) + 1] : null;
+      return index >= 0 ? (V)this.mArray[(index << 1) + 1] : null;
    }
 
    public K keyAt(int index) {
-      return this.mArray[index << 1];
+      return (K)this.mArray[index << 1];
    }
 
    public V valueAt(int index) {
-      return this.mArray[(index << 1) + 1];
+      return (V)this.mArray[(index << 1) + 1];
    }
 
    public V setValueAt(int index, V value) {
       index = (index << 1) + 1;
-      V old = this.mArray[index];
+      V old = (V)this.mArray[index];
       this.mArray[index] = value;
       return old;
    }
@@ -266,7 +266,7 @@ public class SimpleArrayMap<K, V> {
 
       if (index >= 0) {
          index = (index << 1) + 1;
-         V old = this.mArray[index];
+         V old = (V)this.mArray[index];
          this.mArray[index] = value;
          return old;
       } else {
@@ -352,7 +352,7 @@ public class SimpleArrayMap<K, V> {
          this.mArray[(this.mSize << 1) + 1] = null;
       }
 
-      return old;
+      return (V) old;
    }
 
    public int size() {

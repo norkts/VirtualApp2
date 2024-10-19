@@ -568,7 +568,7 @@ public class StringUtils {
       if (str != null && searchStrs != null) {
          int sz = searchStrs.length;
          int ret = Integer.MAX_VALUE;
-         int tmp = false;
+
 
          for(int i = 0; i < sz; ++i) {
             CharSequence search = searchStrs[i];
@@ -590,7 +590,6 @@ public class StringUtils {
       if (str != null && searchStrs != null) {
          int sz = searchStrs.length;
          int ret = -1;
-         int tmp = false;
 
          for(int i = 0; i < sz; ++i) {
             CharSequence search = searchStrs[i];
@@ -1355,7 +1354,6 @@ public class StringUtils {
                boolean[] noMoreMatchesForReplIndex = new boolean[searchLength];
                int textIndex = -1;
                int replaceIndex = -1;
-               int tempIndex = true;
 
                int start;
                int tempIndex;
@@ -1378,7 +1376,7 @@ public class StringUtils {
                   int increase = 0;
 
                   int i;
-                  for(int i = 0; i < searchList.length; ++i) {
+                  for(i = 0; i < searchList.length; ++i) {
                      if (searchList[i] != null && replacementList[i] != null) {
                         i = replacementList[i].length() - searchList[i].length();
                         if (i > 0) {
@@ -1399,7 +1397,6 @@ public class StringUtils {
                      start = textIndex + searchList[replaceIndex].length();
                      textIndex = -1;
                      replaceIndex = -1;
-                     tempIndex = true;
 
                      for(i = 0; i < searchLength; ++i) {
                         if (!noMoreMatchesForReplIndex[i] && searchList[i] != null && searchList[i].length() != 0 && replacementList[i] != null) {
@@ -1416,8 +1413,8 @@ public class StringUtils {
 
                   i = text.length();
 
-                  for(int i = start; i < i; ++i) {
-                     buf.append(text.charAt(i));
+                  for(int j = start; j < i; ++j) {
+                     buf.append(text.charAt(j));
                   }
 
                   String result = buf.toString();

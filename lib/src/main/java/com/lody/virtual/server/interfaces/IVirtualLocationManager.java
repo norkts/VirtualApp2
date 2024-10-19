@@ -82,91 +82,91 @@ public interface IVirtualLocationManager extends IInterface {
          VLocation _arg0;
          String _arg1;
          VLocation _arg2;
-         int _arg0;
-         ArrayList _arg0;
+         int i_arg0;
+         ArrayList a_arg0;
          List _result;
-         VCell _arg2;
-         ArrayList _arg2;
-         int _arg2;
+         VCell v_arg2;
+         ArrayList a_arg2;
+         int i_arg2;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _arg2 = this.getMode(_arg0, _arg1);
+               i_arg2 = this.getMode(i_arg0, _arg1);
                reply.writeNoException();
-               reply.writeInt(_arg2);
+               reply.writeInt(i_arg2);
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _arg2 = data.readInt();
-               this.setMode(_arg0, _arg1, _arg2);
+               i_arg2 = data.readInt();
+               this.setMode(i_arg0, _arg1, i_arg2);
                reply.writeNoException();
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
                if (0 != data.readInt()) {
-                  _arg2 = (VCell)VCell.CREATOR.createFromParcel(data);
+                  v_arg2 = (VCell)VCell.CREATOR.createFromParcel(data);
                } else {
-                  _arg2 = null;
+                  v_arg2 = null;
                }
 
-               this.setCell(_arg0, _arg1, _arg2);
+               this.setCell(i_arg0, _arg1, v_arg2);
                reply.writeNoException();
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _arg2 = data.createTypedArrayList(VCell.CREATOR);
-               this.setAllCell(_arg0, _arg1, _arg2);
+               a_arg2 = data.createTypedArrayList(VCell.CREATOR);
+               this.setAllCell(i_arg0, _arg1, a_arg2);
                reply.writeNoException();
                return true;
             case 5:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _arg2 = data.createTypedArrayList(VCell.CREATOR);
-               this.setNeighboringCell(_arg0, _arg1, _arg2);
+               a_arg2 = data.createTypedArrayList(VCell.CREATOR);
+               this.setNeighboringCell(i_arg0, _arg1, a_arg2);
                reply.writeNoException();
                return true;
             case 6:
                data.enforceInterface(descriptor);
-               VCell _arg0;
+               VCell vCell_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (VCell)VCell.CREATOR.createFromParcel(data);
+                  vCell_arg0 = (VCell)VCell.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  vCell_arg0 = null;
                }
 
-               this.setGlobalCell(_arg0);
+               this.setGlobalCell(vCell_arg0);
                reply.writeNoException();
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               _arg0 = data.createTypedArrayList(VCell.CREATOR);
-               this.setGlobalAllCell(_arg0);
+               a_arg0 = data.createTypedArrayList(VCell.CREATOR);
+               this.setGlobalAllCell(a_arg0);
                reply.writeNoException();
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               _arg0 = data.createTypedArrayList(VCell.CREATOR);
-               this.setGlobalNeighboringCell(_arg0);
+               a_arg0 = data.createTypedArrayList(VCell.CREATOR);
+               this.setGlobalNeighboringCell(a_arg0);
                reply.writeNoException();
                return true;
             case 9:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _arg2 = this.getCell(_arg0, _arg1);
+               v_arg2 = this.getCell(i_arg0, _arg1);
                reply.writeNoException();
-               if (_arg2 != null) {
+               if (v_arg2 != null) {
                   reply.writeInt(1);
-                  _arg2.writeToParcel(reply, 1);
+                  v_arg2.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -174,23 +174,23 @@ public interface IVirtualLocationManager extends IInterface {
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _result = this.getAllCell(_arg0, _arg1);
+               _result = this.getAllCell(i_arg0, _arg1);
                reply.writeNoException();
                reply.writeTypedList(_result);
                return true;
             case 11:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _result = this.getNeighboringCell(_arg0, _arg1);
+               _result = this.getNeighboringCell(i_arg0, _arg1);
                reply.writeNoException();
                reply.writeTypedList(_result);
                return true;
             case 12:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
                if (0 != data.readInt()) {
                   _arg2 = (VLocation)VLocation.CREATOR.createFromParcel(data);
@@ -198,14 +198,14 @@ public interface IVirtualLocationManager extends IInterface {
                   _arg2 = null;
                }
 
-               this.setLocation(_arg0, _arg1, _arg2);
+               this.setLocation(i_arg0, _arg1, _arg2);
                reply.writeNoException();
                return true;
             case 13:
                data.enforceInterface(descriptor);
-               _arg0 = data.readInt();
+               i_arg0 = data.readInt();
                _arg1 = data.readString();
-               _arg2 = this.getLocation(_arg0, _arg1);
+               _arg2 = this.getLocation(i_arg0, _arg1);
                reply.writeNoException();
                if (_arg2 != null) {
                   reply.writeInt(1);

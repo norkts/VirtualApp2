@@ -80,12 +80,12 @@ abstract class MapCollections<K, V> {
    public <T> T[] toArrayHelper(T[] array, int offset) {
       int N = this.colGetSize();
       if (array.length < N) {
-         T[] newArray = (Object[])Array.newInstance(array.getClass().getComponentType(), N);
+         T[] newArray = (T[])Array.newInstance(array.getClass().getComponentType(), N);
          array = newArray;
       }
 
       for(int i = 0; i < N; ++i) {
-         array[i] = this.colGetEntry(i, offset);
+         array[i] = (T)this.colGetEntry(i, offset);
       }
 
       if (array.length > N) {
@@ -171,7 +171,7 @@ abstract class MapCollections<K, V> {
       }
 
       public Iterator<V> iterator() {
-         return MapCollections.this.new ArrayIterator(1);
+         return new ArrayIterator(1);
       }
 
       public boolean remove(Object object) {
@@ -257,7 +257,7 @@ abstract class MapCollections<K, V> {
       }
 
       public Iterator<K> iterator() {
-         return MapCollections.this.new ArrayIterator(0);
+         return new ArrayIterator(0);
       }
 
       public boolean remove(Object object) {
@@ -433,7 +433,7 @@ abstract class MapCollections<K, V> {
          if (!this.mEntryValid) {
             throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
          } else {
-            return MapCollections.this.colGetEntry(this.mIndex, 0);
+            return (K)MapCollections.this.colGetEntry(this.mIndex, 0);
          }
       }
 
@@ -441,7 +441,7 @@ abstract class MapCollections<K, V> {
          if (!this.mEntryValid) {
             throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
          } else {
-            return MapCollections.this.colGetEntry(this.mIndex, 1);
+            return (V)MapCollections.this.colGetEntry(this.mIndex, 1);
          }
       }
 
@@ -495,7 +495,7 @@ abstract class MapCollections<K, V> {
       }
 
       public T next() {
-         Object res = MapCollections.this.colGetEntry(this.mIndex, this.mOffset);
+         T res = (T)MapCollections.this.colGetEntry(this.mIndex, this.mOffset);
          ++this.mIndex;
          this.mCanRemove = true;
          return res;

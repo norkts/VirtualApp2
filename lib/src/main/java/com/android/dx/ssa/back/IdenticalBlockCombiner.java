@@ -28,7 +28,7 @@ public class IdenticalBlockCombiner {
             IntList preds = this.ropMethod.labelToPredecessors(b.getLabel());
             int szPreds = preds.size();
 
-            for(int i = 0; i < szPreds; ++i) {
+            for(i = 0; i < szPreds; ++i) {
                int iLabel = preds.get(i);
                BasicBlock iBlock = this.blocks.labelToBlock(iLabel);
                if (!toDelete.get(iLabel) && iBlock.getSuccessors().size() <= 1 && iBlock.getFirstInsn().getOpcode().getOpcode() != 55) {

@@ -485,8 +485,8 @@ public final class BytecodeArray {
                target = this.bytes.getUnsignedShort(offset + 1);
                newop = this.bytes.getUnsignedByte(offset + 3);
                expectZero = this.bytes.getUnsignedByte(offset + 4);
-               Constant cst = this.pool.get(target);
-               visitor.visitConstant(opcode, offset, 5, cst, newop | expectZero << 8);
+               Constant cst3 = this.pool.get(target);
+               visitor.visitConstant(opcode, offset, 5, cst3, newop | expectZero << 8);
                return 5;
             case 186:
                target = this.bytes.getUnsignedShort(offset + 1);
@@ -500,8 +500,8 @@ public final class BytecodeArray {
             case 197:
                target = this.bytes.getUnsignedShort(offset + 1);
                newop = this.bytes.getUnsignedByte(offset + 3);
-               Constant cst = this.pool.get(target);
-               visitor.visitConstant(opcode, offset, 4, cst, newop);
+               Constant cst2 = this.pool.get(target);
+               visitor.visitConstant(opcode, offset, 4, cst2, newop);
                return 4;
             case 200:
             case 201:

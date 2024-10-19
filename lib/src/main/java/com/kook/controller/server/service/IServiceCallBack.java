@@ -49,8 +49,8 @@ public interface IServiceCallBack extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               int _arg0 = data.readInt();
-               this.listenerOptionEvent(_arg0);
+               int i_arg0 = data.readInt();
+               this.listenerOptionEvent(i_arg0);
                reply.writeNoException();
                return true;
             case 3:

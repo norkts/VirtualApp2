@@ -159,17 +159,17 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
 
    public ArrayList<F> findFilters(IntentFilter matching) {
       if (matching.countDataSchemes() == 1) {
-         return this.collectFilters((VPackage.IntentInfo[])this.mSchemeToFilter.get(matching.getDataScheme(0)), matching);
+         return this.collectFilters(this.mSchemeToFilter.get(matching.getDataScheme(0)), matching);
       } else if (matching.countDataTypes() != 0 && matching.countActions() == 1) {
-         return this.collectFilters((VPackage.IntentInfo[])this.mTypedActionToFilter.get(matching.getAction(0)), matching);
+         return this.collectFilters(this.mTypedActionToFilter.get(matching.getAction(0)), matching);
       } else if (matching.countDataTypes() == 0 && matching.countDataSchemes() == 0 && matching.countActions() == 1) {
-         return this.collectFilters((VPackage.IntentInfo[])this.mActionToFilter.get(matching.getAction(0)), matching);
+         return this.collectFilters(this.mActionToFilter.get(matching.getAction(0)), matching);
       } else {
          ArrayList<F> res = null;
          Iterator var3 = this.mFilters.iterator();
 
          while(var3.hasNext()) {
-            F cur = (VPackage.IntentInfo)var3.next();
+            F cur = (F)var3.next();
             if (this.filterEquals(cur.filter, matching)) {
                if (res == null) {
                   res = new ArrayList();
@@ -216,7 +216,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
       int N = listCut.size();
 
       for(int i = 0; i < N; ++i) {
-         this.buildResolveList(intent, categories, defaultOnly, resolvedType, scheme, (VPackage.IntentInfo[])listCut.get(i), resultList, userId);
+         this.buildResolveList(intent, categories, defaultOnly, resolvedType, scheme, listCut.get(i), resultList, userId);
       }
 
       this.sortResults(resultList);
@@ -236,26 +236,26 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
             String baseType = resolvedType.substring(0, slashpos);
             if (!baseType.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PD5SVg==")))) {
                if (resolvedType.length() == slashpos + 2 && resolvedType.charAt(slashpos + 1) == '*') {
-                  firstTypeCut = (VPackage.IntentInfo[])this.mBaseTypeToFilter.get(baseType);
-                  secondTypeCut = (VPackage.IntentInfo[])this.mWildTypeToFilter.get(baseType);
+                  firstTypeCut = this.mBaseTypeToFilter.get(baseType);
+                  secondTypeCut = this.mWildTypeToFilter.get(baseType);
                } else {
-                  firstTypeCut = (VPackage.IntentInfo[])this.mTypeToFilter.get(resolvedType);
-                  secondTypeCut = (VPackage.IntentInfo[])this.mWildTypeToFilter.get(baseType);
+                  firstTypeCut = this.mTypeToFilter.get(resolvedType);
+                  secondTypeCut = this.mWildTypeToFilter.get(baseType);
                }
 
-               thirdTypeCut = (VPackage.IntentInfo[])this.mWildTypeToFilter.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PD5SVg==")));
+               thirdTypeCut = this.mWildTypeToFilter.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PD5SVg==")));
             } else if (intent.getAction() != null) {
-               firstTypeCut = (VPackage.IntentInfo[])this.mTypedActionToFilter.get(intent.getAction());
+               firstTypeCut = this.mTypedActionToFilter.get(intent.getAction());
             }
          }
       }
 
       if (scheme != null) {
-         schemeCut = (VPackage.IntentInfo[])this.mSchemeToFilter.get(scheme);
+         schemeCut = this.mSchemeToFilter.get(scheme);
       }
 
       if (resolvedType == null && scheme == null && intent.getAction() != null) {
-         firstTypeCut = (VPackage.IntentInfo[])this.mActionToFilter.get(intent.getAction());
+         firstTypeCut = this.mActionToFilter.get(intent.getAction());
       }
 
       FastImmutableArraySet<String> categories = getFastIntentCategories(intent);
@@ -292,7 +292,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
    protected abstract F[] newArray(int var1);
 
    protected R newResult(F filter, int match, int userId) {
-      return filter;
+      return (R)filter;
    }
 
    protected void sortResults(List<R> results) {
@@ -316,7 +316,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
    }
 
    private void addFilter(HashMap<String, F[]> map, String name, F filter) {
-      F[] array = (VPackage.IntentInfo[])map.get(name);
+      F[] array = map.get(name);
       if (array == null) {
          array = this.newArray(2);
          map.put(name, array);
@@ -433,7 +433,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
    }
 
    private void remove_all_objects(HashMap<String, F[]> map, String name, Object object) {
-      F[] array = (VPackage.IntentInfo[])map.get(name);
+      F[] array = map.get(name);
       if (array != null) {
          int LAST;
          for(LAST = array.length - 1; LAST >= 0 && array[LAST] == null; --LAST) {
@@ -469,7 +469,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
       int N = src != null ? src.length : 0;
       boolean hasNonDefaults = false;
 
-      VPackage.IntentInfo filter;
+      F filter;
       for(int i = 0; i < N && (filter = src[i]) != null; ++i) {
          if ((packageName == null || this.isPackageForFilter(packageName, filter)) && this.allowFilterResult(filter, dest)) {
             int match = filter.filter.match(action, resolvedType, scheme, data, categories, TAG);
@@ -509,7 +509,7 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R> {
       }
 
       public F next() {
-         return this.mCur = (VPackage.IntentInfo)this.mI.next();
+         return this.mCur = (F) this.mI.next();
       }
 
       public void remove() {

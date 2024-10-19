@@ -188,7 +188,7 @@ public class FileUtils {
    }
 
    public static void writeToFile(InputStream dataIns, File target) throws IOException {
-      int BUFFER = true;
+      boolean BUFFER = true;
       BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(target));
 
       try {
@@ -273,7 +273,6 @@ public class FileUtils {
          inputStream = context.getResources().getAssets().open(source);
          outputStream = new FileOutputStream(target);
          byte[] buffer = new byte[1024];
-         int count = false;
 
          int count;
          while((count = inputStream.read(buffer)) > 0) {

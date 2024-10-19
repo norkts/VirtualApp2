@@ -364,7 +364,7 @@ public class ChooseTypeAndAccountActivity extends Activity implements AccountMan
          supportedAccountTypes.add(desc.type);
       }
 
-      HashSet setOfRelevantAccountTypes;
+      Set<String> setOfRelevantAccountTypes;
       if (allowedAccountTypes != null) {
          setOfRelevantAccountTypes = new HashSet();
          Collections.addAll(setOfRelevantAccountTypes, allowedAccountTypes);

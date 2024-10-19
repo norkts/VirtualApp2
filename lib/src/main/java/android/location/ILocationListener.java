@@ -43,24 +43,23 @@ public interface ILocationListener extends IInterface {
 
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
-         String _arg0;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               Location _arg0;
+               Location _arg1;
                if (0 != data.readInt()) {
-                  _arg0 = (Location)Location.CREATOR.createFromParcel(data);
+                  _arg1 = (Location)Location.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  _arg1 = null;
                }
 
-               this.onLocationChanged(_arg0);
+               this.onLocationChanged(_arg1);
                reply.writeNoException();
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
-               int _arg1 = data.readInt();
+               String _arg0 = data.readString();
+               int i_arg1 = data.readInt();
                Bundle _arg2;
                if (0 != data.readInt()) {
                   _arg2 = (Bundle)Bundle.CREATOR.createFromParcel(data);
@@ -68,7 +67,7 @@ public interface ILocationListener extends IInterface {
                   _arg2 = null;
                }
 
-               this.onStatusChanged(_arg0, _arg1, _arg2);
+               this.onStatusChanged(_arg0, i_arg1, _arg2);
                reply.writeNoException();
                return true;
             case 3:

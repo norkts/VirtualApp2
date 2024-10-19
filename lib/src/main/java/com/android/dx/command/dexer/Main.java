@@ -375,7 +375,7 @@ public class Main {
 
             ClassPathOpener.FileNameFilter filter = new RemoveModuleInfoFilter(new NotFilter((ClassPathOpener.FileNameFilter)mainPassFilter));
 
-            for(int i = 0; i < fileNames.length; ++i) {
+            for(i = 0; i < fileNames.length; ++i) {
                this.processOne(fileNames[i], filter);
             }
          } else {
@@ -760,7 +760,7 @@ public class Main {
                               return;
                            }
 
-                           EncodedMethod meth = (EncodedMethod)var23.next();
+                           meth = (EncodedMethod)var23.next();
                            meth.debugPrint(pw, this.args.verboseDump);
                            CstString sourceFile = clazz.getSourceFile();
                            if (sourceFile != null) {
@@ -1509,12 +1509,12 @@ public class Main {
 
       public BestEffortMainDexListFilter() {
          String normalized;
-         Object fullPath;
+         List<String> fullPath;
          for(Iterator var2 = Main.this.classesInMainDex.iterator(); var2.hasNext(); ((List)fullPath).add(normalized)) {
             String pathOfClass = (String)var2.next();
             normalized = Main.fixPath(pathOfClass);
             String simple = this.getSimpleName(normalized);
-            fullPath = (List)this.map.get(simple);
+            fullPath = (List<String>)this.map.get(simple);
             if (fullPath == null) {
                fullPath = new ArrayList(1);
                this.map.put(simple, fullPath);

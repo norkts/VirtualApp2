@@ -49,11 +49,9 @@ public class LanzouHelper {
                   try {
                      fos = new FileOutputStream(file);
                      byte[] bytes = new byte[1024];
-                     int lenx = false;
                      long fileSize = response.body().contentLength();
                      HVLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgYLC9nNDMi")) + fileSize);
                      long sum = 0L;
-                     int porSize = false;
 
                      int len;
                      while((len = is.read(bytes)) != -1) {

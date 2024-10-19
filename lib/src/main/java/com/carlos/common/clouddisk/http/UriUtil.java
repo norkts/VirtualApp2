@@ -12,5 +12,5 @@ public class UriUtil {
    public static final String SHAREHEAD = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8KLzJOIB4tLC4pDm8zQSZuNwYwIyocJWAgQCo="));
    public static final String DOWNFILEHEAD = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8KLzJOIB4uKQglDmk0TCZoNzgaLgcuDn0KRClpJFkcOQgEI2UVNwM="));
    public static final String DOWNFILEPATH = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4iCWoFNyU="));
-   public static final String MYGITHUB;
+   public static final String MYGITHUB = "";
 }

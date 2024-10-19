@@ -45,16 +45,16 @@ public interface IDeviceManager extends IInterface {
          String descriptor = DESCRIPTOR;
          int _arg0;
          boolean _arg1;
-         VDeviceConfig _arg1;
+         VDeviceConfig vdc_arg1;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
-               _arg1 = this.getDeviceConfig(_arg0);
+               vdc_arg1 = this.getDeviceConfig(_arg0);
                reply.writeNoException();
-               if (_arg1 != null) {
+               if (vdc_arg1 != null) {
                   reply.writeInt(1);
-                  _arg1.writeToParcel(reply, 1);
+                  vdc_arg1.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -64,12 +64,12 @@ public interface IDeviceManager extends IInterface {
                data.enforceInterface(descriptor);
                _arg0 = data.readInt();
                if (0 != data.readInt()) {
-                  _arg1 = (VDeviceConfig)VDeviceConfig.CREATOR.createFromParcel(data);
+                  vdc_arg1 = (VDeviceConfig)VDeviceConfig.CREATOR.createFromParcel(data);
                } else {
-                  _arg1 = null;
+                  vdc_arg1 = null;
                }
 
-               this.updateDeviceConfig(_arg0, _arg1);
+               this.updateDeviceConfig(_arg0, vdc_arg1);
                reply.writeNoException();
                return true;
             case 3:

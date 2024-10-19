@@ -68,12 +68,12 @@ public interface IVClient extends IInterface {
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
          IBinder _arg0;
-         String _arg0;
+         String s_arg0;
          IBinder _result;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readString();
+               s_arg0 = data.readString();
                _result = data.readStrongBinder();
                Intent _arg2;
                if (0 != data.readInt()) {
@@ -82,7 +82,7 @@ public interface IVClient extends IInterface {
                   _arg2 = null;
                }
 
-               this.scheduleNewIntent(_arg0, _result, _arg2);
+               this.scheduleNewIntent(s_arg0, _result, _arg2);
                reply.writeNoException();
                return true;
             case 2:
@@ -93,28 +93,28 @@ public interface IVClient extends IInterface {
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               ComponentName _arg0;
+               ComponentName cn_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
+                  cn_arg0 = (ComponentName)ComponentName.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  cn_arg0 = null;
                }
 
                _result = data.readStrongBinder();
-               IBinder _result = this.createProxyService(_arg0, _result);
+               IBinder binder_result = this.createProxyService(cn_arg0, _result);
                reply.writeNoException();
-               reply.writeStrongBinder(_result);
+               reply.writeStrongBinder(binder_result);
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               ProviderInfo _arg0;
+               ProviderInfo providerInfo_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (ProviderInfo)ProviderInfo.CREATOR.createFromParcel(data);
+                  providerInfo_arg0 = (ProviderInfo)ProviderInfo.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  providerInfo_arg0 = null;
                }
 
-               _result = this.acquireProviderClient(_arg0);
+               _result = this.acquireProviderClient(providerInfo_arg0);
                reply.writeNoException();
                reply.writeStrongBinder(_result);
                return true;
@@ -132,28 +132,28 @@ public interface IVClient extends IInterface {
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               boolean _result = this.isAppRunning();
+               boolean b_result = this.isAppRunning();
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 8:
                data.enforceInterface(descriptor);
-               _arg0 = this.getDebugInfo();
+               s_arg0 = this.getDebugInfo();
                reply.writeNoException();
-               reply.writeString(_arg0);
+               reply.writeString(s_arg0);
                return true;
             case 9:
                data.enforceInterface(descriptor);
                _arg0 = data.readStrongBinder();
-               boolean _result = this.finishReceiver(_arg0);
+               b_result = this.finishReceiver(_arg0);
                reply.writeNoException();
-               reply.writeInt(_result ? 1 : 0);
+               reply.writeInt(b_result ? 1 : 0);
                return true;
             case 10:
                data.enforceInterface(descriptor);
-               List<ActivityManager.RunningServiceInfo> _result = this.getServices();
+               List<ActivityManager.RunningServiceInfo> list_result = this.getServices();
                reply.writeNoException();
-               reply.writeTypedList(_result);
+               reply.writeTypedList(list_result);
                return true;
             case 1598968902:
                reply.writeString(descriptor);

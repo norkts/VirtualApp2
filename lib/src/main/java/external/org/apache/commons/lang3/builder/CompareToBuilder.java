@@ -115,7 +115,7 @@ public class CompareToBuilder implements Builder<Integer> {
             Comparable<Object> comparable = (Comparable)lhs;
             this.comparison = comparable.compareTo(rhs);
          } else {
-            Comparator<Object> comparator2 = comparator;
+            Comparator<Object> comparator2 = (Comparator)comparator;
             this.comparison = comparator2.compare(lhs, rhs);
          }
 

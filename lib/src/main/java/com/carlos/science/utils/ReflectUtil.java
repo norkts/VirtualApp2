@@ -13,7 +13,7 @@ public class ReflectUtil {
       try {
          Constructor constructor = cls.getDeclaredConstructor();
          constructor.setAccessible(true);
-         instance = constructor.newInstance();
+         instance = (T)constructor.newInstance();
       } catch (NoSuchMethodException var3) {
          NoSuchMethodException e = var3;
          e.printStackTrace();

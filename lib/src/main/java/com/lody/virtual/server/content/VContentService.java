@@ -445,8 +445,7 @@ public final class VContentService extends IContentService.Stub {
             list.add(info.toSyncInfo());
          }
 
-         ArrayList var11 = list;
-         return var11;
+         return list;
       } finally {
          restoreCallingIdentity(identityToken);
       }

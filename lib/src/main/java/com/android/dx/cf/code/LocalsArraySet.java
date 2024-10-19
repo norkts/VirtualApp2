@@ -33,7 +33,7 @@ public class LocalsArraySet extends LocalsArray {
       for(int i = 0; i < sz; ++i) {
          LocalsArray la = (LocalsArray)toCopy.secondaries.get(i);
          if (la == null) {
-            this.secondaries.add((Object)null);
+            this.secondaries.add(null);
          } else {
             this.secondaries.add(la.copy());
          }

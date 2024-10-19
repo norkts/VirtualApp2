@@ -157,7 +157,7 @@ public class HookWrapper {
                entity = (HookEntity)hookEntityMap.get(foundMethod);
                if (entity == null) {
                   entity = new HookEntity((Member)foundMethod);
-                  hookEntityMap.put(foundMethod, entity);
+                  hookEntityMap.put((Member)foundMethod, entity);
                }
 
                entity.pars = pars;
@@ -184,7 +184,7 @@ public class HookWrapper {
                entity = (HookEntity)hookEntityMap.get(foundMethod);
                if (entity == null) {
                   entity = new HookEntity((Member)foundMethod);
-                  hookEntityMap.put(foundMethod, entity);
+                  hookEntityMap.put((Member)foundMethod, entity);
                }
 
                entity.pars = pars;

@@ -50,7 +50,7 @@ public final class CatchStructs {
       this.handlerOffsets = new TreeMap();
 
       for(int i = 0; i < size; ++i) {
-         this.handlerOffsets.put(this.table.get(i).getHandlers(), (Object)null);
+         this.handlerOffsets.put(this.table.get(i).getHandlers(), null);
       }
 
       if (this.handlerOffsets.size() > 65535) {

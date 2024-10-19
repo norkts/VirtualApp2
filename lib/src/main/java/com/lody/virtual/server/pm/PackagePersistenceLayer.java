@@ -71,10 +71,10 @@ class PackagePersistenceLayer extends PersistenceLayer {
          if (version <= 5) {
             count = p.readInt();
 
-            ArrayList list;
+            ArrayList list = new ArrayList(count);
             PackageSettingV5 settingV5;
             PackageSettingV5 uri;
-            for(list = new ArrayList(count); count-- > 0; list.add(settingV5)) {
+            for(; count-- > 0;) {
                if (version < 5) {
                   this.changed = true;
                   PackageSettingV1 v1 = new PackageSettingV1();
@@ -91,37 +91,37 @@ class PackagePersistenceLayer extends PersistenceLayer {
                } else {
                   settingV5 = new PackageSettingV5(version, p);
                }
+               list.add(settingV5);
             }
 
             Iterator var12 = list.iterator();
 
             while(var12.hasNext()) {
-               PackageSettingV5 settingV5 = (PackageSettingV5)var12.next();
-               uri = null;
-               Uri uri;
-               if (settingV5.appMode == 1) {
-                  uri = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + settingV5.packageName);
+               PackageSettingV5 settingV5_1 = (PackageSettingV5)var12.next();
+               Uri uri_1;
+               if (settingV5_1.appMode == 1) {
+                  uri_1 = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + settingV5_1.packageName);
                } else {
-                  File apkFile = VEnvironment.getPackageFile(settingV5.packageName);
+                  File apkFile = VEnvironment.getPackageFile(settingV5_1.packageName);
                   if (!apkFile.exists()) {
-                     apkFile = VEnvironment.getPackageFileExt(settingV5.packageName);
+                     apkFile = VEnvironment.getPackageFileExt(settingV5_1.packageName);
                   }
 
                   if (apkFile.exists()) {
-                     uri = Uri.fromFile(apkFile);
+                     uri_1 = Uri.fromFile(apkFile);
                   } else {
-                     uri = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + settingV5.packageName);
+                     uri_1 = Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + settingV5_1.packageName);
                   }
                }
 
-               if (uri != null) {
+               if (uri_1 != null) {
                   VAppInstallerParams params = new VAppInstallerParams(26, 1);
-                  VAppInstallerResult installerResult = VirtualCore.get().installPackage(uri, params);
+                  VAppInstallerResult installerResult = VirtualCore.get().installPackage(uri_1, params);
                   if (installerResult.status == 0) {
-                     PackageSetting ps = PackageCacheManager.getSetting(settingV5.packageName);
-                     ps.userState = settingV5.userState;
+                     PackageSetting ps = PackageCacheManager.getSetting(settingV5_1.packageName);
+                     ps.userState = settingV5_1.userState;
                   } else {
-                     VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDyQ/Iz4qMWoKBitlNzAgJAg+M2IFMFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtLESQ7Ly0EOWkFBShqARotLDo6In0KGjduDjMpPl9XI2UwLCBrEQI7DV42OnkaJDVsJyQ0LRhSVg==")), settingV5.packageName);
+                     VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iDyQ/Iz4qMWoKBitlNzAgJAg+M2IFMFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtLESQ7Ly0EOWkFBShqARotLDo6In0KGjduDjMpPl9XI2UwLCBrEQI7DV42OnkaJDVsJyQ0LRhSVg==")), settingV5_1.packageName);
                   }
                }
             }

@@ -1632,7 +1632,7 @@ public class SyncStorageEngine extends Handler {
                               int i = this.mAuthorities.size();
 
                               while(true) {
-                                 AuthorityInfo authority;
+//                                 AuthorityInfo authority;
                                  do {
                                     if (i <= 0) {
                                        continue label98;
@@ -1912,7 +1912,6 @@ public class SyncStorageEngine extends Handler {
       byte[] flatData = null;
       Parcel parcel = Parcel.obtain();
 
-      byte[] flatData;
       try {
          bundle.writeToParcel(parcel, 0);
          flatData = parcel.marshall();

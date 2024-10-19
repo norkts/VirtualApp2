@@ -18,7 +18,7 @@ public class RefStaticObject<T> {
       T obj = null;
 
       try {
-         obj = this.field.get((Object)null);
+         obj = (T)this.field.get((Object)null);
       } catch (Exception var3) {
       }
 

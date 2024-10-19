@@ -41,12 +41,12 @@ public class SparseArray<E> implements Cloneable {
    }
 
    public E get(int key) {
-      return this.get(key, (Object)null);
+      return this.get(key, null);
    }
 
    public E get(int key, E valueIfKeyNotFound) {
       int i = ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
-      return i >= 0 && this.mValues[i] != DELETED ? this.mValues[i] : valueIfKeyNotFound;
+      return i >= 0 && this.mValues[i] != DELETED ? (E)this.mValues[i] : valueIfKeyNotFound;
    }
 
    public void delete(int key) {
@@ -162,13 +162,13 @@ public class SparseArray<E> implements Cloneable {
          this.gc();
       }
 
-      return this.mValues[index];
+      return (E)this.mValues[index];
    }
 
    public E removeReturnOld(int key) {
       int i = ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
       if (i >= 0 && this.mValues[i] != DELETED) {
-         E old = this.mValues[i];
+         E old = (E)this.mValues[i];
          this.mValues[i] = DELETED;
          this.mGarbage = true;
          return old;

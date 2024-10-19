@@ -68,7 +68,6 @@ public class NewStatusBarUtil {
          Class clazz = window.getClass();
 
          try {
-            int darkModeFlag = false;
             Class layoutParams = Class.forName(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kuKQcMI38bPC9vAR4UIxgcIGAjJBJpDh4qLwgACHsbHjNpEQYaIBYiKGUwOANqAVRF")));
             Field field = layoutParams.getField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQVfBmchJB9qMlERICxfAX0xQVFnDDAMJSw+U2wmFg59MgIOISwuGmMFSFo=")));
             int darkModeFlag = field.getInt(layoutParams);

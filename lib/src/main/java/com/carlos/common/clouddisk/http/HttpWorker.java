@@ -192,8 +192,6 @@ public class HttpWorker {
    public static byte[] read(InputStream inStream) throws Exception {
       ByteArrayOutputStream outStream = new ByteArrayOutputStream();
       byte[] buffer = new byte[1024];
-      int len = false;
-
       int len;
       while((len = inStream.read(buffer)) != -1) {
          outStream.write(buffer, 0, len);
@@ -509,10 +507,10 @@ public class HttpWorker {
                   });
                } catch (Exception var4) {
                   final Exception e = var4;
-                  finalI1 = i;
+                  final int finalI2 = i;
                   (new Handler(Looper.getMainLooper())).post(new Runnable() {
                      public void run() {
-                        listener.onError(finalI1);
+                        listener.onError(finalI2);
                         e.printStackTrace();
                      }
                   });

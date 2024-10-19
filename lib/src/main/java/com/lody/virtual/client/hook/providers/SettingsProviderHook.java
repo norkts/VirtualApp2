@@ -213,7 +213,7 @@ public class SettingsProviderHook extends ExternalProviderHook {
             } else if (e.getCause() instanceof IllegalArgumentException) {
                return new Bundle();
             } else {
-               throw e;
+               throw new RuntimeException(e);
             }
          }
       }

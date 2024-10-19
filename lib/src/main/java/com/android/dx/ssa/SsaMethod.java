@@ -446,7 +446,6 @@ public final class SsaMethod {
       Stack<SsaBasicBlock> stack = new Stack();
       SsaBasicBlock rootBlock = reverse ? this.getExitBlock() : this.getEntryBlock();
       if (rootBlock != null) {
-         stack.add((Object)null);
          stack.add(rootBlock);
 
          while(true) {

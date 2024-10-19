@@ -64,14 +64,14 @@ public final class ValueEncoder {
    public void writeConstant(Constant cst) {
       int type = constantToValueType(cst);
       int value;
-      long value;
+      long l_value;
       switch (type) {
          case 0:
          case 2:
          case 4:
          case 6:
-            value = ((CstLiteralBits)cst).getLongBits();
-            EncodedValueCodec.writeSignedIntegralValue(this.out, type, value);
+            l_value = ((CstLiteralBits)cst).getLongBits();
+            EncodedValueCodec.writeSignedIntegralValue(this.out, type, l_value);
             break;
          case 1:
          case 5:
@@ -90,16 +90,16 @@ public final class ValueEncoder {
          default:
             throw new RuntimeException("Shouldn't happen");
          case 3:
-            value = ((CstLiteralBits)cst).getLongBits();
-            EncodedValueCodec.writeUnsignedIntegralValue(this.out, type, value);
+            l_value = ((CstLiteralBits)cst).getLongBits();
+            EncodedValueCodec.writeUnsignedIntegralValue(this.out, type, l_value);
             break;
          case 16:
-            value = ((CstFloat)cst).getLongBits() << 32;
-            EncodedValueCodec.writeRightZeroExtendedValue(this.out, type, value);
+            l_value = ((CstFloat)cst).getLongBits() << 32;
+            EncodedValueCodec.writeRightZeroExtendedValue(this.out, type, l_value);
             break;
          case 17:
-            value = ((CstDouble)cst).getLongBits();
-            EncodedValueCodec.writeRightZeroExtendedValue(this.out, type, value);
+            l_value = ((CstDouble)cst).getLongBits();
+            EncodedValueCodec.writeRightZeroExtendedValue(this.out, type, l_value);
             break;
          case 21:
             value = this.file.getProtoIds().indexOf(((CstProtoRef)cst).getPrototype());

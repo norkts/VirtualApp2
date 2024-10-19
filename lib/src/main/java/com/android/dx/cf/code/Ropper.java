@@ -504,9 +504,9 @@ public final class Ropper {
       if (synch) {
          synchReg = this.getSynchReg();
          if (this.isStatic()) {
-            Insn insn = new ThrowingCstInsn(Rops.CONST_OBJECT, pos, RegisterSpecList.EMPTY, StdTypeList.EMPTY, this.method.getDefiningClass());
+            Insn insn1 = new ThrowingCstInsn(Rops.CONST_OBJECT, pos, RegisterSpecList.EMPTY, StdTypeList.EMPTY, this.method.getDefiningClass());
             insns = new InsnList(1);
-            insns.set(0, insn);
+            insns.set(0, insn1);
          } else {
             insns = new InsnList(2);
             insn = new PlainCstInsn(Rops.MOVE_PARAM_OBJECT, pos, synchReg, RegisterSpecList.EMPTY, CstInteger.VALUE_0);
@@ -523,8 +523,8 @@ public final class Ropper {
             insns.set(0, new PlainInsn(Rops.opMoveResultPseudo(synchReg), pos, synchReg, RegisterSpecList.EMPTY));
          }
 
-         Insn insn = new ThrowingInsn(Rops.MONITOR_ENTER, pos, RegisterSpecList.make(synchReg), StdTypeList.EMPTY);
-         insns.set(this.isStatic() ? 1 : 0, insn);
+         Insn insn2 = new ThrowingInsn(Rops.MONITOR_ENTER, pos, RegisterSpecList.make(synchReg), StdTypeList.EMPTY);
+         insns.set(this.isStatic() ? 1 : 0, insn2);
          insns.setImmutable();
          bb = new BasicBlock(label2, insns, IntList.makeImmutable(0), 0);
          this.addBlock(bb, IntList.EMPTY);
@@ -574,8 +574,8 @@ public final class Ropper {
          InsnList insns = new InsnList(2);
          Insn insn = new PlainInsn(Rops.opMoveException(Type.THROWABLE), pos, exReg, RegisterSpecList.EMPTY);
          insns.set(0, insn);
-         Insn insn = new ThrowingInsn(Rops.MONITOR_EXIT, pos, RegisterSpecList.make(this.getSynchReg()), StdTypeList.EMPTY);
-         insns.set(1, insn);
+         Insn insn1 = new ThrowingInsn(Rops.MONITOR_EXIT, pos, RegisterSpecList.make(this.getSynchReg()), StdTypeList.EMPTY);
+         insns.set(1, insn1);
          insns.setImmutable();
          int label2 = this.getSpecialLabel(-7);
          BasicBlock bb = new BasicBlock(this.getSpecialLabel(-6), insns, IntList.makeImmutable(label2), label2);
@@ -640,7 +640,7 @@ public final class Ropper {
 
       int sz;
       for(sz = 0; sz < largestAllocedLabel; ++sz) {
-         labelToSubroutines.add((Object)null);
+         labelToSubroutines.add(null);
       }
 
       for(sz = 0; sz < this.result.size(); ++sz) {
@@ -828,7 +828,7 @@ public final class Ropper {
             this.origLabelToCopiedLabel.put(origLabel, resultLabel);
 
             while(this.labelToSubroutines.size() <= resultLabel) {
-               this.labelToSubroutines.add((Object)null);
+               this.labelToSubroutines.add(null);
             }
 
             this.labelToSubroutines.set(resultLabel, (IntList)this.labelToSubroutines.get(origLabel));

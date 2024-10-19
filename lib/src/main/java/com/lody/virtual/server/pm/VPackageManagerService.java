@@ -131,12 +131,12 @@ public class VPackageManagerService extends IPackageManager.Stub {
       N = pkg.services.size();
 
       for(i = 0; i < N; ++i) {
-         VPackage.ServiceComponent a = (VPackage.ServiceComponent)pkg.services.get(i);
-         if (a.info.processName == null) {
-            a.info.processName = a.info.packageName;
+         VPackage.ServiceComponent vs_a = (VPackage.ServiceComponent)pkg.services.get(i);
+         if (vs_a.info.processName == null) {
+            vs_a.info.processName = vs_a.info.packageName;
          }
 
-         this.mServices.addService(a);
+         this.mServices.addService(vs_a);
       }
 
       N = pkg.receivers.size();
@@ -221,8 +221,8 @@ public class VPackageManagerService extends IPackageManager.Stub {
          N = pkg.services.size();
 
          for(i = 0; i < N; ++i) {
-            VPackage.ServiceComponent a = (VPackage.ServiceComponent)pkg.services.get(i);
-            this.mServices.removeService(a);
+            VPackage.ServiceComponent vs_a = (VPackage.ServiceComponent)pkg.services.get(i);
+            this.mServices.removeService(vs_a);
          }
 
          N = pkg.receivers.size();

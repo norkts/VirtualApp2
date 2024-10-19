@@ -130,7 +130,7 @@ public class MenuLayout extends ViewGroup implements ICarrier {
    protected void onLayout(boolean changed, int l, int t, int r, int b) {
       if (!this.isMoving) {
          this.computeCenterXY(this.position);
-         int radius = false;
+//         int radius = false;
          this.layoutItem(0);
       }
    }

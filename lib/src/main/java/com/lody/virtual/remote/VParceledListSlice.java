@@ -137,7 +137,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
          int i;
          for(i = 0; i < N && dest.dataSize() < 131072; ++i) {
             dest.writeInt(1);
-            T parcelable = (Parcelable)this.mList.get(i);
+            T parcelable = (T)this.mList.get(i);
             if (parcelable == null) {
                dest.writeString((String)null);
             } else {
@@ -164,7 +164,7 @@ public class VParceledListSlice<T extends Parcelable> implements Parcelable {
 
                      for(; i < N && reply.dataSize() < 262144; ++i) {
                         reply.writeInt(1);
-                        T parcelable = (Parcelable)VParceledListSlice.this.mList.get(i);
+                        T parcelable = (T)VParceledListSlice.this.mList.get(i);
                         VParceledListSlice.verifySameType(listElementClass, parcelable.getClass());
                         reply.writeParcelable(parcelable, callFlags);
                         if (VParceledListSlice.DEBUG) {

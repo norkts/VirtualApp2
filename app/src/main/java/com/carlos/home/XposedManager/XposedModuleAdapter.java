@@ -1,12 +1,17 @@
 package com.carlos.home.XposedManager;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
+import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -19,13 +24,25 @@ import java.util.List;
 
 
 import com.carlos.R;
+import com.carlos.common.AppComponentDelegate;
 import com.carlos.home.models.AppData;
 import com.carlos.home.models.MultiplePackageAppData;
 import com.carlos.home.models.PackageAppData;
 import com.carlos.home.repo.AppRepository;
+import com.lody.virtual.client.core.AppCallback;
+import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.client.env.Constants;
+import com.lody.virtual.client.env.VirtualRuntime;
+import com.lody.virtual.client.ipc.VActivityManager;
+import com.lody.virtual.client.ipc.VPackageManager;
+import com.lody.virtual.helper.utils.ComponentUtils;
+import com.lody.virtual.helper.utils.VLog;
+import com.lody.virtual.remote.ClientConfig;
 
 public class XposedModuleAdapter extends RecyclerView.Adapter<XposedModuleAdapter.ViewHolder> {
-
+    public static final String PASS_PKG_NAME_ARGUMENT = "MODEL_ARGUMENT";
+    public static final String PASS_KEY_INTENT = "KEY_INTENT";
+    public static final String PASS_KEY_USER = "KEY_USER";
 
     CardView cardView;
 
@@ -182,16 +199,75 @@ public class XposedModuleAdapter extends RecyclerView.Adapter<XposedModuleAdapte
         return false;
     }*/
     private void launchApp(int userId, String packageName) {
-/*        if (VirtualCore.get().isRun64BitProcess(packageName)) {
-            if (!VirtualCore.get().is64BitEngineInstalled()) {
-                Toast.makeText(context, "Please install 64bit engine.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (!V64BitHelper.has64BitEngineStartPermission()) {
-                Toast.makeText(context, "No Permission to start 64bit engine.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }*/
-        //LoadingActivity.launch(context,packageName,userId);
+//        if (VirtualCore.get().isRun64BitProcess(packageName)) {
+//            if (!VirtualCore.get().is64BitEngineInstalled()) {
+//                Toast.makeText(context, "Please install 64bit engine.", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            if (!V64BitHelper.has64BitEngineStartPermission()) {
+//                Toast.makeText(context, "No Permission to start 64bit engine.", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//        }
+//        LoadingActivity.launch(context,packageName,userId);
+        launchApp(userId, packageName,true);
+
+    }
+
+
+    public boolean launchApp(final int userId, final String packageName, boolean preview) {
+        Context context = VirtualCore.get().getContext();
+        VPackageManager pm = VPackageManager.get();
+        Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
+        intentToResolve.addCategory(Intent.CATEGORY_INFO);
+        intentToResolve.setPackage(packageName);
+        List<ResolveInfo> ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
+
+        // Otherwise, try to find a main launcher activity.
+        if (ris == null || ris.size() <= 0) {
+            // reuse the intent instance
+            intentToResolve.removeCategory(Intent.CATEGORY_INFO);
+            intentToResolve.addCategory(Intent.CATEGORY_LAUNCHER);
+            intentToResolve.setPackage(packageName);
+            ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
+        }
+        if (ris == null || ris.size() <= 0) {
+            return false;
+        }
+        final ActivityInfo info = ris.get(0).activityInfo;
+        final Intent intent = new Intent(intentToResolve);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName(info.packageName, info.name);
+        //1.va的进程初始化500ms
+        //2.app的Application初始化，这个要看app
+        //3.app的4组件初始化
+        if (!preview || VActivityManager.get().isAppRunning(info.packageName, userId, true)) {
+            VLog.d("kk", "app's main thread was running.");
+            VActivityManager.get().startActivity(intent, userId);
+        } else {
+            VLog.d("kk", "app's main thread not running.");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            final String processName = ComponentUtils.getProcessName(info);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //wait 500ms
+                    ClientConfig clientConfig = initProcess(packageName, processName, userId);
+                    if (clientConfig != null) {
+                        VActivityManager.get().startActivity(intent, userId);
+                        //VActivityManager#startActivity启动速度比WindowPreviewActivity快
+                    }
+                }
+            }).start();
+        }
+        return true;
+    }
+
+    public ClientConfig initProcess(String packageName, String processName, int userId) {
+        try {
+            return VActivityManager.get().getService().initProcess(packageName, processName, userId);
+        } catch (RemoteException e) {
+            return VirtualRuntime.crash(e);
+        }
     }
 }

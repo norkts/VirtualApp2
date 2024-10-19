@@ -96,7 +96,7 @@ public class ClassReferenceListBuilder {
       MethodList methods = classFile.getMethods();
       int nbMethods = methods.size();
 
-      for(int i = 0; i < nbMethods; ++i) {
+      for( i = 0; i < nbMethods; ++i) {
          this.checkPrototype(Prototype.intern(methods.get(i).getDescriptor().getString()));
       }
 

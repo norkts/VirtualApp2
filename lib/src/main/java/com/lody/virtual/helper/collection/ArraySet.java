@@ -218,7 +218,7 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
    }
 
    public E valueAt(int index) {
-      return this.mArray[index];
+      return (E)this.mArray[index];
    }
 
    public boolean isEmpty() {
@@ -324,7 +324,7 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
          this.mArray[this.mSize] = null;
       }
 
-      return old;
+      return (E)old;
    }
 
    public boolean removeAll(ArraySet<? extends E> array) {
@@ -350,7 +350,7 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
 
    public <T> T[] toArray(T[] array) {
       if (array.length < this.mSize) {
-         T[] newArray = (Object[])Array.newInstance(array.getClass().getComponentType(), this.mSize);
+         T[] newArray = (T[])Array.newInstance(array.getClass().getComponentType(), this.mSize);
          array = newArray;
       }
 
@@ -491,8 +491,8 @@ public final class ArraySet<E> implements Collection<E>, Set<E> {
       this.ensureCapacity(this.mSize + collection.size());
       boolean added = false;
 
-      Object value;
-      for(Iterator var3 = collection.iterator(); var3.hasNext(); added |= this.add(value)) {
+      E value;
+      for(Iterator<? extends E> var3 = collection.iterator(); var3.hasNext(); added |= this.add(value)) {
          value = var3.next();
       }
 

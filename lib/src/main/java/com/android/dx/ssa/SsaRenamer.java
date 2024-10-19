@@ -71,7 +71,7 @@ public class SsaRenamer implements Runnable {
       this.ssaRegToLocalItems.ensureCapacity(reg + 1);
 
       while(this.ssaRegToLocalItems.size() <= reg) {
-         this.ssaRegToLocalItems.add((Object)null);
+         this.ssaRegToLocalItems.add(null);
       }
 
       this.ssaRegToLocalItems.set(reg, local);

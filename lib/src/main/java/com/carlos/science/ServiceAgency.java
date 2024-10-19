@@ -28,7 +28,7 @@ public class ServiceAgency {
          }
       }
 
-      T service = this.cacheMap.get(tClass);
+      T service = (T)this.cacheMap.get(tClass);
       if (service == null) {
          ServiceConfig[] var3 = ServiceConfig.values();
          int var4 = var3.length;
@@ -39,7 +39,7 @@ public class ServiceAgency {
             try {
                Class serviceClass = Class.forName(serviceEnum.className);
                if (tClass.isAssignableFrom(serviceClass)) {
-                  service = ReflectUtil.newInstance(serviceClass);
+                  service = (T)ReflectUtil.newInstance(serviceClass);
                   this.cacheMap.put(tClass, service);
                   return service;
                }

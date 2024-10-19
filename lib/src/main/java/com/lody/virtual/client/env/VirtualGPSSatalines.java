@@ -130,7 +130,6 @@ public class VirtualGPSSatalines {
 
       for(i = 0; i < statelines.size(); ++i) {
          GPSStateline gpsStateline = (GPSStateline)statelines.get(i);
-         int constellationType = true;
          this.prnWithFlags[i] = gpsStateline.getPnr() << 71 | 24;
       }
 

@@ -73,15 +73,15 @@ public interface ISyncAdapter extends IInterface {
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               Account _arg0;
+               Account acc_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (Account)Account.CREATOR.createFromParcel(data);
+                  acc_arg0 = (Account)Account.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  acc_arg0 = null;
                }
 
                _arg1 = data.readString();
-               this.initialize(_arg0, _arg1);
+               this.initialize(acc_arg0, _arg1);
                reply.writeNoException();
                return true;
             case 1598968902:

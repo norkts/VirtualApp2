@@ -70,14 +70,14 @@ public interface IAppInstallerSession extends IInterface {
                return true;
             case 3:
                data.enforceInterface(descriptor);
-               IntentSender _arg0;
+               IntentSender intentSender_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
+                  intentSender_arg0 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intentSender_arg0 = null;
                }
 
-               this.commit(_arg0);
+               this.commit(intentSender_arg0);
                reply.writeNoException();
                return true;
             case 4:

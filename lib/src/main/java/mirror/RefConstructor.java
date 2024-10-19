@@ -43,7 +43,7 @@ public class RefConstructor<T> {
 
    public T newInstance() {
       try {
-         return this.ctor.newInstance();
+         return (T)this.ctor.newInstance();
       } catch (Exception var2) {
          return null;
       }
@@ -51,7 +51,7 @@ public class RefConstructor<T> {
 
    public T newInstance(Object... params) {
       try {
-         return this.ctor.newInstance(params);
+         return (T)this.ctor.newInstance(params);
       } catch (Exception var3) {
          return null;
       }

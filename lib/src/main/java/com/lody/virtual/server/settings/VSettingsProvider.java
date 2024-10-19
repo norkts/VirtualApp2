@@ -152,7 +152,7 @@ public class VSettingsProvider {
                }
             }
 
-            throw th;
+            throw new RuntimeException(th);
          }
       }
 

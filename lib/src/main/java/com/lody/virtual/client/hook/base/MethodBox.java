@@ -16,7 +16,7 @@ public class MethodBox {
 
    public <T> T call() throws InvocationTargetException {
       try {
-         return this.method.invoke(this.who, this.args);
+         return (T)this.method.invoke(this.who, this.args);
       } catch (IllegalAccessException var2) {
          IllegalAccessException e = var2;
          throw new RuntimeException(e);
@@ -25,7 +25,7 @@ public class MethodBox {
 
    public <T> T callSafe() {
       try {
-         return this.method.invoke(this.who, this.args);
+         return (T)this.method.invoke(this.who, this.args);
       } catch (IllegalAccessException var2) {
          IllegalAccessException e = var2;
          e.printStackTrace();

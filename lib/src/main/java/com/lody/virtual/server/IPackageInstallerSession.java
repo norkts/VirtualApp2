@@ -57,18 +57,18 @@ public interface IPackageInstallerSession extends IInterface {
       public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
          String descriptor = DESCRIPTOR;
          String _arg0;
-         float _arg0;
+         float f_arg0;
          switch (code) {
             case 1:
                data.enforceInterface(descriptor);
-               _arg0 = data.readFloat();
-               this.setClientProgress(_arg0);
+               f_arg0 = data.readFloat();
+               this.setClientProgress(f_arg0);
                reply.writeNoException();
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               _arg0 = data.readFloat();
-               this.addClientProgress(_arg0);
+               f_arg0 = data.readFloat();
+               this.addClientProgress(f_arg0);
                reply.writeNoException();
                return true;
             case 3:
@@ -82,11 +82,11 @@ public interface IPackageInstallerSession extends IInterface {
                _arg0 = data.readString();
                long _arg1 = data.readLong();
                long _arg2 = data.readLong();
-               ParcelFileDescriptor _result = this.openWrite(_arg0, _arg1, _arg2);
+               ParcelFileDescriptor parcelFileDescriptor_result = this.openWrite(_arg0, _arg1, _arg2);
                reply.writeNoException();
-               if (_result != null) {
+               if (parcelFileDescriptor_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  parcelFileDescriptor_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -95,11 +95,11 @@ public interface IPackageInstallerSession extends IInterface {
             case 5:
                data.enforceInterface(descriptor);
                _arg0 = data.readString();
-               ParcelFileDescriptor _result = this.openRead(_arg0);
+               parcelFileDescriptor_result = this.openRead(_arg0);
                reply.writeNoException();
-               if (_result != null) {
+               if (parcelFileDescriptor_result != null) {
                   reply.writeInt(1);
-                  _result.writeToParcel(reply, 1);
+                  parcelFileDescriptor_result.writeToParcel(reply, 1);
                } else {
                   reply.writeInt(0);
                }
@@ -112,14 +112,14 @@ public interface IPackageInstallerSession extends IInterface {
                return true;
             case 7:
                data.enforceInterface(descriptor);
-               IntentSender _arg0;
+               IntentSender intentSender_arg0;
                if (0 != data.readInt()) {
-                  _arg0 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
+                  intentSender_arg0 = (IntentSender)IntentSender.CREATOR.createFromParcel(data);
                } else {
-                  _arg0 = null;
+                  intentSender_arg0 = null;
                }
 
-               this.commit(_arg0);
+               this.commit(intentSender_arg0);
                reply.writeNoException();
                return true;
             case 8:

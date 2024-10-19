@@ -51,8 +51,8 @@ public interface IWeChatControllerCallBack extends IInterface {
             case 1:
                data.enforceInterface(descriptor);
                ClassLoader cl = this.getClass().getClassLoader();
-               Map _arg0 = data.readHashMap(cl);
-               this.syncScanGroupChatData(_arg0);
+               Map map_arg0 = data.readHashMap(cl);
+               this.syncScanGroupChatData(map_arg0);
                reply.writeNoException();
                return true;
             case 2:
@@ -70,9 +70,9 @@ public interface IWeChatControllerCallBack extends IInterface {
                return true;
             case 4:
                data.enforceInterface(descriptor);
-               String _result = this.getSendChatMessage();
+               String s_result = this.getSendChatMessage();
                reply.writeNoException();
-               reply.writeString(_result);
+               reply.writeString(s_result);
                return true;
             case 5:
                data.enforceInterface(descriptor);

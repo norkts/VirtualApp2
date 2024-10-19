@@ -53,7 +53,7 @@ public interface IPackageInstallObserver2 extends IInterface {
                return true;
             case 2:
                data.enforceInterface(descriptor);
-               String _arg0 = data.readString();
+               String s_arg0 = data.readString();
                int _arg1 = data.readInt();
                String _arg2 = data.readString();
                Bundle _arg3;
@@ -63,7 +63,7 @@ public interface IPackageInstallObserver2 extends IInterface {
                   _arg3 = null;
                }
 
-               this.onPackageInstalled(_arg0, _arg1, _arg2, _arg3);
+               this.onPackageInstalled(s_arg0, _arg1, _arg2, _arg3);
                reply.writeNoException();
                return true;
             case 1598968902:

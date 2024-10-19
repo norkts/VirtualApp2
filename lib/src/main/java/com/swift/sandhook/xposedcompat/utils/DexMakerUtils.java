@@ -150,7 +150,7 @@ public class DexMakerUtils {
       code.loadConstant(intLocal, 0);
       code.loadConstant(longLocal, 0L);
       code.loadConstant(shortLocal, Short.valueOf((short)0));
-      code.loadConstant(voidLocal, (Object)null);
+      code.loadConstant(voidLocal, null);
       code.loadConstant(objectLocal, (Object)null);
       code.loadConstant(booleanObjLocal, (Object)null);
       code.loadConstant(byteObjLocal, (Object)null);

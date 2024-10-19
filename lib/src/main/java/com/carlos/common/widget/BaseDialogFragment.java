@@ -126,27 +126,27 @@ public abstract class BaseDialogFragment extends DialogFragment {
       public T setSize(int mWidth, int mHeight) {
          this.mWidth = mWidth;
          this.mHeight = mHeight;
-         return this;
+         return (T)this;
       }
 
       public T setGravity(int mGravity) {
          this.mGravity = mGravity;
-         return this;
+         return (T)this;
       }
 
       public T setOffsetX(int mOffsetX) {
          this.mOffsetX = mOffsetX;
-         return this;
+         return (T)this;
       }
 
       public T setOffsetY(int mOffsetY) {
          this.mOffsetY = mOffsetY;
-         return this;
+         return (T)this;
       }
 
       public T setAnimation(int mAnimation) {
          this.mAnimation = mAnimation;
-         return this;
+         return (T)this;
       }
 
       protected abstract D build();

@@ -66,7 +66,7 @@ class NotificationFixer {
                Drawable drawable = icon.loadDrawable(appContext);
                Bitmap bitmap = BitmapUtils.drawableToBitmap(drawable);
                mirror.android.graphics.drawable.Icon.mObj1.set(icon, bitmap);
-               mirror.android.graphics.drawable.Icon.mString1.set(icon, (Object)null);
+               mirror.android.graphics.drawable.Icon.mString1.set(icon, null);
                mirror.android.graphics.drawable.Icon.mType.set(icon, 1);
             }
          }

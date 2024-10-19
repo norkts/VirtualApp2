@@ -463,24 +463,22 @@ public class ExportDetails {
       HVLog.d(" ========== settingsProperty 有" + propertyGlobal.size());
       Iterator var2 = propertyGlobal.entrySet().iterator();
 
-      String key;
       while(var2.hasNext()) {
          Map.Entry<String, String> entry = (Map.Entry)var2.next();
          String key = (String)entry.getKey();
-         key = (String)entry.getValue();
-         this.mIniFile.set(BuildInfoConstant.SettingsGlobalProperty.TYPE, key, key);
+         String value = (String)entry.getValue();
+         this.mIniFile.set(BuildInfoConstant.SettingsGlobalProperty.TYPE, key, value);
       }
 
       Map<String, String> propertySystem = this.buildInfo.settingsProperty(android.provider.Settings.System.CONTENT_URI);
       HVLog.d(" ========== propertySystem 有" + propertySystem.size());
       Iterator var9 = propertySystem.entrySet().iterator();
 
-      String key;
       while(var9.hasNext()) {
          Map.Entry<String, String> entry = (Map.Entry)var9.next();
-         key = (String)entry.getKey();
-         key = (String)entry.getValue();
-         this.mIniFile.set(BuildInfoConstant.SettingsSystemProperty.TYPE, key, key);
+         String key = (String)entry.getKey();
+         String value = (String)entry.getValue();
+         this.mIniFile.set(BuildInfoConstant.SettingsSystemProperty.TYPE, key, value);
       }
 
       Map<String, String> propertySecure = this.buildInfo.settingsProperty(Secure.CONTENT_URI);
@@ -489,7 +487,7 @@ public class ExportDetails {
 
       while(var12.hasNext()) {
          Map.Entry<String, String> entry = (Map.Entry)var12.next();
-         key = (String)entry.getKey();
+         String key = (String)entry.getKey();
          String value = (String)entry.getValue();
          this.mIniFile.set(BuildInfoConstant.SettingsSecureProperty.TYPE, key, value);
       }
@@ -553,7 +551,6 @@ public class ExportDetails {
       List<String> fileList = FileInfoNative.getFileList("/system");
       Iterator var4 = fileList.iterator();
 
-      String file;
       while(var4.hasNext()) {
          String file = (String)var4.next();
          file = FileInfoNative.fileInfoToJson(file);
@@ -568,7 +565,7 @@ public class ExportDetails {
 
       String fileInfoToJson;
       while(var9.hasNext()) {
-         file = (String)var9.next();
+         String file = (String)var9.next();
          fileInfoToJson = FileInfoNative.fileInfoToJson(file);
          this.mIniFile.set(BuildInfoConstant.SystemFileInfo.TYPE, file, fileInfoToJson);
       }
@@ -580,7 +577,7 @@ public class ExportDetails {
       var9 = fileList.iterator();
 
       while(var9.hasNext()) {
-         file = (String)var9.next();
+         String file = (String)var9.next();
          fileInfoToJson = FileInfoNative.fileInfoToJson(file);
          this.mIniFile.set(BuildInfoConstant.SystemFileInfo.TYPE, file, fileInfoToJson);
       }

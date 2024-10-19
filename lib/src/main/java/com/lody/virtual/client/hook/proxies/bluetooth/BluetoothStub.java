@@ -49,14 +49,16 @@ public class BluetoothStub extends BinderInvocationProxy {
             public InvocationHandler createProxy(final IInterface base) {
                return new InvocationHandler() {
                   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
                      if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVMCxhNDApIy5SVg==")).equals(method.getName())) {
-                        VDeviceConfig config = null.getDeviceConfig();
-                        if (config.enable) {
-                           String mac = null.getDeviceConfig().bluetoothMac;
-                           if (!TextUtils.isEmpty(mac)) {
-                              return mac;
-                           }
-                        }
+                        //FIXME
+//                        VDeviceConfig config = null.getDeviceConfig();
+//                        if (config.enable) {
+//                           String mac = null.getDeviceConfig().bluetoothMac;
+//                           if (!TextUtils.isEmpty(mac)) {
+//                              return mac;
+//                           }
+//                        }
                      }
 
                      return method.invoke(base, args);

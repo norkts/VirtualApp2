@@ -529,7 +529,7 @@ public class VUserManagerService extends IUserManager.Stub {
                if (storedId != id) {
                   VLog.e(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc2M28nIC9iVyQwKi0ML34zMCVvVjweLRcqJWNTOD9vHg0pLxg2KGsJIARrEQ40")));
                   valueString = null;
-                  return valueString;
+                  return null;
                }
 
                serialNumber = this.readIntAttribute(parser, ATTR_SERIAL_NO, id);
