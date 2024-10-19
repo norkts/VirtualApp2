@@ -1,93 +1,101 @@
 package com.lody.virtual.server.vs;
 
 import android.util.SparseArray;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.server.interfaces.IVirtualStorageService;
 import com.lody.virtual.server.pm.VUserManagerService;
-
+import java.io.File;
 import java.util.HashMap;
 
-/**
- * @author Lody
- */
-
 public class VirtualStorageService extends IVirtualStorageService.Stub {
+   private static final VirtualStorageService sService = new VirtualStorageService();
+   private static final String[] sPublicDirs = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRY2XGIVSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OwcuKWUVLFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhgYOWwKNARiAShF"))};
+   private final VSPersistenceLayer mLayer = new VSPersistenceLayer(this);
+   private final SparseArray<HashMap<String, VSConfig>> mConfigs = new SparseArray();
 
-    private static final VirtualStorageService sService = new VirtualStorageService();
-    private final VSPersistenceLayer mLayer = new VSPersistenceLayer(this);
-    private final SparseArray<HashMap<String, VSConfig>> mConfigs = new SparseArray<>();
+   public static VirtualStorageService get() {
+      return sService;
+   }
 
-    public static VirtualStorageService get() {
-        return sService;
-    }
+   private VirtualStorageService() {
+      this.mLayer.read();
+   }
 
-    private VirtualStorageService() {
-        mLayer.read();
-    }
+   SparseArray<HashMap<String, VSConfig>> getConfigs() {
+      return this.mConfigs;
+   }
 
-    SparseArray<HashMap<String, VSConfig>> getConfigs() {
-        return mConfigs;
-    }
+   public void setVirtualStorage(String packageName, int userId, String vsPath) {
+      this.checkUserId(userId);
+      synchronized(this.mConfigs) {
+         VSConfig config = this.getOrCreateVSConfigLocked(packageName, userId);
+         config.vsPath = vsPath;
+         this.mLayer.save();
+      }
 
-    @Override
-    public void setVirtualStorage(String packageName, int userId, String vsPath) {
-        checkUserId(userId);
-        synchronized (mConfigs) {
-            VSConfig config = getOrCreateVSConfigLocked(packageName, userId);
-            config.vsPath = vsPath;
-            mLayer.save();
-        }
-    }
+      this.preInitPublicPath(vsPath);
+   }
 
-    private VSConfig getOrCreateVSConfigLocked(String packageName, int userId) {
-        HashMap<String, VSConfig> userMap = mConfigs.get(userId);
-        if (userMap == null) {
-            userMap = new HashMap<>();
-            mConfigs.put(userId, userMap);
-        }
-        VSConfig config = userMap.get(packageName);
-        if (config == null) {
-            config = new VSConfig();
-            config.enable = true;
-            userMap.put(packageName, config);
-        }
-        return config;
-    }
+   private void preInitPublicPath(String vsPath) {
+      new File(vsPath, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRY2XGIVSFo=")));
+      String[] var2 = sPublicDirs;
+      int var3 = var2.length;
 
+      for(int var4 = 0; var4 < var3; ++var4) {
+         String dir = var2[var4];
+         File file = new File(vsPath, dir);
+         if (!file.exists()) {
+            file.mkdirs();
+         }
+      }
 
-    @Override
-    public String getVirtualStorage(String packageName, int userId) {
-        checkUserId(userId);
-        synchronized (mConfigs) {
-            VSConfig config = getOrCreateVSConfigLocked(packageName, userId);
-            return config.vsPath;
-        }
-    }
+   }
 
-    @Override
-    public void setVirtualStorageState(String packageName, int userId, boolean enable) {
-        checkUserId(userId);
-        synchronized (mConfigs) {
-            VSConfig config = getOrCreateVSConfigLocked(packageName, userId);
-            config.enable = enable;
-            mLayer.save();
-        }
+   private VSConfig getOrCreateVSConfigLocked(String packageName, int userId) {
+      HashMap<String, VSConfig> userMap = (HashMap)this.mConfigs.get(userId);
+      if (userMap == null) {
+         userMap = new HashMap();
+         this.mConfigs.put(userId, userMap);
+      }
 
-    }
+      VSConfig config = (VSConfig)userMap.get(packageName);
+      if (config == null) {
+         config = new VSConfig();
+         config.enable = true;
+         userMap.put(packageName, config);
+      }
 
-    @Override
-    public boolean isVirtualStorageEnable(String packageName, int userId) {
-        checkUserId(userId);
-        synchronized (mConfigs) {
-            VSConfig config = getOrCreateVSConfigLocked(packageName, userId);
-            return config.enable;
-        }
+      return config;
+   }
 
-    }
+   public String getVirtualStorage(String packageName, int userId) {
+      this.checkUserId(userId);
+      synchronized(this.mConfigs) {
+         VSConfig config = this.getOrCreateVSConfigLocked(packageName, userId);
+         return config.vsPath;
+      }
+   }
 
-    private void checkUserId(int userId) {
-        if (!VUserManagerService.get().exists(userId)) {
-            throw new IllegalStateException("Invalid userId " + userId);
-        }
-    }
+   public void setVirtualStorageState(String packageName, int userId, boolean enable) {
+      this.checkUserId(userId);
+      synchronized(this.mConfigs) {
+         VSConfig config = this.getOrCreateVSConfigLocked(packageName, userId);
+         config.enable = enable;
+         this.mLayer.save();
+      }
+   }
+
+   public boolean isVirtualStorageEnable(String packageName, int userId) {
+      this.checkUserId(userId);
+      synchronized(this.mConfigs) {
+         VSConfig config = this.getOrCreateVSConfigLocked(packageName, userId);
+         return config.enable;
+      }
+   }
+
+   private void checkUserId(int userId) {
+      if (!VUserManagerService.get().exists(userId)) {
+         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLmsVHi9iVyQvIy0MKGQjASg=")) + userId);
+      }
+   }
 }

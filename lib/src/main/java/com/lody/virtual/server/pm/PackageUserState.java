@@ -3,48 +3,39 @@ package com.lody.virtual.server.pm;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * @author Lody
- */
-
 public class PackageUserState implements Parcelable {
+   public static final Parcelable.Creator<PackageUserState> CREATOR = new Parcelable.Creator<PackageUserState>() {
+      public PackageUserState createFromParcel(Parcel source) {
+         return new PackageUserState(source);
+      }
 
-    public static final Parcelable.Creator<PackageUserState> CREATOR = new Parcelable.Creator<PackageUserState>() {
-        @Override
-        public PackageUserState createFromParcel(Parcel source) {
-            return new PackageUserState(source);
-        }
+      public PackageUserState[] newArray(int size) {
+         return new PackageUserState[size];
+      }
+   };
+   public boolean launched;
+   public boolean hidden;
+   public boolean installed;
 
-        @Override
-        public PackageUserState[] newArray(int size) {
-            return new PackageUserState[size];
-        }
-    };
-    public boolean launched;
-    public boolean hidden;
-    public boolean installed;
+   public PackageUserState() {
+      this.installed = false;
+      this.launched = true;
+      this.hidden = false;
+   }
 
-    public PackageUserState() {
-        installed = false;
-        launched = true;
-        hidden = false;
-    }
+   protected PackageUserState(Parcel in) {
+      this.launched = in.readByte() != 0;
+      this.hidden = in.readByte() != 0;
+      this.installed = in.readByte() != 0;
+   }
 
-    protected PackageUserState(Parcel in) {
-        this.launched = in.readByte() != 0;
-        this.hidden = in.readByte() != 0;
-        this.installed = in.readByte() != 0;
-    }
+   public int describeContents() {
+      return 0;
+   }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(this.launched ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.hidden ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.installed ? (byte) 1 : (byte) 0);
-    }
+   public void writeToParcel(Parcel dest, int flags) {
+      dest.writeByte((byte)(this.launched ? 1 : 0));
+      dest.writeByte((byte)(this.hidden ? 1 : 0));
+      dest.writeByte((byte)(this.installed ? 1 : 0));
+   }
 }

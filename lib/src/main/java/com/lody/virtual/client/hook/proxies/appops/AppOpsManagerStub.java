@@ -1,46 +1,36 @@
 package com.lody.virtual.client.hook.proxies.appops;
 
-import android.annotation.TargetApi;
-import android.app.AppOpsManager;
-import android.content.Context;
-import android.os.Build;
-
+import android.os.IInterface;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.hook.annotations.Inject;
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
-
+import com.lody.virtual.client.hook.base.BinderInvocationStub;
+import mirror.android.app.AppOpsManager;
 import mirror.com.android.internal.app.IAppOpsService;
 
-/**
- * @author Lody
- * <p>
- * Fuck the AppOpsService.
- * @see android.app.AppOpsManager
- */
-@TargetApi(Build.VERSION_CODES.KITKAT)
 @Inject(MethodProxies.class)
 public class AppOpsManagerStub extends BinderInvocationProxy {
+   public AppOpsManagerStub() {
+      super(IAppOpsService.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGowIAM=")));
+   }
 
-    public AppOpsManagerStub() {
-        super(IAppOpsService.Stub.asInterface, Context.APP_OPS_SERVICE);
-    }
+   public void inject() throws Throwable {
+      super.inject();
+      if (AppOpsManager.mService != null) {
+         android.app.AppOpsManager appOpsManager = (android.app.AppOpsManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGowIAM=")));
 
-    @Override
-    public void inject() throws Throwable {
-        super.inject();
-        if (mirror.android.app.AppOpsManager.mService != null) {
-            AppOpsManager appOpsManager = (AppOpsManager) VirtualCore.get().getContext().getSystemService(Context.APP_OPS_SERVICE);
-            try {
-                mirror.android.app.AppOpsManager.mService.set(appOpsManager, getInvocationStub().getProxyInterface());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+         try {
+            AppOpsManager.mService.set(appOpsManager, (IInterface)((BinderInvocationStub)this.getInvocationStub()).getProxyInterface());
+         } catch (Exception var3) {
+            Exception e = var3;
+            e.printStackTrace();
+         }
+      }
 
-    @Override
-    protected void onBindMethods() {
-        super.onBindMethods();
-    }
+   }
 
+   protected void onBindMethods() {
+      super.onBindMethods();
+   }
 }

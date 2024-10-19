@@ -1,29 +1,21 @@
 package com.lody.virtual.client.hook.proxies.restriction;
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import com.lody.virtual.client.hook.base.ReplaceCallingPkgMethodProxy;
-
 import mirror.android.content.IRestrictionsManager;
 
-/**
- * @author Lody
- */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-
+@TargetApi(21)
 public class RestrictionStub extends BinderInvocationProxy {
-	public RestrictionStub() {
-		super(IRestrictionsManager.Stub.asInterface, Context.RESTRICTIONS_SERVICE);
-	}
+   public RestrictionStub() {
+      super(IRestrictionsManager.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKWwKFi99JwozKi0YLw==")));
+   }
 
-	@Override
-	protected void onBindMethods() {
-		super.onBindMethods();
-		addMethodProxy(new ReplaceCallingPkgMethodProxy("getApplicationRestrictions"));
-		addMethodProxy(new ReplaceCallingPkgMethodProxy("notifyPermissionResponse"));
-		addMethodProxy(new ReplaceCallingPkgMethodProxy("requestPermission"));
-	}
+   protected void onBindMethods() {
+      super.onBindMethods();
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaIAJgHgY5Lwg2MW8FMF9rDjA/KS4YJWYaGipsNyxF"))));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOD9pHjAqKgccL2oFLCVlMgogKT06KWAzNCA="))));
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uL2wVNANmHyQ/Iz1XMWoKAi9lJxpF"))));
+   }
 }

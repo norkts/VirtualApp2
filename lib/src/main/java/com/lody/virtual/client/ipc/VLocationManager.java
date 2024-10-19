@@ -1,295 +1,292 @@
 package com.lody.virtual.client.ipc;
 
 import android.app.PendingIntent;
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Build.VERSION;
 import android.util.Log;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.VClient;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.hook.proxies.location.MockLocationHelper;
 import com.lody.virtual.client.hook.utils.MethodParameterUtils;
 import com.lody.virtual.helper.utils.Reflect;
-import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.vloc.VLocation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @see LocationManager
- * <p>
- * 实现代码多，资源回收不及时：拦截gps状态，定位请求，并且交给虚拟定位服务，虚拟服务根据一样的条件，再次向系统定位服务请求
- * LocationManager.addgpslistener
- * LocationManager.request
- * <p>
- * 实现代码少：GpsStatusListenerTransport、ListenerTransport这2个对象，hook里面的方法，修改参数，都是binder
- */
 public class VLocationManager {
-    public static final String TAG = "VLoc";
-    private Handler mWorkHandler;
-    private HandlerThread mHandlerThread;
-    private final List<Object> mGpsListeners = new ArrayList<>();
-    private static VLocationManager sVLocationManager = new VLocationManager();
+   private Handler mWorkHandler;
+   private HandlerThread mHandlerThread;
+   private final List<Object> mGpsListeners = new ArrayList();
+   private static VLocationManager sVLocationManager = new VLocationManager();
+   private Runnable mUpdateGpsStatusTask = new Runnable() {
+      public void run() {
+         synchronized(VLocationManager.this.mGpsListeners) {
+            Iterator var2 = VLocationManager.this.mGpsListeners.iterator();
 
-    private VLocationManager() {
-        LocationManager locationManager = (LocationManager) VirtualCore.get().getContext().getSystemService(Context.LOCATION_SERVICE);
-        MockLocationHelper.fakeGpsStatus(locationManager);
-    }
+            while(true) {
+               if (!var2.hasNext()) {
+                  break;
+               }
 
-    public static VLocationManager get() {
-        return sVLocationManager;
-    }
-
-
-    private void checkWork() {
-        if (mHandlerThread == null) {
-            synchronized (this) {
-                if (mHandlerThread == null) {
-                    mHandlerThread = new HandlerThread("loc_thread");
-                    mHandlerThread.start();
-                }
+               Object listener = var2.next();
+               VLocationManager.this.notifyGpsStatus(listener);
             }
-        }
-        if (mWorkHandler == null) {
-            synchronized (this) {
-                if (mWorkHandler == null) {
-                    mWorkHandler = new Handler(mHandlerThread.getLooper());
-                }
+         }
+
+         VLocationManager.this.mWorkHandler.postDelayed(VLocationManager.this.mUpdateGpsStatusTask, 8000L);
+      }
+   };
+   private final Map<Object, UpdateLocationTask> mLocationTaskMap = new HashMap();
+
+   private VLocationManager() {
+      LocationManager locationManager = (LocationManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgAOWsaMC9gJFlF")));
+      MockLocationHelper.fakeGpsStatus(locationManager);
+   }
+
+   public static VLocationManager get() {
+      return sVLocationManager;
+   }
+
+   private void checkWork() {
+      if (this.mHandlerThread == null) {
+         synchronized(this) {
+            if (this.mHandlerThread == null) {
+               this.mHandlerThread = new HandlerThread(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgAOWYwMCBhNDA7KBhSVg==")));
+               this.mHandlerThread.start();
             }
-        }
-    }
+         }
+      }
 
-    private void stopGpsTask() {
-        if (mWorkHandler != null) {
-            mWorkHandler.removeCallbacks(mUpdateGpsStatusTask);
-        }
-    }
-
-    private void startGpsTask() {
-        checkWork();
-        stopGpsTask();
-        mWorkHandler.postDelayed(mUpdateGpsStatusTask, 5000);
-    }
-
-    private Runnable mUpdateGpsStatusTask = new Runnable() {
-        @Override
-        public void run() {
-            synchronized (mGpsListeners) {
-                for (Object listener : mGpsListeners) {
-                    notifyGpsStatus(listener);
-                }
+      if (this.mWorkHandler == null) {
+         synchronized(this) {
+            if (this.mWorkHandler == null) {
+               this.mWorkHandler = new Handler(this.mHandlerThread.getLooper());
             }
-            mWorkHandler.postDelayed(mUpdateGpsStatusTask, 8000);
-        }
-    };
+         }
+      }
 
+   }
 
-    public boolean hasVirtualLocation(String packageName, int userId) {
-        try {
-            return VirtualLocationManager.get().getMode(userId, packageName) != VirtualLocationManager.MODE_CLOSE;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+   private void stopGpsTask() {
+      if (this.mWorkHandler != null) {
+         this.mWorkHandler.removeCallbacks(this.mUpdateGpsStatusTask);
+      }
 
-    public boolean isProviderEnabled(String provider) {
-        return LocationManager.GPS_PROVIDER.equals(provider);
-    }
+   }
 
-    public VLocation getLocation(String packageName, int userId) {
-        return getVirtualLocation(packageName, null, userId);
-    }
+   private void startGpsTask() {
+      this.checkWork();
+      this.stopGpsTask();
+      this.mWorkHandler.postDelayed(this.mUpdateGpsStatusTask, 5000L);
+   }
 
-    public VLocation getCurAppLocation() {
-        return getVirtualLocation(VClient.get().getCurrentPackage(), null, VUserHandle.myUserId());
-    }
+   public boolean hasVirtualLocation(String packageName, int userId) {
+      try {
+         return VirtualLocationManager.get().getMode(userId, packageName) != 0;
+      } catch (Exception var4) {
+         Exception e = var4;
+         e.printStackTrace();
+         return false;
+      }
+   }
 
-    public VLocation getVirtualLocation(String packageName, Location loc, int userId) {
-        try {
-            if (VirtualLocationManager.get().getMode(userId, packageName) == VirtualLocationManager.MODE_USE_GLOBAL) {
-                return VirtualLocationManager.get().getGlobalLocation();
-            } else {
-                return VirtualLocationManager.get().getLocation(userId, packageName);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+   public boolean isProviderEnabled(String provider) {
+      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ==")).equals(provider);
+   }
 
-    public String getPackageName() {
-        return VClient.get().getCurrentPackage();
-    }
+   public VLocation getLocation(String packageName, int userId) {
+      return this.getVirtualLocation(packageName, (Location)null, userId);
+   }
 
-    public void removeGpsStatusListener(final Object[] args) {
-        if (args[0] instanceof PendingIntent) {
-            return;
-        }
-        boolean needStop;
-        synchronized (mGpsListeners) {
-            mGpsListeners.remove(args[0]);
-            needStop = mGpsListeners.size() == 0;
-        }
-        if (needStop) {
-            stopGpsTask();
-        }
-    }
+   public VLocation getCurAppLocation() {
+      return this.getVirtualLocation(VClient.get().getCurrentPackage(), (Location)null, VUserHandle.myUserId());
+   }
 
+   public VLocation getVirtualLocation(String packageName, Location loc, int userId) {
+      try {
+         return VirtualLocationManager.get().getMode(userId, packageName) == 1 ? VirtualLocationManager.get().getGlobalLocation() : VirtualLocationManager.get().getLocation(userId, packageName);
+      } catch (Exception var5) {
+         Exception e = var5;
+         e.printStackTrace();
+         return null;
+      }
+   }
 
-    public void addGpsStatusListener(final Object[] args) {
-        final Object GpsStatusListenerTransport = args[0];
-        MockLocationHelper.invokeSvStatusChanged(GpsStatusListenerTransport);
-        if (GpsStatusListenerTransport != null) {
-            synchronized (mGpsListeners) {
-                mGpsListeners.add(GpsStatusListenerTransport);
-            }
-        }
-        checkWork();
-        notifyGpsStatus(GpsStatusListenerTransport);
-        startGpsTask();
-    }
+   public String getPackageName() {
+      return VClient.get().getCurrentPackage();
+   }
 
-    private void notifyGpsStatus(final Object transport) {
-        if (transport == null) {
-            return;
-        }
-//        checkWork();
-        mWorkHandler.post(new Runnable() {
-            @Override
+   public void removeGpsStatusListener(Object[] args) {
+      if (!(args[0] instanceof PendingIntent)) {
+         boolean needStop;
+         synchronized(this.mGpsListeners) {
+            this.mGpsListeners.remove(args[0]);
+            needStop = this.mGpsListeners.size() == 0;
+         }
+
+         if (needStop) {
+            this.stopGpsTask();
+         }
+
+      }
+   }
+
+   public void addGpsStatusListener(Object[] args) {
+      Object GpsStatusListenerTransport = args[0];
+      MockLocationHelper.invokeSvStatusChanged(GpsStatusListenerTransport);
+      if (GpsStatusListenerTransport != null) {
+         synchronized(this.mGpsListeners) {
+            this.mGpsListeners.add(GpsStatusListenerTransport);
+         }
+      }
+
+      this.checkWork();
+      this.notifyGpsStatus(GpsStatusListenerTransport);
+      this.startGpsTask();
+   }
+
+   private void notifyGpsStatus(final Object transport) {
+      if (transport != null) {
+         this.mWorkHandler.post(new Runnable() {
             public void run() {
-//                GpsStatusGenerate.fakeGpsStatus(transport);
-                MockLocationHelper.invokeSvStatusChanged(transport);
-                MockLocationHelper.invokeNmeaReceived(transport);
+               MockLocationHelper.invokeSvStatusChanged(transport);
+               MockLocationHelper.invokeNmeaReceived(transport);
             }
-        });
-    }
+         });
+      }
+   }
 
-    public void removeUpdates(final Object[] args) {
-        if (args[0] != null) {
-            UpdateLocationTask task = getTask(args[0]);
-            if (task != null) {
-                task.stop();
-            }
-        }
-    }
+   public void removeUpdates(Object[] args) {
+      if (args[0] != null) {
+         UpdateLocationTask task = this.getTask(args[0]);
+         if (task != null) {
+            task.stop();
+         }
+      }
 
-    public void requestLocationUpdates(Object[] args) {
-        //15-16 last
-        final int index;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            index = 1;
-        } else {
-            index = args.length - 1;
-        }
-        final Object listenerTransport = args[index];
-        if (listenerTransport == null) {
-            Log.e(TAG, "ListenerTransport:null");
-        } else {
-            //mInterval
-            long mInterval;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                try {
-                    mInterval = Reflect.on(args[0]).get("mInterval");
-                } catch (Throwable e) {
-                    mInterval = 60 * 1000;
-                }
-            } else {
-                mInterval = MethodParameterUtils.getFirstParam(args, Long.class);
-            }
-            VLocation location = getCurAppLocation();
-            checkWork();
-            notifyLocation(listenerTransport, location.toSysLocation(), true);
-            UpdateLocationTask task = getTask(listenerTransport);
-            if (task == null) {
-                synchronized (mLocationTaskMap) {
-                    task = new UpdateLocationTask(listenerTransport, mInterval);
-                    mLocationTaskMap.put(listenerTransport, task);
-                }
-            }
-            task.start();
-        }
-    }
+   }
 
-    private boolean notifyLocation(final Object ListenerTransport, final Location location, boolean post) {
-        if (ListenerTransport == null) {
-            return false;
-        }
-        if (!post) {
+   public void requestLocationUpdates(Object[] args) {
+      int index;
+      if (VERSION.SDK_INT >= 17) {
+         index = 1;
+      } else {
+         index = args.length - 1;
+      }
+
+      Object listenerTransport = args[index];
+      if (listenerTransport == null) {
+         Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITwED2szSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OxgYKWwFNCZiASxLIz0iDmoKTSVsNC8xLC0uKGAVSFo=")));
+      } else {
+         long mInterval;
+         if (VERSION.SDK_INT >= 17) {
             try {
-                mirror.android.location.LocationManager.ListenerTransport.onLocationChanged.call(ListenerTransport, location);
-                return true;
-            } catch (Throwable e) {
-                e.printStackTrace();
+               mInterval = (Long)Reflect.on(args[0]).get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwYYCGwFNARmNCAo")));
+            } catch (Throwable var11) {
+               mInterval = 60000L;
             }
+         } else {
+            mInterval = (Long)MethodParameterUtils.getFirstParam(args, Long.class);
+         }
+
+         VLocation location = this.getCurAppLocation();
+         this.checkWork();
+         this.notifyLocation(listenerTransport, location.toSysLocation(), true);
+         UpdateLocationTask task = this.getTask(listenerTransport);
+         if (task == null) {
+            synchronized(this.mLocationTaskMap) {
+               task = new UpdateLocationTask(listenerTransport, mInterval);
+               this.mLocationTaskMap.put(listenerTransport, task);
+            }
+         }
+
+         task.start();
+      }
+
+   }
+
+   private boolean notifyLocation(final Object ListenerTransport, final Location location, boolean post) {
+      if (ListenerTransport == null) {
+         return false;
+      } else if (!post) {
+         try {
+            mirror.android.location.LocationManager.ListenerTransport.onLocationChanged.call(ListenerTransport, location);
+            return true;
+         } catch (Throwable var5) {
+            Throwable e = var5;
+            e.printStackTrace();
             return false;
-        }
-        mWorkHandler.post(new Runnable() {
-            @Override
+         }
+      } else {
+         this.mWorkHandler.post(new Runnable() {
             public void run() {
-                try {
-                    mirror.android.location.LocationManager.ListenerTransport.onLocationChanged.call(ListenerTransport, location);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+               try {
+                  mirror.android.location.LocationManager.ListenerTransport.onLocationChanged.call(ListenerTransport, location);
+               } catch (Throwable var2) {
+                  Throwable e = var2;
+                  e.printStackTrace();
+               }
+
             }
-        });
-        return true;
-    }
+         });
+         return true;
+      }
+   }
 
-    private final Map<Object, UpdateLocationTask> mLocationTaskMap = new HashMap<>();
+   private UpdateLocationTask getTask(Object locationListener) {
+      synchronized(this.mLocationTaskMap) {
+         UpdateLocationTask task = (UpdateLocationTask)this.mLocationTaskMap.get(locationListener);
+         return task;
+      }
+   }
 
-    private UpdateLocationTask getTask(Object locationListener) {
-        UpdateLocationTask task;
-        synchronized (mLocationTaskMap) {
-            task = mLocationTaskMap.get(locationListener);
-        }
-        return task;
-    }
+   private class UpdateLocationTask implements Runnable {
+      private Object mListenerTransport;
+      private long mTime;
+      private volatile boolean mRunning;
 
-    private class UpdateLocationTask implements Runnable {
-        private Object mListenerTransport;
-        private long mTime;
-        private volatile boolean mRunning;
+      private UpdateLocationTask(Object ListenerTransport, long time) {
+         this.mListenerTransport = ListenerTransport;
+         this.mTime = time;
+      }
 
-        private UpdateLocationTask(Object ListenerTransport, long time) {
-            mListenerTransport = ListenerTransport;
-            mTime = time;
-        }
-
-        @Override
-        public void run() {
-            if (mRunning) {
-                VLocation location = getCurAppLocation();
-                if (location != null) {
-                    if (notifyLocation(mListenerTransport, location.toSysLocation(), false)) {
-                        start();
-                    }
-                }
+      public void run() {
+         if (this.mRunning) {
+            VLocation location = VLocationManager.this.getCurAppLocation();
+            if (location != null && VLocationManager.this.notifyLocation(this.mListenerTransport, location.toSysLocation(), false)) {
+               this.start();
             }
-        }
+         }
 
-        public void start() {
-            mRunning = true;
-            mWorkHandler.removeCallbacks(this);
-            if (mTime > 0) {
-                mWorkHandler.postDelayed(this, mTime);
-            } else {
-                mWorkHandler.post(this);
-            }
-        }
+      }
 
-        public void stop() {
-            mRunning = false;
-            mWorkHandler.removeCallbacks(this);
-        }
-    }
+      public void start() {
+         this.mRunning = true;
+         VLocationManager.this.mWorkHandler.removeCallbacks(this);
+         if (this.mTime > 0L) {
+            VLocationManager.this.mWorkHandler.postDelayed(this, this.mTime);
+         } else {
+            VLocationManager.this.mWorkHandler.post(this);
+         }
+
+      }
+
+      public void stop() {
+         this.mRunning = false;
+         VLocationManager.this.mWorkHandler.removeCallbacks(this);
+      }
+
+      // $FF: synthetic method
+      UpdateLocationTask(Object x1, long x2, Object x3) {
+         this(x1, x2);
+      }
+   }
 }

@@ -1,116 +1,101 @@
-/*
- *  Copyright 2011 Alexey Andreev.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
 package com.lody.virtual.helper.collection;
 
+import com.lody.virtual.StringFog;
 import java.util.Arrays;
 
-/**
- * @author Lody
- */
 public class IntArray {
-    private static final int[] EMPTY_ARRAY = new int[0];
-    private int[] mData;
-    private int mSize;
+   private static final int[] EMPTY_ARRAY = new int[0];
+   private int[] mData;
+   private int mSize;
 
-    private IntArray() {
-    }
+   private IntArray() {
+   }
 
-    public IntArray(int capacity) {
-        this.mData = new int[capacity];
-    }
+   public IntArray(int capacity) {
+      this.mData = new int[capacity];
+   }
 
-    public static IntArray of(int... values) {
-        IntArray array = new IntArray();
-        array.mData = Arrays.copyOf(values, values.length);
-        array.mSize = values.length;
-        return array;
-    }
+   public static IntArray of(int... values) {
+      IntArray array = new IntArray();
+      array.mData = Arrays.copyOf(values, values.length);
+      array.mSize = values.length;
+      return array;
+   }
 
-    public void clear() {
-        mSize = 0;
-    }
+   public void clear() {
+      this.mSize = 0;
+   }
 
-    public void optimize() {
-        if (mSize > mData.length) {
-            mData = Arrays.copyOf(mData, mSize);
-        }
-    }
+   public void optimize() {
+      if (this.mSize > this.mData.length) {
+         this.mData = Arrays.copyOf(this.mData, this.mSize);
+      }
 
-    public int[] getAll() {
-        return mSize > 0 ? Arrays.copyOf(mData, mSize) : EMPTY_ARRAY;
-    }
+   }
 
-    public int get(int index) {
-        return mData[index];
-    }
+   public int[] getAll() {
+      return this.mSize > 0 ? Arrays.copyOf(this.mData, this.mSize) : EMPTY_ARRAY;
+   }
 
-    public int[] getRange(int start, int end) {
-        return Arrays.copyOfRange(mData, start, end);
-    }
+   public int get(int index) {
+      return this.mData[index];
+   }
 
-    public void set(int index, int value) {
-        if (index >= mSize) {
-            throw new IndexOutOfBoundsException("Index " + index + " is greater than the list size " + mSize);
-        }
-        mData[index] = value;
-    }
+   public int[] getRange(int start, int end) {
+      return Arrays.copyOfRange(this.mData, start, end);
+   }
 
-    private void ensureCapacity() {
-        if (mSize <= mData.length) {
-            return;
-        }
-        int newCap = mData.length;
-        while (mSize > newCap) {
-            newCap = newCap * 3 / 2 + 1;
-        }
-        mData = Arrays.copyOf(mData, newCap);
-    }
+   public void set(int index, int value) {
+      if (index >= this.mSize) {
+         throw new IndexOutOfBoundsException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcPGgaRCg=")) + index + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYKXsFPARiDiAgKAgtOmUzFjdlMzw/IwgtJGAaGjZqVyA8Ki06J3gVSFo=")) + this.mSize);
+      } else {
+         this.mData[index] = value;
+      }
+   }
 
-    public int size() {
-        return mSize;
-    }
+   private void ensureCapacity() {
+      if (this.mSize > this.mData.length) {
+         int newCap;
+         for(newCap = this.mData.length; this.mSize > newCap; newCap = newCap * 3 / 2 + 1) {
+         }
 
-    public void addAll(int[] items) {
-        int target = mSize;
-        mSize += items.length;
-        ensureCapacity();
-        System.arraycopy(items, 0, mData, target, items.length);
-    }
+         this.mData = Arrays.copyOf(this.mData, newCap);
+      }
+   }
 
-    public void add(int item) {
-        ++mSize;
-        ensureCapacity();
-        mData[mSize - 1] = item;
-    }
+   public int size() {
+      return this.mSize;
+   }
 
-    public void remove(int index) {
-        remove(index, 1);
-    }
+   public void addAll(int[] items) {
+      int target = this.mSize;
+      this.mSize += items.length;
+      this.ensureCapacity();
+      System.arraycopy(items, 0, this.mData, target, items.length);
+   }
 
-    public void remove(int index, int count) {
-        System.arraycopy(mData, index + count, mData, index, mSize - index - count);
-        mSize -= count;
-    }
+   public void add(int item) {
+      ++this.mSize;
+      this.ensureCapacity();
+      this.mData[this.mSize - 1] = item;
+   }
 
-    public boolean contains(int item) {
-        for (int i = 0; i < mSize; ++i) {
-            if (mData[i] == item) {
-                return true;
-            }
-        }
-        return false;
-    }
+   public void remove(int index) {
+      this.remove(index, 1);
+   }
+
+   public void remove(int index, int count) {
+      System.arraycopy(this.mData, index + count, this.mData, index, this.mSize - index - count);
+      this.mSize -= count;
+   }
+
+   public boolean contains(int item) {
+      for(int i = 0; i < this.mSize; ++i) {
+         if (this.mData[i] == item) {
+            return true;
+         }
+      }
+
+      return false;
+   }
 }

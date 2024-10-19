@@ -2,32 +2,32 @@ package android.location;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.lody.virtual.StringFog;
 
 public final class LocationRequest implements Parcelable {
+   public static final Parcelable.Creator<LocationRequest> CREATOR = new Parcelable.Creator<LocationRequest>() {
+      public LocationRequest createFromParcel(Parcel in) {
+         throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+      }
 
-    public String getProvider() {
-        return null;
-    }
+      public LocationRequest[] newArray(int size) {
+         throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+      }
+   };
 
+   public LocationRequest setProvider(String provider) {
+      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+   }
 
-    public static final Creator<LocationRequest> CREATOR = new Creator<LocationRequest>() {
-        @Override
-        public LocationRequest createFromParcel(Parcel in) {
-            return null;
-        }
+   public String getProvider() {
+      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+   }
 
-        @Override
-        public LocationRequest[] newArray(int size) {
-            return null;
-        }
-    };
+   public int describeContents() {
+      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+   }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-    }
+   public void writeToParcel(Parcel dest, int flags) {
+      throw new RuntimeException(StringFog.decrypt("IBEHFEQ="));
+   }
 }

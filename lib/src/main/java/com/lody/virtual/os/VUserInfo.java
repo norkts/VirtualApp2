@@ -2,174 +2,130 @@ package com.lody.virtual.os;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.lody.virtual.StringFog;
 
-/**
- * Per-user information.
- */
 public class VUserInfo implements Parcelable {
+   public static final int FLAG_MASK_USER_TYPE = 255;
+   public static final int FLAG_PRIMARY = 1;
+   public static final int FLAG_ADMIN = 2;
+   public static final int FLAG_GUEST = 4;
+   public static final int FLAG_RESTRICTED = 8;
+   public static final int FLAG_INITIALIZED = 16;
+   public static final int FLAG_MANAGED_PROFILE = 32;
+   public static final int FLAG_DISABLED = 64;
+   public static final int NO_PROFILE_GROUP_ID = -1;
+   public int id;
+   public int serialNumber;
+   public String name;
+   public String iconPath;
+   public int flags;
+   public long creationTime;
+   public long lastLoggedInTime;
+   public int profileGroupId;
+   public boolean partial;
+   public boolean guestToRemove;
+   public static final Parcelable.Creator<VUserInfo> CREATOR = new Parcelable.Creator<VUserInfo>() {
+      public VUserInfo createFromParcel(Parcel source) {
+         return new VUserInfo(source);
+      }
 
-    /** 8 bits for user type */
-    public static final int FLAG_MASK_USER_TYPE = 0x000000FF;
+      public VUserInfo[] newArray(int size) {
+         return new VUserInfo[size];
+      }
+   };
 
-    /**
-     * *************************** NOTE ***************************
-     * These flag values CAN NOT CHANGE because they are written
-     * directly to storage.
-     */
+   public VUserInfo(int id, String name, int flags) {
+      this(id, name, (String)null, flags);
+   }
 
-    /**
-     * Primary user. Only one user can have this flag set. Meaning of this
-     * flag TBD.
-     */
-    public static final int FLAG_PRIMARY = 0x00000001;
+   public VUserInfo(int id, String name, String iconPath, int flags) {
+      this.id = id;
+      this.name = name;
+      this.flags = flags;
+      this.iconPath = iconPath;
+      this.profileGroupId = -1;
+   }
 
-    /**
-     * User with administrative privileges. Such a user can create and
-     * delete users.
-     */
-    public static final int FLAG_ADMIN   = 0x00000002;
+   public boolean isPrimary() {
+      return (this.flags & 1) == 1;
+   }
 
-    /**
-     * Indicates a guest user that may be transient.
-     */
-    public static final int FLAG_GUEST   = 0x00000004;
+   public boolean isAdmin() {
+      return (this.flags & 2) == 2;
+   }
 
-    /**
-     * Indicates the user has restrictions in privileges, in addition to those for normal users.
-     * Exact meaning TBD. For instance, maybe they can't install apps or administer WiFi access pts.
-     */
-    public static final int FLAG_RESTRICTED = 0x00000008;
+   public boolean isGuest() {
+      return (this.flags & 4) == 4;
+   }
 
-    /**
-     * Indicates that this user has gone through its first-time initialization.
-     */
-    public static final int FLAG_INITIALIZED = 0x00000010;
+   public boolean isRestricted() {
+      return (this.flags & 8) == 8;
+   }
 
-    /**
-     * Indicates that this user is a profile of another user, for example holding a users
-     * corporate data.
-     */
-    public static final int FLAG_MANAGED_PROFILE = 0x00000020;
+   public boolean isManagedProfile() {
+      return (this.flags & 32) == 32;
+   }
 
-    /**
-     * Indicates that this user is disabled.
-     */
-    public static final int FLAG_DISABLED = 0x00000040;
+   public boolean isEnabled() {
+      return (this.flags & 64) != 64;
+   }
 
+   public VUserInfo() {
+   }
 
-    public static final int NO_PROFILE_GROUP_ID = -1;
+   public VUserInfo(int id) {
+      this.id = id;
+   }
 
-    public int id;
-    public int serialNumber;
-    public String name;
-    public String iconPath;
-    public int flags;
-    public long creationTime;
-    public long lastLoggedInTime;
-    public int profileGroupId;
+   public VUserInfo(VUserInfo orig) {
+      this.name = orig.name;
+      this.iconPath = orig.iconPath;
+      this.id = orig.id;
+      this.flags = orig.flags;
+      this.serialNumber = orig.serialNumber;
+      this.creationTime = orig.creationTime;
+      this.lastLoggedInTime = orig.lastLoggedInTime;
+      this.partial = orig.partial;
+      this.profileGroupId = orig.profileGroupId;
+      this.guestToRemove = orig.guestToRemove;
+   }
 
-    /** User is only partially created. */
-    public boolean partial;
-    public boolean guestToRemove;
+   public String toString() {
+      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc2M28hAiZiNB4h")) + this.id + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + this.name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")) + Integer.toHexString(this.flags) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LwhSVg=="));
+   }
 
-    public VUserInfo(int id, String name, int flags) {
-        this(id, name, null, flags);
-    }
+   public int describeContents() {
+      return 0;
+   }
 
-    public VUserInfo(int id, String name, String iconPath, int flags) {
-        this.id = id;
-        this.name = name;
-        this.flags = flags;
-        this.iconPath = iconPath;
-        this.profileGroupId = NO_PROFILE_GROUP_ID;
-    }
+   public void writeToParcel(Parcel dest, int parcelableFlags) {
+      dest.writeInt(this.id);
+      dest.writeString(this.name);
+      dest.writeString(this.iconPath);
+      dest.writeInt(this.flags);
+      dest.writeInt(this.serialNumber);
+      dest.writeLong(this.creationTime);
+      dest.writeLong(this.lastLoggedInTime);
+      dest.writeInt(this.partial ? 1 : 0);
+      dest.writeInt(this.profileGroupId);
+      dest.writeInt(this.guestToRemove ? 1 : 0);
+   }
 
-    public boolean isPrimary() {
-        return (flags & FLAG_PRIMARY) == FLAG_PRIMARY;
-    }
+   private VUserInfo(Parcel source) {
+      this.id = source.readInt();
+      this.name = source.readString();
+      this.iconPath = source.readString();
+      this.flags = source.readInt();
+      this.serialNumber = source.readInt();
+      this.creationTime = source.readLong();
+      this.lastLoggedInTime = source.readLong();
+      this.partial = source.readInt() != 0;
+      this.profileGroupId = source.readInt();
+      this.guestToRemove = source.readInt() != 0;
+   }
 
-    public boolean isAdmin() {
-        return (flags & FLAG_ADMIN) == FLAG_ADMIN;
-    }
-
-    public boolean isGuest() {
-        return (flags & FLAG_GUEST) == FLAG_GUEST;
-    }
-
-    public boolean isRestricted() {
-        return (flags & FLAG_RESTRICTED) == FLAG_RESTRICTED;
-    }
-
-    public boolean isManagedProfile() {
-        return (flags & FLAG_MANAGED_PROFILE) == FLAG_MANAGED_PROFILE;
-    }
-
-    public boolean isEnabled() {
-        return (flags & FLAG_DISABLED) != FLAG_DISABLED;
-    }
-
-    public VUserInfo() {
-    }
-
-    public VUserInfo(int id) {
-        this.id = id;
-    }
-
-    public VUserInfo(VUserInfo orig) {
-        name = orig.name;
-        iconPath = orig.iconPath;
-        id = orig.id;
-        flags = orig.flags;
-        serialNumber = orig.serialNumber;
-        creationTime = orig.creationTime;
-        lastLoggedInTime = orig.lastLoggedInTime;
-        partial = orig.partial;
-        profileGroupId = orig.profileGroupId;
-        guestToRemove = orig.guestToRemove;
-    }
-
-    @Override
-    public String toString() {
-        return "UserInfo{" + id + ":" + name + ":" + Integer.toHexString(flags) + "}";
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel dest, int parcelableFlags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeString(iconPath);
-        dest.writeInt(flags);
-        dest.writeInt(serialNumber);
-        dest.writeLong(creationTime);
-        dest.writeLong(lastLoggedInTime);
-        dest.writeInt(partial ? 1 : 0);
-        dest.writeInt(profileGroupId);
-        dest.writeInt(guestToRemove ? 1 : 0);
-    }
-
-    public static final Parcelable.Creator<VUserInfo> CREATOR
-            = new Parcelable.Creator<VUserInfo>() {
-        public VUserInfo createFromParcel(Parcel source) {
-            return new VUserInfo(source);
-        }
-        public VUserInfo[] newArray(int size) {
-            return new VUserInfo[size];
-        }
-    };
-
-    private VUserInfo(Parcel source) {
-        id = source.readInt();
-        name = source.readString();
-        iconPath = source.readString();
-        flags = source.readInt();
-        serialNumber = source.readInt();
-        creationTime = source.readLong();
-        lastLoggedInTime = source.readLong();
-        partial = source.readInt() != 0;
-        profileGroupId = source.readInt();
-        guestToRemove = source.readInt() != 0;
-    }
+   // $FF: synthetic method
+   VUserInfo(Parcel x0, Object x1) {
+      this(x0);
+   }
 }

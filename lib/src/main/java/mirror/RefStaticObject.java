@@ -2,34 +2,34 @@ package mirror;
 
 import java.lang.reflect.Field;
 
-@SuppressWarnings("unchecked")
 public class RefStaticObject<T> {
-    private Field field;
+   private Field field;
 
-    public RefStaticObject(Class<?> cls, Field field) throws NoSuchFieldException {
-        this.field = cls.getDeclaredField(field.getName());
-        this.field.setAccessible(true);
-    }
+   public RefStaticObject(Class<?> cls, Field field) throws NoSuchFieldException {
+      this.field = cls.getDeclaredField(field.getName());
+      this.field.setAccessible(true);
+   }
 
-    public Class<?> type() {
-        return field.getType();
-    }
+   public Class<?> type() {
+      return this.field.getType();
+   }
 
-    public T get() {
-        T obj = null;
-        try {
-            obj = (T) this.field.get(null);
-        } catch (Exception e) {
-            //Ignore
-        }
-        return obj;
-    }
+   public T get() {
+      T obj = null;
 
-    public void set(T obj) {
-        try {
-            this.field.set(null, obj);
-        } catch (Exception e) {
-            //Ignore
-        }
-    }
+      try {
+         obj = this.field.get((Object)null);
+      } catch (Exception var3) {
+      }
+
+      return obj;
+   }
+
+   public void set(T obj) {
+      try {
+         this.field.set((Object)null, obj);
+      } catch (Exception var3) {
+      }
+
+   }
 }

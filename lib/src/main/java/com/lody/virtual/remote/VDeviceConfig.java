@@ -5,245 +5,288 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
-
+import com.lody.virtual.StringFog;
+import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VEnvironment;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * @author Lody
- */
 public class VDeviceConfig implements Parcelable {
+   private static final UsedDeviceInfoPool mPool = new UsedDeviceInfoPool();
+   public static final int VERSION = 3;
+   public boolean enable;
+   public String deviceId;
+   public String androidId;
+   public String wifiMac;
+   public String wifiName;
+   public String bluetoothMac;
+   public String iccId;
+   public String serial;
+   public String gmsAdId;
+   public String bluetoothName;
+   public final Map<String, String> buildProp = new HashMap();
+   public static final Parcelable.Creator<VDeviceConfig> CREATOR = new Parcelable.Creator<VDeviceConfig>() {
+      public VDeviceConfig createFromParcel(Parcel source) {
+         return new VDeviceConfig(source);
+      }
 
-    private static final UsedDeviceInfoPool mPool = new UsedDeviceInfoPool();
+      public VDeviceConfig[] newArray(int size) {
+         return new VDeviceConfig[size];
+      }
+   };
 
-    private static final class UsedDeviceInfoPool {
-        final List<String> deviceIds = new ArrayList<>();
-        final List<String> androidIds = new ArrayList<>();
-        final List<String> wifiMacs = new ArrayList<>();
-        final List<String> bluetoothMacs = new ArrayList<>();
-        final List<String> iccIds = new ArrayList<>();
-    }
+   public VDeviceConfig() {
+   }
 
-    public static final int VERSION = 3;
+   public int describeContents() {
+      return 0;
+   }
 
-    public boolean enable;
+   public void writeToParcel(Parcel dest, int flags) {
+      dest.writeByte((byte)(this.enable ? 1 : 0));
+      dest.writeString(this.deviceId);
+      dest.writeString(this.androidId);
+      dest.writeString(this.wifiMac);
+      dest.writeString(this.wifiName);
+      dest.writeString(this.bluetoothMac);
+      dest.writeString(this.iccId);
+      dest.writeString(this.serial);
+      dest.writeString(this.gmsAdId);
+      dest.writeInt(this.buildProp.size());
+      Iterator var3 = this.buildProp.entrySet().iterator();
 
-    public String deviceId;
-    public String androidId;
-    public String wifiMac;
-    public String bluetoothMac;
-    public String iccId;
-    public String serial;
-    public String gmsAdId;
+      while(var3.hasNext()) {
+         Map.Entry<String, String> entry = (Map.Entry)var3.next();
+         dest.writeString((String)entry.getKey());
+         dest.writeString((String)entry.getValue());
+      }
 
-    public final Map<String, String> buildProp = new HashMap<>();
+      dest.writeString(this.bluetoothName);
+   }
 
-    public VDeviceConfig() {
-    }
+   public VDeviceConfig(Parcel in) {
+      this.enable = in.readByte() != 0;
+      this.deviceId = in.readString();
+      this.androidId = in.readString();
+      this.wifiMac = in.readString();
+      this.wifiName = in.readString();
+      this.bluetoothMac = in.readString();
+      this.iccId = in.readString();
+      this.serial = in.readString();
+      this.gmsAdId = in.readString();
+      int buildPropSize = in.readInt();
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+      for(int i = 0; i < buildPropSize; ++i) {
+         String key = in.readString();
+         String value = in.readString();
+         this.buildProp.put(key, value);
+      }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(this.enable ? (byte) 1 : (byte) 0);
-        dest.writeString(this.deviceId);
-        dest.writeString(this.androidId);
-        dest.writeString(this.wifiMac);
-        dest.writeString(this.bluetoothMac);
-        dest.writeString(this.iccId);
-        dest.writeString(this.serial);
-        dest.writeString(this.gmsAdId);
-        dest.writeInt(this.buildProp.size());
-        for (Map.Entry<String, String> entry : this.buildProp.entrySet()) {
-            dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
-        }
-    }
+      this.bluetoothName = in.readString();
+   }
 
-    public VDeviceConfig(Parcel in) {
-        this.enable = in.readByte() != 0;
-        this.deviceId = in.readString();
-        this.androidId = in.readString();
-        this.wifiMac = in.readString();
-        this.bluetoothMac = in.readString();
-        this.iccId = in.readString();
-        this.serial = in.readString();
-        this.gmsAdId = in.readString();
-        int buildPropSize = in.readInt();
-        for (int i = 0; i < buildPropSize; i++) {
-            String key = in.readString();
-            String value = in.readString();
-            this.buildProp.put(key, value);
-        }
-    }
+   public String getProp(String key) {
+      return (String)this.buildProp.get(key);
+   }
 
-    public static final Creator<VDeviceConfig> CREATOR = new Creator<VDeviceConfig>() {
-        @Override
-        public VDeviceConfig createFromParcel(Parcel source) {
-            return new VDeviceConfig(source);
-        }
+   public void setProp(String key, String value) {
+      this.buildProp.put(key, value);
+   }
 
-        @Override
-        public VDeviceConfig[] newArray(int size) {
-            return new VDeviceConfig[size];
-        }
-    };
+   public void clear() {
+      this.deviceId = null;
+      this.androidId = null;
+      this.wifiMac = null;
+      this.wifiName = null;
+      this.bluetoothMac = null;
+      this.iccId = null;
+      this.serial = null;
+      this.gmsAdId = null;
+   }
 
-    public String getProp(String key) {
-        return buildProp.get(key);
-    }
+   public static VDeviceConfig random() {
+      VDeviceConfig info = new VDeviceConfig();
 
-    public void setProp(String key, String value) {
-        buildProp.put(key, value);
-    }
+      String value;
+      do {
+         value = generateDeviceId();
+         info.deviceId = value;
+      } while(mPool.deviceIds.contains(value));
 
+      do {
+         value = generateHex(System.currentTimeMillis(), 16);
+         info.androidId = value;
+      } while(mPool.androidIds.contains(value));
 
-    public void clear() {
-        deviceId = null;
-        androidId = null;
-        wifiMac = null;
-        bluetoothMac = null;
-        iccId = null;
-        serial = null;
-        gmsAdId = null;
-    }
+      do {
+         value = generateMac();
+         info.wifiMac = value;
+      } while(mPool.wifiMacs.contains(value));
 
-    public static VDeviceConfig random() {
-        VDeviceConfig info = new VDeviceConfig();
-        String value;
-        do {
-            value = generateDeviceId();
-            info.deviceId = value;
-        } while (mPool.deviceIds.contains(value));
-        do {
-            value = generateHex(System.currentTimeMillis(), 16);
-            info.androidId = value;
-        } while (mPool.androidIds.contains(value));
-        do {
-            value = generateMac();
-            info.wifiMac = value;
-        } while (mPool.wifiMacs.contains(value));
-        do {
-            value = generateMac();
-            info.bluetoothMac = value;
-        } while (mPool.bluetoothMacs.contains(value));
+      do {
+         value = generate10(System.currentTimeMillis(), 10);
+         info.wifiName = value;
+      } while(mPool.wifiName.contains(value));
 
-        do {
-            value = generate10(System.currentTimeMillis(), 20);
-            info.iccId = value;
-        } while (mPool.iccIds.contains(value));
+      do {
+         value = generateMac();
+         info.bluetoothMac = value;
+      } while(mPool.bluetoothMacs.contains(value));
 
-        info.serial = generateSerial();
+      do {
+         value = generate10(System.currentTimeMillis(), 20);
+         info.iccId = value;
+      } while(mPool.iccIds.contains(value));
 
-        addToPool(info);
-        return info;
-    }
+      info.serial = generateSerial();
+      addToPool(info);
+      return info;
+   }
 
+   public static String generateDeviceId() {
+      return generate10(System.currentTimeMillis(), 15);
+   }
 
-    public static String generateDeviceId() {
-        return generate10(System.currentTimeMillis(), 15);
-    }
+   public static String generate10(long seed, int length) {
+      Random random = new Random(seed);
+      StringBuilder sb = new StringBuilder();
 
+      for(int i = 0; i < length; ++i) {
+         sb.append(random.nextInt(10));
+      }
 
-    public static String generate10(long seed, int length) {
-        Random random = new Random(seed);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            sb.append(random.nextInt(10));
-        }
-        return sb.toString();
-    }
+      return sb.toString();
+   }
 
-    public static String generateHex(long seed, int length) {
-        Random random = new Random(seed);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int nextInt = random.nextInt(16);
-            if (nextInt < 10) {
-                sb.append(nextInt);
-            } else {
-                sb.append((char) ((nextInt - 10) + 'a'));
-            }
-        }
-        return sb.toString();
-    }
+   public static String generateHex(long seed, int length) {
+      Random random = new Random(seed);
+      StringBuilder sb = new StringBuilder();
 
-    private static String generateMac() {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        int next = 1;
-        int cur = 0;
-        while (cur < 12) {
-            int val = random.nextInt(16);
-            if (val < 10) {
-                sb.append(val);
-            } else {
-                sb.append((char) (val + 87));
-            }
-            if (cur == next && cur != 11) {
-                sb.append(":");
-                next += 2;
-            }
-            cur++;
-        }
-        return sb.toString();
-    }
+      for(int i = 0; i < length; ++i) {
+         int nextInt = random.nextInt(16);
+         if (nextInt < 10) {
+            sb.append(nextInt);
+         } else {
+            sb.append((char)(nextInt - 10 + 97));
+         }
+      }
 
-    @SuppressLint("HardwareIds")
-    private static String generateSerial() {
-        String serial;
-        if (Build.SERIAL == null || Build.SERIAL.length() <= 0) {
-            serial = "0123456789ABCDEF";
-        } else {
-            serial = Build.SERIAL;
-        }
-        List<Character> list = new ArrayList<>();
-        for (char c : serial.toCharArray()) {
-            list.add(c);
-        }
-        Collections.shuffle(list);
-        StringBuilder sb = new StringBuilder();
-        for (Character c : list) {
-            sb.append(c.charValue());
-        }
-        return sb.toString();
-    }
+      return sb.toString();
+   }
 
+   private static String generateMac() {
+      Random random = new Random();
+      StringBuilder sb = new StringBuilder();
+      int next = 1;
 
-    public File getWifiFile(int userId, boolean is64Bit) {
-        if (TextUtils.isEmpty(wifiMac)) {
-            return null;
-        }
-        File wifiMacFie = VEnvironment.getWifiMacFile(userId, is64Bit);
-        if (!wifiMacFie.exists()) {
+      for(int cur = 0; cur < 12; ++cur) {
+         int val = random.nextInt(16);
+         if (val < 10) {
+            sb.append(val);
+         } else {
+            sb.append((char)(val + 87));
+         }
+
+         if (cur == next && cur != 11) {
+            sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OD5SVg==")));
+            next += 2;
+         }
+      }
+
+      return sb.toString();
+   }
+
+   @SuppressLint({"HardwareIds"})
+   private static String generateSerial() {
+      String serial;
+      if (Build.SERIAL != null && Build.SERIAL.length() > 0) {
+         serial = Build.SERIAL;
+      } else {
+         serial = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ol49Kn80MwVMMzsaPQUiEmYLBhVjN1RF"));
+      }
+
+      List<Character> list = new ArrayList();
+      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCR3N1RF")) + serial);
+      char[] var2 = serial.toCharArray();
+      int var3 = var2.length;
+
+      for(int var4 = 0; var4 < var3; ++var4) {
+         char c = var2[var4];
+         list.add(c);
+      }
+
+      Collections.shuffle(list);
+      StringBuilder sb = new StringBuilder();
+      Iterator var7 = list.iterator();
+
+      while(var7.hasNext()) {
+         Character c = (Character)var7.next();
+         sb.append(c);
+      }
+
+      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCRLHyggIz0cDmkLRQVqAQIvLhcLPg==")) + sb.toString());
+      return sb.toString();
+   }
+
+   public File getWifiFile(int userId, boolean isExt) {
+      if (TextUtils.isEmpty(this.wifiMac)) {
+         return null;
+      } else {
+         File wifiMacFie = VEnvironment.getWifiMacFile(userId, isExt);
+         if (!wifiMacFie.exists()) {
             try {
-                RandomAccessFile file = new RandomAccessFile(wifiMacFie, "rws");
-                file.write((wifiMac + "\n").getBytes());
-                file.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+               RandomAccessFile file = new RandomAccessFile(wifiMacFie, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mKQ==")));
+               file.write((this.wifiMac + "\n").getBytes());
+               file.close();
+            } catch (IOException var5) {
+               IOException e = var5;
+               e.printStackTrace();
             }
-        }
-        return wifiMacFie;
-    }
+         }
 
-    public static void addToPool(VDeviceConfig info) {
-        mPool.deviceIds.add(info.deviceId);
-        mPool.androidIds.add(info.androidId);
-        mPool.wifiMacs.add(info.wifiMac);
-        mPool.bluetoothMacs.add(info.bluetoothMac);
-        mPool.iccIds.add(info.iccId);
-    }
+         return wifiMacFie;
+      }
+   }
+
+   public static void addToPool(VDeviceConfig info) {
+      mPool.deviceIds.add(info.deviceId);
+      mPool.androidIds.add(info.androidId);
+      mPool.wifiMacs.add(info.wifiMac);
+      mPool.wifiName.add(info.wifiName);
+      mPool.bluetoothMacs.add(info.bluetoothMac);
+      mPool.iccIds.add(info.iccId);
+   }
+
+   private static final class UsedDeviceInfoPool {
+      final List<String> deviceIds;
+      final List<String> androidIds;
+      final List<String> wifiMacs;
+      final List<String> wifiName;
+      final List<String> bluetoothMacs;
+      final List<String> iccIds;
+      final List<String> serials;
+
+      private UsedDeviceInfoPool() {
+         this.deviceIds = new ArrayList();
+         this.androidIds = new ArrayList();
+         this.wifiMacs = new ArrayList();
+         this.wifiName = new ArrayList();
+         this.bluetoothMacs = new ArrayList();
+         this.iccIds = new ArrayList();
+         this.serials = new ArrayList();
+      }
+
+      // $FF: synthetic method
+      UsedDeviceInfoPool(Object x0) {
+         this();
+      }
+   }
 }

@@ -1,7 +1,5 @@
 package com.lody.virtual.client.ipc;
 
-
-
 import android.accounts.Account;
 import android.content.ISyncStatusObserver;
 import android.content.PeriodicSync;
@@ -13,127 +11,119 @@ import android.database.IContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.helper.utils.IInterfaceUtils;
 import com.lody.virtual.server.interfaces.IContentService;
-
 import java.util.List;
 
-/**
- * @author Lody
- */
-
 public class VContentManager {
+   private static final VContentManager sInstance = new VContentManager();
+   private IContentService mService;
 
-    private static final VContentManager sInstance = new VContentManager();
+   public static VContentManager get() {
+      return sInstance;
+   }
 
-    public static VContentManager get() {
-        return sInstance;
-    }
+   public IContentService getService() {
+      if (!IInterfaceUtils.isAlive(this.mService)) {
+         synchronized(this) {
+            Object binder = this.getRemoteInterface();
+            this.mService = (IContentService)LocalProxyUtils.genProxy(IContentService.class, binder);
+         }
+      }
 
-    private IContentService mService;
+      return this.mService;
+   }
 
-    public IContentService getService() {
-        if (!IInterfaceUtils.isAlive(mService)) {
-            synchronized (this) {
-                Object binder = getRemoteInterface();
-                mService = LocalProxyUtils.genProxy(IContentService.class, binder);
-            }
-        }
-        return mService;
-    }
+   private Object getRemoteInterface() {
+      return IContentService.Stub.asInterface(ServiceManagerNative.getService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmEVRF"))));
+   }
 
-    private Object getRemoteInterface() {
-        return IContentService.Stub
-                .asInterface(ServiceManagerNative.getService(ServiceManagerNative.CONTENT));
-    }
+   public void unregisterContentObserver(IContentObserver observer) throws RemoteException {
+      this.getService().unregisterContentObserver(observer);
+   }
 
+   public void registerContentObserver(Uri uri, boolean notifyForDescendants, IContentObserver observer, int userHandle) throws RemoteException {
+      this.getService().registerContentObserver(uri, notifyForDescendants, observer, userHandle);
+   }
 
-    public void unregisterContentObserver(IContentObserver observer) throws RemoteException {
-        getService().unregisterContentObserver(observer);
-    }
+   public void notifyChange(Uri uri, IContentObserver observer, boolean observerWantsSelfNotifications, boolean syncToNetwork, int userHandle) throws RemoteException {
+      this.getService().notifyChange(uri, observer, observerWantsSelfNotifications, syncToNetwork, userHandle);
+   }
 
-    public void registerContentObserver(Uri uri, boolean notifyForDescendants, IContentObserver observer, int userHandle) throws RemoteException {
-        getService().registerContentObserver(uri, notifyForDescendants, observer, userHandle);
-    }
+   public void requestSync(Account account, String authority, Bundle extras) throws RemoteException {
+      this.getService().requestSync(account, authority, extras);
+   }
 
-    public void notifyChange(Uri uri, IContentObserver observer, boolean observerWantsSelfNotifications, boolean syncToNetwork, int userHandle) throws RemoteException {
-        getService().notifyChange(uri, observer, observerWantsSelfNotifications, syncToNetwork, userHandle);
-    }
+   public void sync(SyncRequest request) throws RemoteException {
+      this.getService().sync(request);
+   }
 
-    public void requestSync(Account account, String authority, Bundle extras) throws RemoteException {
-        getService().requestSync(account, authority, extras);
-    }
+   public void cancelSync(Account account, String authority) throws RemoteException {
+      this.getService().cancelSync(account, authority);
+   }
 
-    public void sync(SyncRequest request) throws RemoteException {
-        getService().sync(request);
-    }
+   public boolean getSyncAutomatically(Account account, String providerName) throws RemoteException {
+      return this.getService().getSyncAutomatically(account, providerName);
+   }
 
-    public void cancelSync(Account account, String authority) throws RemoteException {
-        getService().cancelSync(account, authority);
-    }
+   public void setSyncAutomatically(Account account, String providerName, boolean sync) throws RemoteException {
+      this.getService().setSyncAutomatically(account, providerName, sync);
+   }
 
-    public boolean getSyncAutomatically(Account account, String providerName) throws RemoteException {
-        return getService().getSyncAutomatically(account, providerName);
-    }
+   public List<PeriodicSync> getPeriodicSyncs(Account account, String providerName) throws RemoteException {
+      return this.getService().getPeriodicSyncs(account, providerName);
+   }
 
-    public void setSyncAutomatically(Account account, String providerName, boolean sync) throws RemoteException {
-        getService().setSyncAutomatically(account, providerName, sync);
-    }
+   public void addPeriodicSync(Account account, String providerName, Bundle extras, long pollFrequency) throws RemoteException {
+      this.getService().addPeriodicSync(account, providerName, extras, pollFrequency);
+   }
 
-    public List<PeriodicSync> getPeriodicSyncs(Account account, String providerName) throws RemoteException {
-        return getService().getPeriodicSyncs(account, providerName);
-    }
+   public void removePeriodicSync(Account account, String providerName, Bundle extras) throws RemoteException {
+      this.getService().removePeriodicSync(account, providerName, extras);
+   }
 
-    public void addPeriodicSync(Account account, String providerName, Bundle extras, long pollFrequency) throws RemoteException {
-        getService().addPeriodicSync(account, providerName, extras, pollFrequency);
-    }
+   public int getIsSyncable(Account account, String providerName) throws RemoteException {
+      return this.getService().getIsSyncable(account, providerName);
+   }
 
-    public void removePeriodicSync(Account account, String providerName, Bundle extras) throws RemoteException {
-        getService().removePeriodicSync(account, providerName, extras);
-    }
+   public void setIsSyncable(Account account, String providerName, int syncable) throws RemoteException {
+      this.getService().setIsSyncable(account, providerName, syncable);
+   }
 
-    public int getIsSyncable(Account account, String providerName) throws RemoteException {
-        return getService().getIsSyncable(account, providerName);
-    }
+   public void setMasterSyncAutomatically(boolean flag) throws RemoteException {
+      this.getService().setMasterSyncAutomatically(flag);
+   }
 
-    public void setIsSyncable(Account account, String providerName, int syncable) throws RemoteException {
-        getService().setIsSyncable(account, providerName, syncable);
-    }
+   public boolean getMasterSyncAutomatically() throws RemoteException {
+      return this.getService().getMasterSyncAutomatically();
+   }
 
-    public void setMasterSyncAutomatically(boolean flag) throws RemoteException {
-        getService().setMasterSyncAutomatically(flag);
-    }
+   public boolean isSyncActive(Account account, String authority) throws RemoteException {
+      return this.getService().isSyncActive(account, authority);
+   }
 
-    public boolean getMasterSyncAutomatically() throws RemoteException {
-        return getService().getMasterSyncAutomatically();
-    }
+   public List<SyncInfo> getCurrentSyncs() throws RemoteException {
+      return this.getService().getCurrentSyncs();
+   }
 
-    public boolean isSyncActive(Account account, String authority) throws RemoteException {
-        return getService().isSyncActive(account, authority);
-    }
+   public SyncAdapterType[] getSyncAdapterTypes() throws RemoteException {
+      return this.getService().getSyncAdapterTypes();
+   }
 
-    public List<SyncInfo> getCurrentSyncs() throws RemoteException {
-        return getService().getCurrentSyncs();
-    }
+   public SyncStatusInfo getSyncStatus(Account account, String authority) throws RemoteException {
+      return this.getService().getSyncStatus(account, authority);
+   }
 
-    public SyncAdapterType[] getSyncAdapterTypes() throws RemoteException {
-        return getService().getSyncAdapterTypes();
-    }
+   public boolean isSyncPending(Account account, String authority) throws RemoteException {
+      return this.getService().isSyncPending(account, authority);
+   }
 
-    public SyncStatusInfo getSyncStatus(Account account, String authority) throws RemoteException {
-        return getService().getSyncStatus(account, authority);
-    }
+   public void addStatusChangeListener(int mask, ISyncStatusObserver callback) throws RemoteException {
+      this.getService().addStatusChangeListener(mask, callback);
+   }
 
-    public boolean isSyncPending(Account account, String authority) throws RemoteException {
-        return getService().isSyncPending(account, authority);
-    }
-
-    public void addStatusChangeListener(int mask, ISyncStatusObserver callback) throws RemoteException {
-        getService().addStatusChangeListener(mask, callback);
-    }
-
-    public void removeStatusChangeListener(ISyncStatusObserver callback) throws RemoteException {
-        getService().removeStatusChangeListener(callback);
-    }
+   public void removeStatusChangeListener(ISyncStatusObserver callback) throws RemoteException {
+      this.getService().removeStatusChangeListener(callback);
+   }
 }

@@ -1,7 +1,7 @@
 package com.lody.virtual.client;
 
+import [Ljava.lang.ThreadGroup;;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -18,9 +18,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Environment;
 import android.os.Handler;
@@ -29,62 +29,65 @@ import android.os.IInterface;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.os.RemoteException;
 import android.os.StrictMode;
-import android.text.TextUtils;
+import android.os.Build.VERSION;
+import android.security.net.config.ApplicationConfig;
 import android.util.Log;
-import android.view.WindowManager;
-
-import com.lody.virtual.GmsSupport;
+import android.view.autofill.AutofillManager;
+import androidx.annotation.RequiresApi;
+import com.lody.virtual.PineXposed;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.core.CrashHandler;
 import com.lody.virtual.client.core.InvocationStubManager;
+import com.lody.virtual.client.core.LaunchCallBack;
 import com.lody.virtual.client.core.SettingConfig;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.env.VirtualRuntime;
 import com.lody.virtual.client.fixer.ContextFixer;
-import com.lody.virtual.client.hook.delegate.AppInstrumentation;
+import com.lody.virtual.client.hook.instruments.InstrumentationVirtualApp;
 import com.lody.virtual.client.hook.providers.ProviderHook;
+import com.lody.virtual.client.hook.providers.SettingsProviderHook;
 import com.lody.virtual.client.hook.proxies.am.HCallbackStub;
+import com.lody.virtual.client.hook.proxies.view.AutoFillManagerStub;
 import com.lody.virtual.client.hook.secondary.ProxyServiceFactory;
 import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.client.ipc.VDeviceManager;
 import com.lody.virtual.client.ipc.VPackageManager;
 import com.lody.virtual.client.ipc.VirtualStorageManager;
-import com.lody.virtual.client.service.ServiceManager;
+import com.lody.virtual.client.service.VServiceRuntime;
 import com.lody.virtual.client.stub.StubManifest;
+import com.lody.virtual.helper.ComposeClassLoader;
 import com.lody.virtual.helper.compat.BuildCompat;
-import com.lody.virtual.helper.compat.NativeLibraryHelperCompat;
 import com.lody.virtual.helper.compat.StorageManagerCompat;
 import com.lody.virtual.helper.compat.StrictModeCompat;
 import com.lody.virtual.helper.utils.ComponentUtils;
 import com.lody.virtual.helper.utils.FileUtils;
 import com.lody.virtual.helper.utils.Reflect;
 import com.lody.virtual.helper.utils.VLog;
+import com.lody.virtual.oem.EmuiHelper;
+import com.lody.virtual.oem.apps.WeChat;
 import com.lody.virtual.os.VEnvironment;
 import com.lody.virtual.os.VUserHandle;
+import com.lody.virtual.receiver.StaticReceiverSystem;
 import com.lody.virtual.remote.ClientConfig;
 import com.lody.virtual.remote.InstalledAppInfo;
-import com.lody.virtual.remote.PendingResultData;
 import com.lody.virtual.remote.VDeviceConfig;
-import com.lody.virtual.server.pm.PackageSetting;
-import com.xdja.activitycounter.ActivityCounterManager;
-import com.xdja.zs.VAppPermissionManager;
-import com.xdja.zs.controllerManager;
-import com.xdja.zs.exceptionRecorder;
-
+import com.lody.virtual.server.extension.VExtPackageAccessor;
+import com.lody.virtual.server.secondary.FakeIdentityBinder;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import java.io.File;
 import java.lang.reflect.Field;
-import java.security.KeyStore;
-import java.security.Security;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import mirror.android.app.ActivityManagerNative;
 import mirror.android.app.ActivityThread;
 import mirror.android.app.ActivityThreadNMR1;
@@ -93,14 +96,11 @@ import mirror.android.app.ContextImpl;
 import mirror.android.app.ContextImplKitkat;
 import mirror.android.app.IActivityManager;
 import mirror.android.app.LoadedApk;
-import mirror.android.app.LoadedApkICS;
 import mirror.android.app.LoadedApkKitkat;
 import mirror.android.content.ContentProviderHolderOreo;
 import mirror.android.content.res.CompatibilityInfo;
 import mirror.android.providers.Settings;
 import mirror.android.renderscript.RenderScriptCacheDir;
-import mirror.android.security.net.config.NetworkSecurityConfigProvider;
-import mirror.android.view.CompatibilityInfoHolder;
 import mirror.android.view.DisplayAdjustments;
 import mirror.android.view.HardwareRenderer;
 import mirror.android.view.RenderScript;
@@ -108,1212 +108,1138 @@ import mirror.android.view.ThreadedRenderer;
 import mirror.com.android.internal.content.ReferrerIntent;
 import mirror.dalvik.system.VMRuntime;
 import mirror.java.lang.ThreadGroupN;
-import mirror.oem.HwApiCacheManagerEx;
-import mirror.oem.HwFrameworkFactory;
-
-import static com.lody.virtual.client.core.VirtualCore.getConfig;
-import static com.lody.virtual.os.VUserHandle.getUserId;
-import static com.lody.virtual.remote.InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK;
-
-/**
- * @author Lody
- */
 
 public final class VClient extends IVClient.Stub {
+   private static final int NEW_INTENT = 11;
+   private static final int RECEIVER = 12;
+   private static final int FINISH_ACTIVITY = 13;
+   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")) + VClient.class.getSimpleName();
+   @SuppressLint({"StaticFieldLeak"})
+   private static final VClient gClient = new VClient();
+   private final H mH = new H();
+   private Instrumentation mInstrumentation;
+   private ClientConfig clientConfig;
+   private int corePid;
+   private AppBindData mBoundApplication;
+   private Application mInitialApplication;
+   private CrashHandler crashHandler;
+   private InstalledAppInfo mAppInfo;
+   private final Map<String, Application> mAllApplications = new HashMap(1);
+   private Set<String> mExportedVApiPkgs = new HashSet();
+   private static boolean CheckJunitClazz = false;
 
-    private static final int NEW_INTENT = 11;
-    private static final int RECEIVER = 12;
-    private static final int FINISH_ACTIVITY = 13;
+   public int getCorePid() {
+      return this.corePid;
+   }
 
-    private static final String TAG = VClient.class.getSimpleName();
+   public void setCorePid(int corePid) {
+      this.corePid = corePid;
+   }
 
-    @SuppressLint("StaticFieldLeak")
-    private static final VClient gClient = new VClient();
+   private VClient() {
+   }
 
-    private final H mH = new H();
-    private Instrumentation mInstrumentation = AppInstrumentation.getDefault();
-    private ClientConfig clientConfig;
-    private AppBindData mBoundApplication;
-    private Application mInitialApplication;
-    private CrashHandler crashHandler;
-    private InstalledAppInfo mAppInfo;
-    private int mTargetSdkVersion;
-    private ConditionVariable mBindingApplicationLock;
-    private boolean mEnvironmentPrepared = false;
-    private int systemPid;
+   public synchronized void addExportedVApiPkg(String pkg) {
+      this.mExportedVApiPkgs.add(pkg);
+   }
 
-    public InstalledAppInfo getAppInfo() {
-        return mAppInfo;
-    }
+   public InstalledAppInfo getAppInfo() {
+      return this.mAppInfo;
+   }
 
-    public static VClient get() {
-        return gClient;
-    }
+   public static VClient get() {
+      return gClient;
+   }
 
-    public boolean isEnvironmentPrepared() {
-        return mEnvironmentPrepared;
-    }
+   public boolean isDynamicApp() {
+      InstalledAppInfo appInfo = this.getAppInfo();
+      return appInfo != null && appInfo.dynamic;
+   }
 
-    public boolean isAppUseOutsideAPK() {
-        InstalledAppInfo appInfo = getAppInfo();
-        return appInfo != null && appInfo.appMode == MODE_APP_USE_OUTSIDE_APK;
-    }
+   public VDeviceConfig getDeviceConfig() {
+      return VDeviceManager.get().getDeviceConfig(VUserHandle.getUserId(this.getVUid()));
+   }
 
-    public VDeviceConfig getDeviceConfig() {
-        return VDeviceManager.get().getDeviceConfig(getUserId(getVUid()));
-    }
+   public Application getCurrentApplication() {
+      return this.mInitialApplication;
+   }
 
-    public Application getCurrentApplication() {
-        return mInitialApplication;
-    }
+   public String getCurrentPackage() {
+      return this.mBoundApplication != null ? this.mBoundApplication.appInfo.packageName : VPackageManager.get().getNameForUid(this.getVUid());
+   }
 
-    public String getCurrentPackage() {
-        return mBoundApplication != null ?
-                mBoundApplication.appInfo.packageName : VPackageManager.get().getNameForUid(getVUid());
-    }
+   public ApplicationInfo getCurrentApplicationInfo() {
+      return this.mBoundApplication != null ? this.mBoundApplication.appInfo : null;
+   }
 
-    public ApplicationInfo getCurrentApplicationInfo() {
-        return mBoundApplication != null ? mBoundApplication.appInfo : null;
-    }
+   public CrashHandler getCrashHandler() {
+      return this.crashHandler;
+   }
 
-    public int getCurrentTargetSdkVersion() {
-        return mTargetSdkVersion == 0 ?
-                VirtualCore.get().getTargetSdkVersion()
-                : mTargetSdkVersion;
-    }
+   public void setCrashHandler(CrashHandler crashHandler) {
+      this.crashHandler = crashHandler;
+   }
 
-    public CrashHandler getCrashHandler() {
-        return crashHandler;
-    }
+   public int getVUid() {
+      return this.clientConfig == null ? 0 : this.clientConfig.vuid;
+   }
 
-    public void setCrashHandler(CrashHandler crashHandler) {
-        this.crashHandler = crashHandler;
-    }
+   public int getVUserHandle() {
+      return this.clientConfig == null ? 0 : VUserHandle.getUserId(this.clientConfig.vuid);
+   }
 
-    public int getSystemPid() {
-        return systemPid;
-    }
+   public int getVpid() {
+      return this.clientConfig == null ? 0 : this.clientConfig.vpid;
+   }
 
-    public int getVUid() {
-        if (clientConfig == null) {
-            return 0;
-        }
-        return clientConfig.vuid;
-    }
+   public int getBaseVUid() {
+      return this.clientConfig == null ? 0 : VUserHandle.getAppId(this.clientConfig.vuid);
+   }
 
-    /**
-     * $Px
-     * 0-99
-     */
-    public int getVpid() {
-        if (clientConfig == null) {
-            return 0;
-        }
-        return clientConfig.vpid;
-    }
+   public ClassLoader getClassLoader(ApplicationInfo appInfo) {
+      Context context = this.createPackageContext(appInfo.packageName);
+      return context.getClassLoader();
+   }
 
-    public int getBaseVUid() {
-        if (clientConfig == null) {
-            return 0;
-        }
-        return VUserHandle.getAppId(clientConfig.vuid);
-    }
+   private void sendMessage(int what, Object obj) {
+      Message msg = Message.obtain();
+      msg.what = what;
+      msg.obj = obj;
+      this.mH.sendMessage(msg);
+   }
 
-    public int getCallingVUid() {
-        return VActivityManager.get().getCallingUid();
-    }
+   public IBinder getAppThread() {
+      return (IBinder)ActivityThread.getApplicationThread.call(VirtualCore.mainThread());
+   }
 
-    public ClassLoader getClassLoader(ApplicationInfo appInfo) {
-        Context context = createPackageContext(appInfo);
-        return context.getClassLoader();
-    }
+   public IBinder getToken() {
+      return this.clientConfig == null ? null : this.clientConfig.token;
+   }
 
-    private void sendMessage(int what, Object obj) {
-        Message msg = Message.obtain();
-        msg.what = what;
-        msg.obj = obj;
-        mH.sendMessage(msg);
-    }
+   public ClientConfig getClientConfig() {
+      return this.clientConfig;
+   }
 
-    @Override
-    public IBinder getAppThread() {
-        return ActivityThread.getApplicationThread.call(VirtualCore.mainThread());
-    }
+   public boolean isAppRunning() {
+      return this.mInitialApplication != null;
+   }
 
-    @Override
-    public IBinder getToken() {
-        if (clientConfig == null) {
-            return null;
-        }
-        return clientConfig.token;
-    }
+   public boolean isProcessBound() {
+      return this.clientConfig != null;
+   }
 
-    public ClientConfig getClientConfig() {
-        return clientConfig;
-    }
+   public void initProcess(ClientConfig clientConfig) {
+      if (this.clientConfig != null) {
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uMmgVLAZLHgY2KQg1OmowRSVoJyg6KTo6Vg==")) + clientConfig.vpid + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl5WOA==")) + clientConfig.processName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186LGUFAgNLESQqKi0qPWoKDShqDjMrPyo6Vg==")) + this.clientConfig.processName);
+      } else {
+         this.clientConfig = clientConfig;
+      }
+   }
 
-    @Override
-    public boolean isAppRunning() {
-        return mBoundApplication != null;
-    }
-    //xdja
-    int countOfActivity = 0;
-    @Override
-    public boolean isAppForeground(){
-        return countOfActivity > 0;
-    }
-    public void initProcess(ClientConfig clientConfig) {
-        if (this.clientConfig != null) {
-            throw new RuntimeException("reject init process: " + clientConfig.processName + ", this process is : " + this.clientConfig.processName);
-        }
-        this.clientConfig = clientConfig;
-    }
+   private void handleNewIntent(NewIntentData data) {
+      ComponentUtils.unpackFillIn(data.intent, get().getClassLoader());
+      Intent intent = VERSION.SDK_INT >= 22 ? (Intent)ReferrerIntent.ctor.newInstance(data.intent, data.creator) : data.intent;
+      if (ActivityThread.performNewIntents != null) {
+         ActivityThread.performNewIntents.call(VirtualCore.mainThread(), data.token, Collections.singletonList(intent));
+      } else if (ActivityThreadNMR1.performNewIntents != null) {
+         ActivityThreadNMR1.performNewIntents.call(VirtualCore.mainThread(), data.token, Collections.singletonList(intent), true);
+      } else if (BuildCompat.isS()) {
+         Object obj = ((Map)ActivityThread.mActivities.get(VirtualCore.mainThread())).get(data.token);
+         if (obj != null) {
+            ActivityThread.handleNewIntent(obj, Collections.singletonList(intent));
+         }
+      } else {
+         ActivityThreadQ.handleNewIntent.call(VirtualCore.mainThread(), data.token, Collections.singletonList(intent));
+      }
 
-    private void handleNewIntent(NewIntentData data) {
-        Intent intent;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            intent = ReferrerIntent.ctor.newInstance(data.intent, data.creator);
-        } else {
-            intent = data.intent;
-        }
-        if (ActivityThread.performNewIntents != null) {
-            ActivityThread.performNewIntents.call(
-                    VirtualCore.mainThread(),
-                    data.token,
-                    Collections.singletonList(intent)
-            );
-        } else if (ActivityThreadNMR1.performNewIntents != null){
-            ActivityThreadNMR1.performNewIntents.call(
-                    VirtualCore.mainThread(),
-                    data.token,
-                    Collections.singletonList(intent),
-                    true);
-        } else if(ActivityThreadQ.handleNewIntent != null){
-            ActivityThreadQ.handleNewIntent.call(VirtualCore.mainThread(), data.token, Collections.singletonList(intent));
-        }
-        if("com.tencent.mm".equals(getCurrentPackage())){
-            //xdja 修复微信按2次返回键退出
-            //第二次是因为是在顶层activity，微信用了Process.kill导致重启。
-            if(intent.getComponent() != null && intent.getComponent().getClassName().endsWith(".ui.LauncherUI")){
-                if(intent.getBooleanExtra("can_finish", false)){
-                    Intent home = new Intent(Intent.ACTION_MAIN);
-                    home.addCategory(Intent.CATEGORY_HOME);
-                    home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    try {
-                        VirtualCore.get().getContext().startActivity(home);
-                    } catch (Throwable ignore) {
-                    }
-                }
-            }
-        }
-    }
+   }
 
-    public void bindApplication(final String packageName, final String processName) {
-        if (clientConfig == null) {
-            throw new RuntimeException("Unrecorded process: " + processName);
-        }
-        if (isAppRunning()) {
+   public void bindApplication(final String packageName, final String processName) {
+      synchronized(this.mAllApplications) {
+         if (this.mAllApplications.containsKey(packageName)) {
             return;
-        }
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            if (mBindingApplicationLock != null) {
-                mBindingApplicationLock.block();
-                mBindingApplicationLock = null;
-            } else {
-                mBindingApplicationLock = new ConditionVariable();
-            }
+         }
+      }
+
+      if (this.clientConfig == null) {
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcKmgVLCVhNAo/KF4mKmoVNClrDjA6Pyo6Vg==")) + processName);
+      } else {
+         if (Looper.myLooper() != Looper.getMainLooper()) {
+            final ConditionVariable cond = new ConditionVariable();
             VirtualRuntime.getUIHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    bindApplicationNoCheck(packageName, processName);
-                    ConditionVariable lock = mBindingApplicationLock;
-                    mBindingApplicationLock = null;
-                    if (lock != null) {
-                        lock.open();
-                    }
-                }
+               public void run() {
+                  VClient.this.bindApplicationMainThread(packageName, processName, cond);
+                  cond.open();
+               }
             });
-            if (mBindingApplicationLock != null) {
-                mBindingApplicationLock.block();
-            }
-        } else {
-            bindApplicationNoCheck(packageName, processName);
-        }
-    }
+            cond.block();
+         } else {
+            this.bindApplicationMainThread(packageName, processName, (ConditionVariable)null);
+         }
 
+      }
+   }
 
-    private void bindApplicationNoCheck(String packageName, String processName) {
-        if (isAppRunning()) {
+   @RequiresApi(
+      api = 26
+   )
+   private void bindApplicationMainThread(String packageName, String processName, ConditionVariable cond) {
+      synchronized(this.mAllApplications) {
+         if (this.mAllApplications.containsKey(packageName)) {
             return;
-        }
-        if (processName == null) {
-            processName = packageName;
-        }
-        systemPid = VActivityManager.get().getSystemPid();
-        try {
-            setupUncaughtHandler();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        final int userId = getUserId(getVUid());
-        try {
-            fixInstalledProviders();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        VDeviceConfig deviceConfig = getDeviceConfig();
-        VDeviceManager.get().applyBuildProp(deviceConfig);
-        final boolean isSubRemote = VirtualCore.get().isPluginEngine();
-        // Fix: com.loafwallet
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if("com.loafwallet".equals(packageName)) {
-                try {
-                    KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-                    keyStore.load(null);
-                    Enumeration<String> aliases = keyStore.aliases();
-                    while (aliases.hasMoreElements()) {
-                        String entry = aliases.nextElement();
-                        VLog.w(TAG, "remove entry: " + entry);
-                        keyStore.deleteEntry(entry);
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        ActivityThread.mInitialApplication.set(
-                VirtualCore.mainThread(),
-                null
-        );
-        AppBindData data = new AppBindData();
-        InstalledAppInfo info = VirtualCore.get().getInstalledAppInfo(packageName, 0);
-        if (info == null) {
-            new Exception("app not exist").printStackTrace();
-            Process.killProcess(0);
-            System.exit(0);
-        }
-        mAppInfo = info;
-        data.appInfo = VPackageManager.get().getApplicationInfo(packageName, 0, userId);
+         }
+      }
 
-        data.processName = processName;
-        data.providers = VPackageManager.get().queryContentProviders(processName, getVUid(), PackageManager.GET_META_DATA);
-        mTargetSdkVersion = data.appInfo.targetSdkVersion;
-        VLog.i(TAG, "Binding application %s (%s [%d])", data.appInfo.packageName, data.processName, Process.myPid());
-        mBoundApplication = data;
-        VirtualRuntime.setupRuntime(data.processName, data.appInfo);
-        if (VirtualCore.get().isPluginEngine()) {
-            File apkFile = new File(info.getApkPath());
-            File libDir = new File(data.appInfo.nativeLibraryDir);
-            if (!apkFile.exists()) {
-                VirtualCore.get().requestCopyPackage64(packageName);
-            }
-            if (!libDir.exists()) {
-                NativeLibraryHelperCompat.copyNativeBinaries(apkFile, libDir);
-            }
-        }
-        int targetSdkVersion = data.appInfo.targetSdkVersion;
-        if (targetSdkVersion < Build.VERSION_CODES.GINGERBREAD) {
-            StrictMode.ThreadPolicy newPolicy = new StrictMode.ThreadPolicy.Builder(StrictMode.getThreadPolicy()).permitNetwork().build();
+      VirtualCore.getConfig();
+      Log.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT49O35SIClgJFk+KQc5OnozSFo=")), SettingConfig.isUseNativeEngine2(packageName) + "");
+      if (VirtualCore.get().isExtHelperProcess()) {
+         VExtPackageAccessor.syncPackages();
+      }
+
+      boolean isInitialApp = this.mInitialApplication == null;
+      Binder.clearCallingIdentity();
+      if (processName == null) {
+         processName = packageName;
+      }
+
+      try {
+         this.setupUncaughtHandler();
+      } catch (Throwable var23) {
+         Throwable e = var23;
+         e.printStackTrace();
+      }
+
+      int userId = VUserHandle.getUserId(this.getVUid());
+
+      try {
+         this.fixInstalledProviders();
+         SettingsProviderHook.passSettingsProviderPermissionCheck(packageName);
+      } catch (Throwable var22) {
+         Throwable e = var22;
+         e.printStackTrace();
+      }
+
+      VDeviceConfig deviceConfig = this.getDeviceConfig();
+      VDeviceManager.get().applyBuildProp(deviceConfig);
+      ActivityThread.mInitialApplication.set(VirtualCore.mainThread(), (Object)null);
+      AppBindData data = new AppBindData();
+      InstalledAppInfo info = VirtualCore.get().getInstalledAppInfo(packageName, 0);
+      if (info == null) {
+         (new Exception(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KHsFBiVmVyQ/LRccL2UzSFo=")))).printStackTrace();
+         Process.killProcess(0);
+         System.exit(0);
+      }
+
+      if (isInitialApp) {
+         this.mAppInfo = info;
+      }
+
+      data.appInfo = VPackageManager.get().getApplicationInfo(packageName, 0, userId);
+      data.processName = processName;
+      data.providers = VPackageManager.get().queryContentProviders(processName, this.getVUid(), 128);
+      Iterator<ProviderInfo> iterator = data.providers.iterator();
+
+      while(iterator.hasNext()) {
+         ProviderInfo providerInfo = (ProviderInfo)iterator.next();
+         if (!providerInfo.enabled) {
+            iterator.remove();
+         }
+      }
+
+      boolean isExt = VirtualCore.get().isExtPackage();
+      VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj4YCGgFAiZiICQ7IxgmCGwjAjdvER4cLCo5J2EkOyt+AS8pJgQAIGEJAlo=")), data.appInfo.packageName, data.processName, Process.myPid());
+      if (isInitialApp) {
+         VirtualCore.getConfig();
+         this.mBoundApplication = data;
+         VirtualRuntime.setupRuntime(data.processName, data.appInfo);
+         this.mInstrumentation = (Instrumentation)ActivityThread.mInstrumentation.get(VirtualCore.mainThread());
+         int targetSdkVersion = data.appInfo.targetSdkVersion;
+         if (targetSdkVersion < 9) {
+            StrictMode.ThreadPolicy newPolicy = (new StrictMode.ThreadPolicy.Builder(StrictMode.getThreadPolicy())).permitNetwork().build();
             StrictMode.setThreadPolicy(newPolicy);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (VirtualCore.get().getTargetSdkVersion() >= Build.VERSION_CODES.N
-                    && targetSdkVersion < Build.VERSION_CODES.N) {
-                StrictModeCompat.disableDeathOnFileUriExposure();
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && targetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
+         }
+
+         if (VERSION.SDK_INT >= 24 && VirtualCore.get().getTargetSdkVersion() >= 24 && targetSdkVersion < 24) {
+            StrictModeCompat.disableDeathOnFileUriExposure();
+         }
+
+         if (targetSdkVersion < 21) {
             mirror.android.os.Message.updateCheckRecycle.call(targetSdkVersion);
-        }
-        AlarmManager alarmManager = (AlarmManager) VirtualCore.get().getContext().getSystemService(Context.ALARM_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            if (mirror.android.app.AlarmManager.mTargetSdkVersion != null) {
-                try {
-                    mirror.android.app.AlarmManager.mTargetSdkVersion.set(alarmManager, targetSdkVersion);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        //tmp dir
-        File tmpDir;
-        if (isSubRemote) {
-            tmpDir = new File(VEnvironment.getDataUserPackageDirectory64(userId, info.packageName), "cache");
-        } else {
-            tmpDir = new File(VEnvironment.getDataUserPackageDirectory(userId, info.packageName), "cache");
-        }
-        if(!tmpDir.exists()){
-            tmpDir.mkdirs();
-        }
-        System.setProperty("java.io.tmpdir", tmpDir.getAbsolutePath());
+         }
 
-        fixForEmui10();
-
-        if (getConfig().isEnableIORedirect()) {
-            if (VirtualCore.get().isIORelocateWork()) {
-                startIORelocater(info, isSubRemote);
-            } else {
-                VLog.w(TAG, "IO Relocate verify fail.");
+         AlarmManager alarmManager = (AlarmManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggEP28jElo=")));
+         if (mirror.android.app.AlarmManager.mTargetSdkVersion != null) {
+            try {
+               mirror.android.app.AlarmManager.mTargetSdkVersion.set(alarmManager, targetSdkVersion);
+            } catch (Exception var21) {
+               Exception e = var21;
+               e.printStackTrace();
             }
-        }
-        NativeEngine.launchEngine();
-        mEnvironmentPrepared = true;
-        Object mainThread = VirtualCore.mainThread();
-        NativeEngine.startDexOverride();
-        initDataStorage(isSubRemote, userId, packageName);
-        Context context = createPackageContext(data.appInfo);
-        File codeCacheDir;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+         }
+
+         if (isExt) {
+            System.setProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4+LmtSBi9gIFkgKggmPmwgRVo=")), (new File(VEnvironment.getDataUserPackageDirectoryExt(userId, info.packageName), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+OWUFNFo=")))).getAbsolutePath());
+         } else {
+            System.setProperty(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD4+LmtSBi9gIFkgKggmPmwgRVo=")), (new File(VEnvironment.getDataUserPackageDirectory(userId, info.packageName), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+OWUFNFo=")))).getAbsolutePath());
+         }
+
+         VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+I2ojLCBqDlk9KQcYPQ==")));
+         NativeEngine.launchEngine(packageName);
+         if (VirtualCore.getConfig().isEnableIORedirect()) {
+            this.mountVirtualFS(info, isExt);
+         }
+      }
+
+      VirtualCore.getConfig();
+      Object mainThread = VirtualCore.mainThread();
+      this.initDataStorage(isExt, userId, packageName);
+      Context context = this.createPackageContext(data.appInfo.packageName);
+      if (isInitialApp) {
+         VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qP28gMBZiARoLLD0MKGoVLCxrAVRF")));
+         NativeEngine.startDexOverride();
+         StaticReceiverSystem.get().attach(packageName, VirtualCore.get().getContext(), data.appInfo, userId);
+         File codeCacheDir;
+         if (VERSION.SDK_INT >= 23) {
             codeCacheDir = context.getCodeCacheDir();
-        } else {
+         } else {
             codeCacheDir = context.getCacheDir();
-        }
+         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+         if (VERSION.SDK_INT < 24) {
             if (HardwareRenderer.setupDiskCache != null) {
-                HardwareRenderer.setupDiskCache.call(codeCacheDir);
+               HardwareRenderer.setupDiskCache.call(codeCacheDir);
             }
-        } else {
-            if (ThreadedRenderer.setupDiskCache != null) {
-                ThreadedRenderer.setupDiskCache.call(codeCacheDir);
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+         } else if (ThreadedRenderer.setupDiskCache != null) {
+            ThreadedRenderer.setupDiskCache.call(codeCacheDir);
+         }
+
+         if (VERSION.SDK_INT >= 23) {
             if (RenderScriptCacheDir.setupDiskCache != null) {
-                RenderScriptCacheDir.setupDiskCache.call(codeCacheDir);
+               RenderScriptCacheDir.setupDiskCache.call(codeCacheDir);
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (RenderScript.setupDiskCache != null) {
-                RenderScript.setupDiskCache.call(codeCacheDir);
-            }
-        }
-        mBoundApplication.info = ContextImpl.mPackageInfo.get(context);
-        ApplicationInfo applicationInfo = LoadedApk.mApplicationInfo.get(mBoundApplication.info);
-        if(applicationInfo.nativeLibraryDir == null){
-            Log.w("kk-test", "applicationInfo.nativeLibraryDir = null,"+context.getApplicationInfo().nativeLibraryDir, new Exception());
-        }
-        applicationInfo.nativeLibraryDir = data.appInfo.nativeLibraryDir;
-        Object thread = VirtualCore.mainThread();
-        Object boundApp = mirror.android.app.ActivityThread.mBoundApplication.get(thread);
-        mirror.android.app.ActivityThread.AppBindData.appInfo.set(boundApp, data.appInfo);
-        mirror.android.app.ActivityThread.AppBindData.processName.set(boundApp, data.processName);
-        mirror.android.app.ActivityThread.AppBindData.instrumentationName.set(
-                boundApp,
-                new ComponentName(data.appInfo.packageName, Instrumentation.class.getName())
-        );
-        mirror.android.app.ActivityThread.AppBindData.info.set(boundApp, data.info);
-        ActivityThread.AppBindData.providers.set(boundApp, data.providers);
-        if (LoadedApk.mSecurityViolation != null) {
-            LoadedApk.mSecurityViolation.set(mBoundApplication.info, false);
-        }
-        VMRuntime.setTargetSdkVersion.call(VMRuntime.getRuntime.call(), data.appInfo.targetSdkVersion);
-        Configuration configuration = context.getResources().getConfiguration();
-        boolean is64Bit = VirtualRuntime.is64bit();
-        if (!isSubRemote && info.flag == PackageSetting.FLAG_RUN_BOTH_32BIT_64BIT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            List<String> supportAbiList = new LinkedList<>();
-            for (String abi : Build.SUPPORTED_ABIS) {
-                if(is64Bit) {
-                    if (NativeLibraryHelperCompat.is64bitAbi(abi)) {
-                        supportAbiList.add(abi);
-                    }
-                } else {
-                    if (NativeLibraryHelperCompat.is32bitAbi(abi)) {
-                        supportAbiList.add(abi);
-                    }
-                }
-            }
-            String[] supportAbis = supportAbiList.toArray(new String[0]);
-            Reflect.on(Build.class).set("SUPPORTED_ABIS", supportAbis);
-        }
-        Object compatInfo = null;
-        if (CompatibilityInfo.ctor != null) {
+         } else if (RenderScript.setupDiskCache != null) {
+            RenderScript.setupDiskCache.call(codeCacheDir);
+         }
+
+         this.mBoundApplication.info = ContextImpl.mPackageInfo.get(context);
+         Object boundApp = ActivityThread.mBoundApplication.get(mainThread);
+         ActivityThread.AppBindData.appInfo.set(boundApp, data.appInfo);
+         ActivityThread.AppBindData.processName.set(boundApp, data.processName);
+         ActivityThread.AppBindData.instrumentationName.set(boundApp, new ComponentName(data.appInfo.packageName, Instrumentation.class.getName()));
+         ActivityThread.AppBindData.info.set(boundApp, data.info);
+         ActivityThread.AppBindData.providers.set(boundApp, data.providers);
+         if (LoadedApk.mSecurityViolation != null) {
+            LoadedApk.mSecurityViolation.set(this.mBoundApplication.info, false);
+         }
+
+         VMRuntime.setTargetSdkVersion.call(VMRuntime.getRuntime.call(), data.appInfo.targetSdkVersion);
+         Configuration configuration = context.getResources().getConfiguration();
+         Object compatInfo = null;
+         if (CompatibilityInfo.ctor != null) {
             compatInfo = CompatibilityInfo.ctor.newInstance(data.appInfo, configuration.screenLayout, configuration.smallestScreenWidthDp, false);
-        }
-        if (CompatibilityInfo.ctorLG != null) {
+         }
+
+         if (CompatibilityInfo.ctorLG != null) {
             compatInfo = CompatibilityInfo.ctorLG.newInstance(data.appInfo, configuration.screenLayout, configuration.smallestScreenWidthDp, false, 0);
-        }
+         }
 
-        if (compatInfo != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    DisplayAdjustments.setCompatibilityInfo.call(ContextImplKitkat.mDisplayAdjustments.get(context), compatInfo);
-                }
-                DisplayAdjustments.setCompatibilityInfo.call(LoadedApkKitkat.mDisplayAdjustments.get(mBoundApplication.info), compatInfo);
-            } else {
-                CompatibilityInfoHolder.set.call(LoadedApkICS.mCompatibilityInfo.get(mBoundApplication.info), compatInfo);
+         if (compatInfo != null) {
+            if (VERSION.SDK_INT < 24) {
+               DisplayAdjustments.setCompatibilityInfo.call(ContextImplKitkat.mDisplayAdjustments.get(context), compatInfo);
             }
-        }
-		//ssl适配
-		if (NetworkSecurityConfigProvider.install != null) {
-            Security.removeProvider("AndroidNSSP");
-            NetworkSecurityConfigProvider.install.call(context);
-        }
 
-        if(data.appInfo != null && "com.tencent.mm".equals(data.appInfo.packageName)
-                && "com.tencent.mm".equals(data.appInfo.processName)){
-            ClassLoader originClassLoader = context.getClassLoader();
-            fixWeChatTinker(context, data.appInfo, originClassLoader);
-        }
+            DisplayAdjustments.setCompatibilityInfo.call(LoadedApkKitkat.mDisplayAdjustments.get(this.mBoundApplication.info), compatInfo);
+         }
 
-        VirtualCore.get().getAppCallback().beforeStartApplication(packageName, processName, context);
+         if (VERSION.SDK_INT >= 30) {
+            ApplicationConfig.setDefaultInstance((ApplicationConfig)null);
+         }
 
-        try {
-            //TODO reset?
-//            if(LoadedApk.mApplication != null) {
-//                LoadedApk.mApplication.set(data.info, null);
-//            }
-            mInitialApplication = LoadedApk.makeApplication.call(data.info, false, null);
-        } catch (Throwable e) {
-            throw new RuntimeException("Unable to makeApplication", e);
-        }
-        Log.e("kk", data.info+" mInitialApplication set  " + LoadedApk.mApplication.get(data.info));
-        mirror.android.app.ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
-        ContextFixer.fixContext(mInitialApplication);
-        if (Build.VERSION.SDK_INT >= 24 && "com.tencent.mm:recovery".equals(processName)) {
-            fixWeChatRecovery(mInitialApplication);
-        }
-        if (GmsSupport.VENDING_PKG.equals(packageName)) {
-            try {
-                context.getSharedPreferences("vending_preferences", 0)
-                        .edit()
-                        .putBoolean("notify_updates", false)
-                        .putBoolean("notify_updates_completion", false)
-                        .apply();
-                context.getSharedPreferences("finsky", 0)
-                        .edit()
-                        .putBoolean("auto_update_enabled", false)
-                        .apply();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-        /*
-         * Support Atlas plugin framework
-         * see:
-         * https://github.com/alibaba/atlas/blob/master/atlas-core/src/main/java/android/taobao/atlas/bridge/BridgeApplicationDelegate.java
-         */
-        List<ProviderInfo> providers = ActivityThread.AppBindData.providers.get(boundApp);
-        if (providers != null && !providers.isEmpty()) {
-            installContentProviders(mInitialApplication, providers);
-        }
-        VirtualCore.get().getAppCallback().beforeApplicationCreate(packageName, processName, mInitialApplication);
-        try {
-            mInstrumentation.callApplicationOnCreate(mInitialApplication);
-            InvocationStubManager.getInstance().checkEnv(HCallbackStub.class);
-            Application createdApp = ActivityThread.mInitialApplication.get(mainThread);
+         VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("BxpcHUZaOQtYEEZJKRdfDWwNGzcUPzkLHC5SVg==")));
+         PineXposed.initForXposed(context, processName);
+         this.fixSystem();
+         VirtualCore.get().getAppCallback().beforeStartApplication(packageName, processName, context);
+         if (this.mExportedVApiPkgs.contains(packageName) && LoadedApk.mClassLoader != null) {
+            LoadedApk.mClassLoader.set(data.info, new ComposeClassLoader(VClient.class.getClassLoader(), (ClassLoader)LoadedApk.getClassLoader.call(data.info)));
+         }
+      }
+
+      if (CheckJunitClazz && BuildCompat.isR() && data.appInfo.targetSdkVersion < 30) {
+         ClassLoader cl = (ClassLoader)LoadedApk.getClassLoader.call(data.info);
+         if (VERSION.SDK_INT >= 30) {
+            Reflect.on((Object)cl).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+KmgVBgY=")), new ClassLoader() {
+               protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                  return name.startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LD0uCGUaMFo="))) ? VClient.class.getClassLoader().loadClass(name) : super.loadClass(name, resolve);
+               }
+            });
+         }
+      }
+
+      Application app;
+      try {
+         if (VirtualCore.getConfig().resumeInstrumentationInMakeApplication(packageName) && this.mInstrumentation instanceof InstrumentationVirtualApp) {
+            InstrumentationVirtualApp vaIns = (InstrumentationVirtualApp)this.mInstrumentation;
+            this.mInstrumentation = vaIns.getBaseInstrumentation();
+            ActivityThread.mInstrumentation.set(VirtualCore.mainThread(), this.mInstrumentation);
+            app = (Application)LoadedApk.makeApplication.call(data.info, false, vaIns);
+            this.mInstrumentation = vaIns;
+            ActivityThread.mInstrumentation.set(VirtualCore.mainThread(), this.mInstrumentation);
+         } else {
+            app = (Application)LoadedApk.makeApplication.call(data.info, false, null);
+         }
+      } catch (Throwable var25) {
+         Throwable e = var25;
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxdXOWwFGhFsHjwdIxg2O2YaGipsN1RF")), e);
+      }
+
+      ContextFixer.fixContext(app, data.appInfo.packageName);
+      WeChat.disableBinderHook(packageName, app);
+      if (isInitialApp) {
+         this.mInitialApplication = app;
+         ActivityThread.mInitialApplication.set(mainThread, app);
+      }
+
+      VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LC4AD2UzSFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2XGojAgZjDiAoJwgmKmczSFo=")) + isInitialApp + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFEglgNAYgKQciCGYgTQJlER4qLRcqI2AgRD0=")) + this.mInitialApplication);
+      boolean isTargetGame = packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogPCtgDiAwKAMYD2wgRSM="))) || packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojQTdjJCA1KC0iD2kgDSZlJywaLC5SVg=="))) || packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojQTdjJCA1KC0iD2kgDSZoDgoqIwguMX0FMFo=")));
+      Object boundApp;
+      List providers;
+      if (isTargetGame) {
+         boundApp = ActivityThread.mBoundApplication.get(mainThread);
+         providers = (List)ActivityThread.AppBindData.providers.get(boundApp);
+         if (providers != null && !providers.isEmpty()) {
+            this.installContentProviders(app, providers);
+         }
+      }
+
+      if (LoadedApk.mApplication != null) {
+         boundApp = ContextImpl.mPackageInfo.get(context);
+         if (boundApp != null) {
+            LoadedApk.mApplication.set(boundApp, app);
+         }
+      }
+
+      if (VERSION.SDK_INT >= 24 && StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41Dm8jPzJsNygqLD0iJ2EzGlo=")).equals(processName)) {
+         this.fixWeChatRecovery(this.mInitialApplication);
+      }
+
+      Throwable th;
+      if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1DmUVGiZrER4bLj5SVg==")).equals(packageName)) {
+         try {
+            context.getSharedPreferences(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4uCGgFAiZiJR4sIz0MPGkgRStlNzAgKT5SVg==")), 0).edit().putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOD9sJzAsKBciLmkgAlo=")), false).putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOD9sJzAsKBciLmkgAh9oJwYeKQgEJ2YaGipsN1RF")), false).apply();
+            context.getSharedPreferences(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YCG8zQT8=")), 0).edit().putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGo2GgVhHgo7LBcMHWkjMDdoNwIgLghSVg==")), false).apply();
+         } catch (Throwable var20) {
+            th = var20;
+            th.printStackTrace();
+         }
+      }
+
+      synchronized(this.mAllApplications) {
+         this.mAllApplications.put(packageName, app);
+      }
+
+      if (!isTargetGame) {
+         boundApp = ActivityThread.mBoundApplication.get(mainThread);
+         providers = (List)ActivityThread.AppBindData.providers.get(boundApp);
+         if (providers != null && !providers.isEmpty()) {
+            VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMD2wjAixiASwpPT5SVg==")) + providers.size() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFJAJhVgJF")) + app);
+            this.installContentProviders(app, providers);
+         }
+      }
+
+      if (isInitialApp) {
+         VirtualCore.get().getAppCallback().beforeApplicationCreate(packageName, processName, app);
+
+         try {
+            XposedHelpers.findAndHookMethod(Binder.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCRgHgY2KCwMMWkzSFo=")), new XC_MethodReplacement() {
+               protected Object replaceHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+                  int ret = (Integer)XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
+                  return NativeEngine.onGetCallingUid(ret);
+               }
+            });
+         } catch (Throwable var18) {
+            th = var18;
+            VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMzJCRgHgY2KCwMMWk3TStsNAocKSlXVg==")) + th.getMessage());
+            th.printStackTrace();
+         }
+      }
+
+      if (cond != null) {
+         cond.open();
+      }
+
+      try {
+         this.mInstrumentation.callApplicationOnCreate(this.mInitialApplication);
+         InvocationStubManager.getInstance().checkEnv(HCallbackStub.class);
+         if (isInitialApp) {
+            Application createdApp = (Application)ActivityThread.mInitialApplication.get(mainThread);
             if (createdApp != null) {
-                if (TextUtils.equals(VirtualCore.get().getHostPkg(), createdApp.getPackageName())) {
-                    VLog.w("kk", "mInitialApplication is host!!");
-                    ActivityThread.mInitialApplication.set(mainThread, mInitialApplication);
-                    //reset mInitialApplication
-                } else {
-                    mInitialApplication = createdApp;
-                }
+               this.mInitialApplication = createdApp;
             }
-            //reset
-            if(LoadedApk.mApplication != null) {
-                Application application = LoadedApk.mApplication.get(data.info);
-                if (application != null && TextUtils.equals(VirtualCore.get().getHostPkg(), application.getPackageName())) {
-                    VLog.w("kk", "LoadedApk's mApplication is host!");
-                    LoadedApk.mApplication.set(data.info, mInitialApplication);
-                }
-            }
-        } catch (Exception e) {
-            if (!mInstrumentation.onException(mInitialApplication, e)) {
-                throw new RuntimeException("Unable to create application " + data.appInfo.name + ": " + e.toString(), e);
-            }
-        }
-        mInitialApplication.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle bundle) { }
-            @Override
-            public void onActivityStarted(Activity activity) {
-                ActivityCounterManager.get().activityCountAdd(activity.getPackageName(),activity.getClass().getName(), android.os.Process.myPid());
-                countOfActivity++;
-            }
-            @Override
-            public void onActivityResumed(Activity activity) {
-                //检测截屏权限
-                boolean screenShort = VAppPermissionManager.get().getAppPermissionEnable(
-                        activity.getPackageName(), VAppPermissionManager.PROHIBIT_SCREEN_SHORT_RECORDER);
-                Log.e(TAG, "screenShort: " + screenShort);
-                if (screenShort) {
-                    activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE
-                            , WindowManager.LayoutParams.FLAG_SECURE);
-                }
-            }
-            @Override
-            public void onActivityPaused(Activity activity) { }
-            @Override
-            public void onActivityStopped(Activity activity) {
-                ActivityCounterManager.get().activityCountReduce(activity.getPackageName(),activity.getClass().getName(),android.os.Process.myPid());
-                countOfActivity--;
-            }
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle bundle) { }
-            @Override
-            public void onActivityDestroyed(Activity activity) {
+         }
+      } catch (Exception var24) {
+         Exception e = var24;
+         if (!this.mInstrumentation.onException(app, e)) {
+            throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxcqKGkjQQZrDTwsKQc6KGMKNCRqHhoeKV9XVg==")) + data.appInfo.name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + e.toString(), e);
+         }
+      }
 
+      if (!packageName.contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojRQV9ATg/KQMYMmUFLCw=")))) {
+         LaunchCallBack launchDelegate = VirtualCore.get().getLaunchDelegate();
+         VLog.i(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oxg+I2ojLCBlJCAoKhUuOW4FJFo=")));
+         if (launchDelegate != null) {
+            launchDelegate.onLaunch(packageName, VirtualCore.get().getHostPkg(), VirtualCore.get().getContext(), app);
+         }
+      }
+
+      if (isInitialApp) {
+         VirtualCore.get().getAppCallback().afterApplicationCreate(packageName, processName, app);
+      }
+
+      VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwQHDXpSHSNOClw3OgNWD38nPyN1DQEePF8HL04OQCNpJFkcORgiKWsaDQRsJx4bIBg2KGxTAiNuJywzKBc6D28zNCxONSg7Kj02BGozNANrAS8bIxgcLmIKND9jESAeLAgAIH0FGjBsEQI0DV5aJHwOTAN/IyM8MwQHDXpSHSNOCl1F")));
+      VActivityManager.get().appDoneExecuting(info.packageName);
+   }
+
+   private void initDataStorage(boolean isExt, int userId, String pkg) {
+      if (isExt) {
+         FileUtils.ensureDirCreate(VEnvironment.getDataUserPackageDirectoryExt(userId, pkg));
+         FileUtils.ensureDirCreate(VEnvironment.getDeDataUserPackageDirectoryExt(userId, pkg));
+      } else {
+         FileUtils.ensureDirCreate(VEnvironment.getDataUserPackageDirectory(userId, pkg));
+         FileUtils.ensureDirCreate(VEnvironment.getDeDataUserPackageDirectory(userId, pkg));
+      }
+
+   }
+
+   private void fixWeChatRecovery(Application app) {
+      try {
+         Field field = app.getClassLoader().loadClass(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXogMCtgNCg/Kj41DmoVGillJCQgKS0XKmkwLCZsJzguLBc2Vg=="))).getField(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNDBmEVRF")));
+         field.setAccessible(true);
+         if (field.get((Object)null) != null) {
+            return;
+         }
+
+         field.set((Object)null, app.getBaseContext());
+      } catch (Throwable var3) {
+         Throwable e = var3;
+         e.printStackTrace();
+      }
+
+   }
+
+   @SuppressLint({"NewApi"})
+   private void fixSystem() {
+      if (BuildCompat.isS()) {
+         try {
+            Reflect.on(Canvas.class).call(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGMzGiNhHiAgKQcuMW8zLAZuDCQgKS02I2AgRVo=")), 26);
+         } catch (Exception var2) {
+         }
+      }
+
+      if (BuildCompat.isQ() && BuildCompat.isEMUI()) {
+         XposedBridge.hookAllMethods(AutofillManager.class, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOD9uNAY/LCsMDmUzGgRrASxF")), new XC_MethodHook() {
+            protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+               super.beforeHookedMethod(param);
+               AutoFillManagerStub.disableAutoFill(param.thisObject);
             }
-        });
-        VirtualCore.get().getAppCallback().afterApplicationCreate(packageName, processName, mInitialApplication);
-        VActivityManager.get().appDoneExecuting(info.packageName);
+         });
+      }
 
-        //xdja
-       /* context.getCacheDir();
-        List<InstalledAppInfo> modules = VirtualCore.get().getInstalledApps(0);
-        for (InstalledAppInfo module : modules) {
-            String libPath = VEnvironment.getAppLibDirectory(module.packageName).getAbsolutePath();
-            LoadModules.loadModule(module.getApkPath(), module.getOdexFile().getParent(), libPath, mInitialApplication);
-        }*/
-    }
+      EmuiHelper.disableCache();
+   }
 
-    private void initDataStorage(boolean is64bit, int userId, String pkg) {
-        // ensure dir created
-        if (is64bit) {
-            VEnvironment.getDataUserPackageDirectory64(userId, pkg);
-            VEnvironment.getDeDataUserPackageDirectory64(userId, pkg);
-        } else {
-            VEnvironment.getDataUserPackageDirectory(userId, pkg);
-            VEnvironment.getDeDataUserPackageDirectory(userId, pkg);
-        }
-    }
+   private void setupUncaughtHandler() {
+      ThreadGroup root;
+      for(root = Thread.currentThread().getThreadGroup(); root.getParent() != null; root = root.getParent()) {
+      }
 
+      ThreadGroup newRoot = new RootThreadGroup(root);
+      if (VERSION.SDK_INT < 24) {
+         List<ThreadGroup> groups = (List)mirror.java.lang.ThreadGroup.groups.get(root);
+         synchronized(groups) {
+            List<ThreadGroup> newGroups = new ArrayList(groups);
+            newGroups.remove(newRoot);
+            mirror.java.lang.ThreadGroup.groups.set(newRoot, newGroups);
+            groups.clear();
+            groups.add(newRoot);
+            mirror.java.lang.ThreadGroup.groups.set(root, groups);
+            Iterator var6 = newGroups.iterator();
 
-    private void fixForEmui10() {
-        if (BuildCompat.isQ() && BuildCompat.isEMUI()) {
-            if (HwApiCacheManagerEx.getDefault != null && HwApiCacheManagerEx.mPkg != null) {
-                HwApiCacheManagerEx.mPkg.set(HwApiCacheManagerEx.getDefault.call(), VirtualCore.get().getPM());
-            } else if (HwFrameworkFactory.getHwApiCacheManagerEx != null) {
-                Object hwmgr = HwFrameworkFactory.getHwApiCacheManagerEx.call();
-                if (hwmgr != null) {
-                    try {
-                        Reflect.on(hwmgr).call("apiPreCache", VirtualCore.get().getPM());
-                    } catch (Throwable e) {
-                        //ignore
-                    }
-                }
+            while(var6.hasNext()) {
+               ThreadGroup group = (ThreadGroup)var6.next();
+               if (group != newRoot) {
+                  mirror.java.lang.ThreadGroup.parent.set(group, newRoot);
+               }
             }
-        }
-    }
+         }
+      } else {
+         ThreadGroup[] groups = (ThreadGroup[])ThreadGroupN.groups.get(root);
+         synchronized(groups) {
+            ThreadGroup[] newGroups = (ThreadGroup[])((ThreadGroup;)groups).clone();
+            ThreadGroupN.groups.set(newRoot, newGroups);
+            ThreadGroupN.groups.set(root, new ThreadGroup[]{newRoot});
+            ThreadGroup[] var15 = newGroups;
+            int var16 = newGroups.length;
 
-    private void fixWeChatRecovery(Application app) {
-        try {
-            Field field = app.getClassLoader().loadClass("com.tencent.recovery.Recovery").getField("context");
-            field.setAccessible(true);
-            if (field.get(null) != null) {
-                return;
+            for(int var8 = 0; var8 < var16; ++var8) {
+               Object group = var15[var8];
+               if (group != null && group != newRoot) {
+                  ThreadGroupN.parent.set(group, newRoot);
+               }
             }
-            field.set(null, app.getBaseContext());
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void fixWeChatTinker(Context context, ApplicationInfo applicationInfo, ClassLoader appClassLoader)
-    {
-        String dataDir = applicationInfo.dataDir;
-        File tinker = new File(dataDir, "tinker");
-        if(tinker.exists()){
-            Log.e("wxd", " deleteWechatTinker " + tinker.getPath());
-            FileUtils.deleteDir(tinker);
-        }
-        File tinker_temp = new File(dataDir, "tinker_temp");
-        if(tinker_temp.exists()){
-            Log.e("wxd", " deleteWechatTinker " + tinker_temp.getPath());
-            FileUtils.deleteDir(tinker_temp);
-        }
-        File tinker_server = new File(dataDir, "tinker_server");
-        if(tinker_server.exists()){
-            Log.e("wxd", " deleteWechatTinker " + tinker_server.getPath());
-            FileUtils.deleteDir(tinker_server);
-        }
-    }
+            ThreadGroupN.ngroups.set(root, 1);
+         }
+      }
 
-    private void setupUncaughtHandler() {
-        ThreadGroup root = Thread.currentThread().getThreadGroup();
-        while (root.getParent() != null) {
-            root = root.getParent();
-        }
-        ThreadGroup newRoot = new RootThreadGroup(root);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            final List<ThreadGroup> groups = mirror.java.lang.ThreadGroup.groups.get(root);
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (groups) {
-                List<ThreadGroup> newGroups = new ArrayList<>(groups);
-                newGroups.remove(newRoot);
-                mirror.java.lang.ThreadGroup.groups.set(newRoot, newGroups);
-                groups.clear();
-                groups.add(newRoot);
-                mirror.java.lang.ThreadGroup.groups.set(root, groups);
-                for (ThreadGroup group : newGroups) {
-                    if (group == newRoot) {
-                        continue;
-                    }
-                    mirror.java.lang.ThreadGroup.parent.set(group, newRoot);
-                }
+   }
+
+   @SuppressLint({"SdCardPath"})
+   private void mountVirtualFS(InstalledAppInfo info, boolean isExt) {
+      String packageName = info.packageName;
+      int userId = VUserHandle.myUserId();
+      String dataDir;
+      String de_dataDir;
+      String libPath;
+      if (isExt) {
+         dataDir = VEnvironment.getDataUserPackageDirectoryExt(userId, packageName).getPath();
+         de_dataDir = VEnvironment.getDeDataUserPackageDirectoryExtRoot(userId).getPath();
+         libPath = VEnvironment.getDataAppLibDirectoryExt(packageName).getAbsolutePath();
+      } else {
+         dataDir = VEnvironment.getDataUserPackageDirectory(userId, packageName).getPath();
+         de_dataDir = VEnvironment.getDeDataUserPackageDirectoryRoot(userId).getPath();
+         libPath = VEnvironment.getDataAppLibDirectory(packageName).getAbsolutePath();
+      }
+
+      VDeviceConfig deviceConfig = this.getDeviceConfig();
+      if (deviceConfig.enable) {
+         File wifiMacAddressFile = this.getDeviceConfig().getWifiFile(userId, isExt);
+         if (wifiMacAddressFile != null && wifiMacAddressFile.exists()) {
+            String wifiMacAddressPath = wifiMacAddressFile.getPath();
+            NativeEngine.redirectFile(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02J283GilgHiApIylfDmkgASVvJwIsLCk5KX0KFi9lNAo8LAhSVg==")), wifiMacAddressPath);
+            NativeEngine.redirectFile(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02J283GilgHiApIylfDmkgASVrDiwZOQQAO2IaFjVuASw8")), wifiMacAddressPath);
+            NativeEngine.redirectFile(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02J283GilgHiApIylfDmkgASVvJx4tI18AO2IaFjVuASw8")), wifiMacAddressPath);
+         }
+      }
+
+      this.forbidHost();
+      String cache = (new File(dataDir, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+OWUFNFo=")))).getAbsolutePath();
+      NativeEngine.redirectDirectory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qDW8JGlo=")), cache);
+      NativeEngine.redirectDirectory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyViHiAgLwNfVg==")) + packageName, dataDir);
+      int realUserId = VUserHandle.realUserId();
+      NativeEngine.redirectDirectory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzlfVg==")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + packageName, dataDir);
+      if (VERSION.SDK_INT >= 24) {
+         NativeEngine.redirectDirectory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzxfPmknNFo=")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")), de_dataDir);
+      }
+
+      NativeEngine.whitelist(libPath);
+      if (info.dynamic) {
+         NativeEngine.whitelist(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzlfVg==")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4ECWsnGlo=")));
+      } else {
+         NativeEngine.redirectDirectory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyViHiAgLwNfVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4ECWsnGlo=")), libPath);
+         NativeEngine.redirectDirectory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzlfVg==")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4ECWsnGlo=")), libPath);
+      }
+
+      File userLibDir = VEnvironment.getUserAppLibDirectory(userId, packageName);
+      NativeEngine.redirectDirectory(userLibDir.getPath(), libPath);
+      VirtualStorageManager vsManager = VirtualStorageManager.get();
+      String vsPath = vsManager.getVirtualStorage(info.packageName, userId);
+      boolean enable = vsManager.isVirtualStorageEnable(info.packageName, userId);
+      if (enable && vsPath != null) {
+         File vsDirectory = new File(vsPath);
+         if (vsDirectory.exists() || vsDirectory.mkdirs()) {
+            HashSet<String> mountPoints = this.getMountPoints();
+            Iterator var17 = mountPoints.iterator();
+
+            while(var17.hasNext()) {
+               String mountPoint = (String)var17.next();
+               NativeEngine.redirectDirectory(mountPoint, vsPath);
             }
-        } else {
-            final ThreadGroup[] groups = ThreadGroupN.groups.get(root);
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (groups) {
-                ThreadGroup[] newGroups = groups.clone();
-                ThreadGroupN.groups.set(newRoot, newGroups);
-                ThreadGroupN.groups.set(root, new ThreadGroup[]{newRoot});
-                for (Object group : newGroups) {
-                    if (group == null) {
-                        continue;
-                    }
-                    if (group == newRoot) {
-                        continue;
-                    }
-                    ThreadGroupN.parent.set(group, newRoot);
-                }
-                ThreadGroupN.ngroups.set(root, 1);
-            }
-        }
-    }
+         }
+      } else {
+         this.redirectSdcard(info);
+      }
 
+      if (!info.dynamic && (new File(info.getApkPath(isExt))).exists()) {
+         NativeEngine.redirectFile(VEnvironment.getPackageFileStub(packageName), info.getApkPath(isExt));
+         if (VERSION.SDK_INT == 27) {
+            DexOverride override = new DexOverride(VEnvironment.getPackageFileStub(packageName), info.getApkPath(isExt), (String)null, (String)null);
+            NativeEngine.addDexOverride(override);
+         }
+      }
 
-    @SuppressLint("SdCardPath")
-    private void startIORelocater(InstalledAppInfo info, boolean is64bit) {
-        String packageName = info.packageName;
-        int userId = VUserHandle.myUserId();
-        String dataDir, de_dataDir, libPath;
-        if (is64bit) {
-            dataDir = VEnvironment.getDataUserPackageDirectory64(userId, packageName).getPath();
-            de_dataDir = VEnvironment.getDeDataUserPackageDirectory64(userId, packageName).getPath();
-            libPath = VEnvironment.getAppLibDirectory64(packageName).getAbsolutePath();
-        } else {
-            dataDir = VEnvironment.getDataUserPackageDirectory(userId, packageName).getPath();
-            de_dataDir = VEnvironment.getDeDataUserPackageDirectory(userId, packageName).getPath();
-            libPath = VEnvironment.getAppLibDirectory(packageName).getAbsolutePath();
-        }
-        VDeviceConfig deviceConfig = getDeviceConfig();
-        if (deviceConfig.enable) {
-            File wifiMacAddressFile = getDeviceConfig().getWifiFile(userId, is64bit);
-            if (wifiMacAddressFile != null && wifiMacAddressFile.exists()) {
-                String wifiMacAddressPath = wifiMacAddressFile.getPath();
-                NativeEngine.redirectFile("/sys/class/net/wlan0/address", wifiMacAddressPath);
-                NativeEngine.redirectFile("/sys/class/net/eth0/address", wifiMacAddressPath);
-                NativeEngine.redirectFile("/sys/class/net/wifi/address", wifiMacAddressPath);
-            }
-        }
-        LinuxCompat.forgeProcDriver(is64bit);
-        forbidHost();
-        boolean autoFixPath = userId > 0;//防止多开的应用写死路径
-        String cache = new File(dataDir, "cache").getAbsolutePath();
-        NativeEngine.redirectDirectory("/tmp/", cache);
-        // /data/data/{packageName}/ -> /data/data/va/.../data/user/{userId}/{packageName}/
-        NativeEngine.redirectDirectory("/data/data/" + packageName, dataDir);
-        // /data/user/{userId}/{packageName}/ -> /data/data/va/.../data/user/{userId}/{packageName}/
-        NativeEngine.redirectDirectory("/data/user/" + userId + "/" + packageName, dataDir);
-        if(autoFixPath) {
-            // /data/user/0/{packageName}/ -> /data/data/va/.../data/user/{userId}/{packageName}/
-            NativeEngine.redirectDirectory("/data/user/0/" + packageName, dataDir);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            NativeEngine.redirectDirectory("/data/user_de/" + userId + "/" + packageName, de_dataDir);
-            if(autoFixPath) {
-                // /data/user_de/0/{packageName}/ -> /data/data/va/.../data/user_de/{userId}/{packageName}/
-                NativeEngine.redirectDirectory("/data/user_de/0/" + packageName, de_dataDir);
-            }
-        }
-        SettingConfig.AppLibConfig appLibConfig = getConfig().getAppLibConfig(packageName);
+      if (VirtualCore.getConfig().isEnableIORedirect()) {
+         if (VirtualCore.getConfig().isDisableTinker(packageName)) {
+            NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyViHiAgLwNfVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qCWojQSthMB5F")), false);
+            NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyViHiAgLwNfVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qCWojQSthNR4pKAguLGkgRCU=")), false);
+            NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyViHiAgLwNfVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qCWojQSthNR4gKAdXKn8FSFo=")), false);
+            NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzlfVg==")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qCWojQSthMB5F")), false);
+            NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzlfVg==")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qCWojQSthNR4pKAguLGkgRCU=")), false);
+            NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyVmASg/IzlfVg==")) + realUserId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0qCWojQSthNR4gKAdXKn8FSFo=")), false);
+         }
 
-        if (appLibConfig == SettingConfig.AppLibConfig.UseRealLib) {
-            if (info.appMode != MODE_APP_USE_OUTSIDE_APK
-                    || !VirtualCore.get().isOutsideInstalled(info.packageName)) {
-                appLibConfig = SettingConfig.AppLibConfig.UseOwnLib;
-            }
-        }
-        NativeEngine.whitelist(libPath);
-        if (appLibConfig == SettingConfig.AppLibConfig.UseOwnLib) {
-            NativeEngine.redirectDirectory("/data/data/" + packageName + "/lib/", libPath);
-            NativeEngine.redirectDirectory("/data/user/" + userId + "/" + packageName + "/lib/", libPath);
-            if (autoFixPath) {
-                // /data/user_de/0/{packageName}/lib -> /data/data/va/.../data/user_de/{userId}/{packageName}/lib
-                NativeEngine.redirectDirectory("/data/user/0/" + packageName + "/lib/", libPath);
-            }
-        } else {
-            NativeEngine.whitelist("/data/user/" + userId + "/" + packageName + "/lib/");
-        }
-        // /data/data/va/.../data/user/{userId}/{packageName}/lib
-        File userLibDir = VEnvironment.getUserAppLibDirectory(userId, packageName);
-        //libPath=/data/data/va/.../data/app/{packageName}/lib
-        //改为link，防止其他进程读取这个lib目录，报找不到文件错误
-        try {
-            if(userLibDir.exists() && !FileUtils.isSymlink(userLibDir)){
-                FileUtils.deleteDir(userLibDir);
-            }
-            if(!userLibDir.exists()) {
-                FileUtils.createSymlink(libPath, userLibDir.getPath());
-            }
-        } catch (Exception e) {
-            NativeEngine.redirectDirectory(userLibDir.getPath(), libPath);
-        }
+         NativeEngine.enableIORedirect(info);
+      }
 
-        //xdja safekey adapter
-        String subPathData = "/Android/data/" + info.packageName;
-        String prefix = "/emulated/" + VUserHandle.realUserId() + "/";
-        File[] efd = VEnvironment.getTFRoots();
-        for (File f : efd) {
-            if (f == null)
-                continue;
-            String filename = f.getAbsolutePath();
-            if(filename.contains(prefix))
-                continue;
-            String tfRoot = VEnvironment.getTFRoot(f.getAbsolutePath()).getAbsolutePath();
-            NativeEngine.redirectDirectory(tfRoot+subPathData
-                    ,VEnvironment.getTFVirtualRoot(tfRoot,subPathData).getAbsolutePath());
-        }
+   }
 
-        VirtualStorageManager vsManager = VirtualStorageManager.get();
-        //xdja
-        vsManager.setVirtualStorage(info.packageName, userId, VEnvironment.getExternalStorageDirectory(userId).getAbsolutePath());
-        String vsPath = vsManager.getVirtualStorage(info.packageName, userId);
-        boolean enable = vsManager.isVirtualStorageEnable(info.packageName, userId);
-        if (enable && vsPath != null) {
-            File vsDirectory = new File(vsPath);
-            if (vsDirectory.exists() || vsDirectory.mkdirs()) {
-                HashSet<String> mountPoints = getMountPoints();
-                for (String mountPoint : mountPoints) {
-                    //xdja
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        try {
-                            if (Environment.isExternalStorageRemovable(new File(mountPoint))) {
-                                continue;
-                            }
-                        } catch (IllegalArgumentException e) {
-                            VLog.d(TAG, e.toString());
-                        }
-                    }
-                    NativeEngine.redirectDirectory(mountPoint, vsPath);
-                }
+   private void forbidHost() {
+      ActivityManager am = (ActivityManager)VirtualCore.get().getContext().getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      Iterator var2 = am.getRunningAppProcesses().iterator();
 
-            }
-        }
+      while(true) {
+         ActivityManager.RunningAppProcessInfo info;
+         do {
+            do {
+               do {
+                  do {
+                     if (!var2.hasNext()) {
+                        return;
+                     }
 
-        //xdja 放开异常记录路径
-        NativeEngine.whitelist(exceptionRecorder.getExceptionRecordPath());
-        if (VAppPermissionManager.get().getEncryptConfig() != null) {
-            NativeEngine.nativeConfigEncryptPkgName(VAppPermissionManager.get().getEncryptConfig());
-        }
-        NativeEngine.enableIORedirect();
-        if (controllerManager.getNetworkState()) {
-            NativeEngine.nativeConfigNetworkState(controllerManager.getNetworkState());
-            NativeEngine.nativeConfigWhiteOrBlack(controllerManager.isWhiteList());
-            NativeEngine.nativeConfigNetStrategy(controllerManager.get().getIpStrategy(), 1);
-            NativeEngine.nativeConfigNetStrategy(controllerManager.get().getDomainStrategy(), 2);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (controllerManager.get().getDomainStrategy() != null
-                            && controllerManager.get().getDomainStrategy().length > 0) {
-                        NativeEngine.nativeConfigDomainToIp();
-                    }
-                }
-            }).start();
-        }
-    }
+                     info = (ActivityManager.RunningAppProcessInfo)var2.next();
+                  } while(info.pid == Process.myPid());
+               } while(info.uid != VirtualCore.get().myUid());
+            } while(VActivityManager.get().isAppPid(info.pid));
+         } while(!info.processName.startsWith(StubManifest.PACKAGE_NAME) && (StubManifest.EXT_PACKAGE_NAME == null || !info.processName.startsWith(StubManifest.EXT_PACKAGE_NAME)));
 
-    private void forbidHost() {
-        final List<String> hostProcesses;
-        if (StubManifest.PACKAGE_NAME_64BIT != null) {
-            hostProcesses = Arrays.asList(StubManifest.PACKAGE_NAME,
-                    StubManifest.PACKAGE_NAME_64BIT,
-                    StubManifest.PACKAGE_NAME + ":x",
-                    StubManifest.PACKAGE_NAME_64BIT + ":x");
-        } else {
-            hostProcesses = Arrays.asList(StubManifest.PACKAGE_NAME,
-                    StubManifest.PACKAGE_NAME + ":x");
-        }
-        ActivityManager am = (ActivityManager) VirtualCore.get().getContext().getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningAppProcessInfo info : am.getRunningAppProcesses()) {
-            if (info.pid == Process.myPid()) {
-                continue;
-            }
-            if (info.uid != VirtualCore.get().myUid()) {
-                continue;
-            }
-            if(hostProcesses.contains(info.processName)){
-                //is host
-                NativeEngine.forbid("/proc/" + info.pid, false);//直接不允许读取host的任何proc信息
-                NativeEngine.forbid("/proc/" + info.pid + "/maps", true);
-                NativeEngine.forbid("/proc/" + info.pid + "/cmdline", true);
-            }
-        }
-    }
+         NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My06KmozLyU=")) + info.pid + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4IP28KLFo=")), false);
+         NativeEngine.forbid(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My06KmozLyU=")) + info.pid + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My42DWgFHi9gNDBF")), false);
+      }
+   }
 
-    @SuppressLint("SdCardPath")
-    private HashSet<String> getMountPoints() {
-        HashSet<String> mountPoints = new HashSet<>(3);
-        mountPoints.add("/mnt/sdcard/");
-        mountPoints.add("/sdcard/");
-        mountPoints.add("/storage/emulated/" + VUserHandle.realUserId() +"/");
-        String[] points = StorageManagerCompat.getAllPoints(VirtualCore.get().getContext());
-        if (points != null) {
-            Collections.addAll(mountPoints, points);
-        }
-        return mountPoints;
+   @SuppressLint({"SdCardPath"})
+   private HashSet<String> getMountPoints() {
+      HashSet<String> mountPoints = new HashSet(3);
+      mountPoints.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4ICGwJGgNiHig7Iz01DQ==")));
+      mountPoints.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02PGszJARiVx5F")));
+      mountPoints.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My02LGowFjdiJDM1KAdXLW8zQQZrAS8c")) + VUserHandle.realUserId() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+      mountPoints.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0qD28jJC1iCh4/KggMCG4gBitrVgZF")) + VUserHandle.realUserId() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+      String[] points = StorageManagerCompat.getAllPoints(VirtualCore.get().getContext());
+      if (points != null) {
+         String[] var3 = points;
+         int var4 = points.length;
 
-    }
-
-    private Context createPackageContext(ApplicationInfo appInfo) {
-        try {
-            final String packageName = appInfo.packageName;
-            Context hostContext = VirtualCore.get().getContext();
-            Context appContext = hostContext.createPackageContext(packageName, Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-            if (appContext != null) {
-                if (appContext.getApplicationInfo().nativeLibraryDir == null) {
-                    VLog.w(TAG, "fix nativeLibraryDir");
-                    appContext.getApplicationInfo().nativeLibraryDir = appInfo.nativeLibraryDir;
-                }
-                if (appContext.getApplicationInfo().sharedLibraryFiles == null && appInfo.sharedLibraryFiles != null) {
-                    VLog.w(TAG, "fix sharedLibraryFiles");
-                    appContext.getApplicationInfo().sharedLibraryFiles = appInfo.sharedLibraryFiles;
-                }
-            }
-            return appContext;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            VirtualRuntime.crash(e);
-        }
-        throw new RuntimeException();
-    }
-
-    private void installContentProviders(Context app, List<ProviderInfo> providers) {
-        long origId = Binder.clearCallingIdentity();
-        Object mainThread = VirtualCore.mainThread();
-        try {
-            for (ProviderInfo cpi : providers) {
-                try {
-                    ActivityThread.installProvider(mainThread, app, cpi, null);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        } finally {
-            Binder.restoreCallingIdentity(origId);
-        }
-    }
-
-    @Override
-    public IBinder acquireProviderClient(ProviderInfo info) {
-        if (!isAppRunning()) {
-            VClient.get().bindApplication(info.packageName, info.processName);
-        }
-        if (VClient.get().getCurrentApplication() == null) {
-            return null;
-        }
-        IInterface provider = null;
-        String authority = ComponentUtils.getFirstAuthority(info);
-        ContentResolver resolver = VirtualCore.get().getContext().getContentResolver();
-        ContentProviderClient client = null;
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                client = resolver.acquireUnstableContentProviderClient(authority);
+         for(int var5 = 0; var5 < var4; ++var5) {
+            String point = var3[var5];
+            if (point.endsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")))) {
+               mountPoints.add(point);
             } else {
-                client = resolver.acquireContentProviderClient(authority);
+               mountPoints.add(point + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        if (client != null) {
-            provider = mirror.android.content.ContentProviderClient.mContentProvider.get(client);
-            client.release();
-        }
-        IBinder binder = provider != null ? provider.asBinder() : null;
-        if (binder != null) {
-            return binder;
-        }
-        return null;
-    }
+         }
+      }
 
-    private void fixInstalledProviders() {
-        clearSettingProvider();
-        //noinspection unchecked
-        Map<Object, Object> clientMap = ActivityThread.mProviderMap.get(VirtualCore.mainThread());
-        for (Map.Entry<Object, Object> e : clientMap.entrySet()) {
-            Object clientRecord = e.getValue();
-            if (BuildCompat.isOreo()) {
-                IInterface provider = ActivityThread.ProviderClientRecordJB.mProvider.get(clientRecord);
-                Object holder = ActivityThread.ProviderClientRecordJB.mHolder.get(clientRecord);
-                if (holder == null) {
-                    continue;
-                }
-                ProviderInfo info = ContentProviderHolderOreo.info.get(holder);
-                String name = ComponentUtils.getFirstAuthority(info);
-                if (name != null && !name.startsWith(StubManifest.STUB_CP_AUTHORITY)) {
-                    provider = ProviderHook.createProxy(true, name, provider);
-                    ActivityThread.ProviderClientRecordJB.mProvider.set(clientRecord, provider);
-                    ContentProviderHolderOreo.provider.set(holder, provider);
-                }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                IInterface provider = ActivityThread.ProviderClientRecordJB.mProvider.get(clientRecord);
-                Object holder = ActivityThread.ProviderClientRecordJB.mHolder.get(clientRecord);
-                if (holder == null) {
-                    continue;
-                }
-                ProviderInfo info = IActivityManager.ContentProviderHolder.info.get(holder);
-                String name = ComponentUtils.getFirstAuthority(info);
-                if (name != null && !name.startsWith(StubManifest.STUB_CP_AUTHORITY)) {
-                    provider = ProviderHook.createProxy(true, name, provider);
-                    ActivityThread.ProviderClientRecordJB.mProvider.set(clientRecord, provider);
-                    IActivityManager.ContentProviderHolder.provider.set(holder, provider);
-                }
-            } else {
-                String authority = ActivityThread.ProviderClientRecord.mName.get(clientRecord);
-                IInterface provider = ActivityThread.ProviderClientRecord.mProvider.get(clientRecord);
-                if (provider != null && !authority.startsWith(StubManifest.STUB_CP_AUTHORITY)) {
-                    provider = ProviderHook.createProxy(true, authority, provider);
-                    ActivityThread.ProviderClientRecord.mProvider.set(clientRecord, provider);
-                }
-            }
-        }
-    }
+      return mountPoints;
+   }
 
-    public void clearSettingProvider() {
-        Object cache;
-        cache = Settings.System.sNameValueCache.get();
-        if (cache != null) {
-            clearContentProvider(cache);
-        }
-        cache = Settings.Secure.sNameValueCache.get();
-        if (cache != null) {
-            clearContentProvider(cache);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Settings.Global.TYPE != null) {
-            cache = Settings.Global.sNameValueCache.get();
-            if (cache != null) {
-                clearContentProvider(cache);
-            }
-        }
-    }
+   private Context createPackageContext(String packageName) {
+      try {
+         Context hostContext = VirtualCore.get().getContext();
+         Context packageContext = hostContext.createPackageContext(packageName, 3);
+         PackageManager packageManager = packageContext.getPackageManager();
+         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhZfD28wMBNgJFkgKAgALn40IFo=")) + hostContext + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OGszGiZmHjAaLBccD2ozOzI=")) + packageContext + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsKIDd9JA47KC0MQG4jPCt+N1RF")) + packageName);
+         return packageContext;
+      } catch (PackageManager.NameNotFoundException var5) {
+         PackageManager.NameNotFoundException e = var5;
+         e.printStackTrace();
+         VirtualRuntime.crash(e);
+         throw new RuntimeException();
+      }
+   }
 
-    private static void clearContentProvider(Object cache) {
-        if (BuildCompat.isOreo()) {
-            Object holder = Settings.NameValueCacheOreo.mProviderHolder.get(cache);
-            if (holder != null) {
-                Settings.ContentProviderHolder.mContentProvider.set(holder, null);
-            }
-        } else {
-            Settings.NameValueCache.mContentProvider.set(cache, null);
-        }
-    }
+   private void installContentProviders(Context app, List<ProviderInfo> providers) {
+      long origId = Binder.clearCallingIdentity();
+      Object mainThread = VirtualCore.mainThread();
 
-    @Override
-    public void finishActivity(IBinder token) {
-        sendMessage(FINISH_ACTIVITY, token);
-    }
+      try {
+         Iterator var6 = providers.iterator();
 
-    @Override
-    public void closeAllLongSocket() throws RemoteException {
-        NativeEngine.nativeCloseAllSocket();
-    }
+         while(var6.hasNext()) {
+            ProviderInfo cpi = (ProviderInfo)var6.next();
 
-    @Override
-    public void scheduleNewIntent(String creator, IBinder token, Intent intent) {
-        NewIntentData data = new NewIntentData();
-        data.creator = creator;
-        data.token = token;
-        data.intent = intent;
-        sendMessage(NEW_INTENT, data);
-    }
-
-    @Override
-    public void scheduleReceiver(String processName, ComponentName component, Intent intent, PendingResultData pendingResult) {
-        ReceiverData receiverData = new ReceiverData();
-        receiverData.pendingResult = pendingResult;
-        receiverData.intent = intent;
-        receiverData.component = component;
-        receiverData.processName = processName;
-        receiverData.stacktrace = new Exception();
-        sendMessage(RECEIVER, receiverData);
-    }
-
-    private void handleReceiver(ReceiverData data) {
-        if (!isAppRunning()) {
-            bindApplication(data.component.getPackageName(), data.processName);
-        }
-        BroadcastReceiver.PendingResult result = data.pendingResult.build();
-        try {
-            Context context = mInitialApplication.getBaseContext();
-            Context receiverContext = ContextImpl.getReceiverRestrictedContext.call(context);
-            String className = data.component.getClassName();
-            ClassLoader classLoader = LoadedApk.getClassLoader.call(mBoundApplication.info);
-            BroadcastReceiver receiver = (BroadcastReceiver) classLoader.loadClass(className).newInstance();
-            mirror.android.content.BroadcastReceiver.setPendingResult.call(receiver, result);
-            data.intent.setExtrasClassLoader(classLoader);
-            if (data.intent.getComponent() == null) {
-                data.intent.setComponent(data.component);
-            }
-            receiver.onReceive(receiverContext, data.intent);
-            if (mirror.android.content.BroadcastReceiver.getPendingResult.call(receiver) != null) {
-                result.finish();
-            }
-        } catch (Exception e) {
-            data.stacktrace.printStackTrace();
-            throw new RuntimeException(
-                    "Unable to start receiver " + data.component
-                            + ": " + e.toString(), e);
-        }
-        VActivityManager.get().broadcastFinish(data.pendingResult);
-    }
-
-    public ClassLoader getClassLoader() {
-        return LoadedApk.getClassLoader.call(mBoundApplication.info);
-    }
-
-    public Service createService(ServiceInfo info, IBinder token) {
-        if (!isAppRunning()) {
-            bindApplication(info.packageName, info.processName);
-        }
-        ClassLoader classLoader = LoadedApk.getClassLoader.call(mBoundApplication.info);
-        Service service;
-        try {
-            service = (Service) classLoader.loadClass(info.name).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Unable to instantiate service " + info.name
-                            + ": " + e.toString(), e);
-        }
-        try {
-            Context context = VirtualCore.get().getContext().createPackageContext(
-                    info.packageName,
-                    Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY
-            );
-            ContextImpl.setOuterContext.call(context, service);
-            mirror.android.app.Service.attach.call(
-                    service,
-                    context,
-                    VirtualCore.mainThread(),
-                    info.name,
-                    token,
-                    mInitialApplication,
-                    ActivityManagerNative.getDefault.call()
-            );
-            ContextFixer.fixContext(service);
-            service.onCreate();
-            return service;
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Unable to create service " + info.name
-                            + ": " + e.toString(), e);
-        }
-    }
-
-    @Override
-    public IBinder createProxyService(ComponentName component, IBinder binder) {
-        return ProxyServiceFactory.getProxyService(getCurrentApplication(), component, binder);
-    }
-
-    @Override
-    public String getDebugInfo() {
-        return VirtualRuntime.getProcessName();
-    }
-
-    @Override
-    public void stopService(ComponentName component) {
-        ServiceManager.get().stopService(component);
-    }
-
-    private static class RootThreadGroup extends ThreadGroup {
-
-        RootThreadGroup(ThreadGroup parent) {
-            super(parent, "VA");
-        }
-
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-
-            VLog.e(TAG, "uncaughtException !!!!!!");
-            //将异常记录在本地
-            exceptionRecorder.recordException(e);
-
-            Thread.UncaughtExceptionHandler threadHandler = null;
             try {
-                //当前线程的handler
-                threadHandler = Reflect.on(t).get("uncaughtExceptionHandler");
-            } catch (Throwable ignore) {
-
+               ActivityThread.installProvider(mainThread, app, cpi, (Object)null);
+            } catch (Throwable var12) {
+               Throwable e = var12;
+               e.printStackTrace();
             }
-            if(threadHandler == null){
-                //应用进程的Thread.class的ClassLoader是系统classloader，所以直接用静态方法
-                threadHandler = Thread.getDefaultUncaughtExceptionHandler();
+         }
+      } finally {
+         Binder.restoreCallingIdentity(origId);
+      }
+
+   }
+
+   public IBinder acquireProviderClient(ProviderInfo info) {
+      this.bindApplication(info.packageName, info.processName);
+      IInterface provider = null;
+      String[] authorities = info.authority.split(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OC5SVg==")));
+      String authority = authorities.length == 0 ? info.authority : authorities[0];
+      ContentResolver resolver = VirtualCore.get().getContext().getContentResolver();
+      ContentProviderClient client = null;
+
+      try {
+         client = resolver.acquireUnstableContentProviderClient(authority);
+      } catch (Throwable var8) {
+         Throwable e = var8;
+         e.printStackTrace();
+      }
+
+      if (client != null) {
+         provider = (IInterface)mirror.android.content.ContentProviderClient.mContentProvider.get(client);
+         client.release();
+      }
+
+      VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2L2wVAgRiDyQqKi4+MWkzGgRgJwIaLhgcCksVSFo=")) + info + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcMM28wNCRmVgU8")) + provider + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phc6KmozLCthJysiPxhSVg==")) + VirtualRuntime.getProcessName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OHsFJAVmHho1Iz0cLmgkIFo=")) + authority);
+      return provider != null ? provider.asBinder() : null;
+   }
+
+   private void fixInstalledProviders() {
+      this.clearSettingProvider();
+      Map<Object, Object> clientMap = (Map)ActivityThread.mProviderMap.get(VirtualCore.mainThread());
+      Iterator var2 = clientMap.entrySet().iterator();
+
+      while(var2.hasNext()) {
+         Map.Entry<Object, Object> e = (Map.Entry)var2.next();
+         Object clientRecord = e.getValue();
+         IInterface provider;
+         Object holder;
+         ProviderInfo info;
+         if (BuildCompat.isOreo()) {
+            provider = (IInterface)ActivityThread.ProviderClientRecordJB.mProvider.get(clientRecord);
+            holder = ActivityThread.ProviderClientRecordJB.mHolder.get(clientRecord);
+            if (holder != null) {
+               info = (ProviderInfo)ContentProviderHolderOreo.info.get(holder);
+               if (!info.authority.startsWith(StubManifest.STUB_CP_AUTHORITY)) {
+                  provider = ProviderHook.createProxy(true, info.authority, provider);
+                  ActivityThread.ProviderClientRecordJB.mProvider.set(clientRecord, provider);
+                  ContentProviderHolderOreo.provider.set(holder, provider);
+               }
             }
-            Thread.UncaughtExceptionHandler handler;
-            if (threadHandler != null) {
-                handler = threadHandler;
-            } else {
-                handler = VClient.gClient.crashHandler;
+         } else {
+            provider = (IInterface)ActivityThread.ProviderClientRecordJB.mProvider.get(clientRecord);
+            holder = ActivityThread.ProviderClientRecordJB.mHolder.get(clientRecord);
+            if (holder != null) {
+               info = (ProviderInfo)IActivityManager.ContentProviderHolder.info.get(holder);
+               if (!info.authority.startsWith(StubManifest.STUB_CP_AUTHORITY)) {
+                  provider = ProviderHook.createProxy(true, info.authority, provider);
+                  ActivityThread.ProviderClientRecordJB.mProvider.set(clientRecord, provider);
+                  IActivityManager.ContentProviderHolder.provider.set(holder, provider);
+               }
             }
-            boolean isMainThread = Looper.getMainLooper() == Looper.myLooper();
-            //要考虑下面几个情况：
-            //1.defHandler.uncaughtException里面自己杀死当前进程，如果是top activity，则会无限重启
-            //2.defHandler.uncaughtException里面没有杀死当前进程
-            if(isMainThread){
-                //如果是activity是最上层，可能会不断重启activity，或者保留一个白色无效的activity
-                //返回主界面
-                VirtualCore.get().gotoBackHome();
+         }
+      }
+
+   }
+
+   private void clearSettingProvider() {
+      Object cache = Settings.System.sNameValueCache.get();
+      if (cache != null) {
+         clearContentProvider(cache);
+      }
+
+      cache = Settings.Secure.sNameValueCache.get();
+      if (cache != null) {
+         clearContentProvider(cache);
+      }
+
+      if (Settings.Global.TYPE != null) {
+         cache = Settings.Global.sNameValueCache.get();
+         if (cache != null) {
+            clearContentProvider(cache);
+         }
+      }
+
+   }
+
+   private static void clearContentProvider(Object cache) {
+      if (BuildCompat.isOreo()) {
+         Object holder = Settings.NameValueCacheOreo.mProviderHolder.get(cache);
+         if (holder != null) {
+            Settings.ContentProviderHolder.mContentProvider.set(holder, (Object)null);
+         }
+      } else {
+         Settings.NameValueCache.mContentProvider.set(cache, (Object)null);
+      }
+
+   }
+
+   public void finishActivity(IBinder token) {
+      this.sendMessage(13, token);
+   }
+
+   public void scheduleNewIntent(String creator, IBinder token, Intent intent) {
+      NewIntentData data = new NewIntentData();
+      data.creator = creator;
+      data.token = token;
+      data.intent = intent;
+      this.sendMessage(11, data);
+   }
+
+   public void scheduleReceiver(String processName, ComponentName component, Intent intent, BroadcastReceiver.PendingResult pendingResult) {
+      ReceiverData receiverData = new ReceiverData();
+      receiverData.pendingResult = pendingResult;
+      receiverData.intent = intent;
+      receiverData.component = component;
+      receiverData.processName = processName;
+      receiverData.stacktrace = new Exception();
+      this.sendMessage(12, receiverData);
+   }
+
+   private void handleReceiver(ReceiverData data) {
+      BroadcastReceiver.PendingResult result = data.pendingResult;
+
+      try {
+         Context context = this.mInitialApplication.getBaseContext();
+         Context receiverContext = (Context)ContextImpl.getReceiverRestrictedContext.call(context);
+         ContextFixer.fixContext(receiverContext, data.component.getPackageName());
+         String className = data.component.getClassName();
+         ClassLoader classLoader = (ClassLoader)LoadedApk.getClassLoader.call(this.mBoundApplication.info);
+         BroadcastReceiver receiver = (BroadcastReceiver)classLoader.loadClass(className).newInstance();
+         mirror.android.content.BroadcastReceiver.setPendingResult.call(receiver, result);
+         data.intent.setExtrasClassLoader(context.getClassLoader());
+         ComponentUtils.unpackFillIn(data.intent, classLoader);
+         if (data.intent.getComponent() == null) {
+            data.intent.setComponent(data.component);
+         }
+
+         FakeIdentityBinder.setSystemIdentity();
+         receiver.onReceive(receiverContext, data.intent);
+         if (mirror.android.content.BroadcastReceiver.getPendingResult.call(receiver) != null) {
+            IBinder token = (IBinder)mirror.android.content.BroadcastReceiver.PendingResult.mToken.get(result);
+            if (!VActivityManager.get().broadcastFinish(token)) {
+               result.finish();
             }
-            if (handler != null) {
-                handler.uncaughtException(t, e);
+         }
+
+      } catch (Exception var9) {
+         Exception e = var9;
+         data.stacktrace.printStackTrace();
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxgqLm4gRQZ4HgogLT4uI2YwLDV5EVRF")) + data.component + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + e.toString(), e);
+      }
+   }
+
+   public ClassLoader getClassLoader() {
+      return (ClassLoader)LoadedApk.getClassLoader.call(this.mBoundApplication.info);
+   }
+
+   public Service createService(ServiceInfo info, IBinder token) {
+      this.bindApplication(info.packageName, info.processName);
+      ClassLoader classLoader = (ClassLoader)LoadedApk.getClassLoader.call(this.mBoundApplication.info);
+
+      Service service;
+      Exception e;
+      try {
+         service = (Service)classLoader.loadClass(info.name).newInstance();
+      } catch (Exception var7) {
+         e = var7;
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxccDmoKBjdlNCwaLRcqJ0sVNCBlNzgiKAgfJA==")) + info.name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + e.toString(), e);
+      }
+
+      try {
+         Context context = VirtualCore.get().getContext().createPackageContext(info.packageName, 3);
+         ContextImpl.setOuterContext.call(context, service);
+         mirror.android.app.Service.attach.call(service, context, VirtualCore.mainThread(), info.name, token, this.mInitialApplication, ActivityManagerNative.getDefault.call());
+         ContextFixer.fixContext(context, info.packageName);
+         service.onCreate();
+         return service;
+      } catch (Exception var6) {
+         e = var6;
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxcqKGkjQQZrDTw6LhcMMmMKNCB5EVRF")) + info.name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + e.toString(), e);
+      }
+   }
+
+   public IBinder createProxyService(ComponentName component, IBinder binder) {
+      return ProxyServiceFactory.getProxyService(this.getCurrentApplication(), component, binder);
+   }
+
+   public String getDebugInfo() {
+      return VirtualRuntime.getProcessName();
+   }
+
+   public boolean finishReceiver(IBinder token) {
+      return StaticReceiverSystem.get().broadcastFinish(token);
+   }
+
+   public List<ActivityManager.RunningServiceInfo> getServices() {
+      return VServiceRuntime.getInstance().getServices();
+   }
+
+   private void redirectSdcardAndroidData(InstalledAppInfo info) {
+      SettingConfig config = VirtualCore.getConfig();
+      HashSet<String> mountPoints = this.getMountPoints();
+      String[] dirs = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Myw+CGgKFiVjDg01KBciLm4nNFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Myw+CGgKFiVjDg01KgcMPmwjQCU=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Myw+CGgKFiVjDg01Ki0uOH8FSFo="))};
+      File replace = VirtualCore.get().getContext().getExternalFilesDir(config.getVirtualSdcardAndroidDataName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + VUserHandle.myUserId() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+      if (info.packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojBitnHh42Oj0AMWU0RVo="))) && StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+DW8wNCZiJ1RF")).equals(Build.BRAND) && VERSION.SDK_INT == 29) {
+         VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bz8nL0YWWgBLHig1KgMYDmkgFiVlMxoZIxcpCEtXLQUcUz1MXgAdEh8VJARoDgo6JQcLL3UJPzZHAg8TBhojREZaA1dYEzkBAhk3IEcXPQJAECUbBVcJWU5XAwQUFh9LXjYdDhQ7D1YGUi05EzUNEQISLRYaPwtNWDYVOhoNPTUVPAswXx87QBknTVo=")) + info.packageName);
+      } else if (info.packageName.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojBitnHh42Oj0MKA=="))) && StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+DW8wNCZiJ1RF")).equals(Build.BRAND) && VERSION.SDK_INT == 29) {
+         VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Bz8nL0YWWgBLHig1KgMYDmkgFiVlMxogKSo4IhhaACEYSVsuUgwMO2UzMCZqNx4zDV8lP3lXFy4ZUgsIRAArCBorMUxXFgsTWjU3QB87F1IePxMpXAQCLBktBCwbNl8uWQoCIxQtHD8fNkI0EUQkLhQEFD0CFS4wWwldPFQBACsGSV8+XwkbOg==")) + info.packageName);
+      } else {
+         if (!replace.exists() && !replace.mkdirs()) {
+            VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwvIxcLPksVSFo=")) + replace);
+         }
+
+         Iterator var6 = mountPoints.iterator();
+
+         while(var6.hasNext()) {
+            String mountPoint = (String)var6.next();
+            String[] var8 = dirs;
+            int var9 = dirs.length;
+
+            for(int var10 = 0; var10 < var9; ++var10) {
+               String dir = var8[var10];
+               File origin = new File(mountPoint + dir);
+               File target = new File(replace.getPath() + dir);
+               if (!target.exists() && !target.mkdirs()) {
+                  VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwvIxcLPksVSFo=")) + target);
+               }
+
+               NativeEngine.redirectDirectory(origin.getPath(), replace.getPath() + dir);
+            }
+         }
+
+      }
+   }
+
+   private void redirectSdcard(InstalledAppInfo info) {
+      SettingConfig config = VirtualCore.getConfig();
+      this.redirectSdcardAndroidData(info);
+      if (BuildCompat.isR() && VirtualCore.get().getTargetSdkVersion() >= 30) {
+         int userId = VUserHandle.myUserId();
+         ApplicationInfo applicationInfo = info.getApplicationInfo(userId);
+         if (applicationInfo == null) {
+            return;
+         }
+
+         int targetSdkVersion = applicationInfo.targetSdkVersion;
+         if (targetSdkVersion < 30) {
+            HashSet<String> mountPoints = this.getMountPoints();
+            File replace = VirtualCore.get().getContext().getExternalFilesDir(config.getVirtualSdcardAndroidDataName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + VUserHandle.myUserId() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+            if (VirtualCore.get().isSharedUserId()) {
+               replace = new File(replace.toString().replace(StubManifest.EXT_PACKAGE_NAME, StubManifest.PACKAGE_NAME));
             }
 
-            //如果上面方法退出进程，则下面不会执行
-            //主进程异常后，是无法响应后续事件，只能杀死
-            if (isMainThread) {
-                System.exit(0);
+            if (!replace.exists() && !replace.mkdirs()) {
+               VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwvIxcLPksVSFo=")) + replace);
             }
-        }
-    }
 
-    private final class NewIntentData {
-        String creator;
-        IBinder token;
-        Intent intent;
-    }
+            Iterator var8 = mountPoints.iterator();
 
-    private final class AppBindData {
-        String processName;
-        ApplicationInfo appInfo;
-        List<ProviderInfo> providers;
-        Object info;
-    }
-
-    private final class ReceiverData {
-        PendingResultData pendingResult;
-        Intent intent;
-        ComponentName component;
-        String processName;
-        Throwable stacktrace;
-    }
-
-
-    @SuppressLint("HandlerLeak")
-    private class H extends Handler {
-
-        private H() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case NEW_INTENT: {
-                    handleNewIntent((NewIntentData) msg.obj);
-                    break;
-                }
-                case RECEIVER: {
-                    handleReceiver((ReceiverData) msg.obj);
-                    break;
-                }
-                case FINISH_ACTIVITY: {
-                    VActivityManager.get().finishActivity((IBinder) msg.obj);
-                    break;
-                }
+            String mountPoint;
+            while(var8.hasNext()) {
+               mountPoint = (String)var8.next();
+               File origin = new File(mountPoint + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")));
+               NativeEngine.redirectDirectory(origin.getPath(), replace.getPath());
             }
-        }
-    }
+
+            var8 = mountPoints.iterator();
+
+            while(var8.hasNext()) {
+               mountPoint = (String)var8.next();
+
+               try {
+                  String[] standardDirectories = (String[])Reflect.on(Environment.class).field(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IisqEWIhMBFpMgpAIBUcAmEhAlF9IgpPJhU2Vg=="))).get();
+                  String[] var11 = standardDirectories;
+                  int var12 = standardDirectories.length;
+
+                  for(int var13 = 0; var13 < var12; ++var13) {
+                     String directory = var11[var13];
+                     String standardPath = NativeEngine.pathCat(mountPoint, directory);
+                     NativeEngine.whitelist(standardPath);
+                  }
+               } catch (Exception var16) {
+                  var16.printStackTrace();
+               }
+            }
+         }
+      }
+
+   }
+
+   @SuppressLint({"HandlerLeak"})
+   private class H extends Handler {
+      private H() {
+         super(Looper.getMainLooper());
+      }
+
+      public void handleMessage(Message msg) {
+         switch (msg.what) {
+            case 11:
+               VClient.this.handleNewIntent((NewIntentData)msg.obj);
+               break;
+            case 12:
+               VClient.this.handleReceiver((ReceiverData)msg.obj);
+               break;
+            case 13:
+               VActivityManager.get().finishActivity((IBinder)msg.obj);
+         }
+
+      }
+
+      // $FF: synthetic method
+      H(Object x1) {
+         this();
+      }
+   }
+
+   private static final class ReceiverData {
+      BroadcastReceiver.PendingResult pendingResult;
+      Intent intent;
+      ComponentName component;
+      String processName;
+      Throwable stacktrace;
+
+      private ReceiverData() {
+      }
+
+      // $FF: synthetic method
+      ReceiverData(Object x0) {
+         this();
+      }
+   }
+
+   private static final class AppBindData {
+      String processName;
+      ApplicationInfo appInfo;
+      List<ProviderInfo> providers;
+      Object info;
+
+      private AppBindData() {
+      }
+
+      // $FF: synthetic method
+      AppBindData(Object x0) {
+         this();
+      }
+   }
+
+   private static final class NewIntentData {
+      String creator;
+      IBinder token;
+      Intent intent;
+
+      private NewIntentData() {
+      }
+
+      // $FF: synthetic method
+      NewIntentData(Object x0) {
+         this();
+      }
+   }
+
+   private static class RootThreadGroup extends ThreadGroup {
+      RootThreadGroup(ThreadGroup parent) {
+         super(parent, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw+Vg==")));
+      }
+
+      public void uncaughtException(Thread t, Throwable e) {
+         CrashHandler handler = VClient.gClient.crashHandler;
+         if (handler != null) {
+            handler.handleUncaughtException(t, e);
+         } else {
+            VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcOWsaNC1jEQpF")), e);
+         }
+
+      }
+   }
 }

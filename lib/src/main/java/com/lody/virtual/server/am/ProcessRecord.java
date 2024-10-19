@@ -2,100 +2,87 @@ package com.lody.virtual.server.am;
 
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
-import android.os.ConditionVariable;
 import android.os.IInterface;
 import android.os.Process;
-import android.text.TextUtils;
-
 import com.lody.virtual.client.IVClient;
 import com.lody.virtual.client.stub.StubManifest;
+import com.lody.virtual.helper.compat.ObjectsCompat;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.remote.ClientConfig;
-import com.lody.virtual.server.bit64.V64BitHelper;
-
-import java.util.Arrays;
+import com.lody.virtual.server.extension.VExtPackageAccessor;
+import com.lody.virtual.server.pm.PrivilegeAppOptimizer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 final class ProcessRecord extends Binder {
+   public final ApplicationInfo info;
+   public final String processName;
+   final Set<String> pkgList = Collections.synchronizedSet(new HashSet());
+   public IVClient client;
+   public IInterface appThread;
+   public int pid;
+   public int vuid;
+   public int vpid;
+   public boolean isExt;
+   public int userId;
+   public boolean privilege;
 
-    public final ApplicationInfo info;
-    final public String processName;
-    final Set<String> pkgList = Collections.synchronizedSet(new HashSet<String>());
-    public IVClient client;
-    public IInterface appThread;
-    public int pid;
-    public int vuid;
-    public int vpid;
-    public boolean is64bit;
-    public int callingVUid;
-    public int userId;
-    public ConditionVariable initLock = new ConditionVariable();
+   public ProcessRecord(ApplicationInfo info, String processName, int vuid, int vpid, boolean isExt) {
+      this.info = info;
+      this.vuid = vuid;
+      this.vpid = vpid;
+      this.userId = VUserHandle.getUserId(vuid);
+      this.processName = processName;
+      this.isExt = isExt;
+      this.privilege = PrivilegeAppOptimizer.get().isPrivilegeProcess(processName);
+   }
 
-    public ProcessRecord(ApplicationInfo info, String processName, int vuid, int vpid, int callingVUid, boolean is64bit) {
-        this.info = info;
-        this.vuid = vuid;
-        this.vpid = vpid;
-        this.userId = VUserHandle.getUserId(vuid);
-        this.callingVUid = callingVUid;
-        this.processName = processName;
-        this.is64bit = is64bit;
-    }
+   public boolean equals(Object o) {
+      if (this == o) {
+         return true;
+      } else if (o != null && this.getClass() == o.getClass()) {
+         ProcessRecord that = (ProcessRecord)o;
+         return this.vuid == that.vuid && this.vpid == that.vpid && this.isExt == that.isExt && this.userId == that.userId && ObjectsCompat.equals(this.processName, that.processName);
+      } else {
+         return false;
+      }
+   }
 
-    public int getCallingVUid() {
-        return callingVUid;
-    }
+   public int hashCode() {
+      return ObjectsCompat.hash(this.processName, this.vuid, this.vpid, this.isExt, this.userId);
+   }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProcessRecord that = (ProcessRecord) o;
-        return pid == that.pid &&
-                vuid == that.vuid &&
-                vpid == that.vpid &&
-                is64bit == that.is64bit &&
-                userId == that.userId &&
-                TextUtils.equals(processName, that.processName);
-    }
+   public String getProviderAuthority() {
+      return StubManifest.getStubAuthority(this.vpid, this.isExt);
+   }
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(new Object[]{processName, pid, vuid, vpid, is64bit, userId});
-    }
+   public ClientConfig getClientConfig() {
+      ClientConfig config = new ClientConfig();
+      config.isExt = this.isExt;
+      config.vuid = this.vuid;
+      config.vpid = this.vpid;
+      config.packageName = this.info.packageName;
+      config.processName = this.processName;
+      config.token = this;
+      return config;
+   }
 
-    public String getProviderAuthority() {
-        return StubManifest.getStubAuthority(vpid, is64bit);
-    }
+   public boolean isPrivilegeProcess() {
+      return this.privilege;
+   }
 
-    public ClientConfig getClientConfig() {
-        ClientConfig config = new ClientConfig();
-        config.is64Bit = is64bit;
-        config.vuid = vuid;
-        config.vpid = vpid;
-        config.packageName = info.packageName;
-        config.processName = processName;
-        config.token = this;
-        return config;
-    }
+   public void kill() {
+      if (this.isExt) {
+         VExtPackageAccessor.forceStop(new int[]{this.pid});
+      } else {
+         try {
+            Process.killProcess(this.pid);
+         } catch (Throwable var2) {
+            Throwable e = var2;
+            e.printStackTrace();
+         }
+      }
 
-    public void kill() {
-        if(pid > 0) {
-            VActivityManagerService.get().beforeProcessKilled(this);
-            if (is64bit) {
-                V64BitHelper.forceStop64(pid);
-            } else {
-                try {
-                    Process.killProcess(pid);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public String getPackageName(){
-        return info.packageName;
-    }
+   }
 }

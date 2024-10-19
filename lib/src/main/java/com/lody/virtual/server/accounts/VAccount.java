@@ -3,90 +3,95 @@ package com.lody.virtual.server.accounts;
 import android.accounts.Account;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-/**
- * @author Lody
- */
-
 public class VAccount implements Parcelable {
-    public static final Parcelable.Creator<VAccount> CREATOR = new Parcelable.Creator<VAccount>() {
-        @Override
-        public VAccount createFromParcel(Parcel source) {
-            return new VAccount(source);
-        }
+   public static final Parcelable.Creator<VAccount> CREATOR = new Parcelable.Creator<VAccount>() {
+      public VAccount createFromParcel(Parcel source) {
+         return new VAccount(source);
+      }
 
-        @Override
-        public VAccount[] newArray(int size) {
-            return new VAccount[size];
-        }
-    };
-    public int userId;
-    public String name;
-    public String previousName;
-    public String type;
-    public String password;
-    public long lastAuthenticatedTime;
-    public Map<String, String> authTokens;
-    public Map<String, String> userDatas;
+      public VAccount[] newArray(int size) {
+         return new VAccount[size];
+      }
+   };
+   public int userId;
+   public String name;
+   public String previousName;
+   public String type;
+   public String password;
+   public long lastAuthenticatedTime;
+   public Map<String, String> authTokens;
+   public Map<String, String> userDatas;
 
+   public VAccount(int userId, Account account) {
+      this.userId = userId;
+      this.name = account.name;
+      this.type = account.type;
+      this.authTokens = new HashMap();
+      this.userDatas = new HashMap();
+   }
 
-    public VAccount(int userId, Account account) {
-        this.userId = userId;
-        name = account.name;
-        type = account.type;
-        authTokens = new HashMap<>();
-        userDatas = new HashMap<>();
-    }
+   public VAccount(Parcel in) {
+      this.userId = in.readInt();
+      this.name = in.readString();
+      this.previousName = in.readString();
+      this.type = in.readString();
+      this.password = in.readString();
+      this.lastAuthenticatedTime = in.readLong();
+      int authTokensSize = in.readInt();
+      this.authTokens = new HashMap(authTokensSize);
 
-    public VAccount(Parcel in) {
-        userId = in.readInt();
-        name = in.readString();
-        previousName = in.readString();
-        type = in.readString();
-        password = in.readString();
-        lastAuthenticatedTime = in.readLong();
-        int authTokensSize = in.readInt();
-        authTokens = new HashMap<>(authTokensSize);
-        for (int i = 0; i < authTokensSize; i++) {
-            String key = in.readString();
-            String value = in.readString();
-            authTokens.put(key, value);
-        }
-        int userDatasSize = in.readInt();
-        userDatas = new HashMap<>(userDatasSize);
-        for (int i = 0; i < userDatasSize; i++) {
-            String key = in.readString();
-            String value = in.readString();
-            userDatas.put(key, value);
-        }
-    }
+      int userDatasSize;
+      String key;
+      for(userDatasSize = 0; userDatasSize < authTokensSize; ++userDatasSize) {
+         String key = in.readString();
+         key = in.readString();
+         this.authTokens.put(key, key);
+      }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+      userDatasSize = in.readInt();
+      this.userDatas = new HashMap(userDatasSize);
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(userId);
-        dest.writeString(name);
-        dest.writeString(previousName);
-        dest.writeString(type);
-        dest.writeString(password);
-        dest.writeLong(lastAuthenticatedTime);
-        dest.writeInt(authTokens.size());
-        for (Map.Entry<String, String> entry : authTokens.entrySet()) {
-            dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
-        }
-        dest.writeInt(userDatas.size());
-        for (Map.Entry<String, String> entry : userDatas.entrySet()) {
-            dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
-        }
-    }
+      for(int i = 0; i < userDatasSize; ++i) {
+         key = in.readString();
+         String value = in.readString();
+         this.userDatas.put(key, value);
+      }
+
+   }
+
+   public int describeContents() {
+      return 0;
+   }
+
+   public void writeToParcel(Parcel dest, int flags) {
+      dest.writeInt(this.userId);
+      dest.writeString(this.name);
+      dest.writeString(this.previousName);
+      dest.writeString(this.type);
+      dest.writeString(this.password);
+      dest.writeLong(this.lastAuthenticatedTime);
+      dest.writeInt(this.authTokens.size());
+      Iterator var3 = this.authTokens.entrySet().iterator();
+
+      Map.Entry entry;
+      while(var3.hasNext()) {
+         entry = (Map.Entry)var3.next();
+         dest.writeString((String)entry.getKey());
+         dest.writeString((String)entry.getValue());
+      }
+
+      dest.writeInt(this.userDatas.size());
+      var3 = this.userDatas.entrySet().iterator();
+
+      while(var3.hasNext()) {
+         entry = (Map.Entry)var3.next();
+         dest.writeString((String)entry.getKey());
+         dest.writeString((String)entry.getValue());
+      }
+
+   }
 }
-

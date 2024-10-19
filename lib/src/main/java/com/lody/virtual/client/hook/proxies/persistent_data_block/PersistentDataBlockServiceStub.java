@@ -1,28 +1,23 @@
 package com.lody.virtual.client.hook.proxies.persistent_data_block;
 
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import com.lody.virtual.client.hook.base.ResultStaticMethodProxy;
-
 import mirror.android.service.persistentdata.IPersistentDataBlockService;
 
-/**
- * @author Lody
- */
 public class PersistentDataBlockServiceStub extends BinderInvocationProxy {
+   public PersistentDataBlockServiceStub() {
+      super(IPersistentDataBlockService.Stub.TYPE, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhguKm8zAgNmHjA2LBZfPm4gBjdhJwodLD42LQ==")));
+   }
 
-	public PersistentDataBlockServiceStub() {
-		super(IPersistentDataBlockService.Stub.TYPE, "persistent_data_block");
-	}
-
-	@Override
-	protected void onBindMethods() {
-		super.onBindMethods();
-		addMethodProxy(new ResultStaticMethodProxy("write", -1));
-		addMethodProxy(new ResultStaticMethodProxy("read", new byte[0]));
-		addMethodProxy(new ResultStaticMethodProxy("wipe", null));
-		addMethodProxy(new ResultStaticMethodProxy("getDataBlockSize", 0));
-		addMethodProxy(new ResultStaticMethodProxy("getMaximumDataBlockSize", 0));
-		addMethodProxy(new ResultStaticMethodProxy("setOemUnlockEnabled", 0));
-		addMethodProxy(new ResultStaticMethodProxy("getOemUnlockEnabled", false));
-	}
+   protected void onBindMethods() {
+      super.onBindMethods();
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS0MCWwFNFo=")), -1));
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uP2gFSFo=")), new byte[0]));
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KS4YKGgVSFo=")), (Object)null));
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAFJAZ9DCwoKi0qCWIFLDJrAVRF")), 0));
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIVJDBjDl0vKgU2OWUzQRRlEQYqIzs2I2cwLFo=")), 0));
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIzNCNuDlkoKi0qCWEjMDdoNwIgLghSVg==")), 0));
+      this.addMethodProxy(new ResultStaticMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIzNCNuDlkoKi0qCWEjMDdoNwIgLghSVg==")), false));
+   }
 }

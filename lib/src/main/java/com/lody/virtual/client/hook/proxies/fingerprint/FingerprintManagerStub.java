@@ -1,31 +1,23 @@
 package com.lody.virtual.client.hook.proxies.fingerprint;
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import com.lody.virtual.client.hook.base.ReplaceLastPkgMethodProxy;
-
 import mirror.android.hardware.fingerprint.IFingerprintService;
 
-/**
- * Created by natsuki on 12/10/2017.
- */
-
-@TargetApi(Build.VERSION_CODES.M)
+@TargetApi(23)
 public class FingerprintManagerStub extends BinderInvocationProxy {
-    public FingerprintManagerStub() {
-        super(IFingerprintService.Stub.asInterface, Context.FINGERPRINT_SERVICE);
-    }
+   public FingerprintManagerStub() {
+      super(IFingerprintService.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YCGgzNARhESwzKj42Vg==")));
+   }
 
-    @Override
-    protected void onBindMethods() {
-        addMethodProxy(new ReplaceLastPkgMethodProxy("isHardwareDetected"));
-        addMethodProxy(new ReplaceLastPkgMethodProxy("hasEnrolledFingerprints"));
-        addMethodProxy(new ReplaceLastPkgMethodProxy("authenticate"));
-        addMethodProxy(new ReplaceLastPkgMethodProxy("cancelAuthentication"));
-        addMethodProxy(new ReplaceLastPkgMethodProxy("getEnrolledFingerprints"));
-        addMethodProxy(new ReplaceLastPkgMethodProxy("getAuthenticatorId"));
-    }
+   protected void onBindMethods() {
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2XWsaFixmJCAqKAU2PWUzGilvESgv"))));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBg+KWAVBgRgJFEoKAc2WWwjMC1rDgo7KS4YKmYVNFo="))));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUFNCZmHgY5Lwg2PQ=="))));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+CGszNCRlATAgKRcMDmUzLCloDiwaLD4cVg=="))));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAVBgRgJFEoKAc2WWwjMC1rDgo7KS4YKmYVNFo="))));
+      this.addMethodProxy(new ReplaceLastPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaNAZjHjA2LBccP24gBiVsNR4v"))));
+   }
 }

@@ -1,7 +1,11 @@
 package com.lody.virtual.server.pm.parser;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ComponentInfo;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.FeatureInfo;
 import android.content.pm.InstrumentationInfo;
@@ -13,742 +17,1038 @@ import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
-import android.os.Build;
+import android.os.Binder;
 import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Build.VERSION;
 import android.text.TextUtils;
-import android.util.Log;
-
+import android.util.SparseArray;
 import com.lody.virtual.GmsSupport;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.core.SettingConfig;
 import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.client.env.Constants;
 import com.lody.virtual.client.env.VirtualRuntime;
 import com.lody.virtual.client.fixer.ComponentFixer;
-import com.lody.virtual.helper.collection.ArrayMap;
+import com.lody.virtual.client.ipc.VActivityManager;
+import com.lody.virtual.client.stub.StubManifest;
 import com.lody.virtual.helper.compat.BuildCompat;
-import com.lody.virtual.helper.compat.NativeLibraryHelperCompat;
 import com.lody.virtual.helper.compat.PackageParserCompat;
+import com.lody.virtual.helper.utils.ArrayUtils;
+import com.lody.virtual.helper.utils.ComponentUtils;
 import com.lody.virtual.helper.utils.FileUtils;
+import com.lody.virtual.helper.utils.RefObjUtil;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VEnvironment;
-import com.lody.virtual.remote.InstalledAppInfo;
+import com.lody.virtual.server.pm.ComponentStateManager;
 import com.lody.virtual.server.pm.PackageCacheManager;
 import com.lody.virtual.server.pm.PackageSetting;
 import com.lody.virtual.server.pm.PackageUserState;
-import com.xdja.zs.InstallerSettingManager;
-
+import com.lody.virtual.server.pm.VAppManagerService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-
 import mirror.android.content.pm.ApplicationInfoL;
 import mirror.android.content.pm.ApplicationInfoN;
-
-/**
- * @author Lody
- */
+import mirror.android.content.pm.ApplicationInfoO;
+import mirror.android.content.pm.PackageInfoPie;
+import mirror.android.content.pm.SigningInfo;
+import mirror.android.content.pm.SigningInfoT;
 
 public class PackageParserEx {
+   public static final int GET_SIGNING_CERTIFICATES = 134217728;
+   public static final String ORG_APACHE_HTTP_LEGACY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0MPXojJAJ9Dig0KAMYMmUwBgJ1NwIgLj4+JWcFSFo="));
+   private static final String TAG = PackageParserEx.class.getSimpleName();
+   static SparseArray sparseArray = new SparseArray();
 
-    private static final String TAG = PackageParserEx.class.getSimpleName();
+   public static VPackage parsePackage(File packageFile) throws Throwable {
+      PackageParser parser = PackageParserCompat.createParser(packageFile);
+      if (BuildCompat.isQ()) {
+         parser.setCallback(new PackageParser.CallbackImpl(VirtualCore.getPM()));
+      }
 
-    private static final ArrayMap<String, String[]> sSharedLibCache = new ArrayMap<>();
+      PackageParser.Package p = PackageParserCompat.parsePackage(parser, packageFile, 0);
+      if (p.requestedPermissions.contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1ksKAguD2wgAgNqAQYbPCwiHWsmLF99HCQCIgZbG2MIGg99HyAfIwYMWX02Flo="))) && p.mAppMetaData != null && p.mAppMetaData.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+MWhSEgNjDjg2Lwg2LWoVGlo=")))) {
+         String sig = p.mAppMetaData.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+MWhSEgNjDjg2Lwg2LWoVGlo=")));
+         buildSignature(p, new Signature[]{new Signature(sig)});
+         VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc2CWojPyhiNCAxKANXL2wjEiZoDiwwKS4tJGIwLCRqEQo7LypXKWU3Iy57AVRF")) + p.packageName);
+      } else {
+         try {
+            int flag = 0;
+            if (BuildCompat.isPie()) {
+               flag |= 16;
+            } else {
+               flag |= 1;
+            }
 
-    public static VPackage parsePackage(File packageFile) throws Throwable {
-        PackageParser parser = PackageParserCompat.createParser(packageFile);
-        if (BuildCompat.isQ()) {
-            parser.setCallback(new PackageParser.CallbackImpl(VirtualCore.getPM()));
-        }
-        PackageParser.Package p = PackageParserCompat.parsePackage(parser, packageFile, 0);
-        if (p.requestedPermissions.contains("android.permission.FAKE_PACKAGE_SIGNATURE")
-                && p.mAppMetaData != null
-                && p.mAppMetaData.containsKey("fake-signature")) {
-            String sig = p.mAppMetaData.getString("fake-signature");
-            buildSignature(p, new Signature[]{new Signature(sig)});
-            VLog.d(TAG, "Using fake-signature feature on : " + p.packageName);
-        } else {
+            PackageParserCompat.collectCertificates(parser, p, flag);
+         } catch (Throwable var4) {
+            Throwable e = var4;
+            e.printStackTrace();
+         }
+      }
+
+      return buildPackageCache(p);
+   }
+
+   private static void buildSignature(PackageParser.Package p, Signature[] signatures) {
+      if (BuildCompat.isPie()) {
+         Object signingDetails = mirror.android.content.pm.PackageParser.Package.mSigningDetails.get(p);
+         mirror.android.content.pm.PackageParser.SigningDetails.pastSigningCertificates.set(signingDetails, signatures);
+         mirror.android.content.pm.PackageParser.SigningDetails.signatures.set(signingDetails, signatures);
+      } else {
+         p.mSignatures = signatures;
+      }
+   }
+
+   public static VPackage readPackageCache(String packageName) {
+      Parcel p = Parcel.obtain();
+
+      FileInputStream is;
+      try {
+         File cacheFile = VEnvironment.getPackageCacheFile(packageName);
+         is = new FileInputStream(cacheFile);
+         byte[] bytes = FileUtils.toByteArray(is);
+         is.close();
+         p.unmarshall(bytes, 0, bytes.length);
+         p.setDataPosition(0);
+         if (p.readInt() != 4) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcLmsVHi9iVyQuKAguL2wjNCZ1N1RF")));
+         }
+
+         VPackage pkg = new VPackage(p);
+         addOwner(pkg);
+         VPackage var6 = pkg;
+         return var6;
+      } catch (Exception var10) {
+         Exception e = var10;
+         e.printStackTrace();
+         p.recycle();
+         is = null;
+      } finally {
+         p.recycle();
+      }
+
+      return is;
+   }
+
+   public static void readSignature(VPackage pkg) {
+      File signatureFile = VEnvironment.getSignatureFile(pkg.packageName);
+      if (signatureFile.exists()) {
+         Parcel p = Parcel.obtain();
+
+         try {
             try {
-                int flag = 0;
-                if (BuildCompat.isPie()) {
-                    flag |= PackageParser.PARSE_IS_SYSTEM_DIR;
-                } else {
-                    flag |= PackageParser.PARSE_IS_SYSTEM;
-                }
-                PackageParserCompat.collectCertificates(parser, p, flag);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-        return buildPackageCache(p);
-    }
+               FileInputStream fis = new FileInputStream(signatureFile);
+               byte[] bytes = FileUtils.toByteArray(fis);
+               fis.close();
+               p.unmarshall(bytes, 0, bytes.length);
+               p.setDataPosition(0);
+               if (BuildCompat.isPie()) {
+                  try {
+                     PackageParser.SigningDetails sigDetail = (PackageParser.SigningDetails)((Parcelable.Creator)mirror.android.content.pm.PackageParser.SigningDetails.CREATOR.get()).createFromParcel(p);
+                     pkg.mSigningDetails = sigDetail;
+                     if (sigDetail.pastSigningCertificates != null && sigDetail.pastSigningCertificates.length > 0) {
+                        pkg.mSignatures = new Signature[1];
+                        pkg.mSignatures[0] = sigDetail.pastSigningCertificates[0];
+                     } else {
+                        pkg.mSignatures = sigDetail.signatures;
+                     }
+                  } catch (Exception var10) {
+                     Exception e = var10;
+                     e.printStackTrace();
+                  }
+               }
 
-    private static void buildSignature(PackageParser.Package p, Signature[] signatures) {
-        if (BuildCompat.isQ()) {
-            Object signingDetails = mirror.android.content.pm.PackageParser.Package.mSigningDetails.get(p);
-            mirror.android.content.pm.PackageParser.SigningDetails.pastSigningCertificates.set(signingDetails, signatures);
-            mirror.android.content.pm.PackageParser.SigningDetails.signatures.set(signingDetails, signatures);
-        } else {
-            p.mSignatures = signatures;
-        }
-    }
-
-    public static VPackage readPackageCache(String packageName) {
-        Parcel p = Parcel.obtain();
-        try {
-            File cacheFile = VEnvironment.getPackageCacheFile(packageName);
-            FileInputStream is = new FileInputStream(cacheFile);
-            byte[] bytes = FileUtils.toByteArray(is);
-            is.close();
-            p.unmarshall(bytes, 0, bytes.length);
-            p.setDataPosition(0);
-            if (p.readInt() != 4) {
-                throw new IllegalStateException("Invalid version.");
-            }
-            VPackage pkg = new VPackage(p);
-            addOwner(pkg);
-            return pkg;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            p.recycle();
-        }
-        return null;
-    }
-
-    public static void readSignature(VPackage pkg) {
-        File signatureFile = VEnvironment.getSignatureFile(pkg.packageName);
-        if (!signatureFile.exists()) {
-            return;
-        }
-        Parcel p = Parcel.obtain();
-        try {
-            FileInputStream fis = new FileInputStream(signatureFile);
-            byte[] bytes = FileUtils.toByteArray(fis);
-            fis.close();
-            p.unmarshall(bytes, 0, bytes.length);
-            p.setDataPosition(0);
-            pkg.mSignatures = p.createTypedArray(Signature.CREATOR);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            p.recycle();
-        }
-    }
-
-    public static void savePackageCache(VPackage pkg) {
-        final String packageName = pkg.packageName;
-        File cacheFile = VEnvironment.getPackageCacheFile(packageName);
-        if (cacheFile.exists()) {
-            cacheFile.delete();
-        }
-        File signatureFile = VEnvironment.getSignatureFile(packageName);
-        if (signatureFile.exists()) {
-            signatureFile.delete();
-        }
-        Parcel p = Parcel.obtain();
-
-        try {
-            p.writeInt(4);
-            pkg.writeToParcel(p, 0);
-            FileOutputStream fos = new FileOutputStream(cacheFile);
-            fos.write(p.marshall());
-            fos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            p.recycle();
-        }
-        Signature[] signatures = pkg.mSignatures;
-        if (signatures != null) {
-            if (signatureFile.exists() && !signatureFile.delete()) {
-                VLog.w(TAG, "Unable to delete the signatures of " + packageName);
-            }
-            p = Parcel.obtain();
-            try {
-                p.writeTypedArray(signatures, 0);
-                FileUtils.writeParcelToFile(p, signatureFile);
-            } catch (IOException e) {
-                e.printStackTrace();
+               if (pkg.mSigningDetails == null || pkg.mSignatures == null) {
+                  p.setDataPosition(0);
+                  pkg.mSignatures = (Signature[])p.createTypedArray(Signature.CREATOR);
+                  pkg.mSigningDetails = null;
+               }
             } finally {
-                p.recycle();
+               p.recycle();
             }
-        }
-    }
+         } catch (Exception var12) {
+            Exception e2 = var12;
+            e2.printStackTrace();
+         }
 
-    private static VPackage buildPackageCache(PackageParser.Package p) {
-        VPackage cache = new VPackage();
-        cache.activities = new ArrayList<>(p.activities.size());
-        cache.services = new ArrayList<>(p.services.size());
-        cache.receivers = new ArrayList<>(p.receivers.size());
-        cache.providers = new ArrayList<>(p.providers.size());
-        cache.instrumentation = new ArrayList<>(p.instrumentation.size());
-        cache.permissions = new ArrayList<>(p.permissions.size());
-        cache.permissionGroups = new ArrayList<>(p.permissionGroups.size());
+      }
+   }
 
-        for (PackageParser.Activity activity : p.activities) {
-            cache.activities.add(new VPackage.ActivityComponent(activity));
-        }
-        for (PackageParser.Service service : p.services) {
-            cache.services.add(new VPackage.ServiceComponent(service));
-        }
-        for (PackageParser.Activity receiver : p.receivers) {
-            cache.receivers.add(new VPackage.ActivityComponent(receiver));
-        }
-        for (PackageParser.Provider provider : p.providers) {
-            cache.providers.add(new VPackage.ProviderComponent(provider));
-        }
-        for (PackageParser.Instrumentation instrumentation : p.instrumentation) {
-            cache.instrumentation.add(new VPackage.InstrumentationComponent(instrumentation));
-        }
-        for (PackageParser.Permission permission : p.permissions) {
-            cache.permissions.add(new VPackage.PermissionComponent(permission));
-        }
-        for (PackageParser.PermissionGroup permissionGroup : p.permissionGroups) {
-            cache.permissionGroups.add(new VPackage.PermissionGroupComponent(permissionGroup));
-        }
-        cache.requestedPermissions = new ArrayList<>(p.requestedPermissions.size());
-        cache.requestedPermissions.addAll(p.requestedPermissions);
-        if (mirror.android.content.pm.PackageParser.Package.protectedBroadcasts != null) {
-            List<String> protectedBroadcasts = mirror.android.content.pm.PackageParser.Package.protectedBroadcasts.get(p);
-            if (protectedBroadcasts != null) {
-                cache.protectedBroadcasts = new ArrayList<>(protectedBroadcasts);
-                cache.protectedBroadcasts.addAll(protectedBroadcasts);
-            }
-        }
-        cache.applicationInfo = p.applicationInfo;
-        cache.mSignatures = getSignature(p);
-        cache.mAppMetaData = p.mAppMetaData;
-        cache.packageName = p.packageName;
-        cache.mPreferredOrder = p.mPreferredOrder;
-        cache.mVersionName = p.mVersionName;
-        cache.mSharedUserId = p.mSharedUserId;
-        cache.mSharedUserLabel = p.mSharedUserLabel;
-        cache.usesLibraries = p.usesLibraries;
-        cache.mVersionCode = p.mVersionCode;
-        cache.configPreferences = p.configPreferences;
-        cache.reqFeatures = p.reqFeatures;
-        cache.usesOptionalLibraries = p.usesOptionalLibraries;
-        addOwner(cache);
-        return cache;
-    }
+   public static void savePackageCache(VPackage pkg) {
+      String packageName = pkg.packageName;
+      File cacheFile = VEnvironment.getPackageCacheFile(packageName);
+      if (cacheFile.exists()) {
+         cacheFile.delete();
+      }
 
-    private static Signature[] getSignature(PackageParser.Package p) {
-        if (BuildCompat.isPie()) {
-            return p.mSigningDetails.signatures;
-        } else {
-            return p.mSignatures;
-        }
-    }
+      File signatureFile = VEnvironment.getSignatureFile(packageName);
+      if (signatureFile.exists()) {
+         signatureFile.delete();
+      }
 
-    public static void initApplicationInfoBase(PackageSetting ps, VPackage p) {
-        ApplicationInfo ai = p.applicationInfo;
-        if (TextUtils.isEmpty(ai.processName)) {
-            ai.processName = ai.packageName;
-        }
-        ai.enabled = true;
-        ai.uid = ps.appId;
-        ai.name = ComponentFixer.fixComponentClassName(ps.packageName, ai.name);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ApplicationInfoL.scanSourceDir.set(ai, ai.dataDir);
-            ApplicationInfoL.scanPublicSourceDir.set(ai, ai.dataDir);
-            String hostPrimaryCpuAbi = ApplicationInfoL.primaryCpuAbi.get(VirtualCore.get().getContext().getApplicationInfo());
-            ApplicationInfoL.primaryCpuAbi.set(ai, hostPrimaryCpuAbi);
-        }
-        String[] sharedLibraryFiles = sSharedLibCache.get(ps.packageName);
-        if (sharedLibraryFiles == null) {
-            List<String> sharedLibraryFileList = new LinkedList<>();
-            if (ps.appMode == InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK) {
-                PackageManager hostPM = VirtualCore.get().getUnHookPackageManager();
-                try {
-                    ApplicationInfo hostInfo = hostPM.getApplicationInfo(ps.packageName, PackageManager.GET_SHARED_LIBRARY_FILES);
-                    if (hostInfo.sharedLibraryFiles != null) {
-                        Collections.addAll(sharedLibraryFileList, hostInfo.sharedLibraryFiles);
-                    }
-                } catch (PackageManager.NameNotFoundException e) {
-                    // ignore
-                }
-            }
-            if (Build.VERSION.SDK_INT >= 28 && (ai.targetSdkVersion < 28 || needFixApache(p.usesLibraries, p.usesOptionalLibraries))) {
-                String APACHE_LEGACY_JAR = "/system/framework/org.apache.http.legacy.boot.jar";
-                String APACHE_LEGACY_JAR_Q = "/system/framework/org.apache.http.legacy.jar";
-                if (!sharedLibraryFileList.contains(APACHE_LEGACY_JAR) && !sharedLibraryFileList.contains(APACHE_LEGACY_JAR_Q)) {
-                    if (BuildCompat.isQ()) {
-                        if (!FileUtils.isExist(APACHE_LEGACY_JAR_Q)) {
-                            sharedLibraryFileList.add(APACHE_LEGACY_JAR);
-                        } else {
-                            sharedLibraryFileList.add(APACHE_LEGACY_JAR_Q);
-                        }
-                    } else {
-                        sharedLibraryFileList.add(APACHE_LEGACY_JAR);
-                    }
-                }
-            }
-            sharedLibraryFiles = sharedLibraryFileList.toArray(new String[0]);
-            sSharedLibCache.put(ps.packageName, sharedLibraryFiles);
-        }
-        ai.sharedLibraryFiles = sharedLibraryFiles;
-    }
+      Parcel p = Parcel.obtain();
 
-    private static boolean needFixApache(List<String> usesLibraries, List<String> usesOptionalLibraries){
-        if(usesLibraries != null){
-            if(usesLibraries.contains("org.apache.http.legacy")){
-                return true;
-            }
-        }
-        if(usesOptionalLibraries != null){
-            if(usesOptionalLibraries.contains("org.apache.http.legacy")){
-                return true;
-            }
-        }
-        return false;
-    }
+      try {
+         p.writeInt(4);
+         pkg.writeToParcel(p, 0);
+         FileOutputStream fos = new FileOutputStream(cacheFile);
+         fos.write(p.marshall());
+         fos.close();
+      } catch (Exception var10) {
+         Exception e = var10;
+         e.printStackTrace();
+      }
 
-    private static boolean initApplicationAsUser(ApplicationInfo ai, int userId) {
-        PackageSetting ps = PackageCacheManager.getSetting(ai.packageName);
-        if (ps == null) {
-            return false;
-        }
-        boolean is64bit = ps.isRunPluginProcess();
-        String apkPath = ps.getApkPath(is64bit);
-        if(apkPath == null){
-            return false;
-        }
-        ai.publicSourceDir = apkPath;
-        ai.sourceDir = apkPath;
-        SettingConfig config = VirtualCore.getConfig();
-        SettingConfig.AppLibConfig libConfig = config.getAppLibConfig(ai.packageName);
-        if (is64bit) {
-            ai.nativeLibraryDir = VEnvironment.getAppLibDirectory64(ai.packageName).getPath();
-        } else {
-            ai.nativeLibraryDir = VEnvironment.getAppLibDirectory(ai.packageName).getPath();
-        }
-        if (ps.appMode == InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK) {
-            ApplicationInfo outside = null;
-            try {
-                outside = VirtualCore.get().getUnHookPackageManager().getApplicationInfo(ai.packageName, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                // ignore
-            }
-            if (libConfig == SettingConfig.AppLibConfig.UseRealLib && outside == null) {
-                libConfig = SettingConfig.AppLibConfig.UseOwnLib;
-            }
-            if (GmsSupport.isGoogleAppOrService(ai.packageName)) {
-                libConfig = SettingConfig.AppLibConfig.UseOwnLib;
-            }
-            if (outside != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    ai.splitNames = outside.splitNames;
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ai.splitPublicSourceDirs = outside.splitPublicSourceDirs;
-                    ai.splitSourceDirs = outside.splitSourceDirs;
-                }
-                if (libConfig == SettingConfig.AppLibConfig.UseRealLib) {
-                    String outsideNativeLib = chooseOutsideNativeLib(outside, VirtualRuntime.is64bit());
-                    if (outsideNativeLib != null) {
-                        ai.nativeLibraryDir = outsideNativeLib;
-                    }
-                }
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (is64bit) {
-                if (Build.SUPPORTED_64_BIT_ABIS.length > 0) {
-                    ApplicationInfoL.primaryCpuAbi.set(ai, Build.SUPPORTED_64_BIT_ABIS[0]);
-                }
-                if (ps.flag == PackageSetting.FLAG_RUN_BOTH_32BIT_64BIT) {
-                    ApplicationInfoL.secondaryCpuAbi.set(ai, Build.SUPPORTED_32_BIT_ABIS[0]);
-                }
+      p.recycle();
+      Signature[] signatures = pkg.mSignatures;
+      Object obj = pkg.mSigningDetails;
+      Object sig = obj == null ? signatures : obj;
+      if (sig != null) {
+         if (signatureFile.exists() && !signatureFile.delete()) {
+            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1Pxc2PW8zGgZrDTw/IwgtJGEgGiJsNCQ9Iy1fJ2wnIANoIzxF")) + packageName);
+         }
+
+         p = Parcel.obtain();
+
+         try {
+            if (sig instanceof PackageParser.SigningDetails) {
+               mirror.android.content.pm.PackageParser.SigningDetails.writeToParcel.call(obj, p, 0);
             } else {
-                ApplicationInfoL.primaryCpuAbi.set(ai, Build.SUPPORTED_32_BIT_ABIS[0]);
-                if (ps.flag == PackageSetting.FLAG_RUN_BOTH_32BIT_64BIT) {
-                    if (Build.SUPPORTED_64_BIT_ABIS.length > 0) {
-                        ApplicationInfoL.secondaryCpuAbi.set(ai, Build.SUPPORTED_64_BIT_ABIS[0]);
-                    }
-                }
+               p.writeTypedArray(signatures, 0);
             }
-        }
 
-        if (is64bit) {
-            ai.dataDir = VEnvironment.getDataUserPackageDirectory64(userId, ai.packageName).getPath();
-        } else {
-            ai.dataDir = VEnvironment.getDataUserPackageDirectory(userId, ai.packageName).getPath();
-        }
-        String scanSourceDir = new File(apkPath).getParent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ApplicationInfoL.scanSourceDir.set(ai, scanSourceDir);
-            ApplicationInfoL.scanPublicSourceDir.set(ai, scanSourceDir);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileUtils.writeParcelToFile(p, signatureFile);
+         } catch (IOException var9) {
+            IOException e2 = var9;
+            e2.printStackTrace();
+         }
+      }
+
+   }
+
+   private static VPackage buildPackageCache(PackageParser.Package p) {
+      VPackage cache = new VPackage();
+      cache.activities = new ArrayList(p.activities.size());
+      cache.services = new ArrayList(p.services.size());
+      cache.receivers = new ArrayList(p.receivers.size());
+      cache.providers = new ArrayList(p.providers.size());
+      cache.instrumentation = new ArrayList(p.instrumentation.size());
+      cache.permissions = new ArrayList(p.permissions.size());
+      cache.permissionGroups = new ArrayList(p.permissionGroups.size());
+      Iterator it = p.activities.iterator();
+
+      while(it.hasNext()) {
+         PackageParser.Activity activity = (PackageParser.Activity)it.next();
+         cache.activities.add(new VPackage.ActivityComponent(activity));
+      }
+
+      Iterator it2 = p.services.iterator();
+
+      while(it2.hasNext()) {
+         PackageParser.Service service = (PackageParser.Service)it2.next();
+         cache.services.add(new VPackage.ServiceComponent(service));
+      }
+
+      Iterator it3 = p.receivers.iterator();
+
+      while(it3.hasNext()) {
+         PackageParser.Activity receiver = (PackageParser.Activity)it3.next();
+         cache.receivers.add(new VPackage.ActivityComponent(receiver));
+      }
+
+      Iterator it4 = p.providers.iterator();
+
+      while(it4.hasNext()) {
+         PackageParser.Provider provider = (PackageParser.Provider)it4.next();
+         cache.providers.add(new VPackage.ProviderComponent(provider));
+      }
+
+      Iterator it5 = p.instrumentation.iterator();
+
+      while(it5.hasNext()) {
+         PackageParser.Instrumentation instrumentation = (PackageParser.Instrumentation)it5.next();
+         cache.instrumentation.add(new VPackage.InstrumentationComponent(instrumentation));
+      }
+
+      Iterator it6 = p.permissions.iterator();
+
+      while(it6.hasNext()) {
+         PackageParser.Permission permission = (PackageParser.Permission)it6.next();
+         cache.permissions.add(new VPackage.PermissionComponent(permission));
+      }
+
+      Iterator it7 = p.permissionGroups.iterator();
+
+      while(it7.hasNext()) {
+         PackageParser.PermissionGroup permissionGroup = (PackageParser.PermissionGroup)it7.next();
+         cache.permissionGroups.add(new VPackage.PermissionGroupComponent(permissionGroup));
+      }
+
+      cache.requestedPermissions = new ArrayList(p.requestedPermissions.size());
+      cache.requestedPermissions.addAll(p.requestedPermissions);
+      List protectedBroadcasts;
+      if (mirror.android.content.pm.PackageParser.Package.protectedBroadcasts != null && (protectedBroadcasts = (List)mirror.android.content.pm.PackageParser.Package.protectedBroadcasts.get(p)) != null) {
+         cache.protectedBroadcasts = new ArrayList(protectedBroadcasts);
+         cache.protectedBroadcasts.addAll(protectedBroadcasts);
+      }
+
+      cache.applicationInfo = p.applicationInfo;
+      if (BuildCompat.isPie()) {
+         cache.mSigningDetails = p.mSigningDetails;
+         if (p.mSigningDetails.pastSigningCertificates != null && p.mSigningDetails.pastSigningCertificates.length > 0) {
+            cache.mSignatures = new Signature[1];
+            cache.mSignatures[0] = p.mSigningDetails.pastSigningCertificates[0];
+         } else {
+            cache.mSignatures = p.mSigningDetails.signatures;
+         }
+      } else {
+         cache.mSignatures = p.mSignatures;
+      }
+
+      cache.mAppMetaData = p.mAppMetaData;
+      cache.packageName = p.packageName;
+      cache.mPreferredOrder = p.mPreferredOrder;
+      cache.mVersionName = p.mVersionName;
+      cache.mSharedUserId = p.mSharedUserId;
+      cache.mSharedUserLabel = p.mSharedUserLabel;
+      cache.usesLibraries = p.usesLibraries;
+      cache.usesOptionalLibraries = p.usesOptionalLibraries;
+      cache.mVersionCode = p.mVersionCode;
+      cache.configPreferences = p.configPreferences;
+      cache.reqFeatures = p.reqFeatures;
+      fixSignatureAsSystem(cache);
+      addOwner(cache);
+      injectXposedModuleInfo(cache);
+      updatePackageApache(cache);
+      return cache;
+   }
+
+   private static void injectXposedModuleInfo(VPackage vPackage) {
+      if (vPackage.mAppMetaData != null && vPackage.mAppMetaData.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBc6D28zNCxgDh4wLAdbPQ==")))) {
+         VPackage.XposedModule module = new VPackage.XposedModule();
+         Object descriptionRaw = vPackage.mAppMetaData.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBc6D28zNCxiHjApLy4uMWowBi9lJxpF")));
+         String descriptionTmp = null;
+         if (descriptionRaw instanceof String) {
+            descriptionTmp = ((String)descriptionRaw).trim();
+         } else if (descriptionRaw instanceof Integer) {
+            try {
+               int resId = (Integer)descriptionRaw;
+               if (resId != 0) {
+                  descriptionTmp = VirtualCore.getPM().getResourcesForApplication(vPackage.applicationInfo).getString(resId).trim();
+               }
+            } catch (Exception var5) {
+            }
+         }
+
+         module.desc = descriptionTmp != null ? descriptionTmp : "";
+         Object minVersionRaw = vPackage.mAppMetaData.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KBc6D28zNCxgDgY2LD0MKGoFLCVlN1RF")));
+         if (minVersionRaw instanceof Integer) {
+            module.minVersion = (Integer)minVersionRaw;
+         } else if (minVersionRaw instanceof String) {
+            module.minVersion = extractIntPart((String)minVersionRaw);
+         } else {
+            module.minVersion = 0;
+         }
+
+         vPackage.xposedModule = module;
+      }
+   }
+
+   private static int extractIntPart(String str) {
+      int result = 0;
+      int length = str.length();
+
+      for(int offset = 0; offset < length; ++offset) {
+         char c = str.charAt(offset);
+         if ('0' > c || c > '9') {
+            break;
+         }
+
+         result = result * 10 + (c - 48);
+      }
+
+      return result;
+   }
+
+   public static void initApplicationInfoBase(PackageSetting ps, VPackage p) {
+      ApplicationInfo ai = p.applicationInfo;
+      if (TextUtils.isEmpty(ai.processName)) {
+         ai.processName = ai.packageName;
+      }
+
+      ai.enabled = true;
+      ai.uid = ps.appId;
+      ai.name = ComponentFixer.fixComponentClassName(ps.packageName, ai.name);
+   }
+
+   private static void initApplicationAsUser(ApplicationInfo ai, int userId, boolean isExt) {
+      PackageSetting ps = PackageCacheManager.getSetting(ai.packageName);
+      VPackage pkg = PackageCacheManager.get(ai.packageName);
+      if (ps == null) {
+         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1Pxc6PWU2AitvHiwaLC4lJGIwAjV7N1RF")) + ai.packageName);
+      } else {
+         ApplicationInfo outsideAppInfo = null;
+
+         try {
+            outsideAppInfo = VirtualCore.get().getPackageManager().getApplicationInfo(ai.packageName, 0);
+         } catch (Throwable var13) {
+         }
+
+         SettingConfig config = VirtualCore.getConfig();
+         String splitName;
+         if (isExt && !ps.dynamic) {
+            ai.sourceDir = VEnvironment.getPackageFileExt(ai.packageName).getPath();
+            ai.publicSourceDir = ai.sourceDir;
+            File nativeLibraryRootDir = VEnvironment.getDataAppLibDirectoryExt(ai.packageName);
+            File nativeLibraryDir = new File(nativeLibraryRootDir, VirtualRuntime.getInstructionSet(ps.primaryCpuAbi));
+            ai.nativeLibraryDir = nativeLibraryDir.getPath();
+            if (ps.secondaryCpuAbi != null) {
+               File secondaryNativeLibraryDir = new File(nativeLibraryRootDir, VirtualRuntime.getInstructionSet(ps.secondaryCpuAbi));
+               ApplicationInfoL.secondaryNativeLibraryDir.set(ai, secondaryNativeLibraryDir.getPath());
+            }
+
+            splitName = VEnvironment.getDataAppPackageDirectoryExt(ai.packageName).getAbsolutePath();
+            ApplicationInfoL.scanSourceDir.set(ai, splitName);
+            ApplicationInfoL.scanPublicSourceDir.set(ai, splitName);
+         }
+
+         if (!ps.dynamic && pkg.splitNames != null && !pkg.splitNames.isEmpty()) {
+            if (VERSION.SDK_INT >= 26) {
+               ai.splitNames = (String[])pkg.splitNames.toArray(new String[0]);
+            }
+
+            List<String> splitSourceDirs = new ArrayList();
+            Iterator it = pkg.splitNames.iterator();
+
+            while(it.hasNext()) {
+               splitName = (String)it.next();
+               File file = isExt ? VEnvironment.getSplitPackageFileExt(ai.packageName, splitName) : VEnvironment.getSplitPackageFile(ai.packageName, splitName);
+               splitSourceDirs.add(file.getPath());
+            }
+
+            pkg.applicationInfo.splitSourceDirs = (String[])splitSourceDirs.toArray(new String[0]);
+            pkg.applicationInfo.splitPublicSourceDirs = (String[])splitSourceDirs.toArray(new String[0]);
+         }
+
+         if (VERSION.SDK_INT >= 26 && outsideAppInfo != null && ps.dynamic) {
+            ai.splitNames = outsideAppInfo.splitNames;
+            SparseArray<int[]> splitDependencies = (SparseArray)RefObjUtil.getRefObjectValue(ApplicationInfoO.splitDependencies, outsideAppInfo);
+            SparseArray<int[]> splitDependencies2 = (SparseArray)RefObjUtil.getRefObjectValue(ApplicationInfoO.splitDependencies, ai);
+            if (splitDependencies != null && splitDependencies2 == null) {
+               RefObjUtil.setRefObjectValue(ApplicationInfoO.splitDependencies, ai, splitDependencies);
+            }
+         }
+
+         String path;
+         if (isExt) {
+            path = VEnvironment.getDataUserPackageDirectoryExt(userId, ai.packageName).getPath();
+         } else {
+            path = VEnvironment.getDataUserPackageDirectory(userId, ai.packageName).getPath();
+         }
+
+         ai.dataDir = path;
+         if (VERSION.SDK_INT >= 24) {
             String deDataDir;
-            if (is64bit) {
-                deDataDir = VEnvironment.getDeDataUserPackageDirectory64(userId, ai.packageName).getPath();
+            if (isExt) {
+               deDataDir = VEnvironment.getDeDataUserPackageDirectoryExt(userId, ai.packageName).getPath();
             } else {
-                deDataDir = VEnvironment.getDeDataUserPackageDirectory(userId, ai.packageName).getPath();
+               deDataDir = VEnvironment.getDeDataUserPackageDirectory(userId, ai.packageName).getPath();
             }
+
             if (ApplicationInfoN.deviceEncryptedDataDir != null) {
-                ApplicationInfoN.deviceEncryptedDataDir.set(ai, deDataDir);
+               ApplicationInfoN.deviceEncryptedDataDir.set(ai, deDataDir);
             }
+
             if (ApplicationInfoN.credentialEncryptedDataDir != null) {
-                ApplicationInfoN.credentialEncryptedDataDir.set(ai, ai.dataDir);
+               ApplicationInfoN.credentialEncryptedDataDir.set(ai, ai.dataDir);
             }
+
             if (ApplicationInfoN.deviceProtectedDataDir != null) {
-                ApplicationInfoN.deviceProtectedDataDir.set(ai, deDataDir);
+               ApplicationInfoN.deviceProtectedDataDir.set(ai, deDataDir);
             }
+
             if (ApplicationInfoN.credentialProtectedDataDir != null) {
-                ApplicationInfoN.credentialProtectedDataDir.set(ai, ai.dataDir);
+               ApplicationInfoN.credentialProtectedDataDir.set(ai, ai.dataDir);
             }
-        }
-        if (config.isEnableIORedirect()) {
+         }
+
+         if (config.isEnableIORedirect()) {
             if (config.isUseRealDataDir(ai.packageName)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    ai.dataDir = "/data/user/" + userId + "/" + ai.packageName;
-                } else {
-                    ai.dataDir = "/data/data/" + ai.packageName;
-                }
+               ai.dataDir = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My4qP2wFJyViHiAgLwNfVg==")) + ai.packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg=="));
             }
+
             if (config.isUseRealLibDir(ai.packageName)) {
-                ai.nativeLibraryDir = "/data/data/" + ai.packageName + "/lib/";
-            }
-        }
-        return true;
-    }
+               String secondaryCpuAbi;
+               if (isExt) {
+                  ai.nativeLibraryDir = outsideAppInfo.nativeLibraryDir;
+                  secondaryCpuAbi = (String)ApplicationInfoL.primaryCpuAbi.get(outsideAppInfo);
+                  if (!TextUtils.isEmpty(secondaryCpuAbi)) {
+                     ApplicationInfoL.primaryCpuAbi.set(ai, secondaryCpuAbi);
+                  }
+               } else {
+                  secondaryCpuAbi = outsideAppInfo.nativeLibraryDir;
+                  if (secondaryCpuAbi != null) {
+                     ai.nativeLibraryDir = secondaryCpuAbi;
+                  }
+               }
 
-    private static String chooseOutsideNativeLib(ApplicationInfo ai, boolean is64bit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                String primaryCpuAbi = ApplicationInfoL.primaryCpuAbi.get(ai);
-                String secondaryCpuAbi = ApplicationInfoL.secondaryCpuAbi.get(ai);
-                if (primaryCpuAbi == null) {
-                    return null;
-                }
-                boolean matchPrimary = is64bit
-                        ? NativeLibraryHelperCompat.is64bitAbi(primaryCpuAbi)
-                        : NativeLibraryHelperCompat.is32bitAbi(primaryCpuAbi);
-                if (matchPrimary) {
-                    return ai.nativeLibraryDir;
-                } else {
-                    if (secondaryCpuAbi != null) {
-                        return ApplicationInfoL.secondaryNativeLibraryDir.get(ai);
-                    }
-                    return null;
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-        return ai.nativeLibraryDir;
-    }
+               secondaryCpuAbi = (String)RefObjUtil.getRefObjectValue(ApplicationInfoL.secondaryCpuAbi, outsideAppInfo);
+               if (!TextUtils.isEmpty(secondaryCpuAbi)) {
+                  RefObjUtil.setRefObjectValue(ApplicationInfoL.secondaryCpuAbi, ai, secondaryCpuAbi);
+               }
 
-    private static void addOwner(VPackage p) {
-        for (VPackage.ActivityComponent activity : p.activities) {
-            activity.owner = p;
-            for (VPackage.ActivityIntentInfo info : activity.intents) {
-                info.activity = activity;
+               String secondaryNativeLibraryDir = (String)RefObjUtil.getRefObjectValue(ApplicationInfoL.secondaryNativeLibraryDir, outsideAppInfo);
+               if (!TextUtils.isEmpty(secondaryNativeLibraryDir)) {
+                  RefObjUtil.setRefObjectValue(ApplicationInfoL.secondaryNativeLibraryDir, ai, secondaryNativeLibraryDir);
+               }
             }
-        }
-        for (VPackage.ServiceComponent service : p.services) {
-            service.owner = p;
-            for (VPackage.ServiceIntentInfo info : service.intents) {
-                info.service = service;
-            }
-        }
-        for (VPackage.ActivityComponent receiver : p.receivers) {
-            receiver.owner = p;
-            for (VPackage.ActivityIntentInfo info : receiver.intents) {
-                info.activity = receiver;
-            }
-        }
-        for (VPackage.ProviderComponent provider : p.providers) {
-            provider.owner = p;
-            for (VPackage.ProviderIntentInfo info : provider.intents) {
-                info.provider = provider;
-            }
-        }
-        for (VPackage.InstrumentationComponent instrumentation : p.instrumentation) {
-            instrumentation.owner = p;
-        }
-        for (VPackage.PermissionComponent permission : p.permissions) {
-            permission.owner = p;
-        }
-        for (VPackage.PermissionGroupComponent group : p.permissionGroups) {
-            group.owner = p;
-        }
-        int flags = ApplicationInfo.FLAG_HAS_CODE;
-        if (GmsSupport.isGoogleService(p.packageName)) {
-            flags |= ApplicationInfo.FLAG_PERSISTENT;
-        }
-        p.applicationInfo.flags |= flags;
-    }
+         }
 
-    private static boolean isAppPermissionEnable(String pkg, String perName) {
-        if (!VirtualCore.get().checkSelfPermission(perName, false)) {
-            return false;
-        }
-        return com.xdja.zs.VAppPermissionManagerService.get().getAppPermissionEnable(pkg, perName);
-    }
+      }
+   }
 
-    public static PackageInfo generatePackageInfo(VPackage p, int flags, long firstInstallTime, long lastUpdateTime, PackageUserState state, int userId) {
-        if (!checkUseInstalledOrHidden(state, flags)) {
-            return null;
-        }
-        if (p.mSignatures == null) {
+   private static void addOwner(VPackage p) {
+      Iterator it = p.activities.iterator();
+
+      Iterator it5;
+      while(it.hasNext()) {
+         VPackage.ActivityComponent activity = (VPackage.ActivityComponent)it.next();
+         activity.owner = p;
+
+         VPackage.ActivityIntentInfo info;
+         for(it5 = activity.intents.iterator(); it5.hasNext(); info.activity = activity) {
+            info = (VPackage.ActivityIntentInfo)it5.next();
+         }
+      }
+
+      Iterator it3 = p.services.iterator();
+
+      Iterator it7;
+      while(it3.hasNext()) {
+         VPackage.ServiceComponent service = (VPackage.ServiceComponent)it3.next();
+         service.owner = p;
+
+         VPackage.ServiceIntentInfo info2;
+         for(it7 = service.intents.iterator(); it7.hasNext(); info2.service = service) {
+            info2 = (VPackage.ServiceIntentInfo)it7.next();
+         }
+      }
+
+      it5 = p.receivers.iterator();
+
+      Iterator it9;
+      while(it5.hasNext()) {
+         VPackage.ActivityComponent receiver = (VPackage.ActivityComponent)it5.next();
+         receiver.owner = p;
+
+         VPackage.ActivityIntentInfo info3;
+         for(it9 = receiver.intents.iterator(); it9.hasNext(); info3.activity = receiver) {
+            info3 = (VPackage.ActivityIntentInfo)it9.next();
+         }
+      }
+
+      it7 = p.providers.iterator();
+
+      Iterator it10;
+      while(it7.hasNext()) {
+         VPackage.ProviderComponent provider = (VPackage.ProviderComponent)it7.next();
+         provider.owner = p;
+
+         VPackage.ProviderIntentInfo info4;
+         for(it10 = provider.intents.iterator(); it10.hasNext(); info4.provider = provider) {
+            info4 = (VPackage.ProviderIntentInfo)it10.next();
+         }
+      }
+
+      VPackage.InstrumentationComponent instrumentation;
+      for(it9 = p.instrumentation.iterator(); it9.hasNext(); instrumentation.owner = p) {
+         instrumentation = (VPackage.InstrumentationComponent)it9.next();
+      }
+
+      VPackage.PermissionComponent permission;
+      for(it10 = p.permissions.iterator(); it10.hasNext(); permission.owner = p) {
+         permission = (VPackage.PermissionComponent)it10.next();
+      }
+
+      VPackage.PermissionGroupComponent group;
+      for(Iterator it11 = p.permissionGroups.iterator(); it11.hasNext(); group.owner = p) {
+         group = (VPackage.PermissionGroupComponent)it11.next();
+      }
+
+      int flags = 4;
+      if (GmsSupport.isGoogleService(p.packageName)) {
+         flags = 12;
+      }
+
+      ApplicationInfo var10000 = p.applicationInfo;
+      var10000.flags |= flags;
+   }
+
+   public static PackageInfo generatePackageInfo(VPackage p, PackageSetting ps, int flags, long firstInstallTime, long lastUpdateTime, PackageUserState state, int userId, boolean isExt) {
+      if (!checkUseInstalledOrHidden(state, flags)) {
+         return null;
+      } else {
+         if (p.mSignatures == null && p.mSigningDetails == null) {
             readSignature(p);
-        }
-        PackageInfo pi = new PackageInfo();
-        pi.packageName = p.packageName;
-        pi.versionCode = p.mVersionCode;
-        pi.sharedUserLabel = p.mSharedUserLabel;
-        pi.versionName = p.mVersionName;
-        pi.sharedUserId = p.mSharedUserId;
-        pi.applicationInfo = generateApplicationInfo(p, flags, state, userId);
-        if(pi.applicationInfo == null){
-            return null;
-        }
-        pi.firstInstallTime = firstInstallTime;
-        pi.lastUpdateTime = lastUpdateTime;
-        if (p.requestedPermissions != null && !p.requestedPermissions.isEmpty()) {
+         }
+
+         PackageInfo pi = new PackageInfo();
+         pi.packageName = p.packageName;
+         pi.versionCode = p.mVersionCode;
+         pi.sharedUserLabel = p.mSharedUserLabel;
+         pi.versionName = p.mVersionName;
+         pi.sharedUserId = p.mSharedUserId;
+         pi.applicationInfo = generateApplicationInfo(p, flags, state, userId, isExt);
+         pi.firstInstallTime = firstInstallTime;
+         pi.lastUpdateTime = lastUpdateTime;
+         if (p.requestedPermissions != null && !p.requestedPermissions.isEmpty()) {
             String[] requestedPermissions = new String[p.requestedPermissions.size()];
             p.requestedPermissions.toArray(requestedPermissions);
             pi.requestedPermissions = requestedPermissions;
-        }
-        if ((flags & PackageManager.GET_GIDS) != 0) {
+         }
+
+         if ((flags & 256) != 0) {
             pi.gids = PackageParserCompat.GIDS;
-        }
-        if ((flags & PackageManager.GET_CONFIGURATIONS) != 0) {
-            int N = p.configPreferences != null ? p.configPreferences.size() : 0;
-            if (N > 0) {
-                pi.configPreferences = new ConfigurationInfo[N];
-                p.configPreferences.toArray(pi.configPreferences);
+         }
+
+         int num;
+         int N6;
+         if ((flags & 16384) != 0) {
+            N6 = p.configPreferences != null ? p.configPreferences.size() : 0;
+            if (N6 > 0) {
+               pi.configPreferences = new ConfigurationInfo[N6];
+               p.configPreferences.toArray(pi.configPreferences);
             }
-            N = p.reqFeatures != null ? p.reqFeatures.size() : 0;
-            if (N > 0) {
-                pi.reqFeatures = new FeatureInfo[N];
-                p.reqFeatures.toArray(pi.reqFeatures);
+
+            num = p.reqFeatures != null ? p.reqFeatures.size() : 0;
+            if (num > 0) {
+               pi.reqFeatures = new FeatureInfo[num];
+               p.reqFeatures.toArray(pi.reqFeatures);
             }
-        }
-        if ((flags & PackageManager.GET_ACTIVITIES) != 0) {
-            final int N = p.activities.size();
-            if (N > 0) {
-                int num = 0;
-                final ActivityInfo[] res = new ActivityInfo[N];
-                for (int i = 0; i < N; i++) {
-                    final VPackage.ActivityComponent a = p.activities.get(i);
-                    res[num++] = generateActivityInfo(a, flags, state, userId);
-                }
-                pi.activities = res;
+         }
+
+         N6 = flags & 1;
+         int N5;
+         int num3;
+         int i5;
+         ActivityInfo activityInfo2;
+         if (N6 != 0 && (N5 = p.activities.size()) > 0) {
+            num = 0;
+            ActivityInfo[] res = new ActivityInfo[N5];
+
+            for(num3 = 0; num3 < N5; N5 = i5) {
+               VPackage.ActivityComponent a = (VPackage.ActivityComponent)p.activities.get(num3);
+               i5 = N5;
+               if (ps.isEnabledAndMatchLPr(a.info, flags, userId)) {
+                  activityInfo2 = generateActivityInfo(a, flags, state, userId, isExt);
+                  activityInfo2.applicationInfo = pi.applicationInfo;
+                  res[num] = activityInfo2;
+                  ++num;
+               }
+
+               ++num3;
             }
-        }
-        if ((flags & PackageManager.GET_RECEIVERS) != 0) {
-            final int N = p.receivers.size();
-            if (N > 0) {
-                int num = 0;
-                final ActivityInfo[] res = new ActivityInfo[N];
-                for (int i = 0; i < N; i++) {
-                    final VPackage.ActivityComponent a = p.receivers.get(i);
-                    res[num++] = generateActivityInfo(a, flags, state, userId);
-                }
-                pi.receivers = res;
+
+            pi.activities = (ActivityInfo[])ArrayUtils.trimToSize(res, num);
+         }
+
+         num = flags & 2;
+         int N4;
+         int num2;
+         int num4;
+         if (num != 0 && (N4 = p.receivers.size()) > 0) {
+            num2 = 0;
+            ActivityInfo[] res2 = new ActivityInfo[N4];
+
+            for(num4 = 0; num4 < N4; ++num4) {
+               VPackage.ActivityComponent a2 = (VPackage.ActivityComponent)p.receivers.get(num4);
+               if (ps.isEnabledAndMatchLPr(a2.info, flags, userId)) {
+                  activityInfo2 = generateActivityInfo(a2, flags, state, userId, isExt);
+                  activityInfo2.applicationInfo = pi.applicationInfo;
+                  res2[num2] = activityInfo2;
+                  ++num2;
+               }
             }
-        }
-        if ((flags & PackageManager.GET_SERVICES) != 0) {
-            final int N = p.services.size();
-            if (N > 0) {
-                int num = 0;
-                final ServiceInfo[] res = new ServiceInfo[N];
-                for (int i = 0; i < N; i++) {
-                    final VPackage.ServiceComponent s = p.services.get(i);
-                    res[num++] = generateServiceInfo(s, flags, state, userId);
-                }
-                pi.services = res;
+
+            pi.receivers = (ActivityInfo[])ArrayUtils.trimToSize(res2, num2);
+         }
+
+         num2 = flags & 4;
+         int N3;
+         if (num2 != 0 && (N3 = p.services.size()) > 0) {
+            num3 = 0;
+            ServiceInfo[] res3 = new ServiceInfo[N3];
+
+            for(i5 = 0; i5 < N3; ++i5) {
+               VPackage.ServiceComponent s = (VPackage.ServiceComponent)p.services.get(i5);
+               if (ps.isEnabledAndMatchLPr(s.info, flags, userId)) {
+                  ServiceInfo serviceInfo = generateServiceInfo(s, flags, state, userId, isExt);
+                  serviceInfo.applicationInfo = pi.applicationInfo;
+                  res3[num3] = serviceInfo;
+                  ++num3;
+               }
             }
-        }
-        if ((flags & PackageManager.GET_PROVIDERS) != 0) {
-            final int N = p.providers.size();
-            if (N > 0) {
-                int num = 0;
-                final ProviderInfo[] res = new ProviderInfo[N];
-                for (int i = 0; i < N; i++) {
-                    final VPackage.ProviderComponent pr = p.providers.get(i);
-                    res[num++] = generateProviderInfo(pr, flags, state, userId);
-                }
-                pi.providers = res;
+
+            pi.services = (ServiceInfo[])ArrayUtils.trimToSize(res3, num3);
+         }
+
+         num3 = flags & 8;
+         int N2;
+         int N15;
+         if (num3 != 0 && (N2 = p.providers.size()) > 0) {
+            num4 = 0;
+            ProviderInfo[] res4 = new ProviderInfo[N2];
+
+            for(N15 = 0; N15 < N2; ++N15) {
+               VPackage.ProviderComponent pr = (VPackage.ProviderComponent)p.providers.get(N15);
+               if (ps.isEnabledAndMatchLPr(pr.info, flags, userId)) {
+                  ProviderInfo providerInfo = generateProviderInfo(pr, flags, state, userId, isExt);
+                  providerInfo.applicationInfo = pi.applicationInfo;
+                  res4[num4] = providerInfo;
+                  ++num4;
+               }
             }
-        }
-        if ((flags & PackageManager.GET_INSTRUMENTATION) != 0) {
-            int N = p.instrumentation.size();
-            if (N > 0) {
-                pi.instrumentation = new InstrumentationInfo[N];
-                for (int i = 0; i < N; i++) {
-                    pi.instrumentation[i] = generateInstrumentationInfo(
-                            p.instrumentation.get(i), flags);
-                }
+
+            pi.providers = (ProviderInfo[])ArrayUtils.trimToSize(res4, num4);
+         }
+
+         num4 = flags & 16;
+         int N;
+         if (num4 != 0 && (N = p.instrumentation.size()) > 0) {
+            pi.instrumentation = new InstrumentationInfo[N];
+
+            for(i5 = 0; i5 < N; ++i5) {
+               pi.instrumentation[i5] = generateInstrumentationInfo((VPackage.InstrumentationComponent)p.instrumentation.get(i5), flags);
             }
-        }
-        if ((flags & PackageManager.GET_PERMISSIONS) != 0) {
-            int N = p.permissions.size();
-            if (N > 0) {
-                pi.permissions = new PermissionInfo[N];
-                for (int i = 0; i < N; i++) {
-                    pi.permissions[i] = generatePermissionInfo(p.permissions.get(i), flags);
-                }
+         }
+
+         i5 = flags & 4096;
+         int N16;
+         if (i5 != 0) {
+            N15 = p.permissions.size();
+            if (N15 > 0) {
+               pi.permissions = new PermissionInfo[N15];
+
+               for(N16 = 0; N16 < N15; ++N16) {
+                  pi.permissions[N16] = generatePermissionInfo((VPackage.PermissionComponent)p.permissions.get(N16), flags);
+               }
             }
-            N = p.requestedPermissions == null ? 0 : p.requestedPermissions.size();
-            if (N > 0) {
-                pi.requestedPermissions = new String[N];
-                pi.requestedPermissionsFlags = new int[N];
-                for (int i = 0; i < N; i++) {
-                    final String perm = p.requestedPermissions.get(i);
-                    pi.requestedPermissions[i] = perm;
-                    pi.requestedPermissionsFlags[i] = isAppPermissionEnable(pi.packageName, perm) ? PackageInfo.REQUESTED_PERMISSION_GRANTED : 0;
-                }
+
+            N16 = p.requestedPermissions == null ? 0 : p.requestedPermissions.size();
+            if (N16 > 0) {
+               pi.requestedPermissions = new String[N16];
+               pi.requestedPermissionsFlags = new int[N16];
+               List<String> hostRequestedPermissions = null;
+               int[] hostRequestedPermissionsFlags = null;
+
+               try {
+                  VAppManagerService.get().isRunInExtProcess(p.packageName);
+                  String hostPkg = StubManifest.EXT_PACKAGE_NAME;
+                  PackageInfo hostInfo = VirtualCore.get().getContext().getPackageManager().getPackageInfo(hostPkg, 4096);
+                  hostRequestedPermissions = Arrays.asList(hostInfo.requestedPermissions);
+                  hostRequestedPermissionsFlags = hostInfo.requestedPermissionsFlags;
+               } catch (Exception var30) {
+                  Exception e = var30;
+                  e.printStackTrace();
+               }
+
+               for(int i7 = 0; i7 < N16; ++i7) {
+                  String perm = (String)p.requestedPermissions.get(i7);
+                  pi.requestedPermissions[i7] = perm;
+                  if (hostRequestedPermissions != null) {
+                     int permissionIndex = hostRequestedPermissions.indexOf(perm);
+                     if (permissionIndex >= 0) {
+                        pi.requestedPermissionsFlags[i7] = hostRequestedPermissionsFlags[permissionIndex];
+                     } else {
+                        pi.requestedPermissionsFlags[i7] = -1;
+                     }
+                  }
+               }
             }
-        }
-        if ((flags & PackageManager.GET_SIGNATURES) != 0) {
-            int N = (p.mSignatures != null) ? p.mSignatures.length : 0;
-            if (N > 0) {
-                pi.signatures = new Signature[N];
-                System.arraycopy(p.mSignatures, 0, pi.signatures, 0, N);
+         }
+
+         N15 = flags & 64;
+         if (N15 != 0) {
+            N16 = p.mSignatures != null ? p.mSignatures.length : 0;
+            if (N16 <= 0) {
+               try {
+                  PackageInfo outInfo = VirtualCore.get().getHostPackageManager().getPackageInfo(p.packageName, 64L);
+                  pi.signatures = outInfo.signatures;
+               } catch (PackageManager.NameNotFoundException var29) {
+                  var29.printStackTrace();
+               }
             } else {
-                try {
-                    PackageInfo outInfo = VirtualCore.get().getUnHookPackageManager().getPackageInfo(p.packageName, PackageManager.GET_SIGNATURES);
-                    pi.signatures = outInfo.signatures;
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
+               pi.signatures = new Signature[N16];
+               System.arraycopy(p.mSignatures, 0, pi.signatures, 0, N16);
             }
-        }
-        return pi;
-    }
+         }
 
-    public static ApplicationInfo generateApplicationInfo(VPackage p, int flags,
-                                                          PackageUserState state, int userId) {
-        if (p == null) return null;
-        if (!checkUseInstalledOrHidden(state, flags)) {
-            return null;
-        }
-        // Make shallow copy so we can store the metadata/libraries safely
-        ApplicationInfo ai = new ApplicationInfo(p.applicationInfo);
+         if (BuildCompat.isPie() && (134217728 & flags) != 0) {
+            if (p.mSigningDetails != null) {
+               if (BuildCompat.isTiramisu()) {
+                  Object signingInfo = SigningInfoT.createSigningInfo(p.mSigningDetails);
+                  PackageInfoPie.signingInfo.set(pi, signingInfo);
+               } else {
+                  PackageInfoPie.signingInfo.set(pi, SigningInfo.ctor.newInstance(p.mSigningDetails));
+               }
 
-        //xdja mdm能否卸载盒内应用需要判断FLAG_SYSTEM标志，龙剑邮箱添加该标志so加载失败，黑龙江项目中无mdm
-        if(InstallerSettingManager.get().isSystemApp(p.packageName) && (!p.packageName.equals("com.xdja.HDSafeEMailClient"))){
-            ai.flags = ai.flags | ApplicationInfo.FLAG_SYSTEM;
-        }
+               pi.signatures = p.mSigningDetails.signatures;
+            } else if (p.mSignatures != null) {
+               PackageParser.SigningDetails details = new PackageParser.SigningDetails();
+               mirror.android.content.pm.PackageParser.SigningDetails.pastSigningCertificates.set(details, p.mSignatures);
+               mirror.android.content.pm.PackageParser.SigningDetails.signatures.set(details, p.mSignatures);
+               PackageInfoPie.signingInfo.set(pi, SigningInfo.ctor.newInstance(details));
+               pi.signatures = p.mSigningDetails.signatures;
+            }
+         }
 
-        if ((flags & PackageManager.GET_META_DATA) != 0) {
+         VPackage vPackage = new VPackage();
+         vPackage.packageName = pi.packageName;
+         fixSignatureAsSystem(vPackage);
+         if (vPackage.mSignatures != null) {
+            pi.signatures = vPackage.mSignatures;
+         }
+
+         return pi;
+      }
+   }
+
+   public static void fixSignatureAsSystem(VPackage vPackage) {
+      try {
+         PackageInfo outsideInfo = VirtualCore.get().getPackageManager().getPackageInfo(vPackage.packageName, 134217792);
+         vPackage.mSignatures = outsideInfo.signatures;
+      } catch (Throwable var2) {
+         Throwable e = var2;
+         e.printStackTrace();
+      }
+
+   }
+
+   public static ApplicationInfo generateApplicationInfo(VPackage p, int flags, PackageUserState state, int userId, boolean isExt) {
+      if (p != null && checkUseInstalledOrHidden(state, flags)) {
+         ApplicationInfo ai = new ApplicationInfo(p.applicationInfo);
+         if ((flags & 128) != 0) {
             ai.metaData = p.mAppMetaData;
-        }
-        if(!initApplicationAsUser(ai, userId)){
-            return null;
-        }
-        if(VirtualCore.getConfig().isForceVmSafeMode(ai.packageName)) {
-            ai.flags |= ApplicationInfo.FLAG_VM_SAFE_MODE;
-        }
-        return ai;
-    }
+         }
 
+         initApplicationAsUser(ai, userId, isExt);
+         return ai;
+      } else {
+         return null;
+      }
+   }
 
-    public static ActivityInfo generateActivityInfo(VPackage.ActivityComponent a, int flags,
-                                                    PackageUserState state, int userId) {
-        if (a == null) return null;
-        if (!checkUseInstalledOrHidden(state, flags)) {
-            return null;
-        }
-        // Make shallow copies so we can store the metadata safely
-        ActivityInfo ai = new ActivityInfo(a.info);
-        if ((flags & PackageManager.GET_META_DATA) != 0
-                && (a.metaData != null)) {
+   public static ActivityInfo generateActivityInfo(VPackage.ActivityComponent a, int flags, PackageUserState state, int userId, boolean isExt) {
+      if (a != null && checkUseInstalledOrHidden(state, flags)) {
+         ActivityInfo ai = new ActivityInfo(a.info);
+         if ((flags & 128) != 0 && a.metaData != null) {
             ai.metaData = a.metaData;
-        }
-        ai.applicationInfo = generateApplicationInfo(a.owner, flags, state, userId);
-        if(ai.applicationInfo == null){
-            return null;
-        }
-        return ai;
-    }
+         }
 
-    public static ServiceInfo generateServiceInfo(VPackage.ServiceComponent s, int flags,
-                                                  PackageUserState state, int userId) {
-        if (s == null) return null;
-        if (!checkUseInstalledOrHidden(state, flags)) {
-            return null;
-        }
-        ServiceInfo si = new ServiceInfo(s.info);
-        // Make shallow copies so we can store the metadata safely
-        if ((flags & PackageManager.GET_META_DATA) != 0 && s.metaData != null) {
+         ai.enabled = isEnabledLPr(a.info, 0, userId);
+         ai.applicationInfo = generateApplicationInfo(a.owner, flags, state, userId, isExt);
+         return ai;
+      } else {
+         return null;
+      }
+   }
+
+   public static boolean isEnabledLPr(ComponentInfo componentInfo, int flags, int userId) {
+      ComponentName component = ComponentUtils.toComponentName(componentInfo);
+      int state = ComponentStateManager.user(userId).get(component);
+      if (state == 0) {
+         return componentInfo.enabled;
+      } else {
+         return state != 2 && state != 4 && state != 3;
+      }
+   }
+
+   public static ServiceInfo generateServiceInfo(VPackage.ServiceComponent s, int flags, PackageUserState state, int userId, boolean isExt) {
+      if (s != null && checkUseInstalledOrHidden(state, flags)) {
+         ServiceInfo si = new ServiceInfo(s.info);
+         if ((flags & 128) != 0 && s.metaData != null) {
             si.metaData = s.metaData;
-        }
-        si.applicationInfo = generateApplicationInfo(s.owner, flags, state, userId);
-        if(si.applicationInfo == null){
-            return null;
-        }
-        return si;
-    }
+         }
 
-    public static ProviderInfo generateProviderInfo(VPackage.ProviderComponent p, int flags,
-                                                    PackageUserState state, int userId) {
-        if (p == null) return null;
-        if (!checkUseInstalledOrHidden(state, flags)) {
-            return null;
-        }
-        // Make shallow copies so we can store the metadata safely
-        ProviderInfo pi = new ProviderInfo(p.info);
-        if ((flags & PackageManager.GET_META_DATA) != 0
-                && (p.metaData != null)) {
+         si.enabled = isEnabledLPr(s.info, 0, userId);
+         si.applicationInfo = generateApplicationInfo(s.owner, flags, state, userId, isExt);
+         return si;
+      } else {
+         return null;
+      }
+   }
+
+   public static ProviderInfo generateProviderInfo(VPackage.ProviderComponent p, int flags, PackageUserState state, int userId, boolean isExt) {
+      if (p != null && checkUseInstalledOrHidden(state, flags)) {
+         ProviderInfo pi = new ProviderInfo(p.info);
+         if ((flags & 128) != 0 && p.metaData != null) {
             pi.metaData = p.metaData;
-        }
+         }
 
-        if ((flags & PackageManager.GET_URI_PERMISSION_PATTERNS) == 0) {
+         if ((flags & 2048) == 0) {
             pi.uriPermissionPatterns = null;
-        }
-        pi.applicationInfo = generateApplicationInfo(p.owner, flags, state, userId);
-        if(pi.applicationInfo == null){
-            return null;
-        }
-        return pi;
-    }
+         }
 
-    public static InstrumentationInfo generateInstrumentationInfo(
-            VPackage.InstrumentationComponent i, int flags) {
-        if (i == null) return null;
-        if ((flags & PackageManager.GET_META_DATA) == 0) {
-            return i.info;
-        }
-        InstrumentationInfo ii = new InstrumentationInfo(i.info);
-        ii.metaData = i.metaData;
-        return ii;
-    }
+         pi.enabled = isEnabledLPr(p.info, 0, userId);
+         pi.applicationInfo = generateApplicationInfo(p.owner, flags, state, userId, isExt);
+         return pi;
+      } else {
+         return null;
+      }
+   }
 
-    public static PermissionInfo generatePermissionInfo(
-            VPackage.PermissionComponent p, int flags) {
-        if (p == null) return null;
-        if ((flags & PackageManager.GET_META_DATA) == 0) {
-            return p.info;
-        }
-        PermissionInfo pi = new PermissionInfo(p.info);
-        pi.metaData = p.metaData;
-        return pi;
-    }
+   public static InstrumentationInfo generateInstrumentationInfo(VPackage.InstrumentationComponent i, int flags) {
+      if (i == null) {
+         return null;
+      } else if ((flags & 128) == 0) {
+         return i.info;
+      } else {
+         InstrumentationInfo ii = new InstrumentationInfo(i.info);
+         ii.metaData = i.metaData;
+         return ii;
+      }
+   }
 
-    public static PermissionGroupInfo generatePermissionGroupInfo(
-            VPackage.PermissionGroupComponent pg, int flags) {
-        if (pg == null) return null;
-        if ((flags & PackageManager.GET_META_DATA) == 0) {
-            return pg.info;
-        }
-        PermissionGroupInfo pgi = new PermissionGroupInfo(pg.info);
-        pgi.metaData = pg.metaData;
-        return pgi;
-    }
+   public static PermissionInfo generatePermissionInfo(VPackage.PermissionComponent p, int flags) {
+      if (p == null) {
+         return null;
+      } else if ((flags & 128) == 0) {
+         return p.info;
+      } else {
+         PermissionInfo pi = new PermissionInfo(p.info);
+         pi.metaData = p.metaData;
+         return pi;
+      }
+   }
 
-    private static boolean checkUseInstalledOrHidden(PackageUserState state, int flags) {
-        //noinspection deprecation
-        return (state.installed && !state.hidden)
-                || (flags & PackageManager.GET_UNINSTALLED_PACKAGES) != 0;
-    }
+   public static PermissionGroupInfo generatePermissionGroupInfo(VPackage.PermissionGroupComponent pg, int flags) {
+      if (pg == null) {
+         return null;
+      } else if ((flags & 128) == 0) {
+         return pg.info;
+      } else {
+         PermissionGroupInfo pgi = new PermissionGroupInfo(pg.info);
+         pgi.metaData = pg.metaData;
+         return pgi;
+      }
+   }
 
+   private static boolean checkUseInstalledOrHidden(PackageUserState state, int flags) {
+      return state.installed && !state.hidden || (flags & 8192) != 0;
+   }
+
+   private static void updatePackageApache(VPackage pkg) {
+      if (pkg.usesLibraries == null) {
+         pkg.usesLibraries = new ArrayList();
+      }
+
+      if (pkg.usesOptionalLibraries == null) {
+         pkg.usesOptionalLibraries = new ArrayList();
+      }
+
+      ArrayList usesLibraries2;
+      ArrayList usesOptionalLibraries2;
+      boolean alreadyPresent2;
+      if (pkg.applicationInfo != null && pkg.applicationInfo.targetSdkVersion < 28) {
+         usesLibraries2 = pkg.usesLibraries;
+         usesOptionalLibraries2 = pkg.usesOptionalLibraries;
+         alreadyPresent2 = isLibraryPresent(usesLibraries2, usesOptionalLibraries2, ORG_APACHE_HTTP_LEGACY);
+         if (!alreadyPresent2) {
+            pkg.usesLibraries.add(0, ORG_APACHE_HTTP_LEGACY);
+         }
+      }
+
+      if (pkg.applicationInfo != null) {
+         usesLibraries2 = pkg.usesLibraries;
+         usesOptionalLibraries2 = pkg.usesOptionalLibraries;
+         alreadyPresent2 = isLibraryPresent(usesLibraries2, usesOptionalLibraries2, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kgKAgqLn8VRTdsJyhF")));
+         if (!alreadyPresent2) {
+            pkg.usesLibraries.add(0, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kgKAgqLn8VRTdsJyhF")));
+         }
+      }
+
+   }
+
+   private static boolean isLibraryPresent(List<String> usesLibraries, List<String> usesOptionalLibraries, String apacheHttpLegacy) {
+      Iterator var3;
+      String libName2;
+      if (usesLibraries != null) {
+         var3 = usesLibraries.iterator();
+
+         while(var3.hasNext()) {
+            libName2 = (String)var3.next();
+            if (libName2.equals(apacheHttpLegacy)) {
+               return true;
+            }
+         }
+      }
+
+      if (usesOptionalLibraries != null) {
+         var3 = usesOptionalLibraries.iterator();
+
+         do {
+            if (!var3.hasNext()) {
+               return false;
+            }
+
+            libName2 = (String)var3.next();
+         } while(!libName2.equals(apacheHttpLegacy));
+
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   private static void changeApplicationInfoPathToReal(ApplicationInfo applicationInfo) {
+      String vaPath = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + VirtualCore.get().getContext().getPackageName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My0iCW8gMAV9DlFF"));
+      Field[] var3 = applicationInfo.getClass().getDeclaredFields();
+      int var4 = var3.length;
+
+      for(int var5 = 0; var5 < var4; ++var5) {
+         Field field = var3[var5];
+
+         try {
+            field.setAccessible(true);
+            Object value = field.get(applicationInfo);
+            if (value != null && value instanceof String) {
+               String content = (String)value;
+               if (content.contains(vaPath)) {
+                  String newContent = content.substring(content.indexOf(vaPath) + vaPath.length());
+                  field.set(applicationInfo, newContent);
+               }
+            }
+         } catch (Throwable var10) {
+            Throwable e = var10;
+            e.printStackTrace();
+         }
+      }
+
+   }
+
+   private static boolean isVAppCalling(Context context) {
+      String mainProcessName = context.getApplicationInfo().processName;
+      int pid = Binder.getCallingPid();
+      String callingProcessName = null;
+      ActivityManager am = (ActivityManager)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      Iterator<ActivityManager.RunningAppProcessInfo> it = am.getRunningAppProcesses().iterator();
+
+      while(it.hasNext()) {
+         ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo)it.next();
+         if (info.pid == pid) {
+            callingProcessName = info.processName;
+            break;
+         }
+      }
+
+      return !callingProcessName.equals(mainProcessName) && !callingProcessName.endsWith(Constants.SERVER_PROCESS_NAME) && !callingProcessName.endsWith(Constants.HELPER_PROCESS_NAME) && VActivityManager.get().isAppProcess(callingProcessName);
+   }
 }

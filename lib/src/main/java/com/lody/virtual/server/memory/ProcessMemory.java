@@ -1,33 +1,30 @@
 package com.lody.virtual.server.memory;
 
+import com.lody.virtual.StringFog;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Locale;
 
-/**
- * @author Lody
- */
 public class ProcessMemory {
+   private int pid;
+   private RandomAccessFile memFile;
 
-    private int pid;
-    private RandomAccessFile memFile;
+   public ProcessMemory(int pid) throws IOException {
+      this.pid = pid;
+      this.memFile = new RandomAccessFile(String.format(Locale.ENGLISH, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My06KmozLyVIDg01KgcMDw==")), pid), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj0mVg==")));
+   }
 
-    public ProcessMemory(int pid) throws IOException {
-        this.pid = pid;
-        this.memFile = new RandomAccessFile(String.format(Locale.ENGLISH, "/proc/%d/mem", pid), "rw");
-    }
+   public void write(long offset, byte[] bytes) throws IOException {
+      this.memFile.seek(offset);
+      this.memFile.write(bytes);
+   }
 
-    public void write(long offset, byte[] bytes) throws IOException {
-        memFile.seek(offset);
-        memFile.write(bytes);
-    }
+   public int read(long offset, byte[] bytes, int len) throws IOException {
+      this.memFile.seek(offset);
+      return this.memFile.read(bytes, 0, len);
+   }
 
-    public int read(long offset, byte[] bytes, int len) throws IOException {
-        memFile.seek(offset);
-        return memFile.read(bytes, 0, len);
-    }
-
-    public void close() throws IOException {
-        memFile.close();
-    }
+   public void close() throws IOException {
+      this.memFile.close();
+   }
 }

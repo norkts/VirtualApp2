@@ -1,9 +1,5 @@
 package com.lody.virtual.client.core;
 
-/**
- * @author Lody
- */
-
-public interface CrashHandler extends Thread.UncaughtExceptionHandler{
-
+public interface CrashHandler {
+   void handleUncaughtException(Thread var1, Throwable var2);
 }

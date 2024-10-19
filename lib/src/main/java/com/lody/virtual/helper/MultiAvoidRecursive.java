@@ -2,32 +2,31 @@ package com.lody.virtual.helper;
 
 import android.util.SparseBooleanArray;
 
-/**
- * @author Lody
- */
 public class MultiAvoidRecursive {
+   private SparseBooleanArray mCallings;
 
-    private SparseBooleanArray mCallings;
+   public MultiAvoidRecursive(int initialCapacity) {
+      this.mCallings = new SparseBooleanArray(initialCapacity);
+   }
 
-    public MultiAvoidRecursive(int initialCapacity) {
-        mCallings = new SparseBooleanArray(initialCapacity);
-    }
+   public MultiAvoidRecursive() {
+      this(7);
+   }
 
-    public MultiAvoidRecursive() {
-        this(7);
-    }
-
-    public boolean beginCall(int id) {
-        if (mCallings.get(id)) {
+   public boolean beginCall(int id) {
+      synchronized(this.mCallings) {
+         if (this.mCallings.get(id)) {
             return false;
-        }
-        mCallings.put(id, true);
-        return true;
-    }
+         } else {
+            this.mCallings.put(id, true);
+            return true;
+         }
+      }
+   }
 
-    public void finishCall(int id) {
-        mCallings.put(id, false);
-    }
-
-
+   public void finishCall(int id) {
+      synchronized(this.mCallings) {
+         this.mCallings.put(id, false);
+      }
+   }
 }

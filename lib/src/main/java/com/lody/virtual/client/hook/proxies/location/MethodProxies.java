@@ -1,350 +1,285 @@
 package com.lody.virtual.client.hook.proxies.location;
 
-import android.location.LocationManager;
 import android.location.LocationRequest;
-import android.os.Build;
-import android.util.Log;
-
-import com.lody.virtual.client.hook.base.MethodProxy;
-import com.lody.virtual.client.hook.base.ReplaceLastPkgMethodProxy;
+import android.os.WorkSource;
+import android.os.Build.VERSION;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.annotations.SkipInject;
+import com.lody.virtual.client.hook.base.MethodProxy;
+import com.lody.virtual.client.hook.base.ReplaceFirstPkgMethodProxy;
+import com.lody.virtual.client.hook.base.ReplaceLastPkgMethodProxy;
+import com.lody.virtual.client.hook.base.ReplaceSequencePkgMethodProxy;
 import com.lody.virtual.client.ipc.VLocationManager;
+import com.lody.virtual.helper.compat.BuildCompat;
 import com.lody.virtual.helper.utils.Reflect;
+import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.remote.vloc.VLocation;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
-
 import mirror.android.location.LocationRequestL;
-import com.xdja.zs.VAppPermissionManager;
 
-/**
- * @author Lody
- */
-@SuppressWarnings("ALL")
 class MethodProxies {
+   private static void fixLocationRequest(LocationRequest locationRequest) {
+      if (locationRequest != null) {
+         if (LocationRequestL.mHideFromAppOps != null) {
+            LocationRequestL.mHideFromAppOps.set(locationRequest, false);
+         }
 
-    private static void fixLocationRequest(LocationRequest request) {
-        if (request != null) {
-            if (LocationRequestL.mHideFromAppOps != null) {
-                LocationRequestL.mHideFromAppOps.set(request, false);
-            }
-            if (LocationRequestL.mWorkSource != null) {
-                LocationRequestL.mWorkSource.set(request, null);
-            }
-        }
-    }
-
-    @SkipInject
-    static class AddGpsStatusListener extends ReplaceLastPkgMethodProxy {
-        public AddGpsStatusListener() {
-            super("addGpsStatusListener");
-        }
-
-        public AddGpsStatusListener(String name) {
-            super(name);
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "addGpsStatusListener return");
-                return true;
-            }
-            if (isFakeLocationEnable()) {
-                VLocationManager.get().addGpsStatusListener(args);
-                return true;
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    @SkipInject
-    static class RequestLocationUpdates extends ReplaceLastPkgMethodProxy {
-
-        public RequestLocationUpdates() {
-            super("requestLocationUpdates");
-        }
-
-        public RequestLocationUpdates(String name) {
-            super(name);
-        }
-
-        @Override
-        public Object call(final Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "requestLocationUpdates   return");
-                return 0;
+         if (BuildCompat.isS() && LocationRequestL.mWorkSource != null) {
+            WorkSource workSource = (WorkSource)LocationRequestL.mWorkSource.get(locationRequest);
+            if (workSource != null) {
+               workSource.clear();
             }
 
-            if (isFakeLocationEnable()) {
-                VLocationManager.get().requestLocationUpdates(args);
-                return 0;
-            } else {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-                    LocationRequest request = (LocationRequest) args[0];
-                    fixLocationRequest(request);
-                }
+         } else if (LocationRequestL.mWorkSource != null) {
+            LocationRequestL.mWorkSource.set(locationRequest, (Object)null);
+         }
+      }
+   }
+
+   private static class RegisterLocationListener extends ReplaceSequencePkgMethodProxy {
+      public RegisterLocationListener() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwOKi0qOWUzLCVlNQIaKT0qJ2AwLDU=")), 2);
+      }
+
+      public Object call(Object obj, Method method, Object... args) throws Throwable {
+         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OG8jNC1jASggKAguU28FAjdvER4cLCwEI2EjFiBsNAo7ODpXVg==")));
+         if (isFakeLocationEnable()) {
+            VLocationManager.get().requestLocationUpdates(args);
+            return 0;
+         } else {
+            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+KW8zAj5iAVRF")).equals(args[0])) {
+               args[0] = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ=="));
             }
-            return super.call(who, method, args);
-        }
-    }
 
-    @SkipInject
-    static class RemoveUpdates extends ReplaceLastPkgMethodProxy {
+            LocationRequest locationRequest = (LocationRequest)args[1];
+            MethodProxies.fixLocationRequest(locationRequest);
+            return super.call(obj, method, args);
+         }
+      }
+   }
 
-        public RemoveUpdates() {
-            super("removeUpdates");
-        }
+   static class locationCallbackFinished extends MethodProxy {
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return super.call(who, method, args);
+      }
 
-        public RemoveUpdates(String name) {
-            super(name);
-        }
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IxgAOWsaMC9gJFkfLwdbCG4VQSlqJSQaLC4YD2MaLC8="));
+      }
+   }
 
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            if (isFakeLocationEnable()) {
-                VLocationManager.get().removeUpdates(args);
-                return 0;
+   static class getProviderProperties extends MethodProxy {
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGcKFiVmNAYwKAguDGoVNAJrDgo/IxguDw=="));
+      }
+
+      public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
+         if (isFakeLocationEnable()) {
+            try {
+               Reflect.on(result).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwUMM28aNC9hNDApIj0MLmUFNARqJ1RF")), false);
+               Reflect.on(result).set(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwUMM28aNC9hNDApJy0MCG8zSFo=")), false);
+            } catch (Throwable var6) {
+               Throwable e = var6;
+               e.printStackTrace();
             }
-            return super.call(who, method, args);
-        }
-    }
 
-    @SkipInject
-    static class GetLastLocation extends ReplaceLastPkgMethodProxy {
-
-        public GetLastLocation() {
-            super("getLastLocation");
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "getLastLocation return");
-                return null;
-            }
-            if (!(args[0] instanceof String)) {
-                LocationRequest request = (LocationRequest) args[0];
-                fixLocationRequest(request);
-            }
-            if (isFakeLocationEnable()) {
-                VLocation loc = VLocationManager.get().getLocation(getAppPkg(), getAppUserId());
-                if (loc != null) {
-                    return loc.toSysLocation();
-                }
-                return null;
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    @SkipInject
-    static class GetLastKnownLocation extends GetLastLocation {
-        @Override
-        public String getMethodName() {
-            return "getLastKnownLocation";
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "getLastKnownLocation return");
-                return null;
-            }
-            if (isFakeLocationEnable()) {
-                VLocation loc = VLocationManager.get().getLocation(getAppPkg(), getAppUserId());
-                if (loc != null) {
-                    return loc.toSysLocation();
-                }
-                return null;
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    @SkipInject
-    static class IsProviderEnabled extends MethodProxy {
-        @Override
-        public String getMethodName() {
-            return "isProviderEnabled";
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "isProviderEnabled return");
-                return false;
-            }
-            if (isFakeLocationEnable()) {
-                if (args[0] instanceof String) {
-                    return VLocationManager.get().isProviderEnabled((String) args[0]);
-                }
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    static class getAllProviders extends MethodProxy {
-
-        @Override
-        public String getMethodName() {
-            return "getAllProviders";
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "getAllProviders return");
-                return null;
-            }
-            if (isFakeLocationEnable()) {
-                return Arrays.asList(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER);
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    @SkipInject
-    static class GetBestProvider extends MethodProxy {
-        @Override
-        public String getMethodName() {
-            return "getBestProvider";
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "getBestProvider return");
-                return null;
-            }
-            if (isFakeLocationEnable()) {
-                return LocationManager.GPS_PROVIDER;
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    @SkipInject
-    static class RemoveGpsStatusListener extends ReplaceLastPkgMethodProxy {
-        public RemoveGpsStatusListener() {
-            super("removeGpsStatusListener");
-        }
-
-        public RemoveGpsStatusListener(String name) {
-            super(name);
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            if (isFakeLocationEnable()) {
-                VLocationManager.get().removeGpsStatusListener(args);
-                return 0;
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    @SkipInject
-    static class RequestLocationUpdatesPI extends RequestLocationUpdates {
-        public RequestLocationUpdatesPI() {
-            super("requestLocationUpdatesPI");
-        }
-    }
-
-    @SkipInject
-    static class RemoveUpdatesPI extends RemoveUpdates {
-        public RemoveUpdatesPI() {
-            super("removeUpdatesPI");
-        }
-    }
-
-    @SkipInject
-    static class UnregisterGnssStatusCallback extends RemoveGpsStatusListener {
-        public UnregisterGnssStatusCallback() {
-            super("unregisterGnssStatusCallback");
-        }
-    }
-
-    @SkipInject
-    static class RegisterGnssStatusCallback extends AddGpsStatusListener {
-        public RegisterGnssStatusCallback() {
-            super("registerGnssStatusCallback");
-        }
-    }
-
-
-    static class sendExtraCommand extends MethodProxy {
-
-        @Override
-        public String getMethodName() {
-            return "sendExtraCommand";
-        }
-
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "sendExtraCommand return");
-                return true;
-            }
-            if (isFakeLocationEnable()) {
-                return true;
-            }
-            return super.call(who, method, args);
-        }
-    }
-
-    static class getProviderProperties extends MethodProxy {
-
-        @Override
-        public String getMethodName() {
-            return "getProviderProperties";
-        }
-
-        @Override
-        public Object afterCall(Object who, Method method, Object[] args, Object result) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_LocationManStub", "getProviderProperties return");
-                return null;
-            }
-            if (isFakeLocationEnable()) {
-                try {
-                    Reflect.on(result).set("mRequiresNetwork", false);
-                    Reflect.on(result).set("mRequiresCell", false);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-                return result;
-            }
+            return result;
+         } else {
             return super.afterCall(who, method, args, result);
-        }
-    }
+         }
+      }
+   }
 
-    static class locationCallbackFinished extends MethodProxy {
+   static class sendExtraCommand extends MethodProxy {
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLNDBmESw7Jy1fD28jQSZrEVRF"));
+      }
 
-        @Override
-        public String getMethodName() {
-            return "locationCallbackFinished";
-        }
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return isFakeLocationEnable() ? true : super.call(who, method, args);
+      }
+   }
 
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            boolean appPermissionEnable = VAppPermissionManager.get().getLocationEnable(getAppPkg());
-            if (appPermissionEnable) {
-                Log.e("geyao_TelephonyRegStub", "locationCallbackFinished return");
-                return true;
+   @SkipInject
+   static class RegisterGnssStatusCallback extends AddGpsStatusListener {
+      public RegisterGnssStatusCallback() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwTKj4qL2IKBjdvHig6JT4+KGAaMCRpJAJF")));
+      }
+   }
+
+   @SkipInject
+   static class UnregisterGnssStatusCallback extends RemoveGpsStatusListener {
+      public UnregisterGnssStatusCallback() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQgcKmgVPC9hJwo/Izs6DmoKAl5vETg/Khc2H30KTTdpNCQsKghSVg==")));
+      }
+   }
+
+   @SkipInject
+   static class RemoveUpdatesPI extends RemoveUpdates {
+      public RemoveUpdatesPI() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtuASQwLwg2PWoITQk=")));
+      }
+   }
+
+   @SkipInject
+   static class RequestLocationUpdatesPI extends RequestLocationUpdates {
+      public RequestLocationUpdatesPI() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uL2wVNANmHFE1Ly0iLmwjNCZnDjwvLRcqJ2EhOBY=")));
+      }
+   }
+
+   @SkipInject
+   static class RemoveGpsStatusListener extends ReplaceLastPkgMethodProxy {
+      public RemoveGpsStatusListener() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtqJyQpOy42OWUwGgN9ER46KgguKmIFMFo=")));
+      }
+
+      public RemoveGpsStatusListener(String name) {
+         super(name);
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         if (isFakeLocationEnable()) {
+            VLocationManager.get().removeGpsStatusListener(args);
+            return 0;
+         } else {
+            return super.call(who, method, args);
+         }
+      }
+   }
+
+   @SkipInject
+   static class GetBestProvider extends MethodProxy {
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMjNANmHyQqKi4+MWkzGgQ="));
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return isFakeLocationEnable() ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ==")) : super.call(who, method, args);
+      }
+   }
+
+   private static class getAllProviders extends MethodProxy {
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRpESw1LD0cPmkgRQM="));
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return isFakeLocationEnable() ? Arrays.asList(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS06KQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4uLGwzGgRjJ1RF"))) : super.call(who, method, args);
+      }
+   }
+
+   @SkipInject
+   static class IsProviderEnabled extends MethodProxy {
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2Am8jGj5jDgo/IzsMDm4jRSRrASxF"));
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return isFakeLocationEnable() && args[0] instanceof String ? VLocationManager.get().isProviderEnabled((String)args[0]) : super.call(who, method, args);
+      }
+   }
+
+   @SkipInject
+   static class GetLastKnownLocation extends GetLastLocation {
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFJANmHA42Ki46DmczNCloDiwaLD4cVg=="));
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         if (isFakeLocationEnable()) {
+            VLocation loc = VLocationManager.get().getLocation(getAppPkg(), getAppUserId());
+            return loc != null ? loc.toSysLocation() : null;
+         } else {
+            return super.call(who, method, args);
+         }
+      }
+   }
+
+   @SkipInject
+   static class GetLastLocation extends ReplaceLastPkgMethodProxy {
+      public GetLastLocation() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGIFJANmHFE1Ly0iLmwjNCY=")));
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         if (!(args[0] instanceof String)) {
+            LocationRequest request = (LocationRequest)args[0];
+            MethodProxies.fixLocationRequest(request);
+         }
+
+         if (isFakeLocationEnable()) {
+            VLocation loc = VLocationManager.get().getLocation(getAppPkg(), getAppUserId());
+            return loc != null ? loc.toSysLocation() : null;
+         } else {
+            return super.call(who, method, args);
+         }
+      }
+   }
+
+   static class RemoveUpdates extends ReplaceLastPkgMethodProxy {
+      public RemoveUpdates() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowOCtuASQwLwg2PWoFSFo=")));
+      }
+
+      public RemoveUpdates(String name) {
+         super(name);
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         if (isFakeLocationEnable()) {
+            VLocationManager.get().removeUpdates(args);
+            return 0;
+         } else {
+            return super.call(who, method, args);
+         }
+      }
+   }
+
+   @SkipInject
+   static class RequestLocationUpdates extends ReplaceFirstPkgMethodProxy {
+      public RequestLocationUpdates() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uL2wVNANmHFE1Ly0iLmwjNCZnDjwvLRcqJ2EjSFo=")));
+      }
+
+      public RequestLocationUpdates(String name) {
+         super(name);
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITw9DQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OG8jNAFmDjApLBVbDW4FQQZqAQYbIhc6IH0FFiBlICMp")));
+         if (isFakeLocationEnable()) {
+            VLocationManager.get().requestLocationUpdates(args);
+            return 0;
+         } else {
+            if (VERSION.SDK_INT > 16) {
+               LocationRequest request = (LocationRequest)args[0];
+               MethodProxies.fixLocationRequest(request);
             }
 
             return super.call(who, method, args);
-        }
-    }
+         }
+      }
+   }
+
+   @SkipInject
+   static class AddGpsStatusListener extends ReplaceLastPkgMethodProxy {
+      public AddGpsStatusListener() {
+         super(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggqPGAwIANpJwo7LBgML2czLANvESgbLhcMVg==")));
+      }
+
+      public AddGpsStatusListener(String name) {
+         super(name);
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         if (isFakeLocationEnable()) {
+            VLocationManager.get().addGpsStatusListener(args);
+            return true;
+         } else {
+            return super.call(who, method, args);
+         }
+      }
+   }
 }

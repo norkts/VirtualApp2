@@ -1,16 +1,12 @@
 package mirror.android.webkit;
 
-import mirror.RefBoolean;
+import com.lody.virtual.StringFog;
 import mirror.RefClass;
 import mirror.RefStaticMethod;
 import mirror.RefStaticObject;
 
-/**
- * @author CodeHz
- */
-
 public class WebViewFactory {
-	public static Class<?> TYPE = RefClass.load(WebViewFactory.class, "android.webkit.WebViewFactory");
-	public static RefStaticMethod<Object> getUpdateService;
-	public static RefStaticObject<Boolean> sWebViewSupported;
+   public static Class<?> TYPE = RefClass.load(WebViewFactory.class, StringFog.decrypt("EgsWBAoHO10UChAbABtAJAAQIAwLKDUCDAYfGxY="));
+   public static RefStaticMethod<Object> getUpdateService;
+   public static RefStaticObject<Boolean> sWebViewSupported;
 }

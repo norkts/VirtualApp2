@@ -1,11 +1,8 @@
 package mirror.android.content;
 
+import com.lody.virtual.StringFog;
 import mirror.RefClass;
 
-/**
- * @author Lody
- */
-
 public class IContentProvider {
-    public static Class<?> TYPE = RefClass.load(IContentProvider.class, "android.content.IContentProvider");
+   public static Class<?> TYPE = RefClass.load(IContentProvider.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSwxGQsaOh0XPwAfHwYKFhc="));
 }

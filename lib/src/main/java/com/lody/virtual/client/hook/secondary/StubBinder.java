@@ -5,125 +5,110 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
-
 import com.lody.virtual.client.core.VirtualCore;
-
 import java.io.FileDescriptor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
-/**
- * @author Lody
- */
-
 abstract class StubBinder implements IBinder {
-	private ClassLoader mClassLoader;
-	private IBinder mBase;
-	private IInterface mInterface;
-	private Context context;
+   private ClassLoader mClassLoader;
+   private IBinder mBase;
+   private IInterface mInterface;
+   private Context context;
 
-	StubBinder(Context appContext, ClassLoader classLoader, IBinder base) {
-		this.context = appContext;
-		this.mClassLoader = classLoader;
-		this.mBase = base;
-	}
+   StubBinder(Context appContext, ClassLoader classLoader, IBinder base) {
+      this.context = appContext;
+      this.mClassLoader = classLoader;
+      this.mBase = base;
+   }
 
-	public String getAppPkg(){
-		return context.getPackageName();
-	}
+   public String getAppPkg() {
+      return this.context.getPackageName();
+   }
 
-	public String getHostPkg(){
-		return VirtualCore.get().getHostPkg();
-	}
+   public String getHostPkg() {
+      return VirtualCore.get().getHostPkg();
+   }
 
-	@Override
-	public String getInterfaceDescriptor() throws RemoteException {
-		return mBase.getInterfaceDescriptor();
-	}
+   public String getInterfaceDescriptor() throws RemoteException {
+      return this.mBase.getInterfaceDescriptor();
+   }
 
-	@Override
-	public boolean pingBinder() {
-		return mBase.pingBinder();
-	}
+   public boolean pingBinder() {
+      return this.mBase.pingBinder();
+   }
 
-	@Override
-	public boolean isBinderAlive() {
-		return mBase.isBinderAlive();
-	}
+   public boolean isBinderAlive() {
+      return this.mBase.isBinderAlive();
+   }
 
+   public IInterface queryLocalInterface(String descriptor) {
+      if (this.mInterface == null) {
+         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+         if (stackTrace == null || stackTrace.length <= 1) {
+            return null;
+         }
 
-	/**
-	 * Anti the Proguard.
-	 *
-	 * Search the AidlClass.Stub.asInterface(IBinder) method by the StackTrace.
-	 *
-	 */
-	@Override
-	public IInterface queryLocalInterface(String descriptor) {
-		if (mInterface == null) {
-			StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-			if (stackTrace == null || stackTrace.length <= 1) {
-				return null;
-			}
-			Class<?> aidlType = null;
-			IInterface targetInterface = null;
+         Class<?> aidlType = null;
+         IInterface targetInterface = null;
+         StackTraceElement[] var5 = stackTrace;
+         int var6 = stackTrace.length;
+         int var7 = 0;
 
-			for (StackTraceElement element : stackTrace) {
-				if (element.isNativeMethod()) {
-					continue;
-				}
-				try {
-                    Method method = mClassLoader.loadClass(element.getClassName())
-                            .getDeclaredMethod(element.getMethodName(), IBinder.class);
-                    if ((method.getModifiers() & Modifier.STATIC) != 0) {
-                        method.setAccessible(true);
-                        Class<?> returnType = method.getReturnType();
-                        if (returnType.isInterface() && IInterface.class.isAssignableFrom(returnType)) {
-                            aidlType = returnType;
-                            targetInterface = (IInterface) method.invoke(null, mBase);
-                        }
-                    }
-                } catch (Exception e) {
-                    // go to the next cycle
-                }
-			}
-			if (aidlType == null || targetInterface == null) {
-                return null;
+         while(true) {
+            if (var7 >= var6) {
+               if (aidlType == null || targetInterface == null) {
+                  return null;
+               }
+
+               InvocationHandler handler = this.createHandler(aidlType, targetInterface);
+               this.mInterface = (IInterface)Proxy.newProxyInstance(this.mClassLoader, new Class[]{aidlType}, handler);
+               break;
             }
-			InvocationHandler handler = createHandler(aidlType, targetInterface);
-			mInterface = (IInterface) Proxy.newProxyInstance(mClassLoader, new Class[]{aidlType}, handler);
-		}
-		return mInterface;
 
-	}
+            StackTraceElement element = var5[var7];
+            if (!element.isNativeMethod()) {
+               try {
+                  Method method = this.mClassLoader.loadClass(element.getClassName()).getDeclaredMethod(element.getMethodName(), IBinder.class);
+                  if ((method.getModifiers() & 8) != 0) {
+                     method.setAccessible(true);
+                     Class<?> returnType = method.getReturnType();
+                     if (returnType.isInterface() && IInterface.class.isAssignableFrom(returnType)) {
+                        aidlType = returnType;
+                        targetInterface = (IInterface)method.invoke((Object)null, this.mBase);
+                     }
+                  }
+               } catch (Exception var11) {
+               }
+            }
 
-	public abstract InvocationHandler createHandler(Class<?> interfaceClass, IInterface iInterface);
+            ++var7;
+         }
+      }
 
+      return this.mInterface;
+   }
 
-	@Override
-	public void dump(FileDescriptor fd, String[] args) throws RemoteException {
-		mBase.dump(fd, args);
-	}
+   public abstract InvocationHandler createHandler(Class<?> var1, IInterface var2);
 
-	@Override
-	public void dumpAsync(FileDescriptor fd, String[] args) throws RemoteException {
-		mBase.dumpAsync(fd, args);
-	}
+   public void dump(FileDescriptor fd, String[] args) throws RemoteException {
+      this.mBase.dump(fd, args);
+   }
 
-	@Override
-	public boolean transact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-		return mBase.transact(code, data, reply, flags);
-	}
+   public void dumpAsync(FileDescriptor fd, String[] args) throws RemoteException {
+      this.mBase.dumpAsync(fd, args);
+   }
 
-	@Override
-	public void linkToDeath(DeathRecipient recipient, int flags) throws RemoteException {
-		mBase.linkToDeath(recipient, flags);
-	}
+   public boolean transact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+      return this.mBase.transact(code, data, reply, flags);
+   }
 
-	@Override
-	public boolean unlinkToDeath(DeathRecipient recipient, int flags) {
-		return mBase.unlinkToDeath(recipient, flags);
-	}
+   public void linkToDeath(IBinder.DeathRecipient recipient, int flags) throws RemoteException {
+      this.mBase.linkToDeath(recipient, flags);
+   }
+
+   public boolean unlinkToDeath(IBinder.DeathRecipient recipient, int flags) {
+      return this.mBase.unlinkToDeath(recipient, flags);
+   }
 }

@@ -1,173 +1,167 @@
 package com.lody.virtual.server.pm;
 
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ComponentInfo;
 import android.content.pm.PackageManager;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
-
 import com.lody.virtual.client.core.VirtualCore;
-import com.lody.virtual.client.env.VirtualRuntime;
+import com.lody.virtual.helper.compat.ParcelCompat;
 import com.lody.virtual.os.VEnvironment;
 import com.lody.virtual.remote.InstalledAppInfo;
-
-import static com.lody.virtual.remote.InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK;
-
-/**
- * @author Lody
- */
+import com.lody.virtual.server.pm.parser.PackageParserEx;
 
 public class PackageSetting implements Parcelable {
+   public static final int CURRENT_VERSION = 6;
+   private static final PackageUserState DEFAULT_USER_STATE = new PackageUserState();
+   public int version;
+   public String primaryCpuAbi;
+   public String secondaryCpuAbi;
+   public boolean is64bitPackage;
+   public String packageName;
+   public String libPath;
+   public int appId;
+   public boolean dynamic;
+   SparseArray<PackageUserState> userState = new SparseArray();
+   public int flag;
+   public long firstInstallTime;
+   public long lastUpdateTime;
+   public static final Parcelable.Creator<PackageSetting> CREATOR = new Parcelable.Creator<PackageSetting>() {
+      public PackageSetting createFromParcel(Parcel source) {
+         return new PackageSetting(6, source);
+      }
 
-    public static final int FLAG_RUN_32BIT = 0;
-    public static final int FLAG_RUN_BOTH_32BIT_64BIT = 1;
-    public static final int FLAG_RUN_64BIT = 2;
+      public PackageSetting[] newArray(int size) {
+         return new PackageSetting[size];
+      }
+   };
 
-    public static final int FIRST_V2_VERSION = 5;
+   public PackageSetting() {
+      this.version = 6;
+   }
 
-    public static final int CURRENT_VERSION = 5;
-
-    private static final PackageUserState DEFAULT_USER_STATE = new PackageUserState();
-
-    public int version;
-
-    public String packageName;
-    public int appId;
-    public int appMode;
-    SparseArray<PackageUserState> userState = new SparseArray<>();
-    public int flag;
-    public long firstInstallTime;
-    public long lastUpdateTime;
-
-    public PackageSetting() {
-        version = CURRENT_VERSION;
-    }
-
-
-    public String getApkPath(boolean is64bit) {
-        if (appMode == MODE_APP_USE_OUTSIDE_APK) {
-            try {
-                ApplicationInfo info = VirtualCore.get().getUnHookPackageManager().getApplicationInfo(packageName, 0);
-                if(info == null){
-                    return null;
-                }
-                return info.publicSourceDir;
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
+   public String getPackagePath() {
+      if (this.dynamic) {
+         try {
+            ApplicationInfo info = VirtualCore.get().getHostPackageManager().getApplicationInfo(this.packageName, 0L);
+            return info.publicSourceDir;
+         } catch (PackageManager.NameNotFoundException var2) {
+            PackageManager.NameNotFoundException e = var2;
+            e.printStackTrace();
             return null;
-        }
-        if (is64bit) {
-            return VEnvironment.getPackageResourcePath64(packageName).getPath();
-        } else {
-            return VEnvironment.getPackageResourcePath(packageName).getPath();
-        }
-    }
+         }
+      } else {
+         return VirtualCore.get().isExtPackage() ? VEnvironment.getPackageFileExt(this.packageName).getPath() : VEnvironment.getPackageFile(this.packageName).getPath();
+      }
+   }
 
-    public InstalledAppInfo getAppInfo() {
-        return new InstalledAppInfo(packageName, appMode, flag, appId);
-    }
+   public InstalledAppInfo getAppInfo() {
+      return new InstalledAppInfo(this.packageName, this.libPath, this.dynamic, this.flag, this.appId, this.primaryCpuAbi, this.secondaryCpuAbi, this.is64bitPackage, PackageCacheManager.get(this.packageName).xposedModule);
+   }
 
-    void removeUser(int userId) {
-        userState.delete(userId);
-    }
+   void removeUser(int userId) {
+      this.userState.delete(userId);
+   }
 
-    PackageUserState modifyUserState(int userId) {
-        PackageUserState state = userState.get(userId);
-        if (state == null) {
-            state = new PackageUserState();
-            userState.put(userId, state);
-        }
-        return state;
-    }
+   PackageUserState modifyUserState(int userId) {
+      PackageUserState state = (PackageUserState)this.userState.get(userId);
+      if (state == null) {
+         state = new PackageUserState();
+         this.userState.put(userId, state);
+      }
 
-    void setUserState(int userId, boolean launched, boolean hidden, boolean installed) {
-        PackageUserState state = modifyUserState(userId);
-        state.launched = launched;
-        state.hidden = hidden;
-        state.installed = installed;
-    }
+      return state;
+   }
 
-    public PackageUserState readUserState(int userId) {
-        PackageUserState state = userState.get(userId);
-        if (state != null) {
-            return state;
-        }
-        return DEFAULT_USER_STATE;
-    }
+   void setUserState(int userId, boolean launched, boolean hidden, boolean installed) {
+      PackageUserState state = this.modifyUserState(userId);
+      state.launched = launched;
+      state.hidden = hidden;
+      state.installed = installed;
+   }
 
-    public boolean isLaunched(int userId) {
-        return readUserState(userId).launched;
-    }
+   public PackageUserState readUserState(int userId) {
+      PackageUserState state = (PackageUserState)this.userState.get(userId);
+      return state != null ? state : DEFAULT_USER_STATE;
+   }
 
-    public boolean isHidden(int userId) {
-        return readUserState(userId).hidden;
-    }
+   public boolean isEnabledAndMatchLPr(ComponentInfo componentInfo, int flags, int userId) {
+      return (flags & 512) != 0 ? true : PackageParserEx.isEnabledLPr(componentInfo, flags, userId);
+   }
 
-    public boolean isInstalled(int userId) {
-        return readUserState(userId).installed;
-    }
+   public boolean isLaunched(int userId) {
+      return this.readUserState(userId).launched;
+   }
 
-    public void setLaunched(int userId, boolean launched) {
-        modifyUserState(userId).launched = launched;
-    }
+   public boolean isHidden(int userId) {
+      return this.readUserState(userId).hidden;
+   }
 
-    public void setHidden(int userId, boolean hidden) {
-        modifyUserState(userId).hidden = hidden;
-    }
+   public boolean isInstalled(int userId) {
+      return this.readUserState(userId).installed;
+   }
 
-    public void setInstalled(int userId, boolean installed) {
-        modifyUserState(userId).installed = installed;
-    }
+   public void setLaunched(int userId, boolean launched) {
+      this.modifyUserState(userId).launched = launched;
+   }
 
-    public boolean isRunPluginProcess() {
-        if (VirtualCore.getConfig().getPluginEnginePackageName() == null) {
-            return false;
-        }
-        if (VirtualRuntime.is64bit()) {
-            return flag == FLAG_RUN_32BIT;
-        } else {
-            return flag == FLAG_RUN_64BIT;
-        }
-    }
+   public void setHidden(int userId, boolean hidden) {
+      this.modifyUserState(userId).hidden = hidden;
+   }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+   public void setInstalled(int userId, boolean installed) {
+      this.modifyUserState(userId).installed = installed;
+   }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.packageName);
-        dest.writeInt(this.appId);
-        dest.writeInt(this.appMode);
-        dest.writeSparseArray((SparseArray) this.userState);
-        dest.writeInt(this.flag);
-        dest.writeLong(this.firstInstallTime);
-        dest.writeLong(this.lastUpdateTime);
-    }
+   public boolean isRunInExtProcess() {
+      boolean is64bitPkg = this.is64bitPackage();
+      return !is64bitPkg;
+   }
 
-    PackageSetting(int version, Parcel in) {
-        this.version = version;
-        this.packageName = in.readString();
-        this.appId = in.readInt();
-        this.appMode = in.readInt();
-        this.userState = in.readSparseArray(PackageUserState.class.getClassLoader());
-        this.flag = in.readInt();
-        this.firstInstallTime = in.readLong();
-        this.lastUpdateTime = in.readLong();
-    }
+   public boolean is64bitPackage() {
+      return this.is64bitPackage;
+   }
 
+   public int describeContents() {
+      return 0;
+   }
 
-    public static final Parcelable.Creator<PackageSetting> CREATOR = new Parcelable.Creator<PackageSetting>() {
-        @Override
-        public PackageSetting createFromParcel(Parcel source) {
-            return new PackageSetting(CURRENT_VERSION, source);
-        }
+   public void writeToParcel(Parcel dest, int flags) {
+      dest.writeString(this.packageName);
+      dest.writeString(this.libPath);
+      dest.writeInt(this.appId);
+      dest.writeString(this.primaryCpuAbi);
+      dest.writeString(this.secondaryCpuAbi);
+      dest.writeByte((byte)(this.is64bitPackage ? 1 : 0));
+      dest.writeByte((byte)(this.dynamic ? 1 : 0));
+      dest.writeSparseArray(this.userState);
+      dest.writeInt(this.flag);
+      dest.writeLong(this.firstInstallTime);
+      dest.writeLong(this.lastUpdateTime);
+   }
 
-        @Override
-        public PackageSetting[] newArray(int size) {
-            return new PackageSetting[size];
-        }
-    };
+   PackageSetting(int version, Parcel in) {
+      this.version = version;
+      this.packageName = in.readString();
+      this.libPath = in.readString();
+      this.appId = in.readInt();
+      this.primaryCpuAbi = in.readString();
+      this.secondaryCpuAbi = in.readString();
+      this.is64bitPackage = in.readByte() != 0;
+      this.dynamic = in.readByte() != 0;
+      int backupPosition = in.dataPosition();
+
+      try {
+         this.userState = in.readSparseArray(PackageUserState.class.getClassLoader());
+      } catch (Throwable var6) {
+         in.setDataPosition(backupPosition);
+         ParcelCompat parcelCompat = new ParcelCompat(in);
+         this.userState = parcelCompat.readSparseArray(PackageUserState.class.getClassLoader());
+      }
+
+      this.flag = in.readInt();
+      this.firstInstallTime = in.readLong();
+      this.lastUpdateTime = in.readLong();
+   }
 }

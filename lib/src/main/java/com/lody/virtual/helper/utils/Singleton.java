@@ -1,25 +1,19 @@
 package com.lody.virtual.helper.utils;
 
-/**
- * Singleton helper class for lazily initialization.
- *
- * Modeled after frameworks/base/include/utils/Singleton.h
- *
- * @hide
- */
 public abstract class Singleton<T> {
-    private T mInstance;
+   private T mInstance;
 
-    protected abstract T create();
+   protected abstract T create();
 
-    public final T get() {
-        if (mInstance == null) {
-            synchronized (this) {
-                if (mInstance == null) {
-                    mInstance = create();
-                }
+   public final T get() {
+      if (this.mInstance == null) {
+         synchronized(this) {
+            if (this.mInstance == null) {
+               this.mInstance = this.create();
             }
-        }
-        return mInstance;
-    }
+         }
+      }
+
+      return this.mInstance;
+   }
 }

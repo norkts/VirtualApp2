@@ -1,90 +1,57 @@
 package com.lody.virtual.remote;
 
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.lody.virtual.helper.compat.PendingIntentCompat;
 
 public class IntentSenderData implements Parcelable {
+   public String targetPkg;
+   public IBinder token;
+   public int type;
+   public int userId;
+   public static final Parcelable.Creator<IntentSenderData> CREATOR = new Parcelable.Creator<IntentSenderData>() {
+      public IntentSenderData createFromParcel(Parcel source) {
+         return new IntentSenderData(source);
+      }
 
-    /**
-     * packageName
-     */
-    public String creator;
-    public IBinder token;
-    public Intent intent;
-    public int flags;
-    public int type;
-    public int userId;
+      public IntentSenderData[] newArray(int size) {
+         return new IntentSenderData[size];
+      }
+   };
 
-    public IntentSenderData(String creator, IBinder token, Intent intent, int flags, int type, int userId) {
-        this.creator = creator;
-        this.token = token;
-        this.intent = intent;
-        this.flags = flags;
-        this.type = type;
-        this.userId = userId;
-    }
+   public IntentSenderData(String targetPkg, IBinder token, int type, int userId) {
+      this.targetPkg = targetPkg;
+      this.token = token;
+      this.type = type;
+      this.userId = userId;
+   }
 
-    public PendingIntent getPendingIntent() {
-        return readPendingIntent(token);
-    }
+   public PendingIntent getPendingIntent() {
+      return PendingIntentCompat.readPendingIntent(this.token);
+   }
 
+   public int describeContents() {
+      return 0;
+   }
 
-    public static PendingIntent readPendingIntent(IBinder binder) {
-        Parcel parcel = Parcel.obtain();
-        parcel.writeStrongBinder(binder);
-        parcel.setDataPosition(0);
-        try {
-            return PendingIntent.readPendingIntentOrNullFromParcel(parcel);
-        } finally {
-            parcel.recycle();
-        }
-    }
+   public void writeToParcel(Parcel dest, int flags) {
+      dest.writeString(this.targetPkg);
+      dest.writeStrongBinder(this.token);
+      dest.writeInt(this.type);
+      dest.writeInt(this.userId);
+   }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+   protected IntentSenderData(Parcel in) {
+      this.targetPkg = in.readString();
+      this.token = in.readStrongBinder();
+      this.type = in.readInt();
+      this.userId = in.readInt();
+   }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.creator);
-        dest.writeStrongBinder(token);
-        dest.writeParcelable(this.intent, flags);
-        dest.writeInt(this.flags);
-        dest.writeInt(this.type);
-        dest.writeInt(this.userId);
-    }
-
-    protected IntentSenderData(Parcel in) {
-        this.creator = in.readString();
-        this.token = in.readStrongBinder();
-        this.intent = in.readParcelable(Intent.class.getClassLoader());
-        this.flags = in.readInt();
-        this.type = in.readInt();
-        this.userId = in.readInt();
-    }
-
-    public static final Creator<IntentSenderData> CREATOR = new Creator<IntentSenderData>() {
-        @Override
-        public IntentSenderData createFromParcel(Parcel source) {
-            return new IntentSenderData(source);
-        }
-
-        @Override
-        public IntentSenderData[] newArray(int size) {
-            return new IntentSenderData[size];
-        }
-    };
-
-    public void replace(IntentSenderData other) {
-        this.creator = other.creator;
-        this.token = other.token;
-        this.intent = other.intent;
-        this.flags = other.flags;
-        this.type = other.type;
-        this.userId = other.userId;
-    }
+   public void update(IntentSenderData sender) {
+      this.targetPkg = sender.targetPkg;
+      this.type = sender.type;
+   }
 }

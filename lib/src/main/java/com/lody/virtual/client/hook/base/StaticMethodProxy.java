@@ -1,19 +1,13 @@
 package com.lody.virtual.client.hook.base;
 
-/**
- * @author Lody
- */
-
 public class StaticMethodProxy extends MethodProxy {
+   private String mName;
 
-	private String mName;
+   public StaticMethodProxy(String name) {
+      this.mName = name;
+   }
 
-	public StaticMethodProxy(String name) {
-		this.mName = name;
-	}
-
-	@Override
-	public String getMethodName() {
-		return mName;
-	}
+   public String getMethodName() {
+      return this.mName;
+   }
 }

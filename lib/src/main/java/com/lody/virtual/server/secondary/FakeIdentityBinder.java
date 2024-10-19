@@ -1,56 +1,88 @@
 package com.lody.virtual.server.secondary;
 
 import android.os.Binder;
+import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
 import android.os.Process;
 import android.os.RemoteException;
 
-/**
- * @author Lody
- */
 public class FakeIdentityBinder extends Binder {
+   protected Binder mBase;
+   protected int mFakeUid;
+   protected int mFakePid;
 
-    private Binder mBase;
+   public FakeIdentityBinder(Binder binder, int fakeUid, int fakePid) {
+      this.mBase = binder;
+      this.mFakeUid = fakeUid;
+      this.mFakePid = fakePid;
+   }
 
-    public FakeIdentityBinder(Binder binder) {
-        this.mBase = binder;
-    }
+   public void attachInterface(IInterface owner, String descriptor) {
+      this.mBase.attachInterface(owner, descriptor);
+   }
 
-    public final void attachInterface(IInterface owner, String descriptor) {
-        mBase.attachInterface(owner, descriptor);
-    }
+   public String getInterfaceDescriptor() {
+      return this.mBase.getInterfaceDescriptor();
+   }
 
-    public final String getInterfaceDescriptor() {
-        return mBase.getInterfaceDescriptor();
-    }
+   public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+      long identity = Binder.clearCallingIdentity();
 
-    public final boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-        long clearCallingIdentity = Binder.clearCallingIdentity();
-        try {
-            Binder.restoreCallingIdentity(getFakeIdentity());
-            return mBase.transact(code, data, reply, flags);
-        } finally {
-            Binder.restoreCallingIdentity(clearCallingIdentity);
-        }
-    }
+      boolean var7;
+      try {
+         Binder.restoreCallingIdentity(this.getFakeIdentity());
+         var7 = this.mBase.transact(code, data, reply, flags);
+      } finally {
+         Binder.restoreCallingIdentity(identity);
+      }
 
-    /**
-     * See: http://androidxref.com/6.0.1_r10/xref/frameworks/native/libs/binder/IPCThreadState.cpp#356
-     */
-    protected long getFakeIdentity() {
-        return (long) getFakeUid() << 32 | (long) getFakePid();
-    }
+      return var7;
+   }
 
-    protected int getFakeUid() {
-        return Process.myUid();
-    }
+   public static long getIdentity(int uid, int pid) {
+      return (long)uid << 32 | (long)pid;
+   }
 
-    protected int getFakePid() {
-        return Process.myPid();
-    }
+   public static void setSystemIdentity() {
+      long identity = getIdentity(1000, Process.myPid());
+      Binder.restoreCallingIdentity(identity);
+   }
 
-    public final IInterface queryLocalInterface(String descriptor) {
-        return mBase.queryLocalInterface(descriptor);
-    }
+   public static void setIdentity(int uid, int pid) {
+      long identity = getIdentity(uid, pid);
+      Binder.restoreCallingIdentity(identity);
+   }
+
+   protected long getFakeIdentity() {
+      return getIdentity(this.getFakeUid(), this.getFakePid());
+   }
+
+   protected int getFakeUid() {
+      return this.mFakeUid;
+   }
+
+   protected int getFakePid() {
+      return this.mFakePid;
+   }
+
+   public final IInterface queryLocalInterface(String descriptor) {
+      return this.mBase.queryLocalInterface(descriptor);
+   }
+
+   public boolean pingBinder() {
+      return this.mBase.pingBinder();
+   }
+
+   public boolean isBinderAlive() {
+      return this.mBase.isBinderAlive();
+   }
+
+   public void linkToDeath(IBinder.DeathRecipient recipient, int flags) {
+      this.mBase.linkToDeath(recipient, flags);
+   }
+
+   public boolean unlinkToDeath(IBinder.DeathRecipient recipient, int flags) {
+      return this.mBase.unlinkToDeath(recipient, flags);
+   }
 }

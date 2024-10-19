@@ -1,10 +1,8 @@
 package com.lody.virtual.client.core;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
-import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -23,1260 +21,969 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.os.Build;
-import android.os.Bundle;
+import android.net.Uri;
 import android.os.ConditionVariable;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
-import android.os.ResultReceiver;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.lody.virtual.BuildConfig;
-import com.lody.virtual.R;
+import android.os.Build.VERSION;
+import com.kook.librelease.R.string;
+import com.lody.virtual.PineXposed;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.NativeEngine;
 import com.lody.virtual.client.VClient;
 import com.lody.virtual.client.env.Constants;
+import com.lody.virtual.client.env.HostPackageManager;
+import com.lody.virtual.client.env.LocalPackageCache;
 import com.lody.virtual.client.env.SpecialComponentList;
 import com.lody.virtual.client.env.VirtualRuntime;
-import com.lody.virtual.client.fixer.ContextFixer;
 import com.lody.virtual.client.hook.delegate.TaskDescriptionDelegate;
 import com.lody.virtual.client.ipc.LocalProxyUtils;
 import com.lody.virtual.client.ipc.ServiceManagerNative;
 import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.client.ipc.VPackageManager;
-import com.lody.virtual.client.stub.HiddenForeNotification;
 import com.lody.virtual.client.stub.StubManifest;
-import com.lody.virtual.helper.compat.ActivityManagerCompat;
-import com.lody.virtual.helper.compat.BundleCompat;
+import com.lody.virtual.helper.compat.BuildCompat;
 import com.lody.virtual.helper.utils.BitmapUtils;
-import com.lody.virtual.helper.utils.FileUtils;
 import com.lody.virtual.helper.utils.IInterfaceUtils;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VUserHandle;
-import com.lody.virtual.remote.BroadcastIntentData;
-import com.lody.virtual.remote.InstallOptions;
-import com.lody.virtual.remote.InstallResult;
 import com.lody.virtual.remote.InstalledAppInfo;
-import com.lody.virtual.server.bit64.V64BitHelper;
+import com.lody.virtual.remote.VAppInstallerParams;
+import com.lody.virtual.remote.VAppInstallerResult;
+import com.lody.virtual.server.BinderProvider;
+import com.lody.virtual.server.extension.VExtPackageAccessor;
 import com.lody.virtual.server.interfaces.IAppManager;
 import com.lody.virtual.server.interfaces.IPackageObserver;
-import com.lody.virtual.server.pm.PrivilegeAppOptimizer;
-import com.xdja.activitycounter.ActivityCounterManager;
-import com.xdja.call.CallLogObserver;
-import com.xdja.call.PhoneCallService;
-import com.xdja.mms.SmsObserver;
-import com.xdja.utils.PackagePermissionManager;
-import com.xdja.zs.IAppPermissionCallback;
-import com.xdja.zs.IControllerServiceCallback;
-import com.xdja.zs.INotificationCallback;
-import com.xdja.zs.IToastCallback;
-import com.xdja.zs.IUiCallback;
-import com.xdja.zs.IVSCallback;
-import com.xdja.zs.IVSKeyCallback;
-import com.xdja.zs.exceptionRecorder;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-
 import mirror.android.app.ActivityThread;
 
-/**
- * @author Lody
- * @version 3.5
- */
 public final class VirtualCore {
+   public static final int GET_HIDDEN_APP = 1;
+   private static final String TAG = VirtualCore.class.getSimpleName();
+   @SuppressLint({"StaticFieldLeak"})
+   private static VirtualCore gCore = new VirtualCore();
+   private final int myUid = Process.myUid();
+   private int remoteUid = -1;
+   private HostPackageManager hostPackageManager;
+   private String hostPkgName;
+   private Object mainThread;
+   private Context context;
+   private String mainProcessName;
+   private String processName;
+   private ProcessType processType;
+   private boolean isMainPackage;
+   private IAppManager mService;
+   private boolean isStartUp;
+   private PackageInfo mHostPkgInfo;
+   private ConditionVariable mInitLock;
+   private AppCallback mAppCallback;
+   private TaskDescriptionDelegate mTaskDescriptionDelegate;
+   private SettingConfig mConfig;
+   private AppRequestListener mAppRequestListener;
+   private LaunchCallBack launchDelegate;
+   private Handler mHandlerASyc;
+   private final BroadcastReceiver mDownloadCompleteReceiver = new BroadcastReceiver() {
+      public void onReceive(Context context, Intent intent) {
+         VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgoNLwcYOWkFGgQ=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uOWgVAj5iCiQwKi46Dm8zNDdrVjwqLD4IDmAaLD9uDjMpKBdfKWsVLDNvNC8tDRhSVg==")) + intent);
+         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42FhRiIh5AIQZbGmEhLF5iHDwRLAYMBg==")).equals(intent.getAction())) {
+            VActivityManager.get().handleDownloadCompleteIntent(intent);
+         }
 
-    public static final int GET_HIDDEN_APP = 0x00000001;
-    private static final String TAG = VirtualCore.class.getSimpleName();
-    @SuppressLint("StaticFieldLeak")
-    private static VirtualCore gCore = new VirtualCore();
-    private final int myUid = Process.myUid();
-    /**
-     * Client Package Manager
-     */
-    private PackageManager unHookPackageManager;
-    /**
-     * Host package name
-     */
-    private String hostPkgName;
-    /**
-     * ActivityThread instance
-     */
-    private Object mainThread;
-    private Context context;
-    /**
-     * Main ProcessName
-     */
-    private String mainProcessName;
-    /**
-     * Real Process Name
-     */
-    private String processName;
-    private ProcessType processType;
-    private boolean isHostPulginApp;
-    private IAppManager mService;
-    private boolean isStartUp;
-    private PackageInfo mHostPkgInfo;
-    private ConditionVariable mInitLock;
-    private AppCallback mAppCallback;
-    private TaskDescriptionDelegate mTaskDescriptionDelegate;
-    private SettingConfig mConfig;
-    private AppRequestListener mAppRequestListener;
+      }
+   };
+   boolean scanned = false;
 
-    private VirtualCore() {
-    }
+   private VirtualCore() {
+      HandlerThread handlerThread = new HandlerThread(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwZfP2ojMCRiASwROy4cPw==")));
+      handlerThread.start();
+      this.mHandlerASyc = new Handler(handlerThread.getLooper());
+   }
 
-    public static SettingConfig getConfig() {
-        return get().mConfig;
-    }
+   public Handler getHandlerASyc() {
+      return this.mHandlerASyc;
+   }
 
-    public static VirtualCore get() {
-        return gCore;
-    }
+   public static SettingConfig getConfig() {
+      return get().mConfig;
+   }
 
-    public static PackageManager getPM() {
-        return get().getPackageManager();
-    }
+   public static void setConfig(SettingConfig config) {
+      get().mConfig = config;
+   }
 
-    public static Object mainThread() {
-        if (BuildConfig.DEBUG) {
-            if (get().isMainProcess()) {
-                throw new RuntimeException("get ActivityThread on Main Process.");
+   public static VirtualCore get() {
+      return gCore;
+   }
+
+   public static PackageManager getPM() {
+      return get().getPackageManager();
+   }
+
+   public static Object mainThread() {
+      return get().mainThread;
+   }
+
+   public ConditionVariable getInitLock() {
+      return this.mInitLock;
+   }
+
+   public int myUid() {
+      return this.myUid;
+   }
+
+   public int remoteUid() {
+      return this.remoteUid;
+   }
+
+   public int myUserId() {
+      return VUserHandle.getUserId(this.myUid);
+   }
+
+   public AppCallback getAppCallback() {
+      return this.mAppCallback == null ? AppCallback.EMPTY : this.mAppCallback;
+   }
+
+   public void setAppCallback(AppCallback callback) {
+      this.mAppCallback = callback;
+   }
+
+   public void setCrashHandler(CrashHandler handler) {
+      VClient.get().setCrashHandler(handler);
+   }
+
+   public TaskDescriptionDelegate getTaskDescriptionDelegate() {
+      return this.mTaskDescriptionDelegate;
+   }
+
+   public void setTaskDescriptionDelegate(TaskDescriptionDelegate mTaskDescriptionDelegate) {
+      this.mTaskDescriptionDelegate = mTaskDescriptionDelegate;
+   }
+
+   public LaunchCallBack getLaunchDelegate() {
+      return this.launchDelegate;
+   }
+
+   public void setLaunchDelegate(LaunchCallBack launchDelegate) {
+      this.launchDelegate = launchDelegate;
+   }
+
+   public int[] getGids() {
+      return this.mHostPkgInfo.gids;
+   }
+
+   public ApplicationInfo getHostApplicationInfo() {
+      return this.mHostPkgInfo.applicationInfo;
+   }
+
+   public Context getContext() {
+      return this.context;
+   }
+
+   public PackageManager getPackageManager() {
+      return this.context.getPackageManager();
+   }
+
+   public boolean isSystemApp() {
+      ApplicationInfo applicationInfo = this.getContext().getApplicationInfo();
+      return (applicationInfo.flags & 1) != 0 || (applicationInfo.flags & 128) != 0;
+   }
+
+   public String getHostPkg() {
+      return this.hostPkgName;
+   }
+
+   public int getTargetSdkVersion() {
+      return this.context.getApplicationInfo().targetSdkVersion;
+   }
+
+   public HostPackageManager getHostPackageManager() {
+      return this.hostPackageManager;
+   }
+
+   public boolean checkSelfPermission(String permission, boolean isExt) {
+      if (isExt) {
+         return 0 == this.hostPackageManager.checkPermission(permission, StubManifest.EXT_PACKAGE_NAME);
+      } else {
+         return 0 == this.hostPackageManager.checkPermission(permission, StubManifest.PACKAGE_NAME);
+      }
+   }
+
+   public void waitStartup() {
+      if (Looper.myLooper() != Looper.getMainLooper()) {
+         if (this.mInitLock != null) {
+            this.mInitLock.block();
+         }
+
+      }
+   }
+
+   public int getUidForSharedUser(String sharedUserName) {
+      try {
+         return this.getService().getUidForSharedUser(sharedUserName);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         return (Integer)VirtualRuntime.crash(e);
+      }
+   }
+
+   public VAppInstallerResult installPackage(Uri uri, VAppInstallerParams params) {
+      try {
+         return this.getService().installPackage(uri, params);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (VAppInstallerResult)VirtualRuntime.crash(e);
+      }
+   }
+
+   public void startup(Application application, Context context, SettingConfig config) throws Throwable {
+      if (!this.isStartUp) {
+         if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IT4YKmwKNDdgHCg1Iz0LDmoKBjdsNCwwKQReI0saQTBlJzMpKAhbKGUVNDB7AR45DRdbKG8KDTZlNwobLQg+PHojSFo=")));
+         }
+
+         if (!context.getPackageName().equals(config.getMainPackageName()) && !context.getPackageName().equals(config.getExtPackageName())) {
+            throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4uCWwFRSthMCQgKRcLOm8jQS9lMzw7LRg2LX0KJCB5Hh4eLF9XCmoVNzRoHlkZJAdfOm8KRQJ+NFEoLi5bP2gzNyRLEQY1LAMmL2kjGiN4HiwcPQhfO2YwLyNpJFkdLxg2IW8KFj9oDTwZJRc1L2ojNAFvEQE3Khg+OWUzJC1iCiQ2LwdXPX83TStuHjwgLT0qJ2JTOFo=")) + config.getMainPackageName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAKnsFSFo=")) + config.getExtPackageName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186OmwaMyhiJB4gPxhSVg==")) + context.getPackageName());
+         }
+
+         this.mInitLock = new ConditionVariable();
+         this.mConfig = config;
+         String packageName = config.getMainPackageName();
+         String ext_packageName = config.getExtPackageName();
+         Constants.ACTION_SHORTCUT = packageName + Constants.ACTION_SHORTCUT;
+         Constants.ACTION_BADGER_CHANGE = packageName + Constants.ACTION_BADGER_CHANGE;
+         StubManifest.STUB_CP_AUTHORITY = packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz0iCW8gMAV9DlFAIy42LW4YNFo="));
+         StubManifest.PROXY_CP_AUTHORITY = packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz06KmowOC9iHjAqJi4mKG8KFj8="));
+         File externalFilesDir = context.getExternalFilesDir(config.getVirtualSdcardAndroidDataName());
+         if (!externalFilesDir.exists()) {
+            externalFilesDir.mkdirs();
+         }
+
+         if (ext_packageName == null) {
+            ext_packageName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OzwAH2AYRVE="));
+         }
+
+         StubManifest.PACKAGE_NAME = packageName;
+         StubManifest.EXT_PACKAGE_NAME = ext_packageName;
+         StubManifest.EXT_STUB_CP_AUTHORITY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcMmMFMD9qDiQbJQcYCm8FFhNoHlkZKi5SVg=="));
+         StubManifest.EXT_PROXY_CP_AUTHORITY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojLDdhNFE1IykYD2UjOAZqATg7KQQcDmEwAjFvDjAuLBUuDmwzGixpHAY0IRgMVg=="));
+         this.context = context;
+         this.isMainPackage = context.getPackageName().equals(StubManifest.PACKAGE_NAME);
+         NativeEngine.bypassHiddenAPIEnforcementPolicyIfNeeded();
+         this.hostPackageManager = HostPackageManager.init();
+         this.mHostPkgInfo = this.hostPackageManager.getPackageInfo(packageName, 256L);
+         this.detectProcessType();
+         if (this.isVAppProcess()) {
+            this.mainThread = ActivityThread.currentActivityThread.call();
+            if (this.mainThread != null && BuildCompat.isT()) {
+               VLog.e(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KGoFAil9AQozKi0YEW8FMAZrDlk/PQNXVg==")) + application);
+               ActivityThread.mInitialApplication.set(this.mainThread, application);
             }
-        }
-        return get().mainThread;
-    }
 
-    public void gotoBackHome() {
-        Intent home = new Intent(Intent.ACTION_MAIN);
-        home.addCategory(Intent.CATEGORY_HOME);
-        home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        home.putExtra("pid", Process.myPid());
-        home.putExtra("process", get().getProcessName());
-        home.putExtra("userId", VUserHandle.myUserId());
-        try {
-            getContext().startActivity(home);
-        } catch (Throwable ignore) {
-        }
-    }
+            LocalPackageCache.init();
+         }
 
-    public ConditionVariable getInitLock() {
-        return mInitLock;
-    }
-
-    public int myUid() {
-        return myUid;
-    }
-
-    public int myUserId() {
-        return VUserHandle.getUserId(myUid);
-    }
-
-    public AppCallback getAppCallback() {
-        return mAppCallback == null ? AppCallback.EMPTY : mAppCallback;
-    }
-
-    /**
-     * @see #setAppCallback
-     * @deprecated
-     */
-    public void setComponentDelegate(AppCallback delegate) {
-        setAppCallback(delegate);
-    }
-
-    public void setAppCallback(AppCallback delegate) {
-        this.mAppCallback = delegate;
-    }
-
-    public void setCrashHandler(CrashHandler handler) {
-        VClient.get().setCrashHandler(handler);
-    }
-
-    public TaskDescriptionDelegate getTaskDescriptionDelegate() {
-        return mTaskDescriptionDelegate;
-    }
-
-    public void setTaskDescriptionDelegate(TaskDescriptionDelegate mTaskDescriptionDelegate) {
-        this.mTaskDescriptionDelegate = mTaskDescriptionDelegate;
-    }
-
-    public int[] getGids() {
-        return mHostPkgInfo.gids;
-    }
-
-    public ApplicationInfo getHostApplicationInfo() {
-        return mHostPkgInfo.applicationInfo;
-    }
-
-    public Context getContext() {
-        return context;
-    }
-
-    public PackageManager getPackageManager() {
-        return context.getPackageManager();
-    }
-
-    public boolean isSystemApp() {
-        ApplicationInfo applicationInfo = getContext().getApplicationInfo();
-        return (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-    }
-
-    public String getHostPkg() {
-        return hostPkgName;
-    }
-
-    public int getTargetSdkVersion() {
-        return context.getApplicationInfo().targetSdkVersion;
-    }
-
-    public PackageManager getUnHookPackageManager() {
-        return unHookPackageManager;
-    }
-
-    public boolean checkSelfPermission(String permission, boolean is64Bit) {
-        if (is64Bit) {
-            return PackageManager.PERMISSION_GRANTED == unHookPackageManager.checkPermission(permission, StubManifest.PACKAGE_NAME_64BIT);
-        } else {
-            return PackageManager.PERMISSION_GRANTED == unHookPackageManager.checkPermission(permission, StubManifest.PACKAGE_NAME);
-        }
-    }
-
-    public void waitStartup() {
-        if (mInitLock != null) {
-            mInitLock.block();
-        }
-    }
-
-    public int getUidForSharedUser(String sharedUserName) {
-        try {
-            return getService().getUidForSharedUser(sharedUserName);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
-
-    private final BroadcastReceiver mDownloadCompleteReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            VLog.w("DownloadManager", "receive download completed brodcast: " + intent);
-            intent.setExtrasClassLoader(BroadcastIntentData.class.getClassLoader());
-            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
-                VActivityManager.get().handleDownloadCompleteIntent(intent);
+         ApplicationInfo info;
+         if (this.isExtPackage()) {
+            try {
+               info = this.getHostPackageManager().getApplicationInfo(packageName, 0L);
+               if (info != null) {
+                  this.remoteUid = info.uid;
+               }
+            } catch (PackageManager.NameNotFoundException var11) {
             }
-        }
-    };
-
-    public void startup(Context context, SettingConfig config) throws Throwable {
-        if (!isStartUp) {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                throw new IllegalStateException("VirtualCore.startup() must called in main thread.");
+         } else {
+            try {
+               info = this.getHostPackageManager().getApplicationInfo(ext_packageName, 0L);
+               if (info != null) {
+                  this.remoteUid = info.uid;
+               }
+            } catch (PackageManager.NameNotFoundException var10) {
             }
-            mInitLock = new ConditionVariable();
-            mConfig = config;
-            String packageName = config.getHostPackageName();
-            String packageName64 = config.getPluginEnginePackageName();
-            Constants.ACTION_SHORTCUT = packageName + Constants.ACTION_SHORTCUT;
-            Constants.ACTION_BADGER_CHANGE = packageName + Constants.ACTION_BADGER_CHANGE;
+         }
 
-            StubManifest.PACKAGE_NAME = packageName;
-            StubManifest.STUB_CP_AUTHORITY = packageName + ".virtual_stub_";
-            StubManifest.PROXY_CP_AUTHORITY = packageName + ".provider_proxy";
-            StubManifest.PROXY_CP_AUTHORITY_OUTSIDE =  packageName + ".provider_outside";
+         if (this.isVAppProcess() || this.isExtHelperProcess()) {
+            ServiceManagerNative.linkToDeath(new IBinder.DeathRecipient() {
+               public void binderDied() {
+                  VLog.e(VirtualCore.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKmwjNARLETg7IykmPmkjQSx1VjwiIxgEKEsVODVsJCwuLAcXPngVSFo=")) + VirtualCore.this.processType.name());
+                  Process.killProcess(Process.myPid());
+               }
+            });
+         }
 
-            if (packageName64 == null) {
-                packageName64 = "NO_64BIT";
+         if (this.isServerProcess() || this.isExtHelperProcess()) {
+            VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRgALWojHiV9DgoNLwcYOWkFGgQ=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OxgYKWwFNCZjDlk9PxU2DWUFMCRlJzgvJBg+Kn0KJCBlMCAqKAccI2UjATR7AR45DRgiOWwgMDFqDhEtPhhSVg==")) + this.processType);
+            IntentFilter filter = new IntentFilter(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42FhRiIh5AIQZbGmEhLF5iHDwRLAYMBg==")));
+
+            try {
+               context.registerReceiver(this.mDownloadCompleteReceiver, filter);
+            } catch (Throwable var9) {
+               Throwable e = var9;
+               e.printStackTrace();
             }
-            StubManifest.PACKAGE_NAME_64BIT = packageName64;
-            StubManifest.STUB_CP_AUTHORITY_64BIT = packageName64 + ".virtual_stub_64bit_";
-            StubManifest.PROXY_CP_AUTHORITY_64BIT = packageName64 + ".provider_proxy_64bit";
+         }
 
-            this.context = context;
-            unHookPackageManager = context.getPackageManager();
-            mHostPkgInfo = unHookPackageManager.getPackageInfo(packageName, PackageManager.GET_GIDS);
+         InvocationStubManager invocationStubManager = InvocationStubManager.getInstance();
+         invocationStubManager.init();
+         invocationStubManager.injectAll();
+         this.isStartUp = true;
+         this.mInitLock.open();
+      }
 
-            NativeEngine.bypassHiddenAPIEnforcementPolicyIfNeeded();
-            //////////////////////////////
-            // Now we can use hidden API//
-            //////////////////////////////
+   }
 
-            detectProcessType();
-            if (isMainProcess()) {
-                CallLogObserver.observe();
-                SmsObserver.observe();
+   public void waitForEngine() {
+      ServiceManagerNative.ensureServerStarted();
+   }
+
+   public boolean isEngineLaunched() {
+      if (this.isExtPackage()) {
+         return true;
+      } else {
+         if (!BinderProvider.scanApps) {
+            this.scanApps();
+         }
+
+         ActivityManager am = (ActivityManager)this.context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+         String engineProcessName = this.getEngineProcessName();
+         Iterator var3 = am.getRunningAppProcesses().iterator();
+
+         ActivityManager.RunningAppProcessInfo info;
+         do {
+            if (!var3.hasNext()) {
+               return false;
             }
-            if (isServerProcess() || isVAppProcess()) {
-                mainThread = ActivityThread.currentActivityThread.call();
-            }
-            if (isPluginEngine()) {
-                VLog.e(TAG, "===========  64Bit Engine(%s) ===========", processType.name());
-                if (isVAppProcess()) {
-                    getService().asBinder().linkToDeath(new IBinder.DeathRecipient() {
-                        @Override
-                        public void binderDied() {
-                            VLog.e(TAG, "32Bit Engine was dead, kill app process.");
-                            Process.killProcess(Process.myPid());
-                        }
-                    }, 0);
-                }
-            }
-            if (isServerProcess() || is64bitHelperProcess()) {
-                VLog.w("DownloadManager", "Listening DownloadManager action  in process: " + processType);
-                IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-                try {
-                    context.registerReceiver(mDownloadCompleteReceiver, filter);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-            InvocationStubManager invocationStubManager = InvocationStubManager.getInstance();
-            invocationStubManager.init();
-            invocationStubManager.injectAll();
-            ContextFixer.fixContext(context);
-            isStartUp = true;
 
-            //xdja 屏蔽‘不兼容api’对话框    (进一步确保）    暂时屏蔽，观察效果。
-            /*try {
-                Reflect.on("android.app.ActivityThread").call("currentActivityThread").set("mHiddenApiWarningShown", true);
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }*/
+            info = (ActivityManager.RunningAppProcessInfo)var3.next();
+         } while(!info.processName.endsWith(engineProcessName));
 
-            mInitLock.open();
-        }
-    }
+         return true;
+      }
+   }
 
-    public void waitForEngine() {
-        ServiceManagerNative.ensureServerStarted();
-    }
+   public List<ActivityManager.RunningAppProcessInfo> getRunningAppProcessesEx() {
+      ActivityManager am = (ActivityManager)this.context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      List<ActivityManager.RunningAppProcessInfo> list = new ArrayList(am.getRunningAppProcesses());
+      if (!get().isSharedUserId()) {
+         List<ActivityManager.RunningAppProcessInfo> list64 = VExtPackageAccessor.getRunningAppProcesses();
+         list.addAll(list64);
+      }
 
-    //Add by xdja
-    public void preLaunchApp() {
-        if (shouldLaunchApp("com.xdja.dialer")) {
-            VirtualCore.get().context.startService(new Intent(VirtualCore.get().context, PhoneCallService.class));
-        }
+      return list;
+   }
 
-    }
+   public ActivityManager.RunningAppProcessInfo getProccessInfo(String processName, int uid) {
+      List<ActivityManager.RunningAppProcessInfo> runningAppProcessesEx = this.getRunningAppProcessesEx();
+      Iterator var4 = runningAppProcessesEx.iterator();
 
-    //Add by xdja
-    public void sendBootCompleteBC(final String packageName, String action, boolean update) {
-        if (shouldLaunchApp(packageName)) {
-            PrivilegeAppOptimizer.get().addPrivilegeApp(packageName);
-            PrivilegeAppOptimizer.get().performOptimizeAllApps();
-            PrivilegeAppOptimizer.get().removePrivilegeApp(packageName);
-        }
-    }
-
-    //Add by xdja
-    public boolean shouldLaunchApp(String pkgName) {
-        return (isAppInstalled(pkgName) && !isAppRunning(pkgName, myUserId(), false));
-    }
-
-    public boolean isEngineLaunched() {
-        if (isPluginEngine()) {
-            return true;
-        }
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        String engineProcessName = getEngineProcessName();
-        for (ActivityManager.RunningAppProcessInfo info : am.getRunningAppProcesses()) {
-            if (info.processName.endsWith(engineProcessName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isIORelocateWork() {
-        try {
-            return getService().isIORelocateWork();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    public List<ActivityManager.RunningAppProcessInfo> getRunningAppProcessesEx() {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> list = new ArrayList<>(am.getRunningAppProcesses());
-        List<ActivityManager.RunningAppProcessInfo> list64 = V64BitHelper.getRunningAppProcess64();
-        if (list64 != null) {
-            list.addAll(list64);
-        }
-        return list;
-    }
-
-    public List<ActivityManager.RunningTaskInfo> getRunningTasksEx(int maxNum) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> list = new ArrayList<>(am.getRunningTasks(maxNum));
-        List<ActivityManager.RunningTaskInfo> list64 = V64BitHelper.getRunningTasks64(maxNum);
-        if (list64 != null) {
-            list.addAll(list64);
-        }
-        return list;
-    }
-
-
-    public List<ActivityManager.RecentTaskInfo> getRecentTasksEx(int maxNum, int flags) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RecentTaskInfo> list = new ArrayList<>(am.getRecentTasks(maxNum, flags));
-        List<ActivityManager.RecentTaskInfo> list64 = V64BitHelper.getRecentTasks64(maxNum, flags);
-        if (list64 != null) {
-            list.addAll(list64);
-        }
-        return list;
-    }
-
-    public List<ActivityManager.RecentTaskInfo> getAppTasksEx() {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.AppTask> list = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            //TODO V64BitHelper.getgetAppTasks64
-            list = new ArrayList<>(am.getAppTasks());
-            List<ActivityManager.RecentTaskInfo> recentTaskInfoList = new ArrayList<>();
-            for (ActivityManager.AppTask task : list) {
-                try {
-                    ActivityManager.RecentTaskInfo info = task.getTaskInfo();
-                    if (info == null) {
-                        continue;
-                    }
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        //過濾其他App
-                        String pkg = ActivityManagerCompat.getPackageName(info);
-                        if (!(TextUtils.equals(VirtualCore.getConfig().getHostPackageName(), pkg)
-                                || TextUtils.equals(VirtualCore.getConfig().getPluginEnginePackageName(), pkg)
-                        )) {
-                            continue;
-                        }
-                    }
-                    recentTaskInfoList.add(info);
-                }catch (Exception e){
-                    continue;
-                }
-            }
-            return recentTaskInfoList;
-        } else {
-            return getRecentTasksEx(128, ActivityManager.RECENT_IGNORE_UNAVAILABLE | ActivityManager.RECENT_WITH_EXCLUDED);
-        }
-    }
-
-    public void requestCopyPackage64(String packageName) {
-        try {
-            getService().requestCopyPackage64(packageName);
-        } catch (RemoteException e) {
-            VirtualRuntime.crash(e);
-        }
-    }
-
-    public String getEngineProcessName() {
-        return context.getString(R.string.engine_process_name);
-    }
-
-    public void registerActivityLifecycleCallbacks(Application app){
-        app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-            }
-            @Override
-            public void onActivityStarted(Activity activity) {
-                ActivityCounterManager.get().activityCountAdd(activity.getPackageName(),activity.getClass().getName(),android.os.Process.myPid());
-            }
-            @Override
-            public void onActivityResumed(Activity activity) {}
-            @Override
-            public void onActivityPaused(Activity activity) {}
-            @Override
-            public void onActivityStopped(Activity activity) {
-                ActivityCounterManager.get().activityCountReduce(activity.getPackageName(),activity.getClass().getName(),android.os.Process.myPid());
-            }
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle outState) { }
-            @Override
-            public void onActivityDestroyed(Activity activity) { }
-        });
-    }
-
-    public void initialize(VirtualInitializer initializer) {
-        if (initializer == null) {
-            throw new IllegalStateException("Initializer = NULL");
-        }
-        Log.d("Vxlib", "version: " + BuildConfig.commit);
-        switch (processType) {
-            case Main:
-                initializer.onMainProcess();
-                //启动时清零主进程计数器，有可能在进程崩溃时导致计数器残留计数
-                ActivityCounterManager.get().cleanPackage(VirtualCore.get().getHostPkg());
-
-                //设置异常记录
-                Thread.setDefaultUncaughtExceptionHandler(new exceptionRecorder.defaulUncaughtExceptionHandler());
-
-                break;
-            case VAppClient:
-                initializer.onVirtualProcess();
-                break;
-            case Server:
-                initializer.onServerProcess();
-
-                //设置异常记录
-                Thread.setDefaultUncaughtExceptionHandler(new exceptionRecorder.defaulUncaughtExceptionHandler());
-
-                break;
-            case CHILD:
-                initializer.onChildProcess();
-
-                //设置异常记录
-                Thread.setDefaultUncaughtExceptionHandler(new exceptionRecorder.defaulUncaughtExceptionHandler());
-                
-                break;
-        }
-    }
-
-    private static String getProcessName(Context context) {
-        int pid = Process.myPid();
-        String processName = null;
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningAppProcessInfo info : am.getRunningAppProcesses()) {
-            if (info.pid == pid) {
-                processName = info.processName;
-                break;
-            }
-        }
-        if (processName == null) {
-            throw new RuntimeException("processName = null");
-        }
-        return processName;
-    }
-
-    private void detectProcessType() {
-        // Host package name
-        hostPkgName = context.getApplicationInfo().packageName;
-        // Main process name
-        mainProcessName = context.getApplicationInfo().processName;
-        // Current process name
-        processName = getProcessName(context);
-        isHostPulginApp = StubManifest.isHostPluginPackageName(hostPkgName);
-        if (processName.equals(mainProcessName)) {
-            processType = ProcessType.Main;
-        } else if (processName.endsWith(Constants.SERVER_PROCESS_NAME)) {
-            processType = ProcessType.Server;
-        } else if (processName.endsWith(Constants.HELPER_PROCESS_NAME)) {
-            processType = ProcessType.Helper;
-        } else if (VActivityManager.get().isAppProcess(processName)) {
-            processType = ProcessType.VAppClient;
-        } else {
-            processType = ProcessType.CHILD;
-        }
-    }
-
-    public boolean isPluginEngine() {
-        return isHostPulginApp;
-    }
-
-    private IAppManager getService() {
-        if (!IInterfaceUtils.isAlive(mService)) {
-            synchronized (this) {
-                Object remote = getStubInterface();
-                mService = LocalProxyUtils.genProxy(IAppManager.class, remote);
-            }
-        }
-        return mService;
-    }
-
-    private Object getStubInterface() {
-        return IAppManager.Stub
-                .asInterface(ServiceManagerNative.getService(ServiceManagerNative.APP));
-    }
-
-    /**
-     * @return If the current process is used to VA.
-     */
-    public boolean isVAppProcess() {
-        return ProcessType.VAppClient == processType;
-    }
-
-    public boolean is64bitHelperProcess() {
-        return ProcessType.Helper == processType;
-    }
-
-    /**
-     * @return If the current process is the main.
-     */
-    public boolean isMainProcess() {
-        return ProcessType.Main == processType;
-    }
-
-    /**
-     * @return If the current process is the child.
-     */
-    public boolean isChildProcess() {
-        return ProcessType.CHILD == processType;
-    }
-
-    /**
-     * @return If the current process is the server.
-     */
-    public boolean isServerProcess() {
-        return ProcessType.Server == processType;
-    }
-
-    /**
-     * @return the <em>actual</em> process name
-     */
-    public String getProcessName() {
-        return processName;
-    }
-
-    /**
-     * @return the <em>Main</em> process name
-     */
-    public String getMainProcessName() {
-        return mainProcessName;
-    }
-
-    /**
-     * Optimize the Dalvik-Cache for the specified package.
-     *
-     * @param pkg package name
-     * @throws IOException
-     */
-    @Deprecated
-    public void preOpt(String pkg) throws IOException {
-
-    }
-
-    /**
-     * Check if the specified app running in foreground / background?
-     *
-     * @param packageName package name
-     * @param userId      user id
-     * @return if the specified app running in foreground / background.
-     */
-    public boolean isAppRunning(String packageName, int userId, boolean foreground) {
-        return VActivityManager.get().isAppRunning(packageName, userId, foreground);
-    }
-
-    public InstallResult installPackageSync(String apkPath, InstallOptions options) {
-        final ConditionVariable lock = new ConditionVariable();
-        final InstallResult[] out = new InstallResult[1];
-        installPackage(apkPath, options, new InstallCallback() {
-            @Override
-            public void onFinish(InstallResult result) {
-                out[0] = result;
-                lock.open();
-            }
-        });
-        lock.block();
-        //Add by xdja
-        preLaunchApp();
-        return out[0];
-    }
-
-    @Deprecated
-    public InstallResult installPackage(String apkPath, InstallOptions options) {
-        return installPackageSync(apkPath, options);
-    }
-
-
-    public interface InstallCallback {
-        void onFinish(InstallResult result);
-    }
-
-    public void installPackage(String apkPath, InstallOptions options, final InstallCallback callback) {
-        ResultReceiver receiver = new ResultReceiver(null) {
-            @Override
-            protected void onReceiveResult(int resultCode, Bundle resultData) {
-                resultData.setClassLoader(InstallResult.class.getClassLoader());
-                if (callback != null) {
-                    InstallResult res = resultData.getParcelable("result");
-                    callback.onFinish(res);
-                }
-            }
-        };
-        try {
-            getService().installPackage(apkPath, options, receiver);
-        } catch (RemoteException e) {
-            VirtualRuntime.crash(e);
-        }
-    }
-
-    public InstallResult installPackageFromAsset(String asset, InstallOptions options) {
-        InputStream inputStream = null;
-        try {
-            inputStream = getContext().getAssets().open(asset);
-            return installPackageFromStream(inputStream, options);
-        } catch (Throwable e) {
-            InstallResult res = new InstallResult();
-            res.error = e.getMessage();
-            return res;
-        } finally {
-            FileUtils.closeQuietly(inputStream);
-        }
-    }
-
-    public InstallResult installPackageFromStream(InputStream inputStream, InstallOptions options) {
-        try {
-            File dir = getContext().getCacheDir();
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            File apkFile = new File(dir, "tmp_" + System.currentTimeMillis() + ".apk");
-            FileUtils.writeToFile(inputStream, apkFile);
-            InstallResult res = installPackageSync(apkFile.getAbsolutePath(), options);
-            apkFile.delete();
-            return res;
-        } catch (Throwable e) {
-            InstallResult res = new InstallResult();
-            res.error = e.getMessage();
-            return res;
-        }
-    }
-
-    public void addVisibleOutsidePackage(String pkg) {
-        try {
-            getService().addVisibleOutsidePackage(pkg);
-        } catch (RemoteException e) {
-            VirtualRuntime.crash(e);
-        }
-    }
-
-    public void removeVisibleOutsidePackage(String pkg) {
-        try {
-            getService().removeVisibleOutsidePackage(pkg);
-        } catch (RemoteException e) {
-            VirtualRuntime.crash(e);
-        }
-    }
-
-    public boolean isOutsidePackageVisible(String pkg) {
-        try {
-            return getService().isOutsidePackageVisible(pkg);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
-
-    public boolean isAppInstalled(String pkg) {
-        try {
-            return getService().isAppInstalled(pkg);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
-
-    public boolean isPackageLaunchable(String packageName) {
-        InstalledAppInfo info = getInstalledAppInfo(packageName, 0);
-        return info != null
-                && getLaunchIntent(packageName, info.getInstalledUsers()[0]) != null;
-    }
-
-    public Intent getLaunchIntent(String packageName, int userId) {
-        VPackageManager pm = VPackageManager.get();
-        Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
-        intentToResolve.addCategory(Intent.CATEGORY_INFO);
-        intentToResolve.setPackage(packageName);
-        List<ResolveInfo> ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
-
-        // Otherwise, try to find a main launcher activity.
-        if (ris == null || ris.size() <= 0) {
-            // reuse the intent instance
-            intentToResolve.removeCategory(Intent.CATEGORY_INFO);
-            intentToResolve.addCategory(Intent.CATEGORY_LAUNCHER);
-            intentToResolve.setPackage(packageName);
-            ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(context), 0, userId);
-        }
-        if (ris == null || ris.size() <= 0) {
+      ActivityManager.RunningAppProcessInfo info;
+      do {
+         if (!var4.hasNext()) {
             return null;
-        }
-        Intent intent = new Intent(intentToResolve);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setClassName(ris.get(0).activityInfo.packageName,
-                ris.get(0).activityInfo.name);
-        return intent;
-    }
+         }
 
+         info = (ActivityManager.RunningAppProcessInfo)var4.next();
+      } while(!info.processName.equals(processName) || info.uid != uid);
 
-    public boolean createShortcut(int userId, String packageName, OnEmitShortcutListener listener) {
-        return createShortcut(userId, packageName, null, listener);
-    }
+      return info;
+   }
 
-    public boolean createShortcut(int userId, String packageName, Intent splash, OnEmitShortcutListener listener) {
-        InstalledAppInfo setting = getInstalledAppInfo(packageName, 0);
-        if (setting == null) {
-            return false;
-        }
-        ApplicationInfo appInfo = setting.getApplicationInfo(userId);
-        PackageManager pm = context.getPackageManager();
-        String name;
-        Bitmap icon;
-        try {
+   public List<ActivityManager.RunningTaskInfo> getRunningTasksEx(int maxNum) {
+      ActivityManager am = (ActivityManager)this.context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      List<ActivityManager.RunningTaskInfo> list = new ArrayList(am.getRunningTasks(maxNum));
+      if (!get().isSharedUserId()) {
+         List<ActivityManager.RunningTaskInfo> list64 = VExtPackageAccessor.getRunningTasks(maxNum);
+         list.addAll(list64);
+      }
+
+      return list;
+   }
+
+   public List<ActivityManager.RecentTaskInfo> getRecentTasksEx(int maxNum, int flags) {
+      ActivityManager am = (ActivityManager)this.context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      List<ActivityManager.RecentTaskInfo> list = new ArrayList(am.getRecentTasks(maxNum, flags));
+      if (!get().isSharedUserId()) {
+         List<ActivityManager.RecentTaskInfo> list64 = VExtPackageAccessor.getRecentTasks(maxNum, flags);
+         list.addAll(list64);
+      }
+
+      return list;
+   }
+
+   public String getEngineProcessName() {
+      return this.context.getString(string.server_process_name);
+   }
+
+   public void initialize(VirtualInitializer initializer) {
+      if (initializer == null) {
+         throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAgcCWwFAjdgHgYiKAgtOnsnTQBnDwJT")));
+      } else {
+         switch (this.processType) {
+            case Main:
+               initializer.onMainProcess();
+               break;
+            case VAppClient:
+               if (VERSION.SDK_INT >= 21) {
+                  PineXposed.init();
+               }
+
+               initializer.onVirtualProcess();
+               break;
+            case Server:
+               initializer.onServerProcess();
+               break;
+            case CHILD:
+               initializer.onChildProcess();
+         }
+
+      }
+   }
+
+   private static String getProcessName(Context context) {
+      int pid = Process.myPid();
+      String processName = null;
+      ActivityManager am = (ActivityManager)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      Iterator var4 = am.getRunningAppProcesses().iterator();
+
+      while(var4.hasNext()) {
+         ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo)var4.next();
+         if (info.pid == pid) {
+            processName = info.processName;
+            break;
+         }
+      }
+
+      if (processName == null) {
+         throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhcMD2szNANhIlk7KgcLOnsnTSZvAQId")));
+      } else {
+         return processName;
+      }
+   }
+
+   private void detectProcessType() {
+      this.hostPkgName = this.context.getApplicationInfo().packageName;
+      this.mainProcessName = this.context.getApplicationInfo().processName;
+      this.processName = getProcessName(this.context);
+      if (this.processName.equals(this.mainProcessName)) {
+         this.processType = VirtualCore.ProcessType.Main;
+      } else if (this.processName.endsWith(Constants.SERVER_PROCESS_NAME)) {
+         this.processType = VirtualCore.ProcessType.Server;
+      } else if (this.processName.endsWith(Constants.HELPER_PROCESS_NAME)) {
+         this.processType = VirtualCore.ProcessType.Helper;
+      } else if (VActivityManager.get().isAppProcess(this.processName)) {
+         this.processType = VirtualCore.ProcessType.VAppClient;
+      } else {
+         this.processType = VirtualCore.ProcessType.CHILD;
+      }
+
+   }
+
+   private IAppManager getService() {
+      if (!IInterfaceUtils.isAlive(this.mService)) {
+         synchronized(this) {
+            Object remote = this.getStubInterface();
+            this.mService = (IAppManager)LocalProxyUtils.genProxy(IAppManager.class, remote);
+         }
+      }
+
+      return this.mService;
+   }
+
+   private Object getStubInterface() {
+      return IAppManager.Stub.asInterface(ServiceManagerNative.getService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KA=="))));
+   }
+
+   public boolean isVAppProcess() {
+      return VirtualCore.ProcessType.VAppClient == this.processType;
+   }
+
+   public boolean isExtHelperProcess() {
+      return VirtualCore.ProcessType.Helper == this.processType;
+   }
+
+   public boolean isMainProcess() {
+      return VirtualCore.ProcessType.Main == this.processType;
+   }
+
+   public boolean isMainPackage() {
+      return this.isMainPackage;
+   }
+
+   public boolean isExtPackage() {
+      return !this.isMainPackage;
+   }
+
+   public boolean isChildProcess() {
+      return VirtualCore.ProcessType.CHILD == this.processType;
+   }
+
+   public boolean isServerProcess() {
+      return VirtualCore.ProcessType.Server == this.processType;
+   }
+
+   public String getProcessName() {
+      return this.processName;
+   }
+
+   public String getMainProcessName() {
+      return this.mainProcessName;
+   }
+
+   public boolean isAppRunning(String packageName, int userId, boolean foreground) {
+      return VActivityManager.get().isAppRunning(packageName, userId, foreground);
+   }
+
+   public boolean isAppInstalled(String pkg) {
+      try {
+         return this.getService().isAppInstalled(pkg);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         return (Boolean)VirtualRuntime.crash(e);
+      }
+   }
+
+   public boolean isPackageLaunchable(String packageName) {
+      InstalledAppInfo info = this.getInstalledAppInfo(packageName, 0);
+      return info != null && this.getLaunchIntent(packageName, info.getInstalledUsers()[0]) != null;
+   }
+
+   public Intent getLaunchIntent(String packageName, int userId) {
+      VPackageManager pm = VPackageManager.get();
+      Intent intentToResolve = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42QQ5nDB5F")));
+      intentToResolve.addCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlnDB5KIQhSVg==")));
+      intentToResolve.setPackage(packageName);
+      List<ResolveInfo> ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(this.context), 0, userId);
+      if (ris == null || ris.size() <= 0) {
+         intentToResolve.removeCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlnDB5KIQhSVg==")));
+         intentToResolve.addCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlkHCQUIRYYBmMIFlo=")));
+         intentToResolve.setPackage(packageName);
+         ris = pm.queryIntentActivities(intentToResolve, intentToResolve.resolveType(this.context), 0, userId);
+      }
+
+      if (ris != null && ris.size() > 0) {
+         Intent intent = new Intent(intentToResolve);
+         intent.setFlags(268435456);
+         intent.setClassName(((ResolveInfo)ris.get(0)).activityInfo.packageName, ((ResolveInfo)ris.get(0)).activityInfo.name);
+         return intent;
+      } else {
+         return null;
+      }
+   }
+
+   public boolean createShortcut(int userId, String packageName, OnEmitShortcutListener listener) {
+      return this.createShortcut(userId, packageName, (Intent)null, listener);
+   }
+
+   public boolean createShortcut(int userId, String packageName, Intent splash, OnEmitShortcutListener listener) {
+      InstalledAppInfo setting = this.getInstalledAppInfo(packageName, 0);
+      if (setting == null) {
+         return false;
+      } else {
+         ApplicationInfo appInfo = setting.getApplicationInfo(userId);
+         PackageManager pm = this.context.getPackageManager();
+
+         String name;
+         Bitmap icon;
+         try {
             CharSequence sequence = appInfo.loadLabel(pm);
             name = sequence.toString();
             icon = BitmapUtils.drawableToBitmap(appInfo.loadIcon(pm));
-        } catch (Throwable e) {
+         } catch (Throwable var17) {
             return false;
-        }
-        if (listener != null) {
+         }
+
+         if (listener != null) {
             String newName = listener.getName(name);
             if (newName != null) {
-                name = newName;
+               name = newName;
             }
+
             Bitmap newIcon = listener.getIcon(icon);
             if (newIcon != null) {
-                icon = newIcon;
+               icon = newIcon;
             }
-        }
-        Intent targetIntent = getLaunchIntent(packageName, userId);
-        if (targetIntent == null) {
-            return false;
-        }
-        Intent shortcutIntent = wrapperShortcutIntent(targetIntent, splash, packageName, userId);
+         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ShortcutInfo likeShortcut;
-            likeShortcut = new ShortcutInfo.Builder(getContext(), packageName + "@" + userId)
-                    .setLongLabel(name)
-                    .setShortLabel(name)
-                    .setIcon(Icon.createWithBitmap(icon))
-                    .setIntent(shortcutIntent)
-                    .build();
-            ShortcutManager shortcutManager = getContext().getSystemService(ShortcutManager.class);
-            if (shortcutManager != null) {
-                try {
-                    shortcutManager.requestPinShortcut(likeShortcut,
-                            PendingIntent.getActivity(getContext(), packageName.hashCode() + userId, shortcutIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT).getIntentSender());
-                } catch (Throwable e) {
-                    return false;
-                }
-            }
-        } else {
-            Intent addIntent = new Intent();
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapUtils.warrperIcon(icon, 256, 256));
-            addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-            try {
-                context.sendBroadcast(addIntent);
-            } catch (Throwable e) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean removeShortcut(int userId, String packageName, Intent splash, OnEmitShortcutListener listener) {
-        InstalledAppInfo setting = getInstalledAppInfo(packageName, 0);
-        if (setting == null) {
+         Intent targetIntent = this.getLaunchIntent(packageName, userId);
+         if (targetIntent == null) {
             return false;
-        }
-        ApplicationInfo appInfo = setting.getApplicationInfo(userId);
-        PackageManager pm = context.getPackageManager();
-        String name;
-        try {
+         } else {
+            Intent shortcutIntent = this.wrapperShortcutIntent(targetIntent, splash, packageName, userId);
+            if (VERSION.SDK_INT >= 26) {
+               ShortcutInfo likeShortcut = (new ShortcutInfo.Builder(this.getContext(), packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")) + userId)).setLongLabel(name).setShortLabel(name).setIcon(Icon.createWithBitmap(icon)).setIntent(shortcutIntent).build();
+               ShortcutManager shortcutManager = (ShortcutManager)this.getContext().getSystemService(ShortcutManager.class);
+               if (shortcutManager != null) {
+                  try {
+                     shortcutManager.requestPinShortcut(likeShortcut, PendingIntent.getActivity(this.getContext(), packageName.hashCode() + userId, shortcutIntent, 134217728).getIntentSender());
+                  } catch (Throwable var16) {
+                     return false;
+                  }
+               }
+            } else {
+               Intent addIntent = new Intent();
+               addIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmEgBiplNzAsIy0bKmILBgpgHxpO")), shortcutIntent);
+               addIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmEgBiplNzAsIy0bKn0xJEhgEVRF")), name);
+               addIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmEgBiplNzAsIy0bKmILLF5iJ1RF")), BitmapUtils.warrperIcon(icon, 256, 256));
+               addIntent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1Dm8zQQVlNzAZLhcLKn0KND9vDlkdORY2DGQmMB1iDwIALyscGH0xLB19IhpF")));
+
+               try {
+                  this.context.sendBroadcast(addIntent);
+               } catch (Throwable var15) {
+                  return false;
+               }
+            }
+
+            return true;
+         }
+      }
+   }
+
+   public boolean removeShortcut(int userId, String packageName, Intent splash, OnEmitShortcutListener listener) {
+      InstalledAppInfo setting = this.getInstalledAppInfo(packageName, 0);
+      if (setting == null) {
+         return false;
+      } else {
+         ApplicationInfo appInfo = setting.getApplicationInfo(userId);
+         PackageManager pm = this.context.getPackageManager();
+
+         String name;
+         try {
             CharSequence sequence = appInfo.loadLabel(pm);
             name = sequence.toString();
-        } catch (Throwable e) {
+         } catch (Throwable var12) {
             return false;
-        }
-        if (listener != null) {
+         }
+
+         if (listener != null) {
             String newName = listener.getName(name);
             if (newName != null) {
-                name = newName;
+               name = newName;
             }
-        }
-        Intent targetIntent = getLaunchIntent(packageName, userId);
-        if (targetIntent == null) {
+         }
+
+         Intent targetIntent = this.getLaunchIntent(packageName, userId);
+         if (targetIntent == null) {
             return false;
-        }
-        Intent shortcutIntent = wrapperShortcutIntent(targetIntent, splash, packageName, userId);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+         } else {
+            Intent shortcutIntent = this.wrapperShortcutIntent(targetIntent, splash, packageName, userId);
+            if (VERSION.SDK_INT < 26) {
+               Intent addIntent = new Intent();
+               addIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmEgBiplNzAsIy0bKmILBgpgHxpO")), shortcutIntent);
+               addIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmEgBiplNzAsIy0bKn0xJEhgEVRF")), name);
+               addIntent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1Dm8zQQVlNzAZLhcLKn0KND9vDlkdORUADGILBg9kDzgRLhYYHGcYRQ59NR5PIRhSVg==")));
+               this.context.sendBroadcast(addIntent);
+            }
 
-        } else {
-            Intent addIntent = new Intent();
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-            addIntent.setAction("com.android.launcher.action.UNINSTALL_SHORTCUT");
-            context.sendBroadcast(addIntent);
-        }
-        return true;
-    }
+            return true;
+         }
+      }
+   }
 
-    /**
-     * @param intent target activity
-     * @param splash loading activity
-     * @param userId userId
-     */
-    public Intent wrapperShortcutIntent(Intent intent, Intent splash, String packageName, int userId) {
-        Intent shortcutIntent = new Intent();
-        shortcutIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        shortcutIntent.setAction(Constants.ACTION_SHORTCUT);
-        shortcutIntent.setPackage(getHostPkg());
-        if (splash != null) {
-            shortcutIntent.putExtra("_VA_|_splash_", splash.toUri(0));
-        }
-        shortcutIntent.putExtra("_VA_|_pkg_", packageName);
-        shortcutIntent.putExtra("_VA_|_uri_", intent.toUri(0));
-        shortcutIntent.putExtra("_VA_|_user_id_", userId);
-        return shortcutIntent;
-    }
+   public Intent wrapperShortcutIntent(Intent intent, Intent splash, String packageName, int userId) {
+      Intent shortcutIntent = new Intent();
+      shortcutIntent.addCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlmHApKICsAAmcVSFo=")));
+      shortcutIntent.setAction(Constants.ACTION_SHORTCUT);
+      shortcutIntent.setPackage(this.getHostPkg());
+      if (splash != null) {
+         shortcutIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9hJyQoLwgqMmMFSFo=")), splash.toUri(0));
+      }
 
-    public abstract static class UiCallback extends IUiCallback.Stub {
+      shortcutIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9hHg49Ji5SVg==")), packageName);
+      shortcutIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASwzJi5SVg==")), intent.toUri(0));
+      shortcutIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASg/IzxfMWk2NFo=")), userId);
+      return shortcutIntent;
+   }
 
-    }
+   public InstalledAppInfo getInstalledAppInfo(String pkg, int flags) {
+      try {
+         return this.getService().getInstalledAppInfo(pkg, flags);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (InstalledAppInfo)VirtualRuntime.crash(e);
+      }
+   }
 
-    public void setUiCallback(Intent intent, IUiCallback callback) {
-        if (callback != null) {
-            Bundle bundle = new Bundle();
-            BundleCompat.putBinder(bundle, "_VA_|_ui_callback_", callback.asBinder());
-            intent.putExtra("_VA_|_sender_", bundle);
-        }
-    }
+   public int getInstalledAppCount() {
+      try {
+         return this.getService().getInstalledAppCount();
+      } catch (RemoteException var2) {
+         RemoteException e = var2;
+         return (Integer)VirtualRuntime.crash(e);
+      }
+   }
 
-    public abstract static class VSCallback extends IVSCallback.Stub {
-    }
+   public boolean isStartup() {
+      return this.isStartUp;
+   }
 
-    public abstract static class AppPermissionCallback extends IAppPermissionCallback.Stub {
-    }
-    public abstract static class NotificationCallback extends INotificationCallback.Stub {
-    }
+   public boolean uninstallPackageAsUser(String pkgName, int userId) {
+      try {
+         return this.getService().uninstallPackageAsUser(pkgName, userId);
+      } catch (RemoteException var4) {
+         return false;
+      }
+   }
 
-    public abstract static class ControllerServiceCallback extends IControllerServiceCallback.Stub{
+   public boolean uninstallPackage(String pkgName) {
+      try {
+         return this.getService().uninstallPackage(pkgName);
+      } catch (RemoteException var3) {
+         return false;
+      }
+   }
 
-    }
+   public Resources getResources(String pkg) throws Resources.NotFoundException {
+      InstalledAppInfo installedAppInfo = this.getInstalledAppInfo(pkg, 0);
+      if (installedAppInfo != null) {
+         AssetManager assets = (AssetManager)mirror.android.content.res.AssetManager.ctor.newInstance();
+         mirror.android.content.res.AssetManager.addAssetPath.call(assets, installedAppInfo.getApkPath());
+         Resources hostRes = this.context.getResources();
+         return new Resources(assets, hostRes.getDisplayMetrics(), hostRes.getConfiguration());
+      } else {
+         throw new Resources.NotFoundException(pkg);
+      }
+   }
 
-    public abstract static class VSKeyCallback extends IVSKeyCallback.Stub {
-
-    }
-
-    public abstract static class ToastCallback extends IToastCallback.Stub {
-
-    }
-
-    public InstalledAppInfo getInstalledAppInfo(String pkg, int flags) {
-        try {
-            return getService().getInstalledAppInfo(pkg, flags);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
-
-    public int getInstalledAppCount() {
-        try {
-            return getService().getInstalledAppCount();
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
-
-    public boolean isStartup() {
-        return isStartUp;
-    }
-
-    public boolean uninstallPackageAsUser(String pkgName, int userId) {
-        try {
-            if(PackagePermissionManager.getProtectUninstallList().contains(pkgName))
-                return false;
-            return getService().uninstallPackageAsUser(pkgName, userId);
-        } catch (RemoteException e) {
-            // Ignore
-        }
-        return false;
-    }
-
-    public boolean uninstallPackage(String pkgName) {
-        try {
-            if(PackagePermissionManager.getProtectUninstallList().contains(pkgName))
-                return false;
-            return getService().uninstallPackage(pkgName);
-        } catch (RemoteException e) {
-            // Ignore
-        }
-        return false;
-    }
-
-    public Resources getResources(String pkg) throws Resources.NotFoundException {
-        InstalledAppInfo installedAppInfo = getInstalledAppInfo(pkg, 0);
-        if (installedAppInfo != null) {
-            AssetManager assets = mirror.android.content.res.AssetManager.ctor.newInstance();
-            mirror.android.content.res.AssetManager.addAssetPath.call(assets, installedAppInfo.getApkPath());
-            Resources hostRes = context.getResources();
-            return new Resources(assets, hostRes.getDisplayMetrics(), hostRes.getConfiguration());
-        }
-        throw new Resources.NotFoundException(pkg);
-    }
-
-    public synchronized ActivityInfo resolveActivityInfo(Intent intent, int userId) {
-        if (SpecialComponentList.shouldBlockIntent(intent)) {
-            return null;
-        }
-        ActivityInfo activityInfo = null;
-        if (intent.getComponent() == null) {
+   public synchronized ActivityInfo resolveActivityInfo(Intent intent, int userId) {
+      if (SpecialComponentList.shouldBlockIntent(intent)) {
+         return null;
+      } else {
+         ActivityInfo activityInfo = null;
+         if (intent.getComponent() == null) {
             ResolveInfo resolveInfo = VPackageManager.get().resolveIntent(intent, intent.getType(), 0, userId);
             if (resolveInfo != null && resolveInfo.activityInfo != null) {
-                activityInfo = resolveInfo.activityInfo;
-                intent.setClassName(activityInfo.packageName, activityInfo.name);
+               activityInfo = resolveInfo.activityInfo;
+               intent.setClassName(activityInfo.packageName, activityInfo.name);
             }
-        } else {
-            activityInfo = resolveActivityInfo(intent.getComponent(), userId);
-        }
-        return activityInfo;
-    }
+         } else {
+            activityInfo = this.resolveActivityInfo(intent.getComponent(), userId);
+         }
 
-    public ActivityInfo resolveActivityInfo(ComponentName componentName, int userId) {
-        return VPackageManager.get().getActivityInfo(componentName, 0, userId);
-    }
+         return activityInfo;
+      }
+   }
 
-    public ServiceInfo resolveServiceInfo(Intent intent, int userId) {
-        if (SpecialComponentList.shouldBlockIntent(intent)) {
-            return null;
-        }
-        ServiceInfo serviceInfo = null;
-        ResolveInfo resolveInfo = VPackageManager.get().resolveService(intent, intent.getType(), 0, userId);
-        if (resolveInfo != null) {
+   public ActivityInfo resolveActivityInfo(ComponentName componentName, int userId) {
+      return VPackageManager.get().getActivityInfo(componentName, 0, userId);
+   }
+
+   public ServiceInfo resolveServiceInfo(Intent intent, int userId) {
+      if (SpecialComponentList.shouldBlockIntent(intent)) {
+         return null;
+      } else {
+         ServiceInfo serviceInfo = null;
+         ResolveInfo resolveInfo = VPackageManager.get().resolveService(intent, intent.getType(), 0, userId);
+         if (resolveInfo != null) {
             serviceInfo = resolveInfo.serviceInfo;
-        }
-        return serviceInfo;
-    }
+         }
 
-    public void killApp(String pkg, int userId) {
-        VActivityManager.get().killAppByPkg(pkg, userId);
-    }
+         return serviceInfo;
+      }
+   }
 
-    public void killAllApps() {
-        VActivityManager.get().killAllApps();
-    }
+   public void killApp(String pkg, int userId) {
+      VActivityManager.get().killAppByPkg(pkg, userId);
+   }
 
-    public List<InstalledAppInfo> getInstalledApps(int flags) {
-        try {
-            return getService().getInstalledApps(flags);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public void killAllApps() {
+      VActivityManager.get().killAllApps();
+   }
 
-    public List<InstalledAppInfo> getInstalledAppsAsUser(int userId, int flags) {
-        try {
-            return getService().getInstalledAppsAsUser(userId, flags);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public List<InstalledAppInfo> getInstalledApps(int flags) {
+      try {
+         return this.getService().getInstalledApps(flags);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         return (List)VirtualRuntime.crash(e);
+      }
+   }
 
-    public void scanApps() {
-        try {
-            getService().scanApps();
-        } catch (RemoteException e) {
-            // Ignore
-        }
-    }
+   public List<InstalledAppInfo> getInstalledAppsAsUser(int userId, int flags) {
+      try {
+         return this.getService().getInstalledAppsAsUser(userId, flags);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (List)VirtualRuntime.crash(e);
+      }
+   }
 
-    public AppRequestListener getAppRequestListener() {
-        return mAppRequestListener;
-    }
+   public void scanApps() {
+      if (!this.scanned) {
+         try {
+            this.getService().scanApps();
+            this.scanned = true;
+         } catch (RemoteException var2) {
+         }
 
-    public void setAppRequestListener(final AppRequestListener listener) {
-        this.mAppRequestListener = listener;
-    }
+      }
+   }
 
-    public boolean isPackageLaunched(int userId, String packageName) {
-        try {
-            return getService().isPackageLaunched(userId, packageName);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public AppRequestListener getAppRequestListener() {
+      return this.mAppRequestListener;
+   }
 
-    public void setPackageHidden(int userId, String packageName, boolean hidden) {
-        try {
-            getService().setPackageHidden(userId, packageName, hidden);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
+   public void setAppRequestListener(AppRequestListener listener) {
+      this.mAppRequestListener = listener;
+   }
 
-    public boolean installPackageAsUser(int userId, String packageName) {
-        try {
-            return getService().installPackageAsUser(userId, packageName);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public boolean isPackageLaunched(int userId, String packageName) {
+      try {
+         return this.getService().isPackageLaunched(userId, packageName);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (Boolean)VirtualRuntime.crash(e);
+      }
+   }
 
-    public boolean isAppInstalledAsUser(int userId, String packageName) {
-        try {
-            return getService().isAppInstalledAsUser(userId, packageName);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public void setPackageHidden(int userId, String packageName, boolean hidden) {
+      try {
+         this.getService().setPackageHidden(userId, packageName, hidden);
+      } catch (RemoteException var5) {
+         RemoteException e = var5;
+         e.printStackTrace();
+      }
 
-    public int[] getPackageInstalledUsers(String packageName) {
-        try {
-            return getService().getPackageInstalledUsers(packageName);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   }
 
-    public abstract static class PackageObserver extends IPackageObserver.Stub {
-    }
+   public boolean installPackageAsUser(int userId, String packageName) {
+      try {
+         return this.getService().installPackageAsUser(userId, packageName);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (Boolean)VirtualRuntime.crash(e);
+      }
+   }
 
-    public void registerObserver(IPackageObserver observer) {
-        try {
-            getService().registerObserver(observer);
-        } catch (RemoteException e) {
-            VirtualRuntime.crash(e);
-        }
-    }
+   public boolean isAppInstalledAsUser(int userId, String packageName) {
+      try {
+         return this.getService().isAppInstalledAsUser(userId, packageName);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (Boolean)VirtualRuntime.crash(e);
+      }
+   }
 
-    public void unregisterObserver(IPackageObserver observer) {
-        try {
-            getService().unregisterObserver(observer);
-        } catch (RemoteException e) {
-            VirtualRuntime.crash(e);
-        }
-    }
+   public int[] getPackageInstalledUsers(String packageName) {
+      try {
+         return this.getService().getPackageInstalledUsers(packageName);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         return (int[])VirtualRuntime.crash(e);
+      }
+   }
 
-    public boolean isOutsideInstalled(String packageName) {
-        if (packageName == null) {
+   public List<String> getInstalledSplitNames(String packageName) {
+      try {
+         return this.getService().getInstalledSplitNames(packageName);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         return (List)VirtualRuntime.crash(e);
+      }
+   }
+
+   public void registerObserver(IPackageObserver observer) {
+      try {
+         this.getService().registerObserver(observer);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         VirtualRuntime.crash(e);
+      }
+
+   }
+
+   public void unregisterObserver(IPackageObserver observer) {
+      try {
+         this.getService().unregisterObserver(observer);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         VirtualRuntime.crash(e);
+      }
+
+   }
+
+   public boolean isOutsideInstalled(String packageName) {
+      if (packageName == null) {
+         return false;
+      } else {
+         try {
+            this.hostPackageManager.getApplicationInfo(packageName, 0L);
+            return true;
+         } catch (PackageManager.NameNotFoundException var3) {
             return false;
-        }
-        try {
-            return unHookPackageManager.getApplicationInfo(packageName, 0) != null;
-        } catch (PackageManager.NameNotFoundException e) {
-            // Ignore
-        }
-        return false;
-    }
+         }
+      }
+   }
 
-    public boolean is64BitEngineInstalled() {
-        return isOutsideInstalled(StubManifest.PACKAGE_NAME_64BIT);
-    }
+   public boolean isExtPackageInstalled() {
+      return this.isOutsideInstalled(StubManifest.EXT_PACKAGE_NAME);
+   }
 
-    public boolean isRun64BitProcess(String packageName) {
-        try {
-            return getService().isRun64BitProcess(packageName);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public boolean isRunInExtProcess(String packageName) {
+      try {
+         return this.getService().isRunInExtProcess(packageName);
+      } catch (RemoteException var3) {
+         RemoteException e = var3;
+         return (Boolean)VirtualRuntime.crash(e);
+      }
+   }
 
-    public boolean cleanPackageData(String pkg, int userId) {
-        try {
-            return getService().cleanPackageData(pkg, userId);
-        } catch (RemoteException e) {
-            return VirtualRuntime.crash(e);
-        }
-    }
+   public boolean cleanPackageData(String pkg, int userId) {
+      try {
+         return this.getService().cleanPackageData(pkg, userId);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         return (Boolean)VirtualRuntime.crash(e);
+      }
+   }
 
-    public void startForeground(){
-        if(VirtualCore.getConfig().isHideForegroundNotification()){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    && VirtualCore.get().getTargetSdkVersion() >= Build.VERSION_CODES.O) {
-                context.startForegroundService(new Intent(context, HiddenForeNotification.class));
-            } else {
-                context.startService(new Intent(context, HiddenForeNotification.class));
-            }
-        }
-    }
+   public int getAppPid(String pkg, int userId, String proccessName) {
+      return VActivityManager.get().getAppPid(pkg, userId, proccessName);
+   }
 
-    public void stopForeground() {
-        if (VirtualCore.getConfig().isHideForegroundNotification()) {
-            context.stopService(new Intent(context, HiddenForeNotification.class));
-        }
-    }
+   public boolean isSharedUserId() {
+      return this.myUid() == this.remoteUid();
+   }
 
-    public abstract static class Receiver extends BroadcastReceiver{
-        @Override
-        public final void onReceive(Context context, Intent intent) {
-            Bundle extraData = intent.getExtras();
-            BroadcastIntentData intentData = null;
-            if (extraData != null) {
-                extraData.setClassLoader(BroadcastIntentData.class.getClassLoader());
-                intentData = extraData.getParcelable("_VA_|_data_");
-            }
-            int userId;
-            if (intentData != null) {
-                //内部广播，或者服务进程广播
-                intent = intentData.intent;
-                userId = intentData.userId;
-            } else {
-                //系统广播
-                userId = VUserHandle.USER_ALL;
-                SpecialComponentList.unprotectIntent(intent);
-            }
-            onReceive(context, intent, userId);
-        }
+   public abstract static class VirtualInitializer {
+      public void onMainProcess() {
+      }
 
-        public abstract void onReceive(Context context, Intent intent, int userId);
-    }
+      public void onVirtualProcess() {
+      }
 
-    /**
-     *
-     * @param context 直接用这个context进行unregisterReceiver
-     * @param receiver intent的内容会自动处理，和原生一样
-     * @param filter 自动处理
-     */
-    public void registerReceiver(Context context, Receiver receiver, IntentFilter filter){
-        SpecialComponentList.protectIntentFilter(filter, true);
-        context.registerReceiver(receiver, filter);
-    }
+      public void onServerProcess() {
+      }
 
-    /**
-     * Process type
-     */
-    private enum ProcessType {
-        /**
-         * Server process
-         */
-        Server,
-        /**
-         * Virtual app process
-         */
-        VAppClient,
-        /**
-         * Main process
-         */
-        Main,
-        /**
-         * Helper process
-         */
-        Helper,
-        /**
-         * Child process
-         */
-        CHILD
-    }
+      public void onChildProcess() {
+      }
+   }
 
-    public interface AppRequestListener {
-        void onRequestInstall(String path);
+   public interface OnEmitShortcutListener {
+      Bitmap getIcon(Bitmap var1);
 
-        void onRequestUninstall(String pkg);
-    }
+      String getName(String var1);
+   }
 
-    public interface OnEmitShortcutListener {
-        Bitmap getIcon(Bitmap originIcon);
+   public interface AppRequestListener {
+      void onRequestInstall(String var1);
 
-        String getName(String originName);
-    }
+      void onRequestUninstall(String var1);
+   }
 
-    public static abstract class VirtualInitializer {
-        public void onMainProcess() {
-        }
+   private static enum ProcessType {
+      Server,
+      VAppClient,
+      Main,
+      Helper,
+      CHILD;
+   }
 
-        public void onVirtualProcess() {
-        }
-
-        public void onServerProcess() {
-        }
-
-        public void onChildProcess() {
-        }
-
-    }
+   public abstract static class PackageObserver extends IPackageObserver.Stub {
+   }
 }

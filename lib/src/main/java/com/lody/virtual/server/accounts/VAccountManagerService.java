@@ -1,7 +1,6 @@
 package com.lody.virtual.server.accounts;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.accounts.IAccountAuthenticator;
 import android.accounts.IAccountAuthenticatorResponse;
@@ -11,14 +10,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
-import android.os.Binder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
@@ -29,9 +25,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.Xml;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.core.VirtualCore;
-import com.lody.virtual.helper.compat.AccountManagerCompat;
+import com.lody.virtual.client.ipc.VActivityManager;
 import com.lody.virtual.helper.utils.Singleton;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VBinder;
@@ -40,9 +36,6 @@ import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.server.am.VActivityManagerService;
 import com.lody.virtual.server.interfaces.IAccountManager;
 import com.lody.virtual.server.pm.VPackageManagerService;
-
-import org.xmlpull.v1.XmlPullParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -55,1285 +48,1377 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import mirror.com.android.internal.R_Hide;
 
-import static android.accounts.AccountManager.ERROR_CODE_BAD_ARGUMENTS;
-
-
-/**
- * @author Lody
- */
 public class VAccountManagerService extends IAccountManager.Stub {
+   private static final Singleton<VAccountManagerService> sInstance = new Singleton<VAccountManagerService>() {
+      protected VAccountManagerService create() {
+         return new VAccountManagerService();
+      }
+   };
+   private static final long CHECK_IN_TIME = 43200000L;
+   private static final String TAG = VAccountManagerService.class.getSimpleName();
+   private final SparseArray<List<VAccount>> accountsByUserId = new SparseArray();
+   private final SparseArray<List<VAccountVisibility>> accountsVisibilitiesByUserId = new SparseArray();
+   private final LinkedList<AuthTokenRecord> authTokenRecords = new LinkedList();
+   private final LinkedHashMap<String, Session> mSessions = new LinkedHashMap();
+   private final AuthenticatorCache cache = new AuthenticatorCache();
+   private Context mContext = VirtualCore.get().getContext();
+   private long lastAccountChangeTime = 0L;
 
-    private static final Singleton<VAccountManagerService> sInstance = new Singleton<VAccountManagerService>() {
-        @Override
-        protected VAccountManagerService create() {
-            return new VAccountManagerService();
-        }
-    };
-    private static final long CHECK_IN_TIME = 30 * 24 * 60 * 1000L;
-    private static final String TAG = VAccountManagerService.class.getSimpleName();
-    private final SparseArray<List<VAccount>> accountsByUserId = new SparseArray<>();
-    private final SparseArray<List<VAccountVisibility>> accountsVisibilitiesByUserId = new SparseArray<>();
-    private final LinkedList<AuthTokenRecord> authTokenRecords = new LinkedList<>();
-    private final LinkedHashMap<String, Session> mSessions = new LinkedHashMap<>();
-    private final AuthenticatorCache cache = new AuthenticatorCache();
-    private Context mContext = VirtualCore.get().getContext();
-    private long lastAccountChangeTime = 0;
+   public static VAccountManagerService get() {
+      return (VAccountManagerService)sInstance.get();
+   }
 
+   public static void systemReady() {
+      get().readAllAccounts();
+      get().readAllAccountVisibilities();
+   }
 
-    public static VAccountManagerService get() {
-        return sInstance.get();
-    }
+   private static AuthenticatorDescription parseAuthenticatorDescription(Resources resources, String packageName, AttributeSet attributeSet) {
+      TypedArray array = resources.obtainAttributes(attributeSet, (int[])R_Hide.styleable.AccountAuthenticator.get());
 
-    public static void systemReady() {
-        get().readAllAccounts();
-        get().readAllAccountVisibilities();
-    }
+      AuthenticatorDescription var10;
+      try {
+         String accountType = array.getString(R_Hide.styleable.AccountAuthenticator_accountType.get());
+         int label = array.getResourceId(R_Hide.styleable.AccountAuthenticator_label.get(), 0);
+         int icon = array.getResourceId(R_Hide.styleable.AccountAuthenticator_icon.get(), 0);
+         int smallIcon = array.getResourceId(R_Hide.styleable.AccountAuthenticator_smallIcon.get(), 0);
+         int accountPreferences = array.getResourceId(R_Hide.styleable.AccountAuthenticator_accountPreferences.get(), 0);
+         boolean customTokens = array.getBoolean(R_Hide.styleable.AccountAuthenticator_customTokens.get(), false);
+         if (!TextUtils.isEmpty(accountType)) {
+            var10 = new AuthenticatorDescription(accountType, packageName, label, icon, smallIcon, accountPreferences, customTokens);
+            return var10;
+         }
 
-    private static AuthenticatorDescription parseAuthenticatorDescription(Resources resources, String packageName,
-                                                                          AttributeSet attributeSet) {
-        TypedArray array = resources.obtainAttributes(attributeSet, R_Hide.styleable.AccountAuthenticator.get());
-        try {
-            String accountType = array.getString(R_Hide.styleable.AccountAuthenticator_accountType.get());
-            int label = array.getResourceId(R_Hide.styleable.AccountAuthenticator_label.get(), 0);
-            int icon = array.getResourceId(R_Hide.styleable.AccountAuthenticator_icon.get(), 0);
-            int smallIcon = array.getResourceId(R_Hide.styleable.AccountAuthenticator_smallIcon.get(), 0);
-            int accountPreferences = array.getResourceId(R_Hide.styleable.AccountAuthenticator_accountPreferences.get(), 0);
-            boolean customTokens = array.getBoolean(R_Hide.styleable.AccountAuthenticator_customTokens.get(), false);
-            if (TextUtils.isEmpty(accountType)) {
-                return null;
-            }
-            return new AuthenticatorDescription(accountType, packageName, label, icon, smallIcon, accountPreferences,
-                    customTokens);
-        } finally {
-            array.recycle();
-        }
-    }
+         var10 = null;
+      } finally {
+         array.recycle();
+      }
 
+      return var10;
+   }
 
-    @Override
-    public AuthenticatorDescription[] getAuthenticatorTypes(int userId) {
-        synchronized (cache) {
-            AuthenticatorDescription[] descArray = new AuthenticatorDescription[cache.authenticators.size()];
-            int i = 0;
-            for (AuthenticatorInfo info : cache.authenticators.values()) {
-                descArray[i] = info.desc;
-                i++;
-            }
-            return descArray;
-        }
-    }
+   public AuthenticatorDescription[] getAuthenticatorTypes(int userId) {
+      synchronized(this.cache) {
+         AuthenticatorDescription[] descArray = new AuthenticatorDescription[this.cache.authenticators.size()];
+         int i = 0;
 
-    @Override
-    public void getAccountsByFeatures(int userId, IAccountManagerResponse response, String type, String[] features) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (type == null) throw new IllegalArgumentException("accountType is null");
-        AuthenticatorInfo info = getAuthenticatorInfo(type);
-        if (info == null) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArray(AccountManager.KEY_ACCOUNTS, new Account[0]);
+         for(Iterator var5 = this.cache.authenticators.values().iterator(); var5.hasNext(); ++i) {
+            AuthenticatorInfo info = (AuthenticatorInfo)var5.next();
+            descArray[i] = info.desc;
+         }
+
+         return descArray;
+      }
+   }
+
+   public void getAccountsByFeatures(int userId, IAccountManagerResponse response, String type, String[] features) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (type == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcLOmwgDShlNCgdLAhSVg==")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(type);
+         Bundle bundle;
+         RemoteException e;
+         if (info == null) {
+            bundle = new Bundle();
+            bundle.putParcelableArray(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmEShF")), new Account[0]);
+
             try {
-                response.onResult(bundle);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+               response.onResult(bundle);
+            } catch (RemoteException var8) {
+               e = var8;
+               e.printStackTrace();
             }
-            return;
-        }
 
-        if (features == null || features.length == 0) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArray(AccountManager.KEY_ACCOUNTS, getAccounts(userId, type));
-            try {
-                response.onResult(bundle);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+         } else {
+            if (features != null && features.length != 0) {
+               (new GetAccountsByTypeAndFeatureSession(response, userId, info, features)).bind();
+            } else {
+               bundle = new Bundle();
+               bundle.putParcelableArray(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmEShF")), this.getAccounts(userId, type));
+
+               try {
+                  response.onResult(bundle);
+               } catch (RemoteException var9) {
+                  e = var9;
+                  e.printStackTrace();
+               }
             }
-        } else {
-            new GetAccountsByTypeAndFeatureSession(response, userId, info, features).bind();
-        }
-    }
 
-    @Override
-    public final String getPreviousName(int userId, Account account) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        synchronized (accountsByUserId) {
+         }
+      }
+   }
+
+   public final String getPreviousName(int userId, Account account) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         synchronized(this.accountsByUserId) {
             String previousName = null;
-            VAccount vAccount = getAccount(userId, account);
+            VAccount vAccount = this.getAccount(userId, account);
             if (vAccount != null) {
-                previousName = vAccount.previousName;
+               previousName = vAccount.previousName;
             }
+
             return previousName;
-        }
-    }
+         }
+      }
+   }
 
+   public Account[] getAccounts(int userId, String type) {
+      List<Account> accountList = this.getAccountList(userId, type);
+      return (Account[])accountList.toArray(new Account[accountList.size()]);
+   }
 
-    @Override
-    public Account[] getAccounts(int userId, String type) {
-        List<Account> accountList = getAccountList(userId, type);
-        return accountList.toArray(new Account[accountList.size()]);
-    }
+   private List<Account> getAccountList(int userId, String type) {
+      synchronized(this.accountsByUserId) {
+         List<Account> accounts = new ArrayList();
+         List<VAccount> vAccounts = (List)this.accountsByUserId.get(userId);
+         if (vAccounts != null) {
+            Iterator var6 = vAccounts.iterator();
 
+            while(true) {
+               VAccount vAccount;
+               do {
+                  if (!var6.hasNext()) {
+                     return accounts;
+                  }
 
-    private List<Account> getAccountList(int userId, String type) {
-        synchronized (accountsByUserId) {
-            List<Account> accounts = new ArrayList<>();
-            List<VAccount> vAccounts = accountsByUserId.get(userId);
-            if (vAccounts != null) {
-                for (VAccount vAccount : vAccounts) {
-                    if (type == null || vAccount.type.equals(type)) {
-                        accounts.add(new Account(vAccount.name, vAccount.type));
-                    }
-                }
+                  vAccount = (VAccount)var6.next();
+               } while(type != null && !vAccount.type.equals(type));
+
+               accounts.add(new Account(vAccount.name, vAccount.type));
             }
+         } else {
             return accounts;
-        }
-    }
+         }
+      }
+   }
 
-    @Override
-    public final void getAuthToken(final int userId, final IAccountManagerResponse response, final Account account, final String authTokenType, final boolean notifyOnAuthFailure, boolean expectActivityLaunch, final Bundle loginOptions) {
-        if (response == null) {
-            throw new IllegalArgumentException("response is null");
-        }
-        try {
+   public final void getAuthToken(final int userId, IAccountManagerResponse response, final Account account, final String authTokenType, final boolean notifyOnAuthFailure, boolean expectActivityLaunch, final Bundle loginOptions) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else {
+         try {
             if (account == null) {
-                VLog.w(TAG, "getAuthToken called with null account");
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account is null");
-                return;
+               VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaNAZjHwo1KS0MDn4zAjdlEQIgLgQ6MWMFFit5Hh4+KT4hJGgFLDVqNCg5IBhSVg==")));
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+               return;
             }
+
             if (authTokenType == null) {
-                VLog.w(TAG, "getAuthToken called with null authTokenType");
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "authTokenType is null");
-                return;
+               VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMaNAZjHwo1KS0MDn4zAjdlEQIgLgQ6MWMFFit5Hh4+KT4hJGgKNCBlDCw6JS02JWIVBiZpJ1RF")));
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2JBgcKmknTS9sIzwbKhgEKA==")));
+               return;
             }
-        } catch (RemoteException e) {
+         } catch (RemoteException var16) {
+            RemoteException e = var16;
             e.printStackTrace();
             return;
-        }
-        AuthenticatorInfo info = getAuthenticatorInfo(account.type);
-        if (info == null) {
+         }
+
+         AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
+         if (info == null) {
             try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        // Get the calling package. We will use it for the purpose of caching.
-        final String callerPkg = loginOptions.getString(AccountManagerCompat.KEY_ANDROID_PACKAGE_NAME);
-        final boolean customTokens = info.desc.customTokens;
-
-        loginOptions.putInt(AccountManager.KEY_CALLER_UID, VBinder.getCallingUid());
-        loginOptions.putInt(AccountManager.KEY_CALLER_PID, VBinder.getCallingPid());
-        if (notifyOnAuthFailure) {
-            loginOptions.putBoolean(AccountManagerCompat.KEY_NOTIFY_ON_FAILURE, true);
-        }
-        if (!customTokens) {
-            VAccount vAccount;
-            synchronized (accountsByUserId) {
-                vAccount = getAccount(userId, account);
-            }
-            String authToken = vAccount != null ? vAccount.authTokens.get(authTokenType) : null;
-            if (authToken != null) {
-                Bundle result = new Bundle();
-                result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-                result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-                result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-                onResult(response, result);
-                return;
-            }
-        }
-        if (customTokens) {
-            String authToken = getCustomAuthToken(userId, account, authTokenType, callerPkg);
-            if (authToken != null) {
-                Bundle result = new Bundle();
-                result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-                result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-                result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-                onResult(response, result);
-                return;
-            }
-        }
-        new Session(response, userId, info, expectActivityLaunch, false, account.name) {
-
-            @Override
-            protected String toDebugString(long now) {
-                return super.toDebugString(now) + ", getAuthToken"
-                        + ", " + account
-                        + ", authTokenType " + authTokenType
-                        + ", loginOptions " + loginOptions
-                        + ", notifyOnAuthFailure " + notifyOnAuthFailure;
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var14) {
+               RemoteException e = var14;
+               e.printStackTrace();
             }
 
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.getAuthToken(this, account, authTokenType, loginOptions);
+         } else {
+            final String callerPkg = loginOptions.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iHyQ7Ly0EOWkFGgBoAQ4g")));
+            final boolean customTokens = info.desc.customTokens;
+            loginOptions.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoFNARuDgYw")), VBinder.getCallingUid());
+            loginOptions.putInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoFNARpHgYw")), VBinder.getCallingPid());
+            if (notifyOnAuthFailure) {
+               loginOptions.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4ALGUVOD9oJFkRLAg2MmEVQS9lHig5LhhSVg==")), true);
             }
 
-            @Override
-            public void onResult(Bundle result) throws RemoteException {
-                if (result != null) {
-                    String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
-                    if (authToken != null) {
-                        String name = result.getString(AccountManager.KEY_ACCOUNT_NAME);
-                        String type = result.getString(AccountManager.KEY_ACCOUNT_TYPE);
+            if (!customTokens) {
+               VAccount vAccount;
+               synchronized(this.accountsByUserId) {
+                  vAccount = this.getAccount(userId, account);
+               }
+
+               String authToken = vAccount != null ? (String)vAccount.authTokens.get(authTokenType) : null;
+               if (authToken != null) {
+                  Bundle result = new Bundle();
+                  result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUKMCVjJDA2")), authToken);
+                  result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGULJCl9JB4vKj42Vg==")), account.name);
+                  result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")), account.type);
+                  this.onResult(response, result);
+                  return;
+               }
+            }
+
+            if (customTokens) {
+               String authToken = this.getCustomAuthToken(userId, account, authTokenType, callerPkg);
+               if (authToken != null) {
+                  Bundle result = new Bundle();
+                  result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUKMCVjJDA2")), authToken);
+                  result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGULJCl9JB4vKj42Vg==")), account.name);
+                  result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")), account.type);
+                  this.onResult(response, result);
+                  return;
+               }
+            }
+
+            (new Session(response, userId, info, expectActivityLaunch, false, account.name) {
+               protected String toDebugString(long now) {
+                  return super.toDebugString(now) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186PWgaMBFmAQo0JBdfCWkjMyR4EVRF")) + account + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186P2waMCBuHh4xKAcYAGggTSt4EVRF")) + authTokenType + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186DmozPC9gMh4sLBccDW8aDSg=")) + loginOptions + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186CGowMC9iNwYLKjsiLWUzFghoAR4dKhcMJ0sVSFo=")) + notifyOnAuthFailure;
+               }
+
+               public void run() throws RemoteException {
+                  this.mAuthenticator.getAuthToken(this, account, authTokenType, loginOptions);
+               }
+
+               public void onResult(Bundle result) throws RemoteException {
+                  if (result != null) {
+                     String authToken = result.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUKMCVjJDA2")));
+                     if (authToken != null) {
+                        String name = result.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGULJCl9JB4vKj42Vg==")));
+                        String type = result.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")));
                         if (TextUtils.isEmpty(type) || TextUtils.isEmpty(name)) {
-                            onError(AccountManager.ERROR_CODE_INVALID_RESPONSE,
-                                    "the type and name should not be empty");
-                            return;
+                           this.onError(5, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRhfM3sKMD9hHjM8LwcYPn4zMDdlASsrKT5fKWYKTS95Hh4eIzpXJmsJID9qHjwZIQhSVg==")));
+                           return;
                         }
+
                         if (!customTokens) {
-                            synchronized (accountsByUserId) {
-                                VAccount account = getAccount(userId, name, type);
-                                if (account == null) {
-                                    List<VAccount> accounts = accountsByUserId.get(userId);
-                                    if (accounts == null) {
-                                        accounts = new ArrayList<>();
-                                        accountsByUserId.put(userId, accounts);
-                                    }
-                                    account = new VAccount(userId, new Account(name, type));
-                                    accounts.add(account);
-                                    saveAllAccounts();
-                                }
-                            }
+                           synchronized(VAccountManagerService.this.accountsByUserId) {
+                              VAccount accountx = VAccountManagerService.this.getAccount(userId, name, type);
+                              if (accountx == null) {
+                                 List<VAccount> accounts = (List)VAccountManagerService.this.accountsByUserId.get(userId);
+                                 if (accounts == null) {
+                                    accounts = new ArrayList();
+                                    VAccountManagerService.this.accountsByUserId.put(userId, accounts);
+                                 }
+
+                                 accountx = new VAccount(userId, new Account(name, type));
+                                 ((List)accounts).add(accountx);
+                                 VAccountManagerService.this.saveAllAccounts();
+                              }
+                           }
                         }
-                        long expiryMillis = result.getLong(
-                                AccountManagerCompat.KEY_CUSTOM_TOKEN_EXPIRY, 0L);
-                        if (customTokens
-                                && expiryMillis > System.currentTimeMillis()) {
-                            AuthTokenRecord record = new AuthTokenRecord(userId, account, authTokenType, callerPkg, authToken, expiryMillis);
-                            synchronized (authTokenRecords) {
-                                authTokenRecords.remove(record);
-                                authTokenRecords.add(record);
-                            }
+
+                        long expiryMillis = result.getLong(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxogLwc6I2EzGlo=")), 0L);
+                        if (customTokens && expiryMillis > System.currentTimeMillis()) {
+                           AuthTokenRecord record = new AuthTokenRecord(userId, account, authTokenType, callerPkg, authToken, expiryMillis);
+                           synchronized(VAccountManagerService.this.authTokenRecords) {
+                              VAccountManagerService.this.authTokenRecords.remove(record);
+                              VAccountManagerService.this.authTokenRecords.add(record);
+                           }
                         }
-                    }
-                    Intent intent = result.getParcelable(AccountManager.KEY_INTENT);
-                    if (intent != null && notifyOnAuthFailure && !customTokens) {
-                        // TODO: send Signin error Notification
-                    }
-                }
-                super.onResult(result);
-            }
-        }.bind();
-    }
+                     }
 
+                     Intent intent = (Intent)result.getParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")));
+                     if (intent != null && notifyOnAuthFailure && !customTokens) {
+                     }
+                  }
 
-    @Override
-    public void setPassword(int userId, Account account, String password) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        setPasswordInternal(userId, account, password);
-    }
+                  super.onResult(result);
+               }
+            }).bind();
+         }
+      }
+   }
 
-    private void setPasswordInternal(int userId, Account account, String password) {
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, account);
-            if (vAccount != null) {
-                vAccount.password = password;
-                vAccount.authTokens.clear();
-                saveAllAccounts();
-                synchronized (authTokenRecords) {
-                    Iterator<AuthTokenRecord> iterator = authTokenRecords.iterator();
-                    while (iterator.hasNext()) {
-                        AuthTokenRecord record = iterator.next();
-                        if (record.userId == userId && record.account.equals(account)) {
-                            iterator.remove();
-                        }
-                    }
-                }
-                sendAccountsChangedBroadcast(userId);
-            }
-        }
-    }
+   public void setPassword(int userId, Account account, String password) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         this.setPasswordInternal(userId, account, password);
+      }
+   }
 
-    @Override
-    public void setAuthToken(int userId, Account account, String authTokenType, String authToken) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        if (authTokenType == null) throw new IllegalArgumentException("authTokenType is null");
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, account);
-            if (vAccount != null) {
-                // FIXME: cancelNotification
-                vAccount.authTokens.put(authTokenType, authToken);
-                this.saveAllAccounts();
-            }
-        }
-    }
-
-
-    @Override
-    public void setUserData(int userId, Account account, String key, String value) {
-        if (key == null) throw new IllegalArgumentException("key is null");
-        if (account == null) throw new IllegalArgumentException("account is null");
-        VAccount vAccount = getAccount(userId, account);
-        if (vAccount != null) {
-            synchronized (accountsByUserId) {
-                vAccount.userDatas.put(key, value);
-                saveAllAccounts();
-            }
-        }
-    }
-
-
-    @Override
-    public void hasFeatures(int userId, IAccountManagerResponse response,
-                            final Account account, final String[] features) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (account == null) throw new IllegalArgumentException("account is null");
-        if (features == null) throw new IllegalArgumentException("features is null");
-        AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
-        if (info == null) {
-            try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        new Session(response, userId, info, false, true, account.name) {
-
-            @Override
-            public void run() throws RemoteException {
-                try {
-                    mAuthenticator.hasFeatures(this, account, features);
-                } catch (RemoteException e) {
-                    onError(AccountManager.ERROR_CODE_REMOTE_EXCEPTION, "remote exception");
-                }
-            }
-
-            @Override
-            public void onResult(Bundle result) throws RemoteException {
-                IAccountManagerResponse response = getResponseAndClose();
-                if (response != null) {
-                    try {
-                        if (result == null) {
-                            response.onError(AccountManager.ERROR_CODE_INVALID_RESPONSE, "null bundle");
-                            return;
-                        }
-                        Log.v(TAG, getClass().getSimpleName() + " calling onResult() on response "
-                                + response);
-                        final Bundle newResult = new Bundle();
-                        newResult.putBoolean(AccountManager.KEY_BOOLEAN_RESULT,
-                                result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT, false));
-                        response.onResult(newResult);
-                    } catch (RemoteException e) {
-                        // if the caller is dead then there is no one to care about remote exceptions
-                        Log.v(TAG, "failure while notifying response", e);
-                    }
-                }
-            }
-        }.bind();
-    }
-
-
-    @Override
-    public void updateCredentials(int userId, final IAccountManagerResponse response, final Account account,
-                                  final String authTokenType, final boolean expectActivityLaunch,
-                                  final Bundle loginOptions) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (account == null) throw new IllegalArgumentException("account is null");
-        if (authTokenType == null) throw new IllegalArgumentException("authTokenType is null");
-        AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
-        if (info == null) {
-            try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        new Session(response, userId, info, expectActivityLaunch, false, account.name) {
-
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.updateCredentials(this, account, authTokenType, loginOptions);
-            }
-
-            @Override
-            protected String toDebugString(long now) {
-                if (loginOptions != null) loginOptions.keySet();
-                return super.toDebugString(now) + ", updateCredentials"
-                        + ", " + account
-                        + ", authTokenType " + authTokenType
-                        + ", loginOptions " + loginOptions;
-            }
-
-        }.bind();
-    }
-
-    @Override
-    public String getPassword(int userId, Account account) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, account);
-            if (vAccount != null) {
-                return vAccount.password;
-            }
-            return null;
-        }
-    }
-
-    @Override
-    public String getUserData(int userId, Account account, String key) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        if (key == null) throw new IllegalArgumentException("key is null");
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, account);
-            if (vAccount != null) {
-                return vAccount.userDatas.get(key);
-            }
-            return null;
-        }
-    }
-
-    @Override
-    public void editProperties(int userId, IAccountManagerResponse response, final String accountType,
-                               final boolean expectActivityLaunch) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (accountType == null) throw new IllegalArgumentException("accountType is null");
-        AuthenticatorInfo info = this.getAuthenticatorInfo(accountType);
-        if (info == null) {
-            try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        new Session(response, userId, info, expectActivityLaunch, true, null) {
-
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.editProperties(this, mAuthenticatorInfo.desc.type);
-            }
-
-            @Override
-            protected String toDebugString(long now) {
-                return super.toDebugString(now) + ", editProperties"
-                        + ", accountType " + accountType;
-            }
-
-        }.bind();
-
-    }
-
-
-    @Override
-    public void getAuthTokenLabel(int userId, IAccountManagerResponse response, final String accountType,
-                                  final String authTokenType) {
-        if (accountType == null) throw new IllegalArgumentException("accountType is null");
-        if (authTokenType == null) throw new IllegalArgumentException("authTokenType is null");
-        AuthenticatorInfo info = getAuthenticatorInfo(accountType);
-        if (info == null) {
-            try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        new Session(response, userId, info, false, false, null) {
-
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.getAuthTokenLabel(this, authTokenType);
-            }
-
-            @Override
-            public void onResult(Bundle result) throws RemoteException {
-                if (result != null) {
-                    String label = result.getString(AccountManager.KEY_AUTH_TOKEN_LABEL);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(AccountManager.KEY_AUTH_TOKEN_LABEL, label);
-                    super.onResult(bundle);
-                } else {
-                    super.onResult(null);
-                }
-            }
-        }.bind();
-    }
-
-    public void confirmCredentials(int userId, IAccountManagerResponse response, final Account account, final Bundle options, final boolean expectActivityLaunch) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (account == null) throw new IllegalArgumentException("account is null");
-        AuthenticatorInfo info = getAuthenticatorInfo(account.type);
-        if (info == null) {
-            try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        new Session(response, userId, info, expectActivityLaunch, true, account.name, true, true) {
-
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.confirmCredentials(this, account, options);
-            }
-
-        }.bind();
-
-    }
-
-    @Override
-    public void addAccount(int userId, final IAccountManagerResponse response, final String accountType,
-                           final String authTokenType, final String[] requiredFeatures,
-                           final boolean expectActivityLaunch, final Bundle optionsIn) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (accountType == null) throw new IllegalArgumentException("accountType is null");
-        AuthenticatorInfo info = getAuthenticatorInfo(accountType);
-        if (info == null) {
-            try {
-                Bundle result = new Bundle();
-                result.putString(AccountManager.KEY_AUTHTOKEN, authTokenType);
-                result.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-                result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
-                response.onResult(result);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        new Session(response, userId, info, expectActivityLaunch, true, null, false, true) {
-
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.addAccount(this, mAuthenticatorInfo.desc.type, authTokenType, requiredFeatures,
-                        optionsIn);
-            }
-
-            @Override
-            protected String toDebugString(long now) {
-                return super.toDebugString(now) + ", addAccount"
-                        + ", accountType " + accountType
-                        + ", requiredFeatures "
-                        + (requiredFeatures != null
-                        ? TextUtils.join(",", requiredFeatures)
-                        : null);
-            }
-
-        }.bind();
-
-    }
-
-    @Override
-    public boolean addAccountExplicitly(int userId, Account account, String password, Bundle extras) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        return insertAccountIntoDatabase(userId, account, password, extras);
-    }
-
-    @Override
-    public boolean removeAccountExplicitly(int userId, Account account) {
-        return account != null && removeAccountInternal(userId, account);
-    }
-
-    @Override
-    public void renameAccount(int userId, IAccountManagerResponse response, Account accountToRename, String newName) {
-        if (accountToRename == null) throw new IllegalArgumentException("account is null");
-        Account resultingAccount = renameAccountInternal(userId, accountToRename, newName);
-        Bundle result = new Bundle();
-        result.putString(AccountManager.KEY_ACCOUNT_NAME, resultingAccount.name);
-        result.putString(AccountManager.KEY_ACCOUNT_TYPE, resultingAccount.type);
-        try {
-            response.onResult(result);
-        } catch (RemoteException e) {
-            Log.w(TAG, e.getMessage());
-        }
-    }
-
-    @Override
-    public void removeAccount(final int userId, IAccountManagerResponse response, final Account account,
-                              boolean expectActivityLaunch) {
-        if (response == null) throw new IllegalArgumentException("response is null");
-        if (account == null) throw new IllegalArgumentException("account is null");
-        AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
-        if (info == null) {
-            try {
-                response.onError(ERROR_CODE_BAD_ARGUMENTS, "account.type does not exist");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        // FIXME: Cancel Notification
-
-        new Session(response, userId, info, expectActivityLaunch, true, account.name) {
-            @Override
-            protected String toDebugString(long now) {
-                return super.toDebugString(now) + ", removeAccount"
-                        + ", account " + account;
-            }
-
-            @Override
-            public void run() throws RemoteException {
-                mAuthenticator.getAccountRemovalAllowed(this, account);
-            }
-
-            @Override
-            public void onResult(Bundle result) throws RemoteException {
-                if (result != null && result.containsKey(AccountManager.KEY_BOOLEAN_RESULT)
-                        && !result.containsKey(AccountManager.KEY_INTENT)) {
-                    final boolean removalAllowed = result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT);
-                    if (removalAllowed) {
-                        removeAccountInternal(userId, account);
-                    }
-                    IAccountManagerResponse response = getResponseAndClose();
-                    if (response != null) {
-                        Log.v(TAG, getClass().getSimpleName() + " calling onResult() on response "
-                                + response);
-                        Bundle result2 = new Bundle();
-                        result2.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, removalAllowed);
-                        try {
-                            response.onResult(result2);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                super.onResult(result);
-            }
-
-        }.bind();
-
-    }
-
-    @Override
-    public void clearPassword(int userId, Account account) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        setPasswordInternal(userId, account, null);
-    }
-
-    private boolean removeAccountInternal(int userId, Account account) {
-        List<VAccount> accounts = accountsByUserId.get(userId);
-        if (accounts != null) {
-            Iterator<VAccount> iterator = accounts.iterator();
-            while (iterator.hasNext()) {
-                VAccount vAccount = iterator.next();
-                if (userId == vAccount.userId
-                        && TextUtils.equals(vAccount.name, account.name)
-                        && TextUtils.equals(account.type, vAccount.type)) {
-                    iterator.remove();
-                    saveAllAccounts();
-                    sendAccountsChangedBroadcast(userId);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    @Override
-    public boolean accountAuthenticated(int userId, final Account account) {
-        if (account == null) {
-            throw new IllegalArgumentException("account is null");
-        }
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, account);
-            if (vAccount != null) {
-                vAccount.lastAuthenticatedTime = System.currentTimeMillis();
-                saveAllAccounts();
-                return true;
-            }
-            return false;
-        }
-    }
-
-    @Override
-    public void invalidateAuthToken(int userId, String accountType, String authToken) {
-        if (accountType == null) throw new IllegalArgumentException("accountType is null");
-        if (authToken == null) throw new IllegalArgumentException("authToken is null");
-        synchronized (accountsByUserId) {
-            List<VAccount> accounts = accountsByUserId.get(userId);
-            if (accounts != null) {
-                boolean changed = false;
-                for (VAccount account : accounts) {
-                    if (account.type.equals(accountType)) {
-                        account.authTokens.values().remove(authToken);
-                        changed = true;
-                    }
-                }
-                if (changed) {
-                    saveAllAccounts();
-                }
-            }
-            synchronized (authTokenRecords) {
-                Iterator<AuthTokenRecord> iterator = authTokenRecords.iterator();
-                while (iterator.hasNext()) {
-                    AuthTokenRecord record = iterator.next();
-                    if (record.userId == userId && record.authTokenType.equals(accountType)
-                            && record.authToken.equals(authToken)) {
-                        iterator.remove();
-                    }
-                }
-            }
-        }
-    }
-
-
-    private Account renameAccountInternal(int userId, Account accountToRename, String newName) {
-        // TODO: Cancel Notification
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, accountToRename);
-            if (vAccount != null) {
-                vAccount.previousName = vAccount.name;
-                vAccount.name = newName;
-                saveAllAccounts();
-                Account newAccount = new Account(vAccount.name, vAccount.type);
-                synchronized (authTokenRecords) {
-                    for (AuthTokenRecord record : authTokenRecords) {
-                        if (record.userId == userId && record.account.equals(accountToRename)) {
-                            record.account = newAccount;
-                        }
-                    }
-                }
-                sendAccountsChangedBroadcast(userId);
-                return newAccount;
-            }
-        }
-        return accountToRename;
-    }
-
-    @Override
-    public String peekAuthToken(int userId, Account account, String authTokenType) {
-        if (account == null) throw new IllegalArgumentException("account is null");
-        if (authTokenType == null) throw new IllegalArgumentException("authTokenType is null");
-        synchronized (accountsByUserId) {
-            VAccount vAccount = getAccount(userId, account);
-            if (vAccount != null) {
-                return vAccount.authTokens.get(authTokenType);
-            }
-            return null;
-        }
-    }
-
-
-    private String getCustomAuthToken(int userId, Account account, String authTokenType, String packageName) {
-        AuthTokenRecord record = new AuthTokenRecord(userId, account, authTokenType, packageName);
-        String authToken = null;
-        long now = System.currentTimeMillis();
-        synchronized (authTokenRecords) {
-            Iterator<AuthTokenRecord> iterator = authTokenRecords.iterator();
-            while (iterator.hasNext()) {
-                AuthTokenRecord one = iterator.next();
-                if (one.expiryEpochMillis > 0 && one.expiryEpochMillis < now) {
-                    iterator.remove();
-                } else if (record.equals(one)) {
-                    authToken = record.authToken;
-                }
-            }
-        }
-        return authToken;
-    }
-
-    private void onResult(IAccountManagerResponse response, Bundle result) {
-        try {
-            response.onResult(result);
-        } catch (RemoteException e) {
-            // if the caller is dead then there is no one to care about remote
-            // exceptions
-            e.printStackTrace();
-        }
-    }
-
-    private AuthenticatorInfo getAuthenticatorInfo(String type) {
-        synchronized (cache) {
-            return type == null ? null : cache.authenticators.get(type);
-        }
-    }
-
-    private VAccount getAccount(int userId, Account account) {
-        return this.getAccount(userId, account.name, account.type);
-    }
-
-    private boolean insertAccountIntoDatabase(int userId, Account account, String password, Bundle extras) {
-        if (account == null) {
-            return false;
-        }
-        synchronized (accountsByUserId) {
-            if (getAccount(userId, account.name, account.type) != null) {
-                return false;
-            }
-            VAccount vAccount = new VAccount(userId, account);
+   private void setPasswordInternal(int userId, Account account, String password) {
+      synchronized(this.accountsByUserId) {
+         VAccount vAccount = this.getAccount(userId, account);
+         if (vAccount != null) {
             vAccount.password = password;
-            // convert the [Bundle] to [Map<String, String>]
-            if (extras != null) {
-                for (String key : extras.keySet()) {
-                    Object value = extras.get(key);
-                    if (value instanceof String) {
-                        vAccount.userDatas.put(key, (String) value);
-                    }
-                }
+            vAccount.authTokens.clear();
+            this.saveAllAccounts();
+            synchronized(this.authTokenRecords) {
+               Iterator<AuthTokenRecord> iterator = this.authTokenRecords.iterator();
+
+               while(iterator.hasNext()) {
+                  AuthTokenRecord record = (AuthTokenRecord)iterator.next();
+                  if (record.userId == userId && record.account.equals(account)) {
+                     iterator.remove();
+                  }
+               }
             }
-            List<VAccount> accounts = accountsByUserId.get(userId);
-            if (accounts == null) {
-                accounts = new ArrayList<>();
-                accountsByUserId.put(userId, accounts);
+
+            this.sendAccountsChangedBroadcast(userId);
+         }
+
+      }
+   }
+
+   public void setAuthToken(int userId, Account account, String authTokenType, String authToken) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else if (authTokenType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2JBgcKmknTS9sIzwbKhgEKA==")));
+      } else {
+         synchronized(this.accountsByUserId) {
+            VAccount vAccount = this.getAccount(userId, account);
+            if (vAccount != null) {
+               vAccount.authTokens.put(authTokenType, authToken);
+               this.saveAllAccounts();
             }
-            accounts.add(vAccount);
-            saveAllAccounts();
-            sendAccountsChangedBroadcast(vAccount.userId);
+
+         }
+      }
+   }
+
+   public void setUserData(int userId, Account account, String key, String value) {
+      if (key == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LC4uJ3sFAgNLHlkvKhdbVg==")));
+      } else if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         VAccount vAccount = this.getAccount(userId, account);
+         if (vAccount != null) {
+            synchronized(this.accountsByUserId) {
+               vAccount.userDatas.put(key, value);
+               this.saveAllAccounts();
+            }
+         }
+
+      }
+   }
+
+   public void hasFeatures(int userId, IAccountManagerResponse response, final Account account, final String[] features) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else if (features == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4uP2wKNARiASs8KQgpOm8aGiRlEVRF")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
+         if (info == null) {
+            try {
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var7) {
+               RemoteException e = var7;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, false, true, account.name) {
+               public void run() throws RemoteException {
+                  try {
+                     this.mAuthenticator.hasFeatures(this, account, features);
+                  } catch (RemoteException var2) {
+                     this.onError(1, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowMCtLHjAaLy0MKmUzLCVlN1RF")));
+                  }
+
+               }
+
+               public void onResult(Bundle result) throws RemoteException {
+                  IAccountManagerResponse response = this.getResponseAndClose();
+                  if (response != null) {
+                     try {
+                        if (result == null) {
+                           response.onError(5, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoJICpmDlkwKhcMVg==")));
+                           return;
+                        }
+
+                        Log.v(VAccountManagerService.TAG, this.getClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2P2oFHi9gNDs8Ki0YAmkgAgVlHi8ZM186KWA0ODVuASw5KQgqD2sJIFo=")) + response);
+                        Bundle newResult = new Bundle();
+                        newResult.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")), result.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")), false));
+                        response.onResult(newResult);
+                     } catch (RemoteException var4) {
+                        RemoteException e = var4;
+                        Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoKNARiCiQtKRccCGknTSZlJCwaLi0YI2AwJyNlNAo8LD4uKmwjNFo=")), e);
+                     }
+                  }
+
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public void updateCredentials(int userId, IAccountManagerResponse response, final Account account, final String authTokenType, boolean expectActivityLaunch, final Bundle loginOptions) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else if (authTokenType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2JBgcKmknTS9sIzwbKhgEKA==")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
+         if (info == null) {
+            try {
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var9) {
+               RemoteException e = var9;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, expectActivityLaunch, false, account.name) {
+               public void run() throws RemoteException {
+                  this.mAuthenticator.updateCredentials(this, account, authTokenType, loginOptions);
+               }
+
+               protected String toDebugString(long now) {
+                  if (loginOptions != null) {
+                     loginOptions.keySet();
+                  }
+
+                  return super.toDebugString(now) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186I28FMDdmHjAfIz0MPmkjMAZqATgdKToDJA==")) + account + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186P2waMCBuHh4xKAcYAGggTSt4EVRF")) + authTokenType + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186DmozPC9gMh4sLBccDW8aDSg=")) + loginOptions;
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public String getPassword(int userId, Account account) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         synchronized(this.accountsByUserId) {
+            VAccount vAccount = this.getAccount(userId, account);
+            return vAccount != null ? vAccount.password : null;
+         }
+      }
+   }
+
+   public String getUserData(int userId, Account account, String key) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else if (key == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LC4uJ3sFAgNLHlkvKhdbVg==")));
+      } else {
+         synchronized(this.accountsByUserId) {
+            VAccount vAccount = this.getAccount(userId, account);
+            return vAccount != null ? (String)vAccount.userDatas.get(key) : null;
+         }
+      }
+   }
+
+   public void editProperties(int userId, IAccountManagerResponse response, final String accountType, boolean expectActivityLaunch) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (accountType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcLOmwgDShlNCgdLAhSVg==")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(accountType);
+         if (info == null) {
+            try {
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var7) {
+               RemoteException e = var7;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, expectActivityLaunch, true, (String)null) {
+               public void run() throws RemoteException {
+                  this.mAuthenticator.editProperties(this, this.mAuthenticatorInfo.desc.type);
+               }
+
+               protected String toDebugString(long now) {
+                  return super.toDebugString(now) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186M2gFAgZpESw1IxcMKGUzLCtsIwUrLRg2JWAjLClqHzAyLD4fJA==")) + accountType;
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public void getAuthTokenLabel(int userId, IAccountManagerResponse response, String accountType, final String authTokenType) {
+      if (accountType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcLOmwgDShlNCgdLAhSVg==")));
+      } else if (authTokenType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2JBgcKmknTS9sIzwbKhgEKA==")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(accountType);
+         if (info == null) {
+            try {
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var7) {
+               RemoteException e = var7;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, false, false, (String)null) {
+               public void run() throws RemoteException {
+                  this.mAuthenticator.getAuthTokenLabel(this, authTokenType);
+               }
+
+               public void onResult(Bundle result) throws RemoteException {
+                  if (result != null) {
+                     String label = result.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2IhciOGkjOAtrDh5F")));
+                     Bundle bundle = new Bundle();
+                     bundle.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2IhciOGkjOAtrDh5F")), label);
+                     super.onResult(bundle);
+                  } else {
+                     super.onResult((Bundle)null);
+                  }
+
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public void confirmCredentials(int userId, IAccountManagerResponse response, final Account account, final Bundle options, boolean expectActivityLaunch) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
+         if (info == null) {
+            try {
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var8) {
+               RemoteException e = var8;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, expectActivityLaunch, true, account.name, true, true) {
+               public void run() throws RemoteException {
+                  this.mAuthenticator.confirmCredentials(this, account, options);
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public void addAccount(int userId, IAccountManagerResponse response, final String accountType, final String authTokenType, final String[] requiredFeatures, boolean expectActivityLaunch, final Bundle optionsIn) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (accountType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcLOmwgDShlNCgdLAhSVg==")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(accountType);
+         if (info == null) {
+            try {
+               Bundle result = new Bundle();
+               result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUKMCVjJDA2")), authTokenType);
+               result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")), accountType);
+               result.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")), false);
+               response.onResult(result);
+            } catch (RemoteException var10) {
+               RemoteException e = var10;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, expectActivityLaunch, true, (String)null, false, true) {
+               public void run() throws RemoteException {
+                  this.mAuthenticator.addAccount(this, this.mAuthenticatorInfo.desc.type, authTokenType, requiredFeatures, optionsIn);
+               }
+
+               protected String toDebugString(long now) {
+                  return super.toDebugString(now) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186P2gFMBF9JCg1LAcYLn83TTdoJzAcKhgcCm4VGjNuCiBF")) + accountType + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186KmgaJAVjASw/KBU+PW4gBgVsNyg6PQhSVg==")) + (requiredFeatures != null ? TextUtils.join(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")), requiredFeatures) : null);
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public boolean addAccountExplicitly(int userId, Account account, String password, Bundle extras) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         return this.insertAccountIntoDatabase(userId, account, password, extras);
+      }
+   }
+
+   public boolean removeAccountExplicitly(int userId, Account account) {
+      return account != null && this.removeAccountInternal(userId, account);
+   }
+
+   public void renameAccount(int userId, IAccountManagerResponse response, Account accountToRename, String newName) {
+      if (accountToRename == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         Account resultingAccount = this.renameAccountInternal(userId, accountToRename, newName);
+         Bundle result = new Bundle();
+         result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGULJCl9JB4vKj42Vg==")), resultingAccount.name);
+         result.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")), resultingAccount.type);
+
+         try {
+            response.onResult(result);
+         } catch (RemoteException var8) {
+            RemoteException e = var8;
+            Log.w(TAG, e.getMessage());
+         }
+
+      }
+   }
+
+   public void removeAccount(final int userId, IAccountManagerResponse response, final Account account, boolean expectActivityLaunch) {
+      if (response == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uKW8FGiZhJDM8KQgpOm8aGiRlEVRF")));
+      } else if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         AuthenticatorInfo info = this.getAuthenticatorInfo(account.type);
+         if (info == null) {
+            try {
+               response.onError(7, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV1kgLQgmPX4zBiVrDjMrLC4ACksaLAVvASw9")));
+            } catch (RemoteException var7) {
+               RemoteException e = var7;
+               e.printStackTrace();
+            }
+
+         } else {
+            (new Session(response, userId, info, expectActivityLaunch, true, account.name) {
+               protected String toDebugString(long now) {
+                  return super.toDebugString(now) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186KmgVEiVmNDARLy0qDWUjMAZ1VjwsLT42KWYKRT95EVRF")) + account;
+               }
+
+               public void run() throws RemoteException {
+                  this.mAuthenticator.getAccountRemovalAllowed(this, account);
+               }
+
+               public void onResult(Bundle result) throws RemoteException {
+                  if (result != null && result.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo="))) && !result.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")))) {
+                     boolean removalAllowed = result.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")));
+                     if (removalAllowed) {
+                        VAccountManagerService.this.removeAccountInternal(userId, account);
+                     }
+
+                     IAccountManagerResponse response = this.getResponseAndClose();
+                     if (response != null) {
+                        Log.v(VAccountManagerService.TAG, this.getClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2P2oFHi9gNDs8Ki0YAmkgAgVlHi8ZM186KWA0ODVuASw5KQgqD2sJIFo=")) + response);
+                        Bundle result2 = new Bundle();
+                        result2.putBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")), removalAllowed);
+
+                        try {
+                           response.onResult(result2);
+                        } catch (RemoteException var6) {
+                           RemoteException e = var6;
+                           e.printStackTrace();
+                        }
+                     }
+                  }
+
+                  super.onResult(result);
+               }
+            }).bind();
+         }
+      }
+   }
+
+   public void clearPassword(int userId, Account account) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         this.setPasswordInternal(userId, account, (String)null);
+      }
+   }
+
+   private boolean removeAccountInternal(int userId, Account account) {
+      List<VAccount> accounts = (List)this.accountsByUserId.get(userId);
+      if (accounts != null) {
+         Iterator<VAccount> iterator = accounts.iterator();
+
+         while(iterator.hasNext()) {
+            VAccount vAccount = (VAccount)iterator.next();
+            if (userId == vAccount.userId && TextUtils.equals(vAccount.name, account.name) && TextUtils.equals(account.type, vAccount.type)) {
+               iterator.remove();
+               this.saveAllAccounts();
+               this.sendAccountsChangedBroadcast(userId);
+               return true;
+            }
+         }
+      }
+
+      return false;
+   }
+
+   public boolean accountAuthenticated(int userId, Account account) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         synchronized(this.accountsByUserId) {
+            VAccount vAccount = this.getAccount(userId, account);
+            if (vAccount != null) {
+               vAccount.lastAuthenticatedTime = System.currentTimeMillis();
+               this.saveAllAccounts();
+               return true;
+            } else {
+               return false;
+            }
+         }
+      }
+   }
+
+   public void invalidateAuthToken(int userId, String accountType, String authToken) {
+      if (accountType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcLOmwgDShlNCgdLAhSVg==")));
+      } else if (authToken == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2PxccL34zMAVlEQJF")));
+      } else {
+         synchronized(this.accountsByUserId) {
+            List<VAccount> accounts = (List)this.accountsByUserId.get(userId);
+            Iterator iterator;
+            if (accounts != null) {
+               boolean changed = false;
+               iterator = accounts.iterator();
+
+               while(iterator.hasNext()) {
+                  VAccount account = (VAccount)iterator.next();
+                  if (account.type.equals(accountType)) {
+                     account.authTokens.values().remove(authToken);
+                     changed = true;
+                  }
+               }
+
+               if (changed) {
+                  this.saveAllAccounts();
+               }
+            }
+
+            synchronized(this.authTokenRecords) {
+               iterator = this.authTokenRecords.iterator();
+
+               while(iterator.hasNext()) {
+                  AuthTokenRecord record = (AuthTokenRecord)iterator.next();
+                  if (record.userId == userId && record.authTokenType.equals(accountType) && record.authToken.equals(authToken)) {
+                     iterator.remove();
+                  }
+               }
+            }
+
+         }
+      }
+   }
+
+   private Account renameAccountInternal(int userId, Account accountToRename, String newName) {
+      synchronized(this.accountsByUserId) {
+         VAccount vAccount = this.getAccount(userId, accountToRename);
+         if (vAccount != null) {
+            vAccount.previousName = vAccount.name;
+            vAccount.name = newName;
+            this.saveAllAccounts();
+            Account newAccount = new Account(vAccount.name, vAccount.type);
+            synchronized(this.authTokenRecords) {
+               Iterator var8 = this.authTokenRecords.iterator();
+
+               while(var8.hasNext()) {
+                  AuthTokenRecord record = (AuthTokenRecord)var8.next();
+                  if (record.userId == userId && record.account.equals(accountToRename)) {
+                     record.account = newAccount;
+                  }
+               }
+            }
+
+            this.sendAccountsChangedBroadcast(userId);
+            return newAccount;
+         } else {
+            return accountToRename;
+         }
+      }
+   }
+
+   public String peekAuthToken(int userId, Account account, String authTokenType) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else if (authTokenType == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUIMCVjJDA2JBgcKmknTS9sIzwbKhgEKA==")));
+      } else {
+         synchronized(this.accountsByUserId) {
+            VAccount vAccount = this.getAccount(userId, account);
+            return vAccount != null ? (String)vAccount.authTokens.get(authTokenType) : null;
+         }
+      }
+   }
+
+   private String getCustomAuthToken(int userId, Account account, String authTokenType, String packageName) {
+      AuthTokenRecord record = new AuthTokenRecord(userId, account, authTokenType, packageName);
+      String authToken = null;
+      long now = System.currentTimeMillis();
+      synchronized(this.authTokenRecords) {
+         Iterator<AuthTokenRecord> iterator = this.authTokenRecords.iterator();
+
+         while(true) {
+            while(iterator.hasNext()) {
+               AuthTokenRecord one = (AuthTokenRecord)iterator.next();
+               if (one.expiryEpochMillis > 0L && one.expiryEpochMillis < now) {
+                  iterator.remove();
+               } else if (record.equals(one)) {
+                  authToken = record.authToken;
+               }
+            }
+
+            return authToken;
+         }
+      }
+   }
+
+   private void onResult(IAccountManagerResponse response, Bundle result) {
+      try {
+         response.onResult(result);
+      } catch (RemoteException var4) {
+         RemoteException e = var4;
+         e.printStackTrace();
+      }
+
+   }
+
+   private AuthenticatorInfo getAuthenticatorInfo(String type) {
+      synchronized(this.cache) {
+         return type == null ? null : (AuthenticatorInfo)this.cache.authenticators.get(type);
+      }
+   }
+
+   private VAccount getAccount(int userId, Account account) {
+      return this.getAccount(userId, account.name, account.type);
+   }
+
+   private boolean insertAccountIntoDatabase(int userId, Account account, String password, Bundle extras) {
+      if (account == null) {
+         return false;
+      } else {
+         synchronized(this.accountsByUserId) {
+            if (this.getAccount(userId, account.name, account.type) != null) {
+               return false;
+            } else {
+               VAccount vAccount = new VAccount(userId, account);
+               vAccount.password = password;
+               if (extras != null) {
+                  Iterator var7 = extras.keySet().iterator();
+
+                  while(var7.hasNext()) {
+                     String key = (String)var7.next();
+                     Object value = extras.get(key);
+                     if (value instanceof String) {
+                        vAccount.userDatas.put(key, (String)value);
+                     }
+                  }
+               }
+
+               List<VAccount> accounts = (List)this.accountsByUserId.get(userId);
+               if (accounts == null) {
+                  accounts = new ArrayList();
+                  this.accountsByUserId.put(userId, accounts);
+               }
+
+               ((List)accounts).add(vAccount);
+               this.saveAllAccounts();
+               this.sendAccountsChangedBroadcast(vAccount.userId);
+               return true;
+            }
+         }
+      }
+   }
+
+   private void sendAccountsChangedBroadcast(int userId) {
+      Intent loginChangeIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxpTJDwmBWgxAg5hIixXOywqXWQmGh99DzgfLCs2BQ==")));
+      VActivityManagerService.get().sendBroadcastAsUser(loginChangeIntent, new VUserHandle(userId));
+      Intent accountsChangeIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxosLT0qI2AgRCliMhoSIixfAmMIGh1jNTAQKAVfWH0hRR1kNV0fJSwuWQ==")));
+      VActivityManagerService.get().sendBroadcastAsUser(accountsChangeIntent, new VUserHandle(userId));
+      this.broadcastCheckInNowIfNeed(userId);
+   }
+
+   private void broadcastCheckInNowIfNeed(int userId) {
+      long time = System.currentTimeMillis();
+      if (Math.abs(time - this.lastAccountChangeTime) > 43200000L) {
+         this.lastAccountChangeTime = time;
+         this.saveAllAccounts();
+         Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kpKAguLGkgRCZoJ1kgLT5bI2A0RQBnHAoCIgY2DGEhBl5kN1RF")));
+         VActivityManagerService.get().sendBroadcastAsUser(intent, new VUserHandle(userId));
+      }
+
+   }
+
+   private void saveAllAccounts() {
+      File accountFile = VEnvironment.getAccountConfigFile();
+      Parcel dest = Parcel.obtain();
+
+      try {
+         dest.writeInt(1);
+         List<VAccount> accounts = new ArrayList();
+
+         for(int i = 0; i < this.accountsByUserId.size(); ++i) {
+            List<VAccount> list = (List)this.accountsByUserId.valueAt(i);
+            if (list != null) {
+               accounts.addAll(list);
+            }
+         }
+
+         dest.writeInt(accounts.size());
+         Iterator var8 = accounts.iterator();
+
+         while(var8.hasNext()) {
+            VAccount account = (VAccount)var8.next();
+            account.writeToParcel(dest, 0);
+         }
+
+         dest.writeLong(this.lastAccountChangeTime);
+         FileOutputStream fileOutputStream = new FileOutputStream(accountFile);
+         fileOutputStream.write(dest.marshall());
+         fileOutputStream.close();
+      } catch (Exception var6) {
+         Exception e = var6;
+         e.printStackTrace();
+      }
+
+      dest.recycle();
+   }
+
+   private void readAllAccounts() {
+      File accountFile = VEnvironment.getAccountConfigFile();
+      this.refreshAuthenticatorCache((String)null);
+      if (accountFile.exists()) {
+         this.accountsByUserId.clear();
+         Parcel dest = Parcel.obtain();
+
+         try {
+            FileInputStream is = new FileInputStream(accountFile);
+            byte[] bytes = new byte[(int)accountFile.length()];
+            int readLength = is.read(bytes);
+            is.close();
+            if (readLength != bytes.length) {
+               throw new IOException(String.format(Locale.ENGLISH, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQdfKGgVLAZLHlE/Kj06Lmw3TCtrVgUrLS0uCksaJCpqVyMuLzoqVg==")), bytes.length, readLength));
+            }
+
+            dest.unmarshall(bytes, 0, bytes.length);
+            dest.setDataPosition(0);
+            dest.readInt();
+
+            VAccount account;
+            Object accounts;
+            for(int size = dest.readInt(); size-- > 0; ((List)accounts).add(account)) {
+               account = new VAccount(dest);
+               VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gFAiZiICQ7Ly0qDWUjMAZ4V1Ar")) + account.type);
+               accounts = (List)this.accountsByUserId.get(account.userId);
+               if (accounts == null) {
+                  accounts = new ArrayList();
+                  this.accountsByUserId.put(account.userId, accounts);
+               }
+            }
+
+            this.lastAccountChangeTime = dest.readLong();
+         } catch (Exception var12) {
+            Exception e = var12;
+            e.printStackTrace();
+         } finally {
+            dest.recycle();
+         }
+      }
+
+   }
+
+   private VAccount getAccount(int userId, String accountName, String accountType) {
+      List<VAccount> accounts = (List)this.accountsByUserId.get(userId);
+      if (accounts != null) {
+         Iterator var5 = accounts.iterator();
+
+         while(var5.hasNext()) {
+            VAccount account = (VAccount)var5.next();
+            if (TextUtils.equals(account.name, accountName) && TextUtils.equals(account.type, accountType)) {
+               return account;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public void refreshAuthenticatorCache(String packageName) {
+      this.cache.authenticators.clear();
+      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxoCLT42KWYKRT9hAQo9Kj4AKm8VAjVrHiw6Jz5SVg==")));
+      if (packageName != null) {
+         intent.setPackage(packageName);
+      }
+
+      this.generateServicesMap(VPackageManagerService.get().queryIntentServices(intent, (String)null, 128, 0), this.cache.authenticators, new RegisteredServicesParser());
+   }
+
+   private void generateServicesMap(List<ResolveInfo> services, Map<String, AuthenticatorInfo> map, RegisteredServicesParser accountParser) {
+      Iterator var4 = services.iterator();
+
+      while(true) {
+         ResolveInfo info;
+         XmlResourceParser parser;
+         do {
+            if (!var4.hasNext()) {
+               return;
+            }
+
+            info = (ResolveInfo)var4.next();
+            parser = accountParser.getParser(this.mContext, info.serviceInfo, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxoCLT42KWYKRT9hAQo9Kj4AKm8VAjVrHiw6Jz5SVg==")));
+         } while(parser == null);
+
+         try {
+            AttributeSet attributeSet = Xml.asAttributeSet(parser);
+
+            int type;
+            while((type = parser.next()) != 1 && type != 2) {
+            }
+
+            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmV107LAg2MmkjMAZqATAsKggACA==")).equals(parser.getName())) {
+               AuthenticatorDescription desc = parseAuthenticatorDescription(accountParser.getResources(this.mContext, info.serviceInfo.applicationInfo), info.serviceInfo.packageName, attributeSet);
+               if (desc != null) {
+                  map.put(desc.type, new AuthenticatorInfo(desc, info.serviceInfo));
+               }
+            }
+         } catch (Exception var10) {
+            Exception e = var10;
+            e.printStackTrace();
+         }
+      }
+   }
+
+   @TargetApi(26)
+   private boolean removeAccountVisibility(int userId, Account account) {
+      List<VAccountVisibility> list = (List)this.accountsVisibilitiesByUserId.get(userId);
+      if (list != null) {
+         Iterator<VAccountVisibility> it = list.iterator();
+
+         while(it.hasNext()) {
+            VAccountVisibility vAccountVisibility = (VAccountVisibility)it.next();
+            if (userId == vAccountVisibility.userId && TextUtils.equals(vAccountVisibility.name, account.name) && TextUtils.equals(account.type, vAccountVisibility.type)) {
+               it.remove();
+               this.saveAllAccountVisibilities();
+               this.sendAccountsChangedBroadcast(userId);
+               return true;
+            }
+         }
+      }
+
+      return false;
+   }
+
+   @TargetApi(26)
+   private boolean renameAccountVisibility(int userId, Account account, String name) {
+      synchronized(this.accountsVisibilitiesByUserId) {
+         VAccountVisibility accountVisibility = this.getAccountVisibility(userId, account);
+         if (accountVisibility != null) {
+            accountVisibility.name = name;
+            this.saveAllAccountVisibilities();
+            this.sendAccountsChangedBroadcast(userId);
             return true;
-        }
-    }
-
-    private void sendAccountsChangedBroadcast(int userId) {
-        Intent intent = new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
-        VActivityManagerService.get().sendBroadcastAsUser(intent, new VUserHandle(userId));
-        broadcastCheckInNowIfNeed(userId);
-    }
-
-    private void broadcastCheckInNowIfNeed(int userId) {
-        long time = System.currentTimeMillis();
-        if (Math.abs(time - lastAccountChangeTime) > CHECK_IN_TIME) {
-            lastAccountChangeTime = time;
-            saveAllAccounts();
-            Intent intent = new Intent("android.server.checkin.CHECKIN_NOW");
-            VActivityManagerService.get().sendBroadcastAsUser(intent, new VUserHandle(userId));
-        }
-    }
-
-    /**
-     * Serializing all accounts
-     */
-    private void saveAllAccounts() {
-        File accountFile = VEnvironment.getAccountConfigFile();
-        Parcel dest = Parcel.obtain();
-        try {
-            dest.writeInt(1);
-            List<VAccount> accounts = new ArrayList<>();
-            for (int i = 0; i < this.accountsByUserId.size(); i++) {
-                List<VAccount> list = this.accountsByUserId.valueAt(i);
-                if (list != null) {
-                    accounts.addAll(list);
-                }
-            }
-            dest.writeInt(accounts.size());
-            for (VAccount account : accounts) {
-                account.writeToParcel(dest, 0);
-            }
-            dest.writeLong(lastAccountChangeTime);
-            FileOutputStream fileOutputStream = new FileOutputStream(accountFile);
-            fileOutputStream.write(dest.marshall());
-            fileOutputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        dest.recycle();
-    }
-
-    /**
-     * Read all accounts from file.
-     */
-    private void readAllAccounts() {
-        File accountFile = VEnvironment.getAccountConfigFile();
-        refreshAuthenticatorCache(null);
-        if (accountFile.exists()) {
-            accountsByUserId.clear();
-            Parcel dest = Parcel.obtain();
-            try {
-                FileInputStream is = new FileInputStream(accountFile);
-                byte[] bytes = new byte[(int) accountFile.length()];
-                int readLength = is.read(bytes);
-                is.close();
-                if (readLength != bytes.length) {
-                    throw new IOException(String.format(Locale.ENGLISH, "Expect length %d, but got %d.", bytes.length, readLength));
-                }
-                dest.unmarshall(bytes, 0, bytes.length);
-                dest.setDataPosition(0);
-                dest.readInt(); // skip the magic
-                int size = dest.readInt(); // the VAccount's size we need to read
-                boolean invalid = false;
-                while (size-- > 0) {
-                    VAccount account = new VAccount(dest);
-                    VLog.d(TAG, "Reading account : " + account.type);
-                    AuthenticatorInfo info = cache.authenticators.get(account.type);
-                    if (info != null) {
-                        List<VAccount> accounts = accountsByUserId.get(account.userId);
-                        if (accounts == null) {
-                            accounts = new ArrayList<>();
-                            accountsByUserId.put(account.userId, accounts);
-                        }
-                        accounts.add(account);
-                    } else {
-                        invalid = true;
-                    }
-                }
-                lastAccountChangeTime = dest.readLong();
-                if (invalid) {
-                    saveAllAccounts();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                dest.recycle();
-            }
-        }
-    }
-
-
-    private VAccount getAccount(int userId, String accountName, String accountType) {
-        List<VAccount> accounts = accountsByUserId.get(userId);
-        if (accounts != null) {
-            for (VAccount account : accounts) {
-                if (TextUtils.equals(account.name, accountName) && TextUtils.equals(account.type, accountType)) {
-                    return account;
-                }
-            }
-        }
-        return null;
-    }
-
-
-    public void refreshAuthenticatorCache(String packageName) {
-        cache.authenticators.clear();
-        Intent intent = new Intent(AccountManager.ACTION_AUTHENTICATOR_INTENT);
-        if (packageName != null) {
-            intent.setPackage(packageName);
-        }
-        generateServicesMap(
-                VPackageManagerService.get().queryIntentServices(intent, null, PackageManager.GET_META_DATA, 0),
-                cache.authenticators, new RegisteredServicesParser());
-    }
-
-    private void generateServicesMap(List<ResolveInfo> services, Map<String, AuthenticatorInfo> map,
-                                     RegisteredServicesParser accountParser) {
-        for (ResolveInfo info : services) {
-            XmlResourceParser parser = accountParser.getParser(mContext, info.serviceInfo,
-                    AccountManager.AUTHENTICATOR_META_DATA_NAME);
-            if (parser != null) {
-                try {
-                    AttributeSet attributeSet = Xml.asAttributeSet(parser);
-                    int type;
-                    while ((type = parser.next()) != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
-                        // Nothing to do
-                    }
-                    if (AccountManager.AUTHENTICATOR_ATTRIBUTES_NAME.equals(parser.getName())) {
-                        AuthenticatorDescription desc = parseAuthenticatorDescription(
-                                accountParser.getResources(mContext, info.serviceInfo.applicationInfo),
-                                info.serviceInfo.packageName, attributeSet);
-                        if (desc != null) {
-                            map.put(desc.type, new AuthenticatorInfo(desc, info.serviceInfo));
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.O)
-    private boolean removeAccountVisibility(int userId, Account account) {
-        List<VAccountVisibility> list = this.accountsVisibilitiesByUserId.get(userId);
-        if (list != null) {
-            Iterator<VAccountVisibility> it = list.iterator();
-            while (it.hasNext()) {
-                VAccountVisibility vAccountVisibility = it.next();
-                if (userId == vAccountVisibility.userId && TextUtils.equals(vAccountVisibility.name, account.name) && TextUtils.equals(account.type, vAccountVisibility.type)) {
-                    it.remove();
-                    saveAllAccountVisibilities();
-                    sendAccountsChangedBroadcast(userId);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @TargetApi(Build.VERSION_CODES.O)
-    private boolean renameAccountVisibility(int userId, Account account, String name) {
-        synchronized (this.accountsVisibilitiesByUserId) {
-            VAccountVisibility accountVisibility = getAccountVisibility(userId, account);
-            if (accountVisibility != null) {
-                accountVisibility.name = name;
-                saveAllAccountVisibilities();
-                sendAccountsChangedBroadcast(userId);
-                return true;
-            }
+         } else {
             return false;
-        }
-    }
+         }
+      }
+   }
 
-    @Override
-    @TargetApi(Build.VERSION_CODES.O)
-    public Map<String, Integer> getPackagesAndVisibilityForAccount(int userId, Account account) {
-        VAccountVisibility accountVisibility = getAccountVisibility(userId, account);
-        if (accountVisibility != null) {
-            return accountVisibility.visibility;
-        }
-        return null;
-    }
+   @TargetApi(26)
+   public Map<String, Integer> getPackagesAndVisibilityForAccount(int userId, Account account) {
+      VAccountVisibility accountVisibility = this.getAccountVisibility(userId, account);
+      return accountVisibility != null ? accountVisibility.visibility : null;
+   }
 
-    @Override
-    @TargetApi(Build.VERSION_CODES.O)
-    public boolean addAccountExplicitlyWithVisibility(int userId, Account account, String password, Bundle extras, Map visibility) {
-        if (account == null) {
-            throw new IllegalArgumentException("account is null");
-        }
-        boolean insertAccountIntoDatabase = insertAccountIntoDatabase(userId, account, password, extras);
-        insertAccountVisibilityIntoDatabase(userId, account, visibility);
-        return insertAccountIntoDatabase;
-    }
+   @TargetApi(26)
+   public boolean addAccountExplicitlyWithVisibility(int userId, Account account, String password, Bundle extras, Map visibility) {
+      if (account == null) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmVyQzIykmDmUjOCQ=")));
+      } else {
+         boolean insertAccountIntoDatabase = this.insertAccountIntoDatabase(userId, account, password, extras);
+         this.insertAccountVisibilityIntoDatabase(userId, account, visibility);
+         return insertAccountIntoDatabase;
+      }
+   }
 
-    @Override
-    @TargetApi(Build.VERSION_CODES.O)
-    public boolean setAccountVisibility(int userId, Account account, String packageName, int newVisibility) {
-        VAccountVisibility accountVisibility = getAccountVisibility(userId, account);
-        if (accountVisibility == null) {
-            return false;
-        }
-        accountVisibility.visibility.put(packageName, newVisibility);
-        saveAllAccountVisibilities();
-        sendAccountsChangedBroadcast(userId);
-        return true;
-    }
+   @TargetApi(26)
+   public boolean setAccountVisibility(int userId, Account account, String packageName, int newVisibility) {
+      VAccountVisibility accountVisibility = this.getAccountVisibility(userId, account);
+      if (accountVisibility == null) {
+         return false;
+      } else {
+         accountVisibility.visibility.put(packageName, newVisibility);
+         this.saveAllAccountVisibilities();
+         this.sendAccountsChangedBroadcast(userId);
+         return true;
+      }
+   }
 
-    @Override
-    @TargetApi(Build.VERSION_CODES.O)
-    public int getAccountVisibility(int userId, Account account, String packageName) {
-        VAccountVisibility accountVisibility = getAccountVisibility(userId, account);
-        if (accountVisibility == null || !accountVisibility.visibility.containsKey(packageName)) {
-            return 0;
-        }
-        return accountVisibility.visibility.get(packageName);
-    }
+   @TargetApi(26)
+   public int getAccountVisibility(int userId, Account account, String packageName) {
+      VAccountVisibility accountVisibility = this.getAccountVisibility(userId, account);
+      return accountVisibility != null && accountVisibility.visibility.containsKey(packageName) ? (Integer)accountVisibility.visibility.get(packageName) : 0;
+   }
 
-    @Override
-    @TargetApi(Build.VERSION_CODES.O)
-    public Map<Account, Integer> getAccountsAndVisibilityForPackage(int userId, String packageName, String accountType) {
-        Map<Account, Integer> hashMap = new HashMap<>();
-        for (Account account : getAccountList(userId, accountType)) {
-            VAccountVisibility accountVisibility = getAccountVisibility(userId, account);
-            if (accountVisibility != null && accountVisibility.visibility.containsKey(packageName)) {
-                hashMap.put(account, accountVisibility.visibility.get(packageName));
-            }
-        }
-        return hashMap;
-    }
+   @TargetApi(26)
+   public Map<Account, Integer> getAccountsAndVisibilityForPackage(int userId, String packageName, String accountType) {
+      Map<Account, Integer> hashMap = new HashMap();
+      Iterator var5 = this.getAccountList(userId, accountType).iterator();
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private boolean insertAccountVisibilityIntoDatabase(int userId, Account account, Map<String, Integer> map) {
-        if (account == null) {
-            return false;
-        }
-        synchronized (this.accountsVisibilitiesByUserId) {
+      while(var5.hasNext()) {
+         Account account = (Account)var5.next();
+         VAccountVisibility accountVisibility = this.getAccountVisibility(userId, account);
+         if (accountVisibility != null && accountVisibility.visibility.containsKey(packageName)) {
+            hashMap.put(account, (Integer)accountVisibility.visibility.get(packageName));
+         }
+      }
+
+      return hashMap;
+   }
+
+   @TargetApi(26)
+   private boolean insertAccountVisibilityIntoDatabase(int userId, Account account, Map<String, Integer> map) {
+      if (account == null) {
+         return false;
+      } else {
+         synchronized(this.accountsVisibilitiesByUserId) {
             VAccountVisibility vAccountVisibility = new VAccountVisibility(userId, account, map);
-            List<VAccountVisibility> list = this.accountsVisibilitiesByUserId.get(userId);
+            List<VAccountVisibility> list = (List)this.accountsVisibilitiesByUserId.get(userId);
             if (list == null) {
-                list = new ArrayList<>();
-                this.accountsVisibilitiesByUserId.put(userId, list);
+               list = new ArrayList();
+               this.accountsVisibilitiesByUserId.put(userId, list);
             }
-            list.add(vAccountVisibility);
-            saveAllAccountVisibilities();
-            sendAccountsChangedBroadcast(vAccountVisibility.userId);
-        }
-        return true;
-    }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private void saveAllAccountVisibilities() {
-        File accountVisibilityConfigFile = VEnvironment.getAccountVisibilityConfigFile();
-        Parcel obtain = Parcel.obtain();
-        try {
-            obtain.writeInt(1);
-            obtain.writeInt(accountsVisibilitiesByUserId.size());
-            for (int i = 0; i < this.accountsVisibilitiesByUserId.size(); i++) {
-                obtain.writeInt(i);
-                List<VAccountVisibility> list = this.accountsVisibilitiesByUserId.valueAt(i);
-                if (list == null) {
-                    obtain.writeInt(0);
-                } else {
-                    obtain.writeInt(list.size());
-                    for (VAccountVisibility writeToParcel : list) {
-                        writeToParcel.writeToParcel(obtain, 0);
-                    }
-                }
+            ((List)list).add(vAccountVisibility);
+            this.saveAllAccountVisibilities();
+            this.sendAccountsChangedBroadcast(vAccountVisibility.userId);
+            return true;
+         }
+      }
+   }
+
+   @TargetApi(26)
+   private void saveAllAccountVisibilities() {
+      File accountVisibilityConfigFile = VEnvironment.getAccountVisibilityConfigFile();
+      Parcel obtain = Parcel.obtain();
+
+      try {
+         obtain.writeInt(1);
+         obtain.writeInt(this.accountsVisibilitiesByUserId.size());
+
+         for(int i = 0; i < this.accountsVisibilitiesByUserId.size(); ++i) {
+            obtain.writeInt(i);
+            List<VAccountVisibility> list = (List)this.accountsVisibilitiesByUserId.valueAt(i);
+            if (list == null) {
+               obtain.writeInt(0);
+            } else {
+               obtain.writeInt(list.size());
+               Iterator var5 = list.iterator();
+
+               while(var5.hasNext()) {
+                  VAccountVisibility writeToParcel = (VAccountVisibility)var5.next();
+                  writeToParcel.writeToParcel(obtain, 0);
+               }
             }
-            obtain.writeLong(this.lastAccountChangeTime);
-            FileOutputStream fileOutputStream = new FileOutputStream(accountVisibilityConfigFile);
-            fileOutputStream.write(obtain.marshall());
-            fileOutputStream.close();
-        } catch (Exception e) {
+         }
+
+         obtain.writeLong(this.lastAccountChangeTime);
+         FileOutputStream fileOutputStream = new FileOutputStream(accountVisibilityConfigFile);
+         fileOutputStream.write(obtain.marshall());
+         fileOutputStream.close();
+      } catch (Exception var7) {
+         Exception e = var7;
+         e.printStackTrace();
+      }
+
+      obtain.recycle();
+   }
+
+   @TargetApi(26)
+   private void readAllAccountVisibilities() {
+      File accountVisibilityConfigFile = VEnvironment.getAccountVisibilityConfigFile();
+      Parcel dest = Parcel.obtain();
+      if (accountVisibilityConfigFile.exists()) {
+         try {
+            FileInputStream is = new FileInputStream(accountVisibilityConfigFile);
+            byte[] bytes = new byte[(int)accountVisibilityConfigFile.length()];
+            int readLength = is.read(bytes);
+            is.close();
+            if (readLength != bytes.length) {
+               throw new IOException(String.format(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQdfKGgVLAZLHlE/Kj06Lmw3TCtrVgUrLS0uCksaJCpqVyMuLzoqVg==")), bytes.length, readLength));
+            }
+
+            dest.unmarshall(bytes, 0, bytes.length);
+            dest.setDataPosition(0);
+            int version = dest.readInt();
+            int userCount = dest.readInt();
+
+            for(int i = 0; i < userCount; ++i) {
+               int userId = dest.readInt();
+               int count = dest.readInt();
+               List<VAccountVisibility> list = new ArrayList();
+               this.accountsVisibilitiesByUserId.put(userId, list);
+
+               for(int j = 0; j < count; ++j) {
+                  list.add(new VAccountVisibility(dest));
+               }
+            }
+
+            this.lastAccountChangeTime = dest.readLong();
+         } catch (Throwable var13) {
+            Throwable e = var13;
             e.printStackTrace();
-        }
-        obtain.recycle();
-    }
+         }
+      }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private void readAllAccountVisibilities() {
-        File accountVisibilityConfigFile = VEnvironment.getAccountVisibilityConfigFile();
-        Parcel dest = Parcel.obtain();
-        if (accountVisibilityConfigFile.exists()) {
+      dest.recycle();
+   }
+
+   @TargetApi(26)
+   private VAccountVisibility getAccountVisibility(int i, String name, String type) {
+      List<VAccountVisibility> list = (List)this.accountsVisibilitiesByUserId.get(i);
+      if (list != null) {
+         Iterator var5 = list.iterator();
+
+         while(var5.hasNext()) {
+            VAccountVisibility vAccountVisibility = (VAccountVisibility)var5.next();
+            if (TextUtils.equals(vAccountVisibility.name, name) && TextUtils.equals(vAccountVisibility.type, type)) {
+               return vAccountVisibility;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   @TargetApi(26)
+   private VAccountVisibility getAccountVisibility(int userId, Account account) {
+      return this.getAccountVisibility(userId, account.name, account.type);
+   }
+
+   public void startAddAccountSession(IAccountManagerResponse response, String accountType, String authTokenType, String[] requiredFeatures, boolean expectActivityLaunch, Bundle options) throws RemoteException {
+      throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qI2snJFo=")));
+   }
+
+   public void startUpdateCredentialsSession(IAccountManagerResponse response, Account account, String authTokenType, boolean expectActivityLaunch, Bundle options) throws RemoteException {
+      throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qI2snJFo=")));
+   }
+
+   public void registerAccountListener(String[] accountTypes) throws RemoteException {
+   }
+
+   public void unregisterAccountListener(String[] accountTypes) throws RemoteException {
+   }
+
+   public void finishSessionAsUser(IAccountManagerResponse response, Bundle sessionBundle, boolean expectActivityLaunch, Bundle appInfo, int userId) throws RemoteException {
+      throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qI2snJFo=")));
+   }
+
+   public void isCredentialsUpdateSuggested(IAccountManagerResponse response, Account account, String statusToken) throws RemoteException {
+      throw new RuntimeException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii0qI2snJFo=")));
+   }
+
+   public AccountAndUser[] getAllAccounts() {
+      List<AccountAndUser> list = new ArrayList();
+
+      for(int i = 0; i < this.accountsByUserId.size(); ++i) {
+         List<VAccount> accounts = (List)this.accountsByUserId.valueAt(i);
+         Iterator var4 = accounts.iterator();
+
+         while(var4.hasNext()) {
+            VAccount account = (VAccount)var4.next();
+            list.add(new AccountAndUser(new Account(account.name, account.type), account.userId));
+         }
+      }
+
+      return (AccountAndUser[])list.toArray(new AccountAndUser[0]);
+   }
+
+   private class GetAccountsByTypeAndFeatureSession extends Session {
+      private final String[] mFeatures;
+      private volatile Account[] mAccountsOfType = null;
+      private volatile ArrayList<Account> mAccountsWithFeatures = null;
+      private volatile int mCurrentAccount = 0;
+
+      public GetAccountsByTypeAndFeatureSession(IAccountManagerResponse response, int userId, AuthenticatorInfo info, String[] features) {
+         super(response, userId, info, false, true, (String)null);
+         this.mFeatures = features;
+      }
+
+      public void run() throws RemoteException {
+         this.mAccountsOfType = VAccountManagerService.this.getAccounts(this.mUserId, this.mAuthenticatorInfo.desc.type);
+         this.mAccountsWithFeatures = new ArrayList(this.mAccountsOfType.length);
+         this.mCurrentAccount = 0;
+         this.checkAccount();
+      }
+
+      public void checkAccount() {
+         if (this.mCurrentAccount >= this.mAccountsOfType.length) {
+            this.sendResult();
+         } else {
+            IAccountAuthenticator accountAuthenticator = this.mAuthenticator;
+            if (accountAuthenticator == null) {
+               Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fM2szQRF9JCg1LAcYLnhSTTdoNwY5KggYKmIkODZuASw8Ki4uKngaLAVqJzA0DRg+LHkaOCRpI1E5Iyo6DmozBi1iAS88Ly1fDm8VGilvESgvPQcqKUsVFituCiAqIy0cLGsFBiBlETAoIBcYOXxTPFo=")) + this.toDebugString());
+            } else {
+               try {
+                  accountAuthenticator.hasFeatures(this, this.mAccountsOfType[this.mCurrentAccount], this.mFeatures);
+               } catch (RemoteException var3) {
+                  this.onError(1, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowMCtLHjAaLy0MKmUzLCVlN1RF")));
+               }
+
+            }
+         }
+      }
+
+      public void onResult(Bundle result) {
+         ++this.mNumResults;
+         if (result == null) {
+            this.onError(5, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoJICpmDlkwKhcMVg==")));
+         } else {
+            if (result.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")), false)) {
+               this.mAccountsWithFeatures.add(this.mAccountsOfType[this.mCurrentAccount]);
+            }
+
+            ++this.mCurrentAccount;
+            this.checkAccount();
+         }
+      }
+
+      public void sendResult() {
+         IAccountManagerResponse response = this.getResponseAndClose();
+         if (response != null) {
             try {
-                FileInputStream is = new FileInputStream(accountVisibilityConfigFile);
-                byte[] bytes = new byte[(int) accountVisibilityConfigFile.length()];
-                int readLength = is.read(bytes);
-                is.close();
-                if (readLength != bytes.length) {
-                    throw new IOException(String.format("Expect length %d, but got %d.", bytes.length, readLength));
-                }
-                dest.unmarshall(bytes, 0, bytes.length);
-                dest.setDataPosition(0);
-                int version = dest.readInt();
-                int userCount = dest.readInt();
-                for (int i = 0; i < userCount; i++) {
-                    int userId = dest.readInt();
-                    int count = dest.readInt();
-                    List<VAccountVisibility> list = new ArrayList<>();
-                    accountsVisibilitiesByUserId.put(userId, list);
-                    for (int j = 0; j < count; j++) {
-                        list.add(new VAccountVisibility(dest));
-                    }
-                }
-                this.lastAccountChangeTime = dest.readLong();
-            } catch (Throwable e) {
-                e.printStackTrace();
+               Account[] accounts = new Account[this.mAccountsWithFeatures.size()];
+
+               for(int i = 0; i < accounts.length; ++i) {
+                  accounts[i] = (Account)this.mAccountsWithFeatures.get(i);
+               }
+
+               if (Log.isLoggable(VAccountManagerService.TAG, 2)) {
+                  Log.v(VAccountManagerService.TAG, this.getClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2P2oFHi9gNDs8Ki0YAmkgAgVlHi8ZM186KWA0ODVuASw5KQgqD2sJIFo=")) + response);
+               }
+
+               Bundle result = new Bundle();
+               result.putParcelableArray(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmEShF")), accounts);
+               response.onResult(result);
+            } catch (RemoteException var4) {
+               RemoteException e = var4;
+               Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoKNARiCiQtKRccCGknTSZlJCwaLi0YI2AwJyNlNAo8LD4uKmwjNFo=")), e);
             }
-        }
-        dest.recycle();
-    }
+         }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private VAccountVisibility getAccountVisibility(int i, String name, String type) {
-        List<VAccountVisibility> list = this.accountsVisibilitiesByUserId.get(i);
-        if (list != null) {
-            for (VAccountVisibility vAccountVisibility : list) {
-                if (TextUtils.equals(vAccountVisibility.name, name) && TextUtils.equals(vAccountVisibility.type, type)) {
-                    return vAccountVisibility;
-                }
-            }
-        }
-        return null;
-    }
+      }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private VAccountVisibility getAccountVisibility(int userId, Account account) {
-        return getAccountVisibility(userId, account.name, account.type);
-    }
+      protected String toDebugString(long now) {
+         return super.toDebugString(now) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186PWgaMBF9JCg1LAcYLmoLRT9nHh47LhY+KmIYICBpATA+LBgAD3VSIFo=")) + (this.mFeatures != null ? TextUtils.join(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MxhSVg==")), this.mFeatures) : null);
+      }
+   }
 
-    @Override
-    public void startAddAccountSession(IAccountManagerResponse response, String accountType, String authTokenType, String[] requiredFeatures, boolean expectActivityLaunch, Bundle options) throws RemoteException {
+   private abstract class Session extends IAccountAuthenticatorResponse.Stub implements IBinder.DeathRecipient, ServiceConnection {
+      final int mUserId;
+      final AuthenticatorInfo mAuthenticatorInfo;
+      private final boolean mStripAuthTokenFromResult;
+      public int mNumResults;
+      IAccountAuthenticator mAuthenticator;
+      private IAccountManagerResponse mResponse;
+      private boolean mExpectActivityLaunch;
+      private long mCreationTime;
+      private String mAccountName;
+      private boolean mAuthDetailsRequired;
+      private boolean mUpdateLastAuthenticatedTime;
+      private int mNumRequestContinued;
+      private int mNumErrors;
 
-    }
-
-    @Override
-    public void startUpdateCredentialsSession(IAccountManagerResponse response, Account account, String authTokenType, boolean expectActivityLaunch, Bundle options) throws RemoteException {
-
-    }
-
-    @Override
-    public void registerAccountListener(String[] accountTypes, String opPackageName) throws RemoteException {
-
-    }
-
-    @Override
-    public void unregisterAccountListener(String[] accountTypes, String opPackageName) throws RemoteException {
-
-    }
-
-    @Override
-    public void finishSessionAsUser(IAccountManagerResponse response, Bundle sessionBundle, boolean expectActivityLaunch, Bundle appInfo, int userId) throws RemoteException {
-
-    }
-
-    @Override
-    public void isCredentialsUpdateSuggested(IAccountManagerResponse response, Account account, String statusToken) throws RemoteException {
-
-    }
-
-    public AccountAndUser[] getAllAccounts() {
-        List<AccountAndUser> list = new ArrayList<>();
-        for (int i = 0; i < accountsByUserId.size(); i++) {
-            List<VAccount> accounts = accountsByUserId.valueAt(i);
-            for (VAccount account : accounts) {
-                list.add(new AccountAndUser(new Account(account.name, account.type), account.userId));
-            }
-        }
-        return list.toArray(new AccountAndUser[0]);
-    }
-
-    final static class AuthTokenRecord {
-        public int userId;
-        public Account account;
-        public long expiryEpochMillis;
-        public String authToken;
-        private String authTokenType;
-        private String packageName;
-
-        AuthTokenRecord(int userId, Account account, String authTokenType, String packageName, String authToken,
-                        long expiryEpochMillis) {
-            this.userId = userId;
-            this.account = account;
-            this.authTokenType = authTokenType;
-            this.packageName = packageName;
-            this.authToken = authToken;
-            this.expiryEpochMillis = expiryEpochMillis;
-        }
-
-        AuthTokenRecord(int userId, Account account, String authTokenType, String packageName) {
-            this.userId = userId;
-            this.account = account;
-            this.authTokenType = authTokenType;
-            this.packageName = packageName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-            AuthTokenRecord that = (AuthTokenRecord) o;
-            return userId == that.userId
-                    && account.equals(that.account)
-                    && authTokenType.equals(that.authTokenType)
-                    && packageName.equals(that.packageName);
-        }
-
-        @Override
-        public int hashCode() {
-            return ((this.userId * 31 + this.account.hashCode()) * 31
-                    + this.authTokenType.hashCode()) * 31
-                    + this.packageName.hashCode();
-        }
-    }
-
-    private final class AuthenticatorInfo {
-        final AuthenticatorDescription desc;
-        final ServiceInfo serviceInfo;
-
-        AuthenticatorInfo(AuthenticatorDescription desc, ServiceInfo info) {
-            this.desc = desc;
-            this.serviceInfo = info;
-        }
-    }
-
-    private final class AuthenticatorCache {
-        final Map<String, AuthenticatorInfo> authenticators = new HashMap<>();
-    }
-
-    private abstract class Session extends IAccountAuthenticatorResponse.Stub
-            implements IBinder.DeathRecipient, ServiceConnection {
-        final int mUserId;
-        final AuthenticatorInfo mAuthenticatorInfo;
-        private final boolean mStripAuthTokenFromResult;
-        public int mNumResults;
-        IAccountAuthenticator mAuthenticator;
-        private IAccountManagerResponse mResponse;
-        private boolean mExpectActivityLaunch;
-        private long mCreationTime;
-        private String mAccountName;
-        private boolean mAuthDetailsRequired;
-        private boolean mUpdateLastAuthenticatedTime;
-        private int mNumRequestContinued;
-        private int mNumErrors;
-
-
-        Session(IAccountManagerResponse response, int userId, AuthenticatorInfo info, boolean expectActivityLaunch, boolean stripAuthTokenFromResult, String accountName, boolean authDetailsRequired, boolean updateLastAuthenticatedTime) {
-            if (info == null) throw new IllegalArgumentException("accountType is null");
+      Session(IAccountManagerResponse response, int userId, AuthenticatorInfo info, boolean expectActivityLaunch, boolean stripAuthTokenFromResult, String accountName, boolean authDetailsRequired, boolean updateLastAuthenticatedTime) {
+         if (info == null) {
+            throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcLOmwgDShlNCgdLAhSVg==")));
+         } else {
             this.mStripAuthTokenFromResult = stripAuthTokenFromResult;
             this.mResponse = response;
             this.mUserId = userId;
@@ -1343,306 +1428,259 @@ public class VAccountManagerService extends IAccountManager.Stub {
             this.mAccountName = accountName;
             this.mAuthDetailsRequired = authDetailsRequired;
             this.mUpdateLastAuthenticatedTime = updateLastAuthenticatedTime;
-            synchronized (mSessions) {
-                mSessions.put(toString(), this);
+            synchronized(VAccountManagerService.this.mSessions) {
+               VAccountManagerService.this.mSessions.put(this.toString(), this);
             }
+
             if (response != null) {
-                try {
-                    response.asBinder().linkToDeath(this, 0 /* flags */);
-                } catch (RemoteException e) {
-                    mResponse = null;
-                    binderDied();
-                }
+               try {
+                  response.asBinder().linkToDeath(this, 0);
+               } catch (RemoteException var12) {
+                  this.mResponse = null;
+                  this.binderDied();
+               }
             }
-        }
 
-        Session(IAccountManagerResponse response, int userId, AuthenticatorInfo info, boolean expectActivityLaunch, boolean stripAuthTokenFromResult, String accountName) {
-            this(response, userId, info, expectActivityLaunch, stripAuthTokenFromResult, accountName, false, false);
-        }
+         }
+      }
 
-        IAccountManagerResponse getResponseAndClose() {
-            if (mResponse == null) {
-                // this session has already been closed
-                return null;
-            }
-            IAccountManagerResponse response = mResponse;
-            close(); // this clears mResponse so we need to save the response before this call
+      Session(IAccountManagerResponse response, int userId, AuthenticatorInfo info, boolean expectActivityLaunch, boolean stripAuthTokenFromResult, String accountName) {
+         this(response, userId, info, expectActivityLaunch, stripAuthTokenFromResult, accountName, false, false);
+      }
+
+      IAccountManagerResponse getResponseAndClose() {
+         if (this.mResponse == null) {
+            return null;
+         } else {
+            IAccountManagerResponse response = this.mResponse;
+            this.close();
             return response;
-        }
+         }
+      }
 
-        private void close() {
-            synchronized (mSessions) {
-                if (mSessions.remove(toString()) == null) {
-                    // the session was already closed, so bail out now
-                    return;
-                }
+      private void close() {
+         synchronized(VAccountManagerService.this.mSessions) {
+            if (VAccountManagerService.this.mSessions.remove(this.toString()) == null) {
+               return;
             }
-            if (mResponse != null) {
-                // stop listening for response deaths
-                mResponse.asBinder().unlinkToDeath(this, 0 /* flags */);
+         }
 
-                // clear this so that we don't accidentally send any further results
-                mResponse = null;
-            }
-            unbind();
-        }
+         if (this.mResponse != null) {
+            this.mResponse.asBinder().unlinkToDeath(this, 0);
+            this.mResponse = null;
+         }
 
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mAuthenticator = IAccountAuthenticator.Stub.asInterface(service);
+         this.unbind();
+      }
+
+      public void onServiceConnected(ComponentName name, IBinder service) {
+         this.mAuthenticator = IAccountAuthenticator.Stub.asInterface(service);
+
+         try {
+            this.run();
+         } catch (RemoteException var4) {
+            this.onError(1, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uDWowMCtLHjAaLy0MKmUzLCVlN1RF")));
+         }
+
+      }
+
+      public void onRequestContinued() {
+         ++this.mNumRequestContinued;
+      }
+
+      public void onError(int errorCode, String errorMessage) {
+         ++this.mNumErrors;
+         IAccountManagerResponse response = this.getResponseAndClose();
+         if (response != null) {
+            Log.v(VAccountManagerService.TAG, this.getClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2P2oFHi9gNDs8Ki0YWmoaRSVsM1gaPQgAKksVMCBlJyAeKRcYJ3gVSFo=")) + response);
+
             try {
-                run();
-            } catch (RemoteException e) {
-                onError(AccountManager.ERROR_CODE_REMOTE_EXCEPTION,
-                        "remote exception");
+               response.onError(errorCode, errorMessage);
+            } catch (RemoteException var5) {
+               RemoteException e = var5;
+               Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKW8zAiVgMFk1KjsMKGoVNAR+MzwqLRcuIWMVESN9NAocKQccJ2MKRTVoHjwZJQcYJXkVID5sJyQ0PhcMM28wICVgNAozKj06Vg==")), e);
             }
-        }
+         } else {
+            Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKW8zAiVgMFk1KjsMKGoVNAR+MzwsLAcMJ30KFgZ5HiwbKQcYJ2sVSFo=")));
+         }
 
-        @Override
-        public void onRequestContinued() {
-            mNumRequestContinued++;
-        }
+      }
 
-        @Override
-        public void onError(int errorCode, String errorMessage) {
-            mNumErrors++;
-            IAccountManagerResponse response = getResponseAndClose();
-            if (response != null) {
-                Log.v(TAG, getClass().getSimpleName()
-                        + " calling onError() on response " + response);
-                try {
-                    response.onError(errorCode, errorMessage);
-                } catch (RemoteException e) {
-                    Log.v(TAG, "Session.onError: caught RemoteException while responding", e);
-                }
-            } else {
-                Log.v(TAG, "Session.onError: already closed");
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mAuthenticator = null;
-            IAccountManagerResponse response = getResponseAndClose();
-            if (response != null) {
-                try {
-                    response.onError(AccountManager.ERROR_CODE_REMOTE_EXCEPTION,
-                            "disconnected");
-                } catch (RemoteException e) {
-                    Log.v(TAG, "Session.onServiceDisconnected: "
-                            + "caught RemoteException while responding", e);
-                }
-            }
-        }
-
-        @Override
-        public void onResult(Bundle result) throws RemoteException {
-            mNumResults++;
-            if (result != null) {
-                boolean isSuccessfulConfirmCreds = result.getBoolean(
-                        AccountManager.KEY_BOOLEAN_RESULT, false);
-                boolean isSuccessfulUpdateCredsOrAddAccount =
-                        result.containsKey(AccountManager.KEY_ACCOUNT_NAME)
-                                && result.containsKey(AccountManager.KEY_ACCOUNT_TYPE);
-                // We should only update lastAuthenticated time, if
-                // mUpdateLastAuthenticatedTime is true and the confirmRequest
-                // or updateRequest was successful
-                boolean needUpdate = mUpdateLastAuthenticatedTime
-                        && (isSuccessfulConfirmCreds || isSuccessfulUpdateCredsOrAddAccount);
-                if (needUpdate || mAuthDetailsRequired) {
-                    synchronized (accountsByUserId) {
-                        VAccount account = getAccount(mUserId, mAccountName, mAuthenticatorInfo.desc.type);
-                        if (needUpdate && account != null) {
-                            account.lastAuthenticatedTime = System.currentTimeMillis();
-                            saveAllAccounts();
-                        }
-                        if (mAuthDetailsRequired) {
-                            long lastAuthenticatedTime = -1;
-                            if (account != null) {
-                                lastAuthenticatedTime = account.lastAuthenticatedTime;
-                            }
-                            result.putLong(AccountManagerCompat.KEY_LAST_AUTHENTICATED_TIME, lastAuthenticatedTime);
-                        }
-                    }
-                }
-            }
-            if (result != null
-                    && !TextUtils.isEmpty(result.getString(AccountManager.KEY_AUTHTOKEN))) {
-//				String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
-//				String accountType = result.getString(AccountManager.KEY_ACCOUNT_TYPE);
-//				if (!TextUtils.isEmpty(accountName) && !TextUtils.isEmpty(accountType)) {
-//					Account account = new Account(accountName, accountType);
-//					FIXME: Cancel Notification
-//				}
-            }
-            Intent intent = null;
-            if (result != null) {
-                intent = result.getParcelable(AccountManager.KEY_INTENT);
-            }
-            IAccountManagerResponse response;
-            if (mExpectActivityLaunch && result != null
-                    && result.containsKey(AccountManager.KEY_INTENT)) {
-                response = mResponse;
-            } else {
-                response = getResponseAndClose();
-            }
-            if (response != null) {
-                try {
-                    if (result == null) {
-                        Log.v(TAG, getClass().getSimpleName()
-                                + " calling onError() on response " + response);
-                        response.onError(AccountManager.ERROR_CODE_INVALID_RESPONSE,
-                                "null bundle returned");
-                    } else {
-                        if (mStripAuthTokenFromResult) {
-                            result.remove(AccountManager.KEY_AUTHTOKEN);
-                        }
-                        Log.v(TAG, getClass().getSimpleName()
-                                + " calling onResult() on response " + response);
-                        if ((result.getInt(AccountManager.KEY_ERROR_CODE, -1) > 0) &&
-                                (intent == null)) {
-                            // All AccountManager error codes are greater than 0
-                            response.onError(result.getInt(AccountManager.KEY_ERROR_CODE),
-                                    result.getString(AccountManager.KEY_ERROR_MESSAGE));
-                        } else {
-                            response.onResult(result);
-                        }
-                    }
-                } catch (RemoteException e) {
-                    // if the caller is dead then there is no one to care about remote exceptions
-                    Log.v(TAG, "failure while notifying response", e);
-                }
-            }
-        }
-
-        public abstract void run() throws RemoteException;
-
-        void bind() {
-            Log.v(TAG, "initiating bind to authenticator type " + mAuthenticatorInfo.desc.type);
-            Intent intent = new Intent();
-            intent.setAction(AccountManager.ACTION_AUTHENTICATOR_INTENT);
-            intent.setClassName(mAuthenticatorInfo.serviceInfo.packageName, mAuthenticatorInfo.serviceInfo.name);
-            intent.putExtra("_VA_|_user_id_", mUserId);
-
-            if (!mContext.bindService(intent, this, Context.BIND_AUTO_CREATE)) {
-                Log.d(TAG, "bind attempt failed for " + toDebugString());
-                onError(AccountManager.ERROR_CODE_REMOTE_EXCEPTION, "bind failure");
-            }
-        }
-
-        protected String toDebugString() {
-            return toDebugString(SystemClock.elapsedRealtime());
-        }
-
-        protected String toDebugString(long now) {
-            return "Session: expectLaunch " + mExpectActivityLaunch
-                    + ", connected " + (mAuthenticator != null)
-                    + ", stats (" + mNumResults + "/" + mNumRequestContinued
-                    + "/" + mNumErrors + ")"
-                    + ", lifetime " + ((now - mCreationTime) / 1000.0);
-        }
-
-        private void unbind() {
-            if (mAuthenticator != null) {
-                mAuthenticator = null;
-                mContext.unbindService(this);
-            }
-        }
-
-        @Override
-        public void binderDied() {
-            mResponse = null;
-            close();
-        }
-    }
-
-    private class GetAccountsByTypeAndFeatureSession extends Session {
-        private final String[] mFeatures;
-        private volatile Account[] mAccountsOfType = null;
-        private volatile ArrayList<Account> mAccountsWithFeatures = null;
-        private volatile int mCurrentAccount = 0;
-
-        public GetAccountsByTypeAndFeatureSession(IAccountManagerResponse response, int userId, AuthenticatorInfo info, String[] features) {
-            super(response, userId, info, false /* expectActivityLaunch */,
-                    true /* stripAuthTokenFromResult */, null /* accountName */);
-            mFeatures = features;
-        }
-
-        @Override
-        public void run() throws RemoteException {
-            mAccountsOfType = getAccounts(mUserId, mAuthenticatorInfo.desc.type);
-            // check whether each account matches the requested features
-            mAccountsWithFeatures = new ArrayList<Account>(mAccountsOfType.length);
-            mCurrentAccount = 0;
-
-            checkAccount();
-        }
-
-        public void checkAccount() {
-            if (mCurrentAccount >= mAccountsOfType.length) {
-                sendResult();
-                return;
-            }
-
-            final IAccountAuthenticator accountAuthenticator = mAuthenticator;
-            if (accountAuthenticator == null) {
-                // It is possible that the authenticator has died, which is indicated by
-                // mAuthenticator being set to null. If this happens then just abort.
-                // There is no need to send back a result or error in this case since
-                // that already happened when mAuthenticator was cleared.
-                Log.v(TAG, "checkAccount: aborting session since we are no longer"
-                        + " connected to the authenticator, " + toDebugString());
-                return;
-            }
+      public void onServiceDisconnected(ComponentName name) {
+         this.mAuthenticator = null;
+         IAccountManagerResponse response = this.getResponseAndClose();
+         if (response != null) {
             try {
-                accountAuthenticator.hasFeatures(this, mAccountsOfType[mCurrentAccount], mFeatures);
-            } catch (RemoteException e) {
-                onError(AccountManager.ERROR_CODE_REMOTE_EXCEPTION, "remote exception");
+               response.onError(1, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgYKWszGiZgNDA5LBcMPg==")));
+            } catch (RemoteException var4) {
+               RemoteException e = var4;
+               Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKW8zAiVgMFk1KjwqPWoaHi9oJyhKIxc2JWAgRSluDiw9Ly4bPngVLDNsESA/IF4iE24KTQFlNwYKKBg2M28KMC9gJFg8LC0AMW8zBShsNyg6KQgAKmIaGiluJ1RF")), e);
             }
-        }
+         }
 
-        @Override
-        public void onResult(Bundle result) {
-            mNumResults++;
-            if (result == null) {
-                onError(AccountManager.ERROR_CODE_INVALID_RESPONSE, "null bundle");
-                return;
+      }
+
+      public void onResult(Bundle result) throws RemoteException {
+         ++this.mNumResults;
+         if (result != null) {
+            boolean isSuccessfulConfirmCreds = result.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4AD2oFNDdgNSw/Iy4MCGUzSFo=")), false);
+            boolean isSuccessfulUpdateCredsOrAddAccount = result.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGULJCl9JB4vKj42Vg=="))) && result.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")));
+            boolean needUpdate = this.mUpdateLastAuthenticatedTime && (isSuccessfulConfirmCreds || isSuccessfulUpdateCredsOrAddAccount);
+            if (needUpdate || this.mAuthDetailsRequired) {
+               synchronized(VAccountManagerService.this.accountsByUserId) {
+                  VAccount account = VAccountManagerService.this.getAccount(this.mUserId, this.mAccountName, this.mAuthenticatorInfo.desc.type);
+                  if (needUpdate && account != null) {
+                     account.lastAuthenticatedTime = System.currentTimeMillis();
+                     VAccountManagerService.this.saveAllAccounts();
+                  }
+
+                  if (this.mAuthDetailsRequired) {
+                     long lastAuthenticatedTime = -1L;
+                     if (account != null) {
+                        lastAuthenticatedTime = account.lastAuthenticatedTime;
+                     }
+
+                     result.putLong(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+KWwLJAVmHho/Kj42MW4FQQZrASwVIxgIJw==")), lastAuthenticatedTime);
+                  }
+               }
             }
-            if (result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)) {
-                mAccountsWithFeatures.add(mAccountsOfType[mCurrentAccount]);
+         }
+
+         if (result != null && !TextUtils.isEmpty(result.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUKMCVjJDA2"))))) {
+         }
+
+         Intent intent = null;
+         if (result != null) {
+            intent = (Intent)result.getParcelable(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")));
+         }
+
+         IAccountManagerResponse response;
+         if (this.mExpectActivityLaunch && result != null && result.containsKey(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcLGgVBgY=")))) {
+            response = this.mResponse;
+         } else {
+            response = this.getResponseAndClose();
+         }
+
+         if (response != null) {
+            try {
+               if (result == null) {
+                  Log.v(VAccountManagerService.TAG, this.getClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2P2oFHi9gNDs8Ki0YWmoaRSVsM1gaPQgAKksVMCBlJyAeKRcYJ3gVSFo=")) + response);
+                  response.onError(5, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz0uDmoJICpmDlkwKhcLOmoVGgZvDgobLhgqVg==")));
+               } else {
+                  if (this.mStripAuthTokenFromResult) {
+                     result.remove(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUKMCVjJDA2")));
+                  }
+
+                  Log.v(VAccountManagerService.TAG, this.getClass().getSimpleName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg2P2oFHi9gNDs8Ki0YAmkgAgVlHi8ZM186KWA0ODVuASw5KQgqD2sJIFo=")) + response);
+                  if (result.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQcMKmowFhNgJAo/")), -1) > 0 && intent == null) {
+                     response.onError(result.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQcMKmowFhNgJAo/"))), result.getString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQcMKmowFg1iASgpLwc6PQ=="))));
+                  } else {
+                     response.onResult(result);
+                  }
+               }
+            } catch (RemoteException var11) {
+               Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoKNARiCiQtKRccCGknTSZlJCwaLi0YI2AwJyNlNAo8LD4uKmwjNFo=")), var11);
             }
-            mCurrentAccount++;
-            checkAccount();
-        }
+         }
 
-        public void sendResult() {
-            IAccountManagerResponse response = getResponseAndClose();
-            if (response != null) {
-                try {
-                    Account[] accounts = new Account[mAccountsWithFeatures.size()];
-                    for (int i = 0; i < accounts.length; i++) {
-                        accounts[i] = mAccountsWithFeatures.get(i);
-                    }
-                    if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                        Log.v(TAG, getClass().getSimpleName() + " calling onResult() on response "
-                                + response);
-                    }
-                    Bundle result = new Bundle();
-                    result.putParcelableArray(AccountManager.KEY_ACCOUNTS, accounts);
-                    response.onResult(result);
-                } catch (RemoteException e) {
-                    // if the caller is dead then there is no one to care about remote exceptions
-                    Log.v(TAG, "failure while notifying response", e);
-                }
-            }
-        }
+      }
 
+      public abstract void run() throws RemoteException;
 
-        @Override
-        protected String toDebugString(long now) {
-            return super.toDebugString(now) + ", getAccountsByTypeAndFeatures"
-                    + ", " + (mFeatures != null ? TextUtils.join(",", mFeatures) : null);
-        }
-    }
+      void bind() {
+         Log.v(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcCWwFAjdmHgY2KCkmOGwjMCx4HiwcPQg+CWYaBiBsNzAiKAhbCmUgETRsDh4dJAMiVg==")) + this.mAuthenticatorInfo.desc.type);
+         Intent intent = new Intent();
+         intent.setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1k7Ly0qDWUjMAZsIxoCLT42KWYKRT9hAQo9Kj4AKm8VAjVrHiw6Jz5SVg==")));
+         intent.setClassName(this.mAuthenticatorInfo.serviceInfo.packageName, this.mAuthenticatorInfo.serviceInfo.name);
+         if (!VActivityManager.get().bindService(VAccountManagerService.this.mContext, intent, this, 1, this.mUserId)) {
+            Log.d(VAccountManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4YCGgJIDdmEQo/KggmLn4zHjdqAQIgLgQ6ImAjMyM=")) + this.toDebugString());
+            this.onError(1, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lj4YCGgJIC59DgYoLAguPQ==")));
+         }
 
+      }
+
+      protected String toDebugString() {
+         return this.toDebugString(SystemClock.elapsedRealtime());
+      }
+
+      protected String toDebugString(long now) {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKW8zAiVgMwU8KAgAKmkjAgZ9ETgwLC42LEsVSFo=")) + this.mExpectActivityLaunch + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186OWozBiZiDiggKAc1Og==")) + (this.mAuthenticator != null) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186KWwFJAZhICc0")) + this.mNumResults + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + this.mNumRequestContinued + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("My5SVg==")) + this.mNumErrors + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAQDOGoFAi5iAQozKgcLOg==")) + (double)(now - this.mCreationTime) / 1000.0;
+      }
+
+      private void unbind() {
+         if (this.mAuthenticator != null) {
+            this.mAuthenticator = null;
+            VActivityManager.get().unbindService(VAccountManagerService.this.mContext, this);
+         }
+
+      }
+
+      public void binderDied() {
+         this.mResponse = null;
+         this.close();
+      }
+   }
+
+   private final class AuthenticatorCache {
+      final Map<String, AuthenticatorInfo> authenticators;
+
+      private AuthenticatorCache() {
+         this.authenticators = new HashMap();
+      }
+
+      // $FF: synthetic method
+      AuthenticatorCache(Object x1) {
+         this();
+      }
+   }
+
+   private final class AuthenticatorInfo {
+      final AuthenticatorDescription desc;
+      final ServiceInfo serviceInfo;
+
+      AuthenticatorInfo(AuthenticatorDescription desc, ServiceInfo info) {
+         this.desc = desc;
+         this.serviceInfo = info;
+      }
+   }
+
+   static final class AuthTokenRecord {
+      public int userId;
+      public Account account;
+      public long expiryEpochMillis;
+      public String authToken;
+      private String authTokenType;
+      private String packageName;
+
+      AuthTokenRecord(int userId, Account account, String authTokenType, String packageName, String authToken, long expiryEpochMillis) {
+         this.userId = userId;
+         this.account = account;
+         this.authTokenType = authTokenType;
+         this.packageName = packageName;
+         this.authToken = authToken;
+         this.expiryEpochMillis = expiryEpochMillis;
+      }
+
+      AuthTokenRecord(int userId, Account account, String authTokenType, String packageName) {
+         this.userId = userId;
+         this.account = account;
+         this.authTokenType = authTokenType;
+         this.packageName = packageName;
+      }
+
+      public boolean equals(Object o) {
+         if (this == o) {
+            return true;
+         } else if (o != null && this.getClass() == o.getClass()) {
+            AuthTokenRecord that = (AuthTokenRecord)o;
+            return this.userId == that.userId && this.account.equals(that.account) && this.authTokenType.equals(that.authTokenType) && this.packageName.equals(that.packageName);
+         } else {
+            return false;
+         }
+      }
+
+      public int hashCode() {
+         return ((this.userId * 31 + this.account.hashCode()) * 31 + this.authTokenType.hashCode()) * 31 + this.packageName.hashCode();
+      }
+   }
 }

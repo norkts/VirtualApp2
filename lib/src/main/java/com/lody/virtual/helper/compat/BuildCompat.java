@@ -1,113 +1,132 @@
 package com.lody.virtual.helper.compat;
 
 import android.os.Build;
-
-/**
- * @author Lody
- */
+import android.os.Build.VERSION;
+import com.lody.virtual.StringFog;
 
 public class BuildCompat {
+   private static ROMType sRomType;
 
-    public static int getPreviewSDKInt() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                return Build.VERSION.PREVIEW_SDK_INT;
-            } catch (Throwable e) {
-                // ignore
-            }
-        }
-        return 0;
-    }
+   public static int getPreviewSDKInt() {
+      if (VERSION.SDK_INT >= 23) {
+         try {
+            return VERSION.PREVIEW_SDK_INT;
+         } catch (Throwable var1) {
+         }
+      }
 
-    public static boolean isQ() {
-        return Build.VERSION.SDK_INT > 28 || (Build.VERSION.SDK_INT == 28 && getPreviewSDKInt() > 0);
-    }
+      return 0;
+   }
 
-    public static boolean isOreo() {
-        return Build.VERSION.SDK_INT > 25 || (Build.VERSION.SDK_INT == 25 && getPreviewSDKInt() > 0);
-    }
+   public static boolean isOreo() {
+      return VERSION.SDK_INT > 25 || VERSION.SDK_INT == 25 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isPie() {
-        return Build.VERSION.SDK_INT > 27 || (Build.VERSION.SDK_INT == 27 && getPreviewSDKInt() > 0);
-    }
+   public static boolean isPie() {
+      return VERSION.SDK_INT > 27 || VERSION.SDK_INT == 27 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isSamsung() {
-        return "samsung".equalsIgnoreCase(Build.BRAND) || "samsung".equalsIgnoreCase(Build.MANUFACTURER);
-    }
+   public static boolean isQ() {
+      return VERSION.SDK_INT > 28 || VERSION.SDK_INT == 28 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isEMUI() {
-        if (Build.DISPLAY.toUpperCase().startsWith("EMUI")) {
-            return true;
-        }
-        String property = SystemPropertiesCompat.get("ro.build.version.emui");
-        return property != null && property.contains("EmotionUI");
-    }
+   public static boolean isR() {
+      return VERSION.SDK_INT > 29 || VERSION.SDK_INT == 29 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isMIUI() {
-        return SystemPropertiesCompat.getInt("ro.miui.ui.version.code", 0) > 0;
-    }
+   public static boolean isS() {
+      return VERSION.SDK_INT > 30 || VERSION.SDK_INT == 30 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isFlyme() {
-        return Build.DISPLAY.toLowerCase().contains("flyme");
-    }
+   public static boolean isT() {
+      return VERSION.SDK_INT > 31 || VERSION.SDK_INT == 31 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isColorOS() {
-        return SystemPropertiesCompat.isExist("ro.build.version.opporom")
-                || SystemPropertiesCompat.isExist("ro.rom.different.version");
-    }
+   public static boolean isSL() {
+      return VERSION.SDK_INT > 31 || VERSION.SDK_INT == 31 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean is360UI() {
-        String property = SystemPropertiesCompat.get("ro.build.uiversion");
-        return property != null && property.toUpperCase().contains("360UI");
-    }
+   public static boolean isTiramisu() {
+      return VERSION.SDK_INT > 32 || VERSION.SDK_INT == 32 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isLetv() {
-        return Build.MANUFACTURER.equalsIgnoreCase("Letv");
-    }
+   public static boolean isUpsideDownCake() {
+      return VERSION.SDK_INT > 33 || VERSION.SDK_INT == 33 && getPreviewSDKInt() > 0;
+   }
 
-    public static boolean isVivo() {
-        return SystemPropertiesCompat.isExist("ro.vivo.os.build.display.id");
-    }
+   public static boolean isSamsung() {
+      return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+DW8wNCZiJ1RF")).equalsIgnoreCase(Build.BRAND) || StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4+DW8wNCZiJ1RF")).equalsIgnoreCase(Build.MANUFACTURER);
+   }
 
+   public static boolean isEMUI() {
+      if (Build.DISPLAY.toUpperCase().startsWith(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQYIBX0VSFo=")))) {
+         return true;
+      } else {
+         String property = SystemPropertiesCompat.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4fCGsgNC9gHg02LD0MKGoFLCVlMxogLBcuIw==")));
+         return property != null && property.contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQgID2wFAiVgNTAJ")));
+      }
+   }
 
-    private static ROMType sRomType;
+   public static boolean isMIUI() {
+      return SystemPropertiesCompat.getInt(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4fCGoVAgVjClkvKQMYLGkgRQNqAQYbPC42KWIaLFo=")), 0) > 0;
+   }
 
-    public static ROMType getROMType() {
-        if (sRomType == null) {
-            if (isEMUI()) {
-                sRomType = ROMType.EMUI;
-            } else if (isMIUI()) {
-                sRomType = ROMType.MIUI;
-            } else if (isFlyme()) {
-                sRomType = ROMType.FLYME;
-            } else if (isColorOS()) {
-                sRomType = ROMType.COLOR_OS;
-            } else if (is360UI()) {
-                sRomType = ROMType._360;
-            } else if (isLetv()) {
-                sRomType = ROMType.LETV;
-            } else if (isVivo()) {
-                sRomType = ROMType.VIVO;
-            } else if (isSamsung()) {
-                sRomType = ROMType.SAMSUNG;
-            } else {
-                sRomType = ROMType.OTHER;
-            }
-        }
-        return sRomType;
-    }
+   public static boolean isFlyme() {
+      return Build.DISPLAY.toLowerCase().contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4EJ2oVNFo=")));
+   }
 
-    public enum ROMType {
-        EMUI,
-        MIUI,
-        FLYME,
-        COLOR_OS,
-        LETV,
-        VIVO,
-        _360,
-        SAMSUNG,
+   public static boolean isColorOS() {
+      return SystemPropertiesCompat.isExist(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4fCGsgNC9gHg02LD0MKGoFLCVlMxocKQc6KWEwAig="))) || SystemPropertiesCompat.isExist(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4fCG8jGiNONAozKD0+PWoVGiZvVho9LhcMD2MKAik=")));
+   }
 
-        OTHER
-    }
+   public static boolean is360UI() {
+      String property = SystemPropertiesCompat.get(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4fCGsgNC9gHg02LAccLGkgRQNqAQYb")));
+      return property != null && property.toUpperCase().contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OikhKGQbAlo=")));
+   }
 
+   public static boolean isLetv() {
+      return Build.MANUFACTURER.equalsIgnoreCase(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OxguLGwjSFo=")));
+   }
+
+   public static boolean isVivo() {
+      return SystemPropertiesCompat.isExist(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4fCGwjAj5gIFk1IykYOGUjLCRrVhovIxc2DmAaPAZ8NBot")));
+   }
+
+   public static ROMType getROMType() {
+      if (sRomType == null) {
+         if (isEMUI()) {
+            sRomType = BuildCompat.ROMType.EMUI;
+         } else if (isMIUI()) {
+            sRomType = BuildCompat.ROMType.MIUI;
+         } else if (isFlyme()) {
+            sRomType = BuildCompat.ROMType.FLYME;
+         } else if (isColorOS()) {
+            sRomType = BuildCompat.ROMType.COLOR_OS;
+         } else if (is360UI()) {
+            sRomType = BuildCompat.ROMType._360;
+         } else if (isLetv()) {
+            sRomType = BuildCompat.ROMType.LETV;
+         } else if (isVivo()) {
+            sRomType = BuildCompat.ROMType.VIVO;
+         } else if (isSamsung()) {
+            sRomType = BuildCompat.ROMType.SAMSUNG;
+         } else {
+            sRomType = BuildCompat.ROMType.OTHER;
+         }
+      }
+
+      return sRomType;
+   }
+
+   public static enum ROMType {
+      EMUI,
+      MIUI,
+      FLYME,
+      COLOR_OS,
+      LETV,
+      VIVO,
+      _360,
+      SAMSUNG,
+      OTHER;
+   }
 }

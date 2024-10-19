@@ -1,28 +1,19 @@
 package com.lody.virtual.client.hook.proxies.media.router;
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import com.lody.virtual.client.hook.base.ReplaceCallingPkgMethodProxy;
-
 import mirror.android.media.IMediaRouterService;
 
-/**
- * @author Lody
- * @see android.media.MediaRouter
- */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+@TargetApi(16)
 public class MediaRouterServiceStub extends BinderInvocationProxy {
+   public MediaRouterServiceStub() {
+      super(IMediaRouterService.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwguPGUVJB9hNB4vLBcMKA==")));
+   }
 
-    public MediaRouterServiceStub() {
-        super(IMediaRouterService.Stub.asInterface, Context.MEDIA_ROUTER_SERVICE);
-    }
-
-    @Override
-    protected void onBindMethods() {
-        super.onBindMethods();
-        addMethodProxy(new ReplaceCallingPkgMethodProxy("registerClientAsUser"));
-    }
+   protected void onBindMethods() {
+      super.onBindMethods();
+      this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Kj4uPWUaLAZiASwfKhccPW8aBhFsIig6LhcMVg=="))));
+   }
 }

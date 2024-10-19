@@ -1,565 +1,515 @@
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.lody.virtual.helper.collection;
 
+import com.lody.virtual.StringFog;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Helper for writing standard Java collection interfaces to a data
- * structure like {@link ArrayMap}.
- * @hide
- */
 abstract class MapCollections<K, V> {
-    EntrySet mEntrySet;
-    KeySet mKeySet;
-    ValuesCollection mValues;
+   MapCollections<K, V>.EntrySet mEntrySet;
+   MapCollections<K, V>.KeySet mKeySet;
+   MapCollections<K, V>.ValuesCollection mValues;
 
-    public static <K, V> boolean containsAllHelper(Map<K, V> map, Collection<?> collection) {
-        Iterator<?> it = collection.iterator();
-        while (it.hasNext()) {
-            if (!map.containsKey(it.next())) {
-                return false;
-            }
-        }
-        return true;
-    }
+   public static <K, V> boolean containsAllHelper(Map<K, V> map, Collection<?> collection) {
+      Iterator<?> it = collection.iterator();
 
-    public static <K, V> boolean removeAllHelper(Map<K, V> map, Collection<?> collection) {
-        int oldSize = map.size();
-        Iterator<?> it = collection.iterator();
-        while (it.hasNext()) {
-            map.remove(it.next());
-        }
-        return oldSize != map.size();
-    }
-
-        public static <K, V> boolean retainAllHelper(Map<K, V> map, Collection<?> collection) {
-        int oldSize = map.size();
-        Iterator<K> it = map.keySet().iterator();
-        while (it.hasNext()) {
-            if (!collection.contains(it.next())) {
-                it.remove();
-            }
-        }
-        return oldSize != map.size();
-    };
-
-        public static <T> boolean equalsSetHelper(Set<T> set, Object object) {
-        if (set == object) {
+      do {
+         if (!it.hasNext()) {
             return true;
-        }
-        if (object instanceof Set) {
-            Set<?> s = (Set<?>) object;
+         }
+      } while(map.containsKey(it.next()));
 
-            try {
-                return set.size() == s.size() && set.containsAll(s);
-            } catch (NullPointerException ignored) {
-                return false;
-            } catch (ClassCastException ignored) {
-                return false;
+      return false;
+   }
+
+   public static <K, V> boolean removeAllHelper(Map<K, V> map, Collection<?> collection) {
+      int oldSize = map.size();
+      Iterator<?> it = collection.iterator();
+
+      while(it.hasNext()) {
+         map.remove(it.next());
+      }
+
+      return oldSize != map.size();
+   }
+
+   public static <K, V> boolean retainAllHelper(Map<K, V> map, Collection<?> collection) {
+      int oldSize = map.size();
+      Iterator<K> it = map.keySet().iterator();
+
+      while(it.hasNext()) {
+         if (!collection.contains(it.next())) {
+            it.remove();
+         }
+      }
+
+      return oldSize != map.size();
+   }
+
+   public static <T> boolean equalsSetHelper(Set<T> set, Object object) {
+      if (set == object) {
+         return true;
+      } else if (object instanceof Set) {
+         Set<?> s = (Set)object;
+
+         try {
+            return set.size() == s.size() && set.containsAll(s);
+         } catch (NullPointerException var4) {
+            return false;
+         } catch (ClassCastException var5) {
+            return false;
+         }
+      } else {
+         return false;
+      }
+   }
+
+   public Object[] toArrayHelper(int offset) {
+      int N = this.colGetSize();
+      Object[] result = new Object[N];
+
+      for(int i = 0; i < N; ++i) {
+         result[i] = this.colGetEntry(i, offset);
+      }
+
+      return result;
+   }
+
+   public <T> T[] toArrayHelper(T[] array, int offset) {
+      int N = this.colGetSize();
+      if (array.length < N) {
+         T[] newArray = (Object[])Array.newInstance(array.getClass().getComponentType(), N);
+         array = newArray;
+      }
+
+      for(int i = 0; i < N; ++i) {
+         array[i] = this.colGetEntry(i, offset);
+      }
+
+      if (array.length > N) {
+         array[N] = null;
+      }
+
+      return array;
+   }
+
+   public Set<Map.Entry<K, V>> getEntrySet() {
+      if (this.mEntrySet == null) {
+         this.mEntrySet = new EntrySet();
+      }
+
+      return this.mEntrySet;
+   }
+
+   public Set<K> getKeySet() {
+      if (this.mKeySet == null) {
+         this.mKeySet = new KeySet();
+      }
+
+      return this.mKeySet;
+   }
+
+   public Collection<V> getValues() {
+      if (this.mValues == null) {
+         this.mValues = new ValuesCollection();
+      }
+
+      return this.mValues;
+   }
+
+   protected abstract int colGetSize();
+
+   protected abstract Object colGetEntry(int var1, int var2);
+
+   protected abstract int colIndexOfKey(Object var1);
+
+   protected abstract int colIndexOfValue(Object var1);
+
+   protected abstract Map<K, V> colGetMap();
+
+   protected abstract void colPut(K var1, V var2);
+
+   protected abstract V colSetValue(int var1, V var2);
+
+   protected abstract void colRemoveAt(int var1);
+
+   protected abstract void colClear();
+
+   final class ValuesCollection implements Collection<V> {
+      public boolean add(V object) {
+         throw new UnsupportedOperationException();
+      }
+
+      public boolean addAll(Collection<? extends V> collection) {
+         throw new UnsupportedOperationException();
+      }
+
+      public void clear() {
+         MapCollections.this.colClear();
+      }
+
+      public boolean contains(Object object) {
+         return MapCollections.this.colIndexOfValue(object) >= 0;
+      }
+
+      public boolean containsAll(Collection<?> collection) {
+         Iterator<?> it = collection.iterator();
+
+         do {
+            if (!it.hasNext()) {
+               return true;
             }
-        }
-        return false;
-    };
+         } while(this.contains(it.next()));
 
-        public Object[] toArrayHelper(int offset) {
-        final int N = colGetSize();
-        Object[] result = new Object[N];
-        for (int i=0; i<N; i++) {
-            result[i] = colGetEntry(i, offset);
-        }
-        return result;
-    };
+         return false;
+      }
 
-    public <T> T[] toArrayHelper(T[] array, int offset) {
-        final int N  = colGetSize();
-        if (array.length < N) {
-            @SuppressWarnings("unchecked") T[] newArray
-                = (T[]) Array.newInstance(array.getClass().getComponentType(), N);
-            array = newArray;
-        }
-        for (int i=0; i<N; i++) {
-            array[i] = (T)colGetEntry(i, offset);
-        }
-        if (array.length > N) {
-            array[N] = null;
-        }
-        return array;
-    }
+      public boolean isEmpty() {
+         return MapCollections.this.colGetSize() == 0;
+      }
 
-    public Set<Map.Entry<K, V>> getEntrySet() {
-        if (mEntrySet == null) {
-            mEntrySet = new EntrySet();
-        }
-        return mEntrySet;
-    }
+      public Iterator<V> iterator() {
+         return MapCollections.this.new ArrayIterator(1);
+      }
 
-    public Set<K> getKeySet() {
-        if (mKeySet == null) {
-            mKeySet = new KeySet();
-        }
-        return mKeySet;
-    }
+      public boolean remove(Object object) {
+         int index = MapCollections.this.colIndexOfValue(object);
+         if (index >= 0) {
+            MapCollections.this.colRemoveAt(index);
+            return true;
+         } else {
+            return false;
+         }
+      }
 
-    public Collection<V> getValues() {
-        if (mValues == null) {
-            mValues = new ValuesCollection();
-        }
-        return mValues;
-    }
+      public boolean removeAll(Collection<?> collection) {
+         int N = MapCollections.this.colGetSize();
+         boolean changed = false;
 
-    protected abstract int colGetSize();
-
-    protected abstract Object colGetEntry(int index, int offset);
-
-    protected abstract int colIndexOfKey(Object key);
-
-    protected abstract int colIndexOfValue(Object key);
-
-    protected abstract Map<K, V> colGetMap();
-
-    protected abstract void colPut(K key, V value);
-
-    protected abstract V colSetValue(int index, V value);
-
-    protected abstract void colRemoveAt(int index);
-
-    protected abstract void colClear();
-
-    final class ArrayIterator<T> implements Iterator<T> {
-        final int mOffset;
-        int mSize;
-        int mIndex;
-        boolean mCanRemove = false;
-
-        ArrayIterator(int offset) {
-            mOffset = offset;
-            mSize = colGetSize();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return mIndex < mSize;
-        }
-
-        @Override
-        public T next() {
-            Object res = colGetEntry(mIndex, mOffset);
-            mIndex++;
-            mCanRemove = true;
-            return (T)res;
-        }
-
-        @Override
-        public void remove() {
-            if (!mCanRemove) {
-                throw new IllegalStateException();
+         for(int i = 0; i < N; ++i) {
+            Object cur = MapCollections.this.colGetEntry(i, 1);
+            if (collection.contains(cur)) {
+               MapCollections.this.colRemoveAt(i);
+               --i;
+               --N;
+               changed = true;
             }
-            mIndex--;
-            mSize--;
-            mCanRemove = false;
-            colRemoveAt(mIndex);
-        }
-    }
+         }
 
-    final class MapIterator implements Iterator<Map.Entry<K, V>>, Map.Entry<K, V> {
-        int mEnd;
-        int mIndex;
-        boolean mEntryValid = false;
+         return changed;
+      }
 
-        MapIterator() {
-            mEnd = colGetSize() - 1;
-            mIndex = -1;
-        }
+      public boolean retainAll(Collection<?> collection) {
+         int N = MapCollections.this.colGetSize();
+         boolean changed = false;
 
-        @Override
-        public boolean hasNext() {
-            return mIndex < mEnd;
-        }
-
-        @Override
-        public Map.Entry<K, V> next() {
-            mIndex++;
-            mEntryValid = true;
-            return this;
-        }
-
-        @Override
-        public void remove() {
-            if (!mEntryValid) {
-                throw new IllegalStateException();
+         for(int i = 0; i < N; ++i) {
+            Object cur = MapCollections.this.colGetEntry(i, 1);
+            if (!collection.contains(cur)) {
+               MapCollections.this.colRemoveAt(i);
+               --i;
+               --N;
+               changed = true;
             }
-            colRemoveAt(mIndex);
-            mIndex--;
-            mEnd--;
-            mEntryValid = false;
-        }
+         }
 
-        @Override
-        public K getKey() {
-            if (!mEntryValid) {
-                throw new IllegalStateException(
-                        "This container does not support retaining Map.Entry objects");
-            }
-            return (K)colGetEntry(mIndex, 0);
-        }
+         return changed;
+      }
 
-        @Override
-        public V getValue() {
-            if (!mEntryValid) {
-                throw new IllegalStateException(
-                        "This container does not support retaining Map.Entry objects");
-            }
-            return (V)colGetEntry(mIndex, 1);
-        }
+      public int size() {
+         return MapCollections.this.colGetSize();
+      }
 
-        @Override
-        public V setValue(V object) {
-            if (!mEntryValid) {
-                throw new IllegalStateException(
-                        "This container does not support retaining Map.Entry objects");
-            }
-            return colSetValue(mIndex, object);
-        }
+      public Object[] toArray() {
+         return MapCollections.this.toArrayHelper(1);
+      }
 
-        @Override
-        public final boolean equals(Object o) {
-            if (!mEntryValid) {
-                throw new IllegalStateException(
-                        "This container does not support retaining Map.Entry objects");
-            }
-            if (!(o instanceof Map.Entry)) {
-                return false;
-            }
-            Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-            return ContainerHelpers.equal(e.getKey(), colGetEntry(mIndex, 0))
-                    && ContainerHelpers.equal(e.getValue(), colGetEntry(mIndex, 1));
-        }
+      public <T> T[] toArray(T[] array) {
+         return MapCollections.this.toArrayHelper(array, 1);
+      }
+   }
 
-        @Override
-        public final int hashCode() {
-            if (!mEntryValid) {
-                throw new IllegalStateException(
-                        "This container does not support retaining Map.Entry objects");
-            }
-            final Object key = colGetEntry(mIndex, 0);
-            final Object value = colGetEntry(mIndex, 1);
-            return (key == null ? 0 : key.hashCode()) ^
-                    (value == null ? 0 : value.hashCode());
-        }
+   final class KeySet implements Set<K> {
+      public boolean add(K object) {
+         throw new UnsupportedOperationException();
+      }
 
-        @Override
-        public final String toString() {
-            return getKey() + "=" + getValue();
-        }
-    }
+      public boolean addAll(Collection<? extends K> collection) {
+         throw new UnsupportedOperationException();
+      }
 
-final class EntrySet implements Set<Map.Entry<K, V>> {
-        @Override
-        public boolean add(Map.Entry<K, V> object) {
-            throw new UnsupportedOperationException();
-        }
+      public void clear() {
+         MapCollections.this.colClear();
+      }
 
-        @Override
-        public boolean addAll(Collection<? extends Map.Entry<K, V>> collection) {
-            int oldSize = colGetSize();
-            for (Map.Entry<K, V> entry : collection) {
-                colPut(entry.getKey(), entry.getValue());
-            }
-            return oldSize != colGetSize();
-        }
+      public boolean contains(Object object) {
+         return MapCollections.this.colIndexOfKey(object) >= 0;
+      }
 
-        @Override
-        public void clear() {
-            colClear();
-        }
+      public boolean containsAll(Collection<?> collection) {
+         return MapCollections.containsAllHelper(MapCollections.this.colGetMap(), collection);
+      }
 
-        @Override
-        public boolean contains(Object o) {
-            if (!(o instanceof Map.Entry))
-                return false;
-            Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-            int index = colIndexOfKey(e.getKey());
+      public boolean isEmpty() {
+         return MapCollections.this.colGetSize() == 0;
+      }
+
+      public Iterator<K> iterator() {
+         return MapCollections.this.new ArrayIterator(0);
+      }
+
+      public boolean remove(Object object) {
+         int index = MapCollections.this.colIndexOfKey(object);
+         if (index >= 0) {
+            MapCollections.this.colRemoveAt(index);
+            return true;
+         } else {
+            return false;
+         }
+      }
+
+      public boolean removeAll(Collection<?> collection) {
+         return MapCollections.removeAllHelper(MapCollections.this.colGetMap(), collection);
+      }
+
+      public boolean retainAll(Collection<?> collection) {
+         return MapCollections.retainAllHelper(MapCollections.this.colGetMap(), collection);
+      }
+
+      public int size() {
+         return MapCollections.this.colGetSize();
+      }
+
+      public Object[] toArray() {
+         return MapCollections.this.toArrayHelper(0);
+      }
+
+      public <T> T[] toArray(T[] array) {
+         return MapCollections.this.toArrayHelper(array, 0);
+      }
+
+      public boolean equals(Object object) {
+         return MapCollections.equalsSetHelper(this, object);
+      }
+
+      public int hashCode() {
+         int result = 0;
+
+         for(int i = MapCollections.this.colGetSize() - 1; i >= 0; --i) {
+            Object obj = MapCollections.this.colGetEntry(i, 0);
+            result += obj == null ? 0 : obj.hashCode();
+         }
+
+         return result;
+      }
+   }
+
+   final class EntrySet implements Set<Map.Entry<K, V>> {
+      public boolean add(Map.Entry<K, V> object) {
+         throw new UnsupportedOperationException();
+      }
+
+      public boolean addAll(Collection<? extends Map.Entry<K, V>> collection) {
+         int oldSize = MapCollections.this.colGetSize();
+         Iterator var3 = collection.iterator();
+
+         while(var3.hasNext()) {
+            Map.Entry<K, V> entry = (Map.Entry)var3.next();
+            MapCollections.this.colPut(entry.getKey(), entry.getValue());
+         }
+
+         return oldSize != MapCollections.this.colGetSize();
+      }
+
+      public void clear() {
+         MapCollections.this.colClear();
+      }
+
+      public boolean contains(Object o) {
+         if (!(o instanceof Map.Entry)) {
+            return false;
+         } else {
+            Map.Entry<?, ?> e = (Map.Entry)o;
+            int index = MapCollections.this.colIndexOfKey(e.getKey());
             if (index < 0) {
-                return false;
+               return false;
+            } else {
+               Object foundVal = MapCollections.this.colGetEntry(index, 1);
+               return ContainerHelpers.equal(foundVal, e.getValue());
             }
-            Object foundVal = colGetEntry(index, 1);
-            return ContainerHelpers.equal(foundVal, e.getValue());
-        }
+         }
+      }
 
-        @Override
-        public boolean containsAll(Collection<?> collection) {
-            Iterator<?> it = collection.iterator();
-            while (it.hasNext()) {
-                if (!contains(it.next())) {
-                    return false;
-                }
+      public boolean containsAll(Collection<?> collection) {
+         Iterator<?> it = collection.iterator();
+
+         do {
+            if (!it.hasNext()) {
+               return true;
             }
-            return true;
-        }
+         } while(this.contains(it.next()));
 
-        @Override
-        public boolean isEmpty() {
-            return colGetSize() == 0;
-        }
+         return false;
+      }
 
-        @Override
-        public Iterator<Map.Entry<K, V>> iterator() {
-            return new MapIterator();
-        }
+      public boolean isEmpty() {
+         return MapCollections.this.colGetSize() == 0;
+      }
 
-        @Override
-        public boolean remove(Object object) {
-            throw new UnsupportedOperationException();
-        }
+      public Iterator<Map.Entry<K, V>> iterator() {
+         return MapCollections.this.new MapIterator();
+      }
 
-        @Override
-        public boolean removeAll(Collection<?> collection) {
-            throw new UnsupportedOperationException();
-        }
+      public boolean remove(Object object) {
+         throw new UnsupportedOperationException();
+      }
 
-        @Override
-        public boolean retainAll(Collection<?> collection) {
-            throw new UnsupportedOperationException();
-        }
+      public boolean removeAll(Collection<?> collection) {
+         throw new UnsupportedOperationException();
+      }
 
-        @Override
-        public int size() {
-            return colGetSize();
-        }
+      public boolean retainAll(Collection<?> collection) {
+         throw new UnsupportedOperationException();
+      }
 
-        @Override
-        public Object[] toArray() {
-            throw new UnsupportedOperationException();
-        }
+      public int size() {
+         return MapCollections.this.colGetSize();
+      }
 
-        @Override
-        public <T> T[] toArray(T[] array) {
-            throw new UnsupportedOperationException();
-        }
+      public Object[] toArray() {
+         throw new UnsupportedOperationException();
+      }
 
-        @Override
-        public boolean equals(Object object) {
-            return equalsSetHelper(this, object);
-        }
+      public <T> T[] toArray(T[] array) {
+         throw new UnsupportedOperationException();
+      }
 
-        @Override
-        public int hashCode() {
-            int result = 0;
-            for (int i=colGetSize()-1; i>=0; i--) {
-                final Object key = colGetEntry(i, 0);
-                final Object value = colGetEntry(i, 1);
-                result += ( (key == null ? 0 : key.hashCode()) ^
-                        (value == null ? 0 : value.hashCode()) );
-            }
-            return result;
-        }
-    }
+      public boolean equals(Object object) {
+         return MapCollections.equalsSetHelper(this, object);
+      }
 
-final class KeySet implements Set<K> {
+      public int hashCode() {
+         int result = 0;
 
-        @Override
-        public boolean add(K object) {
-            throw new UnsupportedOperationException();
-        }
+         for(int i = MapCollections.this.colGetSize() - 1; i >= 0; --i) {
+            Object key = MapCollections.this.colGetEntry(i, 0);
+            Object value = MapCollections.this.colGetEntry(i, 1);
+            result += (key == null ? 0 : key.hashCode()) ^ (value == null ? 0 : value.hashCode());
+         }
 
-        @Override
-        public boolean addAll(Collection<? extends K> collection) {
-            throw new UnsupportedOperationException();
-        }
+         return result;
+      }
+   }
 
-        @Override
-        public void clear() {
-            colClear();
-        }
+   final class MapIterator implements Iterator<Map.Entry<K, V>>, Map.Entry<K, V> {
+      int mEnd = MapCollections.this.colGetSize() - 1;
+      int mIndex = -1;
+      boolean mEntryValid = false;
 
-        @Override
-        public boolean contains(Object object) {
-            return colIndexOfKey(object) >= 0;
-        }
+      public boolean hasNext() {
+         return this.mIndex < this.mEnd;
+      }
 
-        @Override
-        public boolean containsAll(Collection<?> collection) {
-            return containsAllHelper(colGetMap(), collection);
-        }
+      public Map.Entry<K, V> next() {
+         ++this.mIndex;
+         this.mEntryValid = true;
+         return this;
+      }
 
-        @Override
-        public boolean isEmpty() {
-            return colGetSize() == 0;
-        }
+      public void remove() {
+         if (!this.mEntryValid) {
+            throw new IllegalStateException();
+         } else {
+            MapCollections.this.colRemoveAt(this.mIndex);
+            --this.mIndex;
+            --this.mEnd;
+            this.mEntryValid = false;
+         }
+      }
 
-        @Override
-        public Iterator<K> iterator() {
-            return new ArrayIterator<K>(0);
-        }
+      public K getKey() {
+         if (!this.mEntryValid) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
+         } else {
+            return MapCollections.this.colGetEntry(this.mIndex, 0);
+         }
+      }
 
-        @Override
-        public boolean remove(Object object) {
-            int index = colIndexOfKey(object);
-            if (index >= 0) {
-                colRemoveAt(index);
-                return true;
-            }
+      public V getValue() {
+         if (!this.mEntryValid) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
+         } else {
+            return MapCollections.this.colGetEntry(this.mIndex, 1);
+         }
+      }
+
+      public V setValue(V object) {
+         if (!this.mEntryValid) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
+         } else {
+            return MapCollections.this.colSetValue(this.mIndex, object);
+         }
+      }
+
+      public final boolean equals(Object o) {
+         if (!this.mEntryValid) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
+         } else if (!(o instanceof Map.Entry)) {
             return false;
-        }
+         } else {
+            Map.Entry<?, ?> e = (Map.Entry)o;
+            return ContainerHelpers.equal(e.getKey(), MapCollections.this.colGetEntry(this.mIndex, 0)) && ContainerHelpers.equal(e.getValue(), MapCollections.this.colGetEntry(this.mIndex, 1));
+         }
+      }
 
-        @Override
-        public boolean removeAll(Collection<?> collection) {
-            return removeAllHelper(colGetMap(), collection);
-        }
+      public final int hashCode() {
+         if (!this.mEntryValid) {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IRhfCW83IClgJFkgLwccDmkgRChrEQYgKTo6KmAjESNlJwo5LD4uCG9SICZoHiwoJQdfIGwwIzZnJ10dMzwuCGwKFj9LHh46KT0MP2UwAlo=")));
+         } else {
+            Object key = MapCollections.this.colGetEntry(this.mIndex, 0);
+            Object value = MapCollections.this.colGetEntry(this.mIndex, 1);
+            return (key == null ? 0 : key.hashCode()) ^ (value == null ? 0 : value.hashCode());
+         }
+      }
 
-        @Override
-        public boolean retainAll(Collection<?> collection) {
-            return retainAllHelper(colGetMap(), collection);
-        }
+      public final String toString() {
+         return this.getKey() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwhSVg==")) + this.getValue();
+      }
+   }
 
-        @Override
-        public int size() {
-            return colGetSize();
-        }
+   final class ArrayIterator<T> implements Iterator<T> {
+      final int mOffset;
+      int mSize;
+      int mIndex;
+      boolean mCanRemove = false;
 
-        @Override
-        public Object[] toArray() {
-            return toArrayHelper(0);
-        }
+      ArrayIterator(int offset) {
+         this.mOffset = offset;
+         this.mSize = MapCollections.this.colGetSize();
+      }
 
-        @Override
-        public <T> T[] toArray(T[] array) {
-            return toArrayHelper(array, 0);
-        }
+      public boolean hasNext() {
+         return this.mIndex < this.mSize;
+      }
 
-        @Override
-        public boolean equals(Object object) {
-            return equalsSetHelper(this, object);
-        }
+      public T next() {
+         Object res = MapCollections.this.colGetEntry(this.mIndex, this.mOffset);
+         ++this.mIndex;
+         this.mCanRemove = true;
+         return res;
+      }
 
-        @Override
-        public int hashCode() {
-            int result = 0;
-            for (int i=colGetSize()-1; i>=0; i--) {
-                Object obj = colGetEntry(i, 0);
-                result += obj == null ? 0 : obj.hashCode();
-            }
-            return result;
-        }
-    }
-
-final class ValuesCollection implements Collection<V> {
-
-        @Override
-        public boolean add(V object) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean addAll(Collection<? extends V> collection) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void clear() {
-            colClear();
-        }
-
-        @Override
-        public boolean contains(Object object) {
-            return colIndexOfValue(object) >= 0;
-        }
-
-        @Override
-        public boolean containsAll(Collection<?> collection) {
-            Iterator<?> it = collection.iterator();
-            while (it.hasNext()) {
-                if (!contains(it.next())) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return colGetSize() == 0;
-        }
-
-        @Override
-        public Iterator<V> iterator() {
-            return new ArrayIterator<V>(1);
-        }
-
-        @Override
-        public boolean remove(Object object) {
-            int index = colIndexOfValue(object);
-            if (index >= 0) {
-                colRemoveAt(index);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> collection) {
-            int N = colGetSize();
-            boolean changed = false;
-            for (int i=0; i<N; i++) {
-                Object cur = colGetEntry(i, 1);
-                if (collection.contains(cur)) {
-                    colRemoveAt(i);
-                    i--;
-                    N--;
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> collection) {
-            int N = colGetSize();
-            boolean changed = false;
-            for (int i=0; i<N; i++) {
-                Object cur = colGetEntry(i, 1);
-                if (!collection.contains(cur)) {
-                    colRemoveAt(i);
-                    i--;
-                    N--;
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-
-        @Override
-        public int size() {
-            return colGetSize();
-        }
-
-        @Override
-        public Object[] toArray() {
-            return toArrayHelper(1);
-        }
-
-        @Override
-        public <T> T[] toArray(T[] array) {
-            return toArrayHelper(array, 1);
-        }
-    }
+      public void remove() {
+         if (!this.mCanRemove) {
+            throw new IllegalStateException();
+         } else {
+            --this.mIndex;
+            --this.mSize;
+            this.mCanRemove = false;
+            MapCollections.this.colRemoveAt(this.mIndex);
+         }
+      }
+   }
 }

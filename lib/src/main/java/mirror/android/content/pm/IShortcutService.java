@@ -1,24 +1,13 @@
 package mirror.android.content.pm;
 
-import android.os.IBinder;
 import android.os.IInterface;
-
-import mirror.MethodParams;
+import com.lody.virtual.StringFog;
 import mirror.RefClass;
 import mirror.RefStaticMethod;
-import mirror.android.app.ISearchManager;
-
-/**
- * @author Lody
- */
 
 public class IShortcutService {
-    public static Class<?> TYPE = RefClass.load(IShortcutService.class, "android.content.pm.IShortcutService");
-
-    public static final class Stub {
-        public static Class<?> TYPE = RefClass.load(Stub.class, "android.content.pm.IShortcutService$Stub");
-
-        @MethodParams({IBinder.class})
-        public static RefStaticMethod<IInterface> asInterface;
-    }
+   public static final class Stub {
+      public static Class<?> TYPE = RefClass.load(IShortcutService.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXRUfWCw9NxwRGxEFHTwLARMbFQBKDAcWDQ=="));
+      public static RefStaticMethod<IInterface> asInterface;
+   }
 }

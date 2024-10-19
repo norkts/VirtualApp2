@@ -1,19 +1,16 @@
 package com.lody.virtual.client.hook.providers;
 
 import android.content.ContentValues;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IInterface;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.base.MethodBox;
+import com.lody.virtual.client.hook.secondary.ProxyBinder;
+import com.lody.virtual.client.hook.utils.MethodParameterUtils;
 import com.lody.virtual.helper.compat.BuildCompat;
 import com.lody.virtual.helper.utils.VLog;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,227 +18,189 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import mirror.android.content.IContentProvider;
 
-/**
- * @author Lody
- */
-
 public class ProviderHook implements InvocationHandler {
+   private static final Map<String, HookFetcher> PROVIDER_MAP = new HashMap();
+   public static final String QUERY_ARG_SQL_SELECTION = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iVgIrLAcMKGgnPDdsNyMeKT0+KE4FNCBsHgosIz42KWUzSFo="));
+   public static final String QUERY_ARG_SQL_SELECTION_ARGS = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iVgIrLAcMKGgnPDdsNyMeKT0+KE4FNCBsHgosIz42KWU3EjNvJyAc"));
+   public static final String QUERY_ARG_SQL_SORT_ORDER = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iVgIrLAcMKGgnPDdsNyMeKT0+KE4FNCplNzMcKQdfIGsKFlo="));
+   protected final IInterface mBase;
+   protected IInterface mProxy;
+   protected ProxyBinder mProxyBinder;
 
-    public static final String QUERY_ARG_SQL_SELECTION = "android:query-arg-sql-selection";
+   public ProviderHook(IInterface base) {
+      this.mBase = base;
+      this.mProxy = (IInterface)Proxy.newProxyInstance(IContentProvider.TYPE.getClassLoader(), new Class[]{IContentProvider.TYPE}, this);
+      this.mProxyBinder = new ProxyBinder(this.mBase.asBinder(), this.mProxy);
+   }
 
-    public static final String QUERY_ARG_SQL_SELECTION_ARGS =
-            "android:query-arg-sql-selection-args";
-    public static final String QUERY_ARG_SQL_SORT_ORDER = "android:query-arg-sql-sort-order";
+   public IInterface getProxyInterface() {
+      return this.mProxy;
+   }
 
-
-    private static final Map<String, HookFetcher> PROVIDER_MAP = new HashMap<>();
-
-    static {
-        PROVIDER_MAP.put("settings", new HookFetcher() {
-            @Override
+   private static HookFetcher fetchHook(String authority) {
+      VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4uLGszRQpgJB4xPxciLWUzFiVsNx4/L15XVg==")) + authority);
+      HookFetcher fetcher = (HookFetcher)PROVIDER_MAP.get(authority);
+      if (fetcher == null) {
+         fetcher = new HookFetcher() {
             public ProviderHook fetch(boolean external, IInterface provider) {
-                return new SettingsProviderHook(provider);
+               return (ProviderHook)(external ? new ExternalProviderHook(provider) : new InternalProviderHook(provider));
             }
-        });
-        PROVIDER_MAP.put("downloads", new HookFetcher() {
-            @Override
-            public ProviderHook fetch(boolean external, IInterface provider) {
-                return new DownloadProviderHook(provider);
-            }
-        });
-        PROVIDER_MAP.put("com.android.badge", new HookFetcher() {
-            @Override
-            public ProviderHook fetch(boolean external, IInterface provider) {
-                return new BadgeProviderHook(provider);
-            }
-        });
-        PROVIDER_MAP.put("com.huawei.android.launcher.settings", new HookFetcher() {
-            @Override
-            public ProviderHook fetch(boolean external, IInterface provider) {
-                return new BadgeProviderHook(provider);
-            }
-        });
-        PROVIDER_MAP.put("com.android.externalstorage.documents", new HookFetcher() {
-            @Override
-            public ProviderHook fetch(boolean external, IInterface provider) {
-                return new DocumentHook(provider);
-            }
-        });
-    }
+         };
+      }
 
-    protected final Object mBase;
+      return fetcher;
+   }
 
-    public ProviderHook(Object base) {
-        this.mBase = base;
-    }
-
-    private static HookFetcher fetchHook(String authority) {
-        Log.i("wxd", " authority : " + authority);
-        HookFetcher fetcher = PROVIDER_MAP.get(authority);
-        if (fetcher == null) {
-            fetcher = new HookFetcher() {
-                @Override
-                public ProviderHook fetch(boolean external, IInterface provider) {
-                    if (external) {
-                        return new ExternalProviderHook(provider);
-                    }
-                    return new InternalProviderHook(provider);
-                }
-            };
-        }
-        return fetcher;
-    }
-
-    private static IInterface createProxy(IInterface provider, ProviderHook hook) {
-        if (provider == null || hook == null) {
-            return null;
-        }
-        return (IInterface) Proxy.newProxyInstance(provider.getClass().getClassLoader(), new Class[]{
-                IContentProvider.TYPE,
-        }, hook);
-    }
-
-    public static IInterface createProxy(boolean external, String authority, IInterface provider) {
-        if (provider instanceof Proxy && Proxy.getInvocationHandler(provider) instanceof ProviderHook) {
-            return provider;
-        }
-        ProviderHook.HookFetcher fetcher = ProviderHook.fetchHook(authority);
-        if (fetcher != null) {
+   public static IInterface createProxy(boolean external, String authority, IInterface provider) {
+      if (provider instanceof Proxy && Proxy.getInvocationHandler(provider) instanceof ProviderHook) {
+         return provider;
+      } else {
+         HookFetcher fetcher = fetchHook(authority);
+         if (fetcher != null) {
             ProviderHook hook = fetcher.fetch(external, provider);
-            IInterface proxyProvider = ProviderHook.createProxy(provider, hook);
+            IInterface proxyProvider = hook.getProxyInterface();
             if (proxyProvider != null) {
-                provider = proxyProvider;
+               provider = proxyProvider;
             }
-        }
-        return provider;
-    }
+         }
 
-    public Bundle call(MethodBox methodBox, String method, String arg, Bundle extras) throws InvocationTargetException {
-        return methodBox.call();
-    }
+         return provider;
+      }
+   }
 
-    public Uri insert(MethodBox methodBox, Uri url, ContentValues initialValues) throws InvocationTargetException {
+   public Bundle call(MethodBox methodBox, String method, String arg, Bundle extras) throws InvocationTargetException {
+      Object[] args = methodBox.args;
+      int start = this.getCallIndex(methodBox);
+      args[start] = method;
+      args[start + 1] = arg;
+      args[start + 2] = extras;
+      return (Bundle)methodBox.call();
+   }
 
-        return (Uri) methodBox.call();
-    }
+   public int getCallIndex(MethodBox methodBox) {
+      return methodBox.args.length - 3;
+   }
 
-    public Cursor query(MethodBox methodBox, Uri url, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder, Bundle originQueryArgs) throws InvocationTargetException {
-        return (Cursor) methodBox.call();
-    }
+   public Uri insert(MethodBox methodBox, Uri url, ContentValues initialValues) throws InvocationTargetException {
+      Object[] args = methodBox.args;
+      int start = MethodParameterUtils.getIndex(args, Uri.class);
+      args[start] = url;
+      args[start + 1] = initialValues;
+      return (Uri)methodBox.call();
+   }
 
-    public String getType(MethodBox methodBox, Uri url) throws InvocationTargetException {
-        return (String) methodBox.call();
-    }
+   public Cursor query(MethodBox methodBox, Uri url, String[] projection, String selection, String[] selectionArgs, String sortOrder, Bundle originQueryArgs) throws InvocationTargetException {
+      Object[] args = methodBox.args;
+      int start = MethodParameterUtils.getIndex(args, Uri.class);
+      args[start] = url;
+      args[start + 1] = projection;
+      if (BuildCompat.isOreo()) {
+         if (originQueryArgs != null) {
+            originQueryArgs.putString(QUERY_ARG_SQL_SELECTION, selection);
+            originQueryArgs.putStringArray(QUERY_ARG_SQL_SELECTION_ARGS, selectionArgs);
+            originQueryArgs.putString(QUERY_ARG_SQL_SORT_ORDER, sortOrder);
+         }
+      } else {
+         args[start + 2] = selection;
+         args[start + 3] = selectionArgs;
+         args[start + 4] = sortOrder;
+      }
 
-    public int bulkInsert(MethodBox methodBox, Uri url, ContentValues[] initialValues) throws InvocationTargetException {
-        return (int) methodBox.call();
-    }
+      return (Cursor)methodBox.call();
+   }
 
-    public int delete(MethodBox methodBox, Uri url, String selection, String[] selectionArgs) throws InvocationTargetException {
-        return (int) methodBox.call();
-    }
+   public Object invoke(Object proxy, Method method, Object... args) throws Throwable {
+      try {
+         this.processArgs(method, args);
+      } catch (Throwable var13) {
+         Throwable e = var13;
+         e.printStackTrace();
+      }
 
-    public int update(MethodBox methodBox, Uri url, ContentValues values, String selection,
-                      String[] selectionArgs) throws InvocationTargetException {
-        return (int) methodBox.call();
-    }
+      MethodBox methodBox = new MethodBox(method, this.mBase, args);
 
-    public ParcelFileDescriptor openFile(MethodBox methodBox, Uri url, String mode) throws InvocationTargetException {
-        return (ParcelFileDescriptor) methodBox.call();
-    }
+      try {
+         String name = method.getName();
+         int start;
+         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoFSFo=")).equals(name)) {
+            start = this.getCallIndex(methodBox);
+            String methodName = (String)args[start];
+            String arg = (String)args[start + 1];
+            Bundle extras = (Bundle)args[start + 2];
+            return this.call(methodBox, methodName, arg, extras);
+         } else {
+            Uri url;
+            if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcKWgaFgY=")).equals(name)) {
+               start = MethodParameterUtils.getIndex(args, Uri.class);
+               url = (Uri)args[start];
+               ContentValues initialValues = (ContentValues)args[start + 1];
+               return this.insert(methodBox, url, initialValues);
+            } else if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KgcuM28gAlo=")).equals(name)) {
+               start = MethodParameterUtils.getIndex(args, Uri.class);
+               url = (Uri)args[start];
+               String[] projection = (String[])args[start + 1];
+               String selection = null;
+               String[] selectionArgs = null;
+               String sortOrder = null;
+               Bundle queryArgs = null;
+               if (BuildCompat.isOreo()) {
+                  queryArgs = (Bundle)args[start + 2];
+                  if (queryArgs != null) {
+                     selection = queryArgs.getString(QUERY_ARG_SQL_SELECTION);
+                     selectionArgs = queryArgs.getStringArray(QUERY_ARG_SQL_SELECTION_ARGS);
+                     sortOrder = queryArgs.getString(QUERY_ARG_SQL_SORT_ORDER);
+                  }
+               } else {
+                  selection = (String)args[start + 2];
+                  selectionArgs = (String[])args[start + 3];
+                  sortOrder = (String)args[start + 4];
+               }
 
-    public AssetFileDescriptor openAssetFile(MethodBox methodBox, Uri url, String mode) throws InvocationTargetException {
-        return (AssetFileDescriptor) methodBox.call();
-    }
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object... args) throws Throwable {
-        try {
-            processArgs(method, args);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        MethodBox methodBox = new MethodBox(method, mBase, args);
-        int start = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 ? 1 : 0;
-        try {
-            String name = method.getName();
-            if ("call".equals(name)) {
-                if (BuildCompat.isQ()) {
-                    start = 2;
-                }
-                String methodName = (String) args[start];
-                String arg = (String) args[start + 1];
-                Bundle extras = (Bundle) args[start + 2];
-                return call(methodBox, methodName, arg, extras);
-            } else if ("insert".equals(name)) {
-                Uri url = (Uri) args[start];
-                ContentValues initialValues = (ContentValues) args[start + 1];
-                return insert(methodBox, url, initialValues);
-            } else if ("getType".equals(name)) {
-                return getType(methodBox, (Uri) args[0]);
-            } else if ("delete".equals(name)) {
-                Uri url = (Uri) args[start];
-                String selection = (String) args[start + 1];
-                String[] selectionArgs = (String[]) args[start + 2];
-                return delete(methodBox, url, selection, selectionArgs);
-            } else if ("bulkInsert".equals(name)) {
-                Uri url = (Uri) args[start];
-                ContentValues[] initialValues = (ContentValues[]) args[start + 1];
-                return bulkInsert(methodBox, url, initialValues);
-            } else if ("update".equals(name)) {
-                Uri url = (Uri) args[start];
-                ContentValues values = (ContentValues) args[start + 1];
-                String selection = (String) args[start + 2];
-                String[] selectionArgs = (String[]) args[start + 3];
-                return update(methodBox, url, values, selection, selectionArgs);
-            } else if ("openFile".equals(name)) {
-                Uri url = (Uri) args[start];
-                String mode = (String) args[start + 1];
-                return openFile(methodBox, url, mode);
-            } else if ("openAssetFile".equals(name)) {
-                Uri url = (Uri) args[start];
-                String mode = (String) args[start + 1];
-                return openAssetFile(methodBox, url, mode);
-            } else if ("query".equals(name)) {
-                Uri url = (Uri) args[start];
-                String[] projection = (String[]) args[start + 1];
-                String selection = null;
-                String[] selectionArgs = null;
-                String sortOrder = null;
-                Bundle queryArgs = null;
-                if (BuildCompat.isOreo()) {
-                    queryArgs = (Bundle) args[start + 2];
-                    if (queryArgs != null) {
-                        selection = queryArgs.getString(QUERY_ARG_SQL_SELECTION);
-                        selectionArgs = queryArgs.getStringArray(QUERY_ARG_SQL_SELECTION_ARGS);
-                        sortOrder = queryArgs.getString(QUERY_ARG_SQL_SORT_ORDER);
-                    }
-                } else {
-                    selection = (String) args[start + 2];
-                    selectionArgs = (String[]) args[start + 3];
-                    sortOrder = (String) args[start + 4];
-                }
-                return query(methodBox, url, projection, selection, selectionArgs, sortOrder, queryArgs);
+               return this.query(methodBox, url, projection, selection, selectionArgs, sortOrder, queryArgs);
+            } else {
+               return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc2HGUVBixiASxF")).equals(name) ? this.mProxyBinder : methodBox.call();
             }
-            return methodBox.call();
-        } catch (Throwable e) {
-            VLog.w("ProviderHook", "call: %s (%s) with error", method.getName(), Arrays.toString(args));
-            if (e instanceof InvocationTargetException) {
-                throw e.getCause();
-            }
+         }
+      } catch (Throwable var14) {
+         Throwable e = var14;
+         VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhcMD2wjAixiASwKKi1fCQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4+DmoOTChIASs8OV4ML3wnTT1qDiwZPQguCGEwAjU=")), method.getName(), Arrays.toString(args));
+         if (e instanceof InvocationTargetException) {
+            throw e.getCause();
+         } else {
             throw e;
-        }
-    }
+         }
+      }
+   }
 
-    protected void processArgs(Method method, Object... args) {
+   protected void processArgs(Method method, Object... args) {
+   }
 
-    }
+   static {
+      PROVIDER_MAP.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGwFAiZiJyhF")), new HookFetcher() {
+         public ProviderHook fetch(boolean external, IInterface provider) {
+            return new SettingsProviderHook(provider);
+         }
+      });
+      PROVIDER_MAP.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgALWojHiV9Dgop")), new HookFetcher() {
+         public ProviderHook fetch(boolean external, IInterface provider) {
+            return new DownloadProviderHook(provider);
+         }
+      });
+      PROVIDER_MAP.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojJCZiESw1KQc1Dm4VQSxrJyhF")), new HookFetcher() {
+         public ProviderHook fetch(boolean external, IInterface provider) {
+            return new BadgeProviderHook(provider);
+         }
+      });
+      PROVIDER_MAP.put(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojRQV9ATg/KQMYOW8VBgRlJx4vPC4EO2YKRSZvHgo7ORcYJ28aMAVqJyAc")), new HookFetcher() {
+         public ProviderHook fetch(boolean external, IInterface provider) {
+            return new BadgeProviderHook(provider);
+         }
+      });
+   }
 
-    public interface HookFetcher {
-        ProviderHook fetch(boolean external, IInterface provider);
-    }
+   public interface HookFetcher {
+      ProviderHook fetch(boolean var1, IInterface var2);
+   }
 }

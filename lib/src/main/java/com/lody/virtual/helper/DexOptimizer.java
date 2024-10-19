@@ -1,10 +1,10 @@
 package com.lody.virtual.helper;
 
-import android.os.Build;
-
+import android.os.Build.VERSION;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.env.VirtualRuntime;
-import com.lody.virtual.helper.compat.BuildCompat;
-
+import com.lody.virtual.helper.utils.FileUtils;
+import dalvik.system.DexFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,109 +13,70 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import dalvik.system.DexFile;
-import mirror.dalvik.system.VMRuntime;
-
-/**
- * @author Lody
- */
 public class DexOptimizer {
+   public static void dex2oat(String dexFilePath, String oatFilePath) throws IOException {
+      if (VERSION.SDK_INT < 30) {
+         File oatFile = new File(oatFilePath);
+         FileUtils.ensureDirCreate(oatFile.getParentFile());
+         List<String> commandAndParams = new ArrayList();
+         commandAndParams.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguIH8jGjdmEVRF")));
+         commandAndParams.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwQIPGgaRCNiNAYoKARXVg==")) + dexFilePath);
+         commandAndParams.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwQID2saMyNiNAYoKARXVg==")) + oatFilePath);
+         commandAndParams.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwQICWogLAZhNzA5LBccDW9SPANrDi8o")) + VirtualRuntime.getCurrentInstructionSet());
+         if (VERSION.SDK_INT > 25) {
+            commandAndParams.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwQIOWozEgJjDlE/IzlXPGwjOAZrDg0oKRcuI30gEiBsN1RF")));
+         } else {
+            commandAndParams.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("MwQIOWozEgJjDlE/IzlXPGwjOAZrDg0oIxgcCmIFMDNlNAo9OS4uKmUaAlo=")));
+         }
 
-    public static void optimizeDex(String dexFilePath, String optFilePath) throws IOException {
+         ProcessBuilder pb = new ProcessBuilder(commandAndParams);
+         pb.redirectErrorStream(true);
+         Process dex2oatProcess = pb.start();
+         DexOptimizer.StreamConsumer.consumeInputStream(dex2oatProcess.getInputStream());
+         DexOptimizer.StreamConsumer.consumeInputStream(dex2oatProcess.getErrorStream());
 
-        if (VirtualRuntime.isArt()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-                try {
-                    DexOptimizer.interpretDex2Oat(dexFilePath, optFilePath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        // Ensure odex generated
-        DexFile.loadDex(dexFilePath, optFilePath, 0).close();
-    }
-
-    /**
-     * Optimize the dex in interpret mode.
-     *
-     * @param dexFilePath dex file path
-     * @param oatFilePath oat file path
-     * @throws IOException
-     */
-    public static void interpretDex2Oat(String dexFilePath, String oatFilePath) throws IOException {
-        final File oatFile = new File(oatFilePath);
-        if (!oatFile.exists()) {
-            oatFile.getParentFile().mkdirs();
-        }
-
-        final List<String> commandAndParams = new ArrayList<>();
-        commandAndParams.add("dex2oat");
-        // for 7.1.1, duplicate class fix
-        if (Build.VERSION.SDK_INT >= 24) {
-            commandAndParams.add("--runtime-arg");
-            commandAndParams.add("-classpath");
-            commandAndParams.add("--runtime-arg");
-            commandAndParams.add("&");
-        }
-        commandAndParams.add("--dex-file=" + dexFilePath);
-        commandAndParams.add("--oat-file=" + oatFilePath);
-        commandAndParams.add("--instruction-set=" + VMRuntime.getCurrentInstructionSet.call());
-        commandAndParams.add("--compiler-filter=everything");
-        if (Build.VERSION.SDK_INT >= 22 && !BuildCompat.isQ()) {
-            commandAndParams.add("--compile-pic");
-        }
-        if (Build.VERSION.SDK_INT > 25) {
-//            commandAndParams.add("--compiler-filter=quicken");
-            commandAndParams.add("--inline-max-code-units=0");
-        } else {
-//            commandAndParams.add("--compiler-filter=interpret-only");
-            if (Build.VERSION.SDK_INT >= 23) {
-                commandAndParams.add("--inline-depth-limit=0");
-            }
-        }
-
-        final ProcessBuilder pb = new ProcessBuilder(commandAndParams);
-        pb.redirectErrorStream(true);
-        final Process dex2oatProcess = pb.start();
-        StreamConsumer.consumeInputStream(dex2oatProcess.getInputStream());
-        StreamConsumer.consumeInputStream(dex2oatProcess.getErrorStream());
-        try {
-            final int ret = dex2oatProcess.waitFor();
+         try {
+            int ret = dex2oatProcess.waitFor();
             if (ret != 0) {
-                throw new IOException("dex2oat works unsuccessfully, exit code: " + ret);
+               throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguIH8jGjdmVyQtKi4uCWoJTQVlNDAwLT42J2EjNCFqDl0bLiohJGsKRQVsDTw2Ji0MLHs0PFo=")) + ret);
             }
-        } catch (InterruptedException e) {
-            throw new IOException("dex2oat is interrupted, msg: " + e.getMessage(), e);
-        }
-    }
+         } catch (InterruptedException var7) {
+            InterruptedException e = var7;
+            throw new IOException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguIH8jGjdmVyQzIykmMW8aBitsNAowKQcqJ2JTTCNsASwgPl9XVg==")) + e.getMessage(), e);
+         }
+      } else {
+         DexFile.loadDex(dexFilePath, oatFilePath, 0).close();
+      }
 
-    private static class StreamConsumer {
-        static final Executor STREAM_CONSUMER = Executors.newSingleThreadExecutor();
+   }
 
-        static void consumeInputStream(final InputStream is) {
-            STREAM_CONSUMER.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (is == null) {
-                        return;
-                    }
-                    final byte[] buffer = new byte[256];
-                    try {
-                        while ((is.read(buffer)) > 0) {
-                            // To satisfy checkstyle rules.
+   private static class StreamConsumer {
+      static final Executor STREAM_CONSUMER = Executors.newSingleThreadExecutor();
+
+      static void consumeInputStream(final InputStream is) {
+         STREAM_CONSUMER.execute(new Runnable() {
+            public void run() {
+               if (is != null) {
+                  byte[] buffer = new byte[256];
+
+                  try {
+                     while(true) {
+                        if (is.read(buffer) > 0) {
+                           continue;
                         }
-                    } catch (IOException ignored) {
-                        // Ignored.
-                    } finally {
-                        try {
-                            is.close();
-                        } catch (Exception ignored) {
-                            // Ignored.
-                        }
-                    }
-                }
-            });
-        }
-    }
+                     }
+                  } catch (IOException var11) {
+                  } finally {
+                     try {
+                        is.close();
+                     } catch (Exception var10) {
+                     }
+
+                  }
+
+               }
+            }
+         });
+      }
+   }
 }

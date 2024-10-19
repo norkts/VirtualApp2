@@ -1,122 +1,67 @@
 package com.lody.virtual.server.pm;
 
 import android.content.ComponentName;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.content.SharedPreferences;
 import android.util.SparseArray;
-
-import com.lody.virtual.helper.PersistenceLayer;
-import com.lody.virtual.os.VEnvironment;
-
-import java.util.HashMap;
+import com.lody.virtual.StringFog;
+import com.lody.virtual.client.core.VirtualCore;
+import java.util.Iterator;
 import java.util.Map;
 
-/**
- * @author Lody
- */
-public class ComponentStateManager extends PersistenceLayer {
+public class ComponentStateManager {
+   private static SparseArray<UserComponentState> helpers = new SparseArray();
 
-    private static final ComponentStateManager sInstance = new ComponentStateManager();
-    private SparseArray<UserComponentState> states = new SparseArray<>();
+   public static synchronized UserComponentState user(int userId) {
+      UserComponentState state = (UserComponentState)helpers.get(userId);
+      if (state == null) {
+         state = new UserComponentState(userId);
+         helpers.put(userId, state);
+      }
 
-    public static ComponentStateManager get() {
-        return sInstance;
-    }
+      return state;
+   }
 
-    public ComponentStateManager() {
-        super(VEnvironment.getComponentStateFile());
-    }
+   public static class UserComponentState {
+      private SharedPreferences sharedPreferences;
 
+      private UserComponentState(int userId) {
+         this.sharedPreferences = VirtualCore.get().getContext().getSharedPreferences(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4+H2szGiNhHh42KAcYLmoINANvETg/LhUACQ==")) + userId, 0);
+      }
 
-    public int getComponentState(ComponentName component, int userId) {
-        synchronized (this) {
-            return getOrCreate(userId).getOrCreate(component).state;
-        }
-    }
+      public int get(ComponentName componentName) {
+         return this.sharedPreferences.getInt(this.componentKey(componentName), 0);
+      }
 
-    public void setComponentState(ComponentName component, int state, int userId) {
-        synchronized (this) {
-            getOrCreate(userId).getOrCreate(component).state = state;
-            save();
-        }
-    }
+      public void set(ComponentName componentName, int state) {
+         this.sharedPreferences.edit().putInt(this.componentKey(componentName), state).apply();
+      }
 
-    public void clearAll(int userId){
-        synchronized (this) {
-            if(states.indexOfKey(userId) >= 0){
-                states.remove(userId);
-                save();
-            }
-        }
-    }
+      public void clear(String packageName) {
+         Map<String, Integer> all = this.sharedPreferences.getAll();
+         if (all != null) {
+            Iterator var3 = all.keySet().iterator();
 
-    private UserComponentState getOrCreate(int userId) {
-        UserComponentState state;
-        state = states.get(userId);
-        if (state == null) {
-            state = new UserComponentState();
-            states.put(userId, state);
-        }
-        return state;
-    }
-
-    @Override
-    public int getCurrentVersion() {
-        return 1;
-    }
-
-    @Override
-    public void writePersistenceData(Parcel p) {
-        p.writeSparseArray((SparseArray) states);
-    }
-
-    @Override
-    public void readPersistenceData(Parcel p, int version) {
-        states = p.readSparseArray(UserComponentState.class.getClassLoader());
-    }
-
-    static class UserComponentState implements Parcelable {
-        Map<ComponentName, ComponentState> states = new HashMap<>();
-
-        UserComponentState() {
-        }
-
-        public ComponentState getOrCreate(ComponentName component) {
-            ComponentState state = states.get(component);
-            if (state == null) {
-                state = new ComponentState();
-                states.put(component, state);
-            }
-            return state;
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.states.size());
-            dest.writeMap(states);
-        }
-
-        protected UserComponentState(Parcel in) {
-            in.readMap(states, ComponentState.class.getClassLoader());
-        }
-
-        public static final Parcelable.Creator<UserComponentState> CREATOR = new Parcelable.Creator<UserComponentState>() {
-            @Override
-            public UserComponentState createFromParcel(Parcel source) {
-                return new UserComponentState(source);
+            while(var3.hasNext()) {
+               String component = (String)var3.next();
+               if (component.startsWith(packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")))) {
+                  this.sharedPreferences.edit().remove(component).apply();
+               }
             }
 
-            @Override
-            public UserComponentState[] newArray(int size) {
-                return new UserComponentState[size];
-            }
-        };
-    }
+         }
+      }
 
+      public void clearAll() {
+         this.sharedPreferences.edit().clear().apply();
+      }
 
+      private String componentKey(ComponentName componentName) {
+         return componentName.getPackageName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JhhSVg==")) + componentName.getClassName();
+      }
+
+      // $FF: synthetic method
+      UserComponentState(int x0, Object x1) {
+         this(x0);
+      }
+   }
 }

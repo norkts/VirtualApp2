@@ -1,26 +1,21 @@
 package mirror.android.app;
 
-
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.IBinder;
-
-import mirror.MethodParams;
+import com.lody.virtual.StringFog;
 import mirror.RefBoolean;
 import mirror.RefClass;
-import mirror.RefMethod;
-import mirror.RefObject;
 import mirror.RefInt;
+import mirror.RefObject;
 
 public class Activity {
-    public static Class<?> TYPE = RefClass.load(Activity.class, "android.app.Activity");
-    public static RefObject<ActivityInfo> mActivityInfo;
-    public static RefBoolean mFinished;
-    public static RefObject<android.app.Activity> mParent;
-    public static RefInt mResultCode;
-    public static RefObject<Intent> mResultData;
-    public static RefObject<IBinder> mToken;
-    public static RefObject<String> mEmbeddedID;
-    @MethodParams({int.class, int.class, Intent.class})
-    public static RefMethod<Void> onActivityResult;
+   public static Class<?> TYPE = RefClass.load(Activity.class, StringFog.decrypt("EgsWBAoHO10CHwJeKAwaGhMbAhw="));
+   public static RefObject<ActivityInfo> mActivityInfo;
+   public static RefBoolean mFinished;
+   public static RefObject<android.app.Activity> mParent;
+   public static RefInt mResultCode;
+   public static RefObject<Intent> mResultData;
+   public static RefObject<IBinder> mToken;
+   public static RefObject<String> mEmbeddedID;
 }

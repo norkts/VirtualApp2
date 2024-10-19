@@ -1,404 +1,278 @@
-/*
- * Copyright (C) 2011 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.lody.virtual.helper.collection;
 
-/**
- * A copy of the current platform (currently {@link android.os.Build.VERSION_CODES#KITKAT}
- * version of {@link android.util.SparseArray}; provides a removeAt() method and other things.
- */
+import com.lody.virtual.StringFog;
+
 public class SparseArray<E> implements Cloneable {
-    private static final Object DELETED = new Object();
-    private boolean mGarbage = false;
+   private static final Object DELETED = new Object();
+   private boolean mGarbage;
+   private int[] mKeys;
+   private Object[] mValues;
+   private int mSize;
 
-    private int[] mKeys;
-    private Object[] mValues;
-    private int mSize;
+   public SparseArray() {
+      this(10);
+   }
 
-    /**
-     * Creates a new SparseArray containing no mappings.
-     */
-    public SparseArray() {
-        this(10);
-    }
+   public SparseArray(int initialCapacity) {
+      this.mGarbage = false;
+      if (initialCapacity == 0) {
+         this.mKeys = ContainerHelpers.EMPTY_INTS;
+         this.mValues = ContainerHelpers.EMPTY_OBJECTS;
+      } else {
+         initialCapacity = ContainerHelpers.idealIntArraySize(initialCapacity);
+         this.mKeys = new int[initialCapacity];
+         this.mValues = new Object[initialCapacity];
+      }
 
-    /**
-     * Creates a new SparseArray containing no mappings that will not
-     * require any additional memory allocation to store the specified
-     * number of mappings.  If you supply an initial capacity of 0, the
-     * sparse array will be initialized with a light-weight representation
-     * not requiring any additional array allocations.
-     */
-    public SparseArray(int initialCapacity) {
-        if (initialCapacity == 0) {
-            mKeys =  ContainerHelpers.EMPTY_INTS;
-            mValues =  ContainerHelpers.EMPTY_OBJECTS;
-        } else {
-            initialCapacity =  ContainerHelpers.idealIntArraySize(initialCapacity);
-            mKeys = new int[initialCapacity];
-            mValues = new Object[initialCapacity];
-        }
-        mSize = 0;
-    }
+      this.mSize = 0;
+   }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public SparseArray<E> clone() {
-        SparseArray<E> clone = null;
-        try {
-            clone = (SparseArray<E>) super.clone();
-            clone.mKeys = mKeys.clone();
-            clone.mValues = mValues.clone();
-        } catch (CloneNotSupportedException cnse) {
-            /* ignore */
-        }
-        return clone;
-    }
+   public SparseArray<E> clone() {
+      SparseArray<E> clone = null;
 
-    /**
-     * Gets the Object mapped from the specified key, or <code>null</code>
-     * if no such mapping has been made.
-     */
-    public E get(int key) {
-        return get(key, null);
-    }
+      try {
+         clone = (SparseArray)super.clone();
+         clone.mKeys = (int[])this.mKeys.clone();
+         clone.mValues = (Object[])this.mValues.clone();
+      } catch (CloneNotSupportedException var3) {
+      }
 
-    /**
-     * Gets the Object mapped from the specified key, or the specified Object
-     * if no such mapping has been made.
-     */
-    @SuppressWarnings("unchecked")
-    public E get(int key, E valueIfKeyNotFound) {
-        int i =  ContainerHelpers.binarySearch(mKeys, mSize, key);
+      return clone;
+   }
 
-        if (i < 0 || mValues[i] == DELETED) {
-            return valueIfKeyNotFound;
-        } else {
-            return (E) mValues[i];
-        }
-    }
+   public E get(int key) {
+      return this.get(key, (Object)null);
+   }
 
-    /**
-     * Removes the mapping from the specified key, if there was any.
-     */
-    public void delete(int key) {
-        int i =  ContainerHelpers.binarySearch(mKeys, mSize, key);
+   public E get(int key, E valueIfKeyNotFound) {
+      int i = ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
+      return i >= 0 && this.mValues[i] != DELETED ? this.mValues[i] : valueIfKeyNotFound;
+   }
 
-        if (i >= 0) {
-            if (mValues[i] != DELETED) {
-                mValues[i] = DELETED;
-                mGarbage = true;
-            }
-        }
-    }
+   public void delete(int key) {
+      int i = ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
+      if (i >= 0 && this.mValues[i] != DELETED) {
+         this.mValues[i] = DELETED;
+         this.mGarbage = true;
+      }
 
-    /**
-     * Alias for {@link #delete(int)}.
-     */
-    public void remove(int key) {
-        delete(key);
-    }
+   }
 
-    /**
-     * Removes the mapping at the specified index.
-     */
-    public void removeAt(int index) {
-        if (mValues[index] != DELETED) {
-            mValues[index] = DELETED;
-            mGarbage = true;
-        }
-    }
+   public void remove(int key) {
+      this.delete(key);
+   }
 
-    /**
-     * Remove a range of mappings as a batch.
-     *
-     * @param index Index to begin at
-     * @param size Number of mappings to remove
-     */
-    public void removeAtRange(int index, int size) {
-        final int end = Math.min(mSize, index + size);
-        for (int i = index; i < end; i++) {
-            removeAt(i);
-        }
-    }
+   public void removeAt(int index) {
+      if (this.mValues[index] != DELETED) {
+         this.mValues[index] = DELETED;
+         this.mGarbage = true;
+      }
 
-    private void gc() {
-        // Log.e("SparseArray", "gc start with " + mSize);
+   }
 
-        int n = mSize;
-        int o = 0;
-        int[] keys = mKeys;
-        Object[] values = mValues;
+   public void removeAtRange(int index, int size) {
+      int end = Math.min(this.mSize, index + size);
 
-        for (int i = 0; i < n; i++) {
-            Object val = values[i];
+      for(int i = index; i < end; ++i) {
+         this.removeAt(i);
+      }
 
-            if (val != DELETED) {
-                if (i != o) {
-                    keys[o] = keys[i];
-                    values[o] = val;
-                    values[i] = null;
-                }
+   }
 
-                o++;
-            }
-        }
+   private void gc() {
+      int n = this.mSize;
+      int o = 0;
+      int[] keys = this.mKeys;
+      Object[] values = this.mValues;
 
-        mGarbage = false;
-        mSize = o;
-
-        // Log.e("SparseArray", "gc end with " + mSize);
-    }
-
-    /**
-     * Adds a mapping from the specified key to the specified value,
-     * replacing the previous mapping from the specified key if there
-     * was one.
-     */
-    public void put(int key, E value) {
-        int i =  ContainerHelpers.binarySearch(mKeys, mSize, key);
-
-        if (i >= 0) {
-            mValues[i] = value;
-        } else {
-            i = ~i;
-
-            if (i < mSize && mValues[i] == DELETED) {
-                mKeys[i] = key;
-                mValues[i] = value;
-                return;
+      for(int i = 0; i < n; ++i) {
+         Object val = values[i];
+         if (val != DELETED) {
+            if (i != o) {
+               keys[o] = keys[i];
+               values[o] = val;
+               values[i] = null;
             }
 
-            if (mGarbage && mSize >= mKeys.length) {
-                gc();
+            ++o;
+         }
+      }
 
-                // Search again because indices may have changed.
-                i = ~ ContainerHelpers.binarySearch(mKeys, mSize, key);
-            }
+      this.mGarbage = false;
+      this.mSize = o;
+   }
 
-            if (mSize >= mKeys.length) {
-                int n =  ContainerHelpers.idealIntArraySize(mSize + 1);
-
-                int[] nkeys = new int[n];
-                Object[] nvalues = new Object[n];
-
-                // Log.e("SparseArray", "grow " + mKeys.length + " to " + n);
-                System.arraycopy(mKeys, 0, nkeys, 0, mKeys.length);
-                System.arraycopy(mValues, 0, nvalues, 0, mValues.length);
-
-                mKeys = nkeys;
-                mValues = nvalues;
-            }
-
-            if (mSize - i != 0) {
-                // Log.e("SparseArray", "move " + (mSize - i));
-                System.arraycopy(mKeys, i, mKeys, i + 1, mSize - i);
-                System.arraycopy(mValues, i, mValues, i + 1, mSize - i);
-            }
-
-            mKeys[i] = key;
-            mValues[i] = value;
-            mSize++;
-        }
-    }
-
-    /**
-     * Returns the number of key-value mappings that this SparseArray
-     * currently stores.
-     */
-    public int size() {
-        if (mGarbage) {
-            gc();
-        }
-
-        return mSize;
-    }
-
-    /**
-     * Given an index in the range <code>0...size()-1</code>, returns
-     * the key from the <code>index</code>th key-value mapping that this
-     * SparseArray stores.
-     */
-    public int keyAt(int index) {
-        if (mGarbage) {
-            gc();
-        }
-
-        return mKeys[index];
-    }
-
-    /**
-     * Given an index in the range <code>0...size()-1</code>, returns
-     * the value from the <code>index</code>th key-value mapping that this
-     * SparseArray stores.
-     */
-    @SuppressWarnings("unchecked")
-    public E valueAt(int index) {
-        if (mGarbage) {
-            gc();
-        }
-
-        return (E) mValues[index];
-    }
-
-    /**
-     * @hide
-     * Removes the mapping from the specified key, if there was any, returning the old value.
-     */
-    public E removeReturnOld(int key) {
-        int i = ContainerHelpers.binarySearch(mKeys, mSize, key);
-
-        if (i >= 0) {
-            if (mValues[i] != DELETED) {
-                final E old = (E) mValues[i];
-                mValues[i] = DELETED;
-                mGarbage = true;
-                return old;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Given an index in the range <code>0...size()-1</code>, sets a new
-     * value for the <code>index</code>th key-value mapping that this
-     * SparseArray stores.
-     */
-    public void setValueAt(int index, E value) {
-        if (mGarbage) {
-            gc();
-        }
-
-        mValues[index] = value;
-    }
-
-    /**
-     * Returns the index for which {@link #keyAt} would return the
-     * specified key, or a negative number if the specified
-     * key is not mapped.
-     */
-    public int indexOfKey(int key) {
-        if (mGarbage) {
-            gc();
-        }
-
-        return  ContainerHelpers.binarySearch(mKeys, mSize, key);
-    }
-
-    /**
-     * Returns an index for which {@link #valueAt} would return the
-     * specified key, or a negative number if no keys map to the
-     * specified value.
-     * <p>Beware that this is a linear search, unlike lookups by key,
-     * and that multiple keys can map to the same value and this will
-     * find only one of them.
-     * <p>Note also that unlike most collections' {@code indexOf} methods,
-     * this method compares values using {@code ==} rather than {@code equals}.
-     */
-    public int indexOfValue(E value) {
-        if (mGarbage) {
-            gc();
-        }
-
-        for (int i = 0; i < mSize; i++)
-            if (mValues[i] == value)
-                return i;
-
-        return -1;
-    }
-
-    /**
-     * Removes all key-value mappings from this SparseArray.
-     */
-    public void clear() {
-        int n = mSize;
-        Object[] values = mValues;
-
-        for (int i = 0; i < n; i++) {
-            values[i] = null;
-        }
-
-        mSize = 0;
-        mGarbage = false;
-    }
-
-    /**
-     * Puts a key/value pair into the array, optimizing for the case where
-     * the key is greater than all existing keys in the array.
-     */
-    public void append(int key, E value) {
-        if (mSize != 0 && key <= mKeys[mSize - 1]) {
-            put(key, value);
+   public void put(int key, E value) {
+      int i = ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
+      if (i >= 0) {
+         this.mValues[i] = value;
+      } else {
+         i = ~i;
+         if (i < this.mSize && this.mValues[i] == DELETED) {
+            this.mKeys[i] = key;
+            this.mValues[i] = value;
             return;
-        }
+         }
 
-        if (mGarbage && mSize >= mKeys.length) {
-            gc();
-        }
+         if (this.mGarbage && this.mSize >= this.mKeys.length) {
+            this.gc();
+            i = ~ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
+         }
 
-        int pos = mSize;
-        if (pos >= mKeys.length) {
-            int n =  ContainerHelpers.idealIntArraySize(pos + 1);
-
+         if (this.mSize >= this.mKeys.length) {
+            int n = ContainerHelpers.idealIntArraySize(this.mSize + 1);
             int[] nkeys = new int[n];
             Object[] nvalues = new Object[n];
+            System.arraycopy(this.mKeys, 0, nkeys, 0, this.mKeys.length);
+            System.arraycopy(this.mValues, 0, nvalues, 0, this.mValues.length);
+            this.mKeys = nkeys;
+            this.mValues = nvalues;
+         }
 
-            // Log.e("SparseArray", "grow " + mKeys.length + " to " + n);
-            System.arraycopy(mKeys, 0, nkeys, 0, mKeys.length);
-            System.arraycopy(mValues, 0, nvalues, 0, mValues.length);
+         if (this.mSize - i != 0) {
+            System.arraycopy(this.mKeys, i, this.mKeys, i + 1, this.mSize - i);
+            System.arraycopy(this.mValues, i, this.mValues, i + 1, this.mSize - i);
+         }
 
-            mKeys = nkeys;
-            mValues = nvalues;
-        }
+         this.mKeys[i] = key;
+         this.mValues[i] = value;
+         ++this.mSize;
+      }
 
-        mKeys[pos] = key;
-        mValues[pos] = value;
-        mSize = pos + 1;
-    }
+   }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation composes a string by iterating over its mappings. If
-     * this map contains itself as a value, the string "(this Map)"
-     * will appear in its place.
-     */
-    @Override
-    public String toString() {
-        if (size() <= 0) {
-            return "{}";
-        }
+   public int size() {
+      if (this.mGarbage) {
+         this.gc();
+      }
 
-        StringBuilder buffer = new StringBuilder(mSize * 28);
-        buffer.append('{');
-        for (int i=0; i<mSize; i++) {
+      return this.mSize;
+   }
+
+   public int keyAt(int index) {
+      if (this.mGarbage) {
+         this.gc();
+      }
+
+      return this.mKeys[index];
+   }
+
+   public E valueAt(int index) {
+      if (this.mGarbage) {
+         this.gc();
+      }
+
+      return this.mValues[index];
+   }
+
+   public E removeReturnOld(int key) {
+      int i = ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
+      if (i >= 0 && this.mValues[i] != DELETED) {
+         E old = this.mValues[i];
+         this.mValues[i] = DELETED;
+         this.mGarbage = true;
+         return old;
+      } else {
+         return null;
+      }
+   }
+
+   public void setValueAt(int index, E value) {
+      if (this.mGarbage) {
+         this.gc();
+      }
+
+      this.mValues[index] = value;
+   }
+
+   public int indexOfKey(int key) {
+      if (this.mGarbage) {
+         this.gc();
+      }
+
+      return ContainerHelpers.binarySearch(this.mKeys, this.mSize, key);
+   }
+
+   public int indexOfValue(E value) {
+      if (this.mGarbage) {
+         this.gc();
+      }
+
+      for(int i = 0; i < this.mSize; ++i) {
+         if (this.mValues[i] == value) {
+            return i;
+         }
+      }
+
+      return -1;
+   }
+
+   public void clear() {
+      int n = this.mSize;
+      Object[] values = this.mValues;
+
+      for(int i = 0; i < n; ++i) {
+         values[i] = null;
+      }
+
+      this.mSize = 0;
+      this.mGarbage = false;
+   }
+
+   public void append(int key, E value) {
+      if (this.mSize != 0 && key <= this.mKeys[this.mSize - 1]) {
+         this.put(key, value);
+      } else {
+         if (this.mGarbage && this.mSize >= this.mKeys.length) {
+            this.gc();
+         }
+
+         int pos = this.mSize;
+         if (pos >= this.mKeys.length) {
+            int n = ContainerHelpers.idealIntArraySize(pos + 1);
+            int[] nkeys = new int[n];
+            Object[] nvalues = new Object[n];
+            System.arraycopy(this.mKeys, 0, nkeys, 0, this.mKeys.length);
+            System.arraycopy(this.mValues, 0, nvalues, 0, this.mValues.length);
+            this.mKeys = nkeys;
+            this.mValues = nvalues;
+         }
+
+         this.mKeys[pos] = key;
+         this.mValues[pos] = value;
+         this.mSize = pos + 1;
+      }
+   }
+
+   public String toString() {
+      if (this.size() <= 0) {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KC0IVg=="));
+      } else {
+         StringBuilder buffer = new StringBuilder(this.mSize * 28);
+         buffer.append('{');
+
+         for(int i = 0; i < this.mSize; ++i) {
             if (i > 0) {
-                buffer.append(", ");
+               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg==")));
             }
-            int key = keyAt(i);
+
+            int key = this.keyAt(i);
             buffer.append(key);
             buffer.append('=');
-            Object value = valueAt(i);
+            Object value = this.valueAt(i);
             if (value != this) {
-                buffer.append(value);
+               buffer.append(value);
             } else {
-                buffer.append("(this Map)");
+               buffer.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PBcqCmUaLyhoDiAsOQhSVg==")));
             }
-        }
-        buffer.append('}');
-        return buffer.toString();
-    }
+         }
+
+         buffer.append('}');
+         return buffer.toString();
+      }
+   }
+
+   public int[] getKeys() {
+      return this.mKeys;
+   }
 }

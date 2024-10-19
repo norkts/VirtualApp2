@@ -1,51 +1,70 @@
 package com.lody.virtual.client.hook.proxies.libcore;
 
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.annotations.Inject;
 import com.lody.virtual.client.hook.base.MethodInvocationProxy;
 import com.lody.virtual.client.hook.base.MethodInvocationStub;
-import com.lody.virtual.client.hook.base.ReplaceUidMethodProxy;
-
+import com.lody.virtual.client.hook.base.StaticMethodProxy;
+import com.lody.virtual.helper.utils.VLog;
+import java.lang.reflect.Method;
 import mirror.libcore.io.ForwardingOs;
 import mirror.libcore.io.Libcore;
 
-/**
- * @author Lody
- */
 @Inject(MethodProxies.class)
 public class LibCoreStub extends MethodInvocationProxy<MethodInvocationStub<Object>> {
+   public LibCoreStub() {
+      super(new MethodInvocationStub(getOs()));
+   }
 
-    public LibCoreStub() {
-        super(new MethodInvocationStub<Object>(getOs()));
-    }
+   private static Object getOs() {
+      Object os = Libcore.os.get();
+      if (ForwardingOs.os != null) {
+         Object posix = ForwardingOs.os.get(os);
+         if (posix != null) {
+            os = posix;
+         }
+      }
 
-    private static Object getOs() {
-        Object os = Libcore.os.get();
-        if (ForwardingOs.os != null) {
-            Object posix = ForwardingOs.os.get(os);
-            if (posix != null) {
-                os = posix;
-            }
-        }
-        return os;
-    }
+      return os;
+   }
 
-    @Override
-    protected void onBindMethods() {
-        super.onBindMethods();
-        addMethodProxy(new ReplaceUidMethodProxy("chown", 1));
-        addMethodProxy(new ReplaceUidMethodProxy("fchown", 1));
-        addMethodProxy(new ReplaceUidMethodProxy("getpwuid", 0));
-        addMethodProxy(new ReplaceUidMethodProxy("lchown", 1));
-        addMethodProxy(new ReplaceUidMethodProxy("setuid", 0));
-    }
+   protected void onBindMethods() {
+      super.onBindMethods();
+      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li5fD2wzBlo=")), 1));
+      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT42CmowPCY=")), 1));
+      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLG8KPAVjDgpF")), 0));
+      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg2CmowPCY=")), 1));
+      this.addMethodProxy(new ReplaceUidMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGwVAiw=")), 0));
+   }
 
-    @Override
-    public void inject() {
-        Libcore.os.set(getInvocationStub().getProxyInterface());
-    }
+   public void inject() {
+      Libcore.os.set(this.getInvocationStub().getProxyInterface());
+   }
 
-    @Override
-    public boolean isEnvBad() {
-        return getOs() != getInvocationStub().getProxyInterface();
-    }
+   public boolean isEnvBad() {
+      return getOs() != this.getInvocationStub().getProxyInterface();
+   }
+
+   public class ReplaceUidMethodProxy extends StaticMethodProxy {
+      private final int index;
+
+      public ReplaceUidMethodProxy(String name, int index) {
+         super(name);
+         this.index = index;
+      }
+
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return super.call(who, method, args);
+      }
+
+      public boolean beforeCall(Object who, Method method, Object... args) {
+         VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhUMM28FHjd9JDBKKQc2UmkgBiBlJywRKS4APGcOOChuATAhKQgbPnhSIFo=")) + method.getName());
+         int uid = (Integer)args[this.index];
+         if (uid == getVUid() || uid == getBaseVUid()) {
+            args[this.index] = getRealUid();
+         }
+
+         return super.beforeCall(who, method, args);
+      }
+   }
 }

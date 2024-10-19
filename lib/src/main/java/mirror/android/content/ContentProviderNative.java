@@ -2,13 +2,13 @@ package mirror.android.content;
 
 import android.os.IBinder;
 import android.os.IInterface;
-
-import mirror.RefClass;
+import com.lody.virtual.StringFog;
 import mirror.MethodParams;
+import mirror.RefClass;
 import mirror.RefStaticMethod;
 
 public class ContentProviderNative {
-    public static Class<?> TYPE = RefClass.load(ContentProviderNative.class, "android.content.ContentProviderNative");
-    @MethodParams({IBinder.class})
-    public static RefStaticMethod<IInterface> asInterface;
+   public static Class<?> TYPE = RefClass.load(ContentProviderNative.class, StringFog.decrypt("EgsWBAoHO10AABwEDAEaXSYdGBELMQczHR0GAAsLASsTAgwYOg=="));
+   @MethodParams({IBinder.class})
+   public static RefStaticMethod<IInterface> asInterface;
 }

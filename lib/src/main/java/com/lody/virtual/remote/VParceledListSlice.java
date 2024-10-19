@@ -6,213 +6,196 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
-
+import com.lody.virtual.StringFog;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Transfer a large list of Parcelable objects across an IPC. Splits into
- * multiple transactions if needed.
- *
- * Caveat: for efficiency and security, all elements must be the same concrete
- * type. In order to avoid writing the class name of each object, we must ensure
- * that each object is the same type, or else unparceling then reparceling the
- * data may yield a different result if the class name encoded in the Parcelable
- * is a Base type. See b/17671747.
- *
- * @hide
- *
- * 		OpenSilk: Modified to remove the creator optimization which uses hidden
- *       apis. this means we write an extra string for every list item. Class
- *       verification left in place since the Base type issue still applies
- */
 public class VParceledListSlice<T extends Parcelable> implements Parcelable {
-	@SuppressWarnings("unchecked")
-	public static final Parcelable.ClassLoaderCreator<VParceledListSlice> CREATOR = new Parcelable.ClassLoaderCreator<VParceledListSlice>() {
-		public VParceledListSlice createFromParcel(Parcel in) {
-			return new VParceledListSlice(in, null);
-		}
+   public static final Parcelable.ClassLoaderCreator<VParceledListSlice> CREATOR = new Parcelable.ClassLoaderCreator<VParceledListSlice>() {
+      public VParceledListSlice createFromParcel(Parcel in) {
+         return new VParceledListSlice(in, (ClassLoader)null);
+      }
 
-		@Override
-		public VParceledListSlice createFromParcel(Parcel in, ClassLoader loader) {
-			return new VParceledListSlice(in, loader);
-		}
+      public VParceledListSlice createFromParcel(Parcel in, ClassLoader loader) {
+         return new VParceledListSlice(in, loader);
+      }
 
-		public VParceledListSlice[] newArray(int size) {
-			return new VParceledListSlice[size];
-		}
-	};
-	/*
-	 * TODO get this number from somewhere else. For now set it to a quarter of
-	 * the 1MB limit.
-	 */
-	private static final int MAX_IPC_SIZE = 256 * 1024;
-	private static final int MAX_FIRST_IPC_SIZE = MAX_IPC_SIZE / 2;
-	private static String TAG = "ParceledListSlice";
-	private static boolean DEBUG = false;
-	private final List<T> mList;
+      public VParceledListSlice[] newArray(int size) {
+         return new VParceledListSlice[size];
+      }
+   };
+   private static final int MAX_IPC_SIZE = 262144;
+   private static final int MAX_FIRST_IPC_SIZE = 131072;
+   private static String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+KmszNCRiDgoOKQgqLmIFOC9oJyhF"));
+   private static boolean DEBUG = false;
+   private final List<T> mList;
 
-	public VParceledListSlice(List<T> list) {
-		mList = list;
-	}
+   public VParceledListSlice(List<T> list) {
+      this.mList = list;
+   }
 
-	private VParceledListSlice(Parcel p, ClassLoader loader) {
-		if (loader == null) {
-			loader = VParceledListSlice.class.getClassLoader();
-		}
-		final int N = p.readInt();
-		mList = new ArrayList<T>(N);
-		if (DEBUG)
-			Log.d(TAG, "Retrieving " + N + " items");
-		if (N <= 0) {
-			return;
-		}
+   private VParceledListSlice(Parcel p, ClassLoader loader) {
+      if (loader == null) {
+         loader = VParceledListSlice.class.getClassLoader();
+      }
 
-		// Parcelable.Creator<T> creator = p.readParcelableCreator(loader);
-		Class<?> listElementClass = null;
+      int N = p.readInt();
+      this.mList = new ArrayList(N);
+      if (DEBUG) {
+         Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uLG8jAitmNAY2KCkmVg==")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYLGgVEgM=")));
+      }
 
-		int i = 0;
-		while (i < N) {
-			if (p.readInt() == 0) {
-				break;
-			}
+      if (N > 0) {
+         Class<?> listElementClass = null;
 
-			// final T parcelable = p.readCreator(creator, loader);
-			final T parcelable = p.readParcelable(loader);
-			if (listElementClass == null) {
-				listElementClass = parcelable.getClass();
-			} else if (parcelable != null) {
-				verifySameType(listElementClass, parcelable.getClass());
-			}
+         int i;
+         for(i = 0; i < N && p.readInt() != 0; ++i) {
+            T parcelable = p.readParcelable(loader);
+            if (listElementClass == null) {
+               listElementClass = parcelable.getClass();
+            } else if (parcelable != null) {
+               verifySameType(listElementClass, parcelable.getClass());
+            }
 
-			mList.add(parcelable);
+            this.mList.add(parcelable);
+            if (DEBUG) {
+               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gJIC9gNFEzKj0LOn4FSFo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + this.mList.get(this.mList.size() - 1));
+            }
+         }
 
-			if (DEBUG)
-				Log.d(TAG, "Read inline #" + i + ": " + mList.get(mList.size() - 1));
-			i++;
-		}
-		if (i >= N) {
-			return;
-		}
-		final IBinder retriever = p.readStrongBinder();
-		while (i < N) {
-			if (DEBUG)
-				Log.d(TAG, "Reading more @" + i + " of " + N + ": retriever=" + retriever);
-			Parcel data = Parcel.obtain();
-			Parcel reply = Parcel.obtain();
-			data.writeInt(i);
-			try {
-				retriever.transact(IBinder.FIRST_CALL_TRANSACTION, data, reply, 0);
-			} catch (RemoteException e) {
-				Log.w(TAG, "Failure retrieving array; only received " + i + " of " + N, e);
-				return;
-			}
-			while (i < N && reply.readInt() != 0) {
-				// final T parcelable = reply.readCreator(creator, loader);
-				final T parcelable = reply.readParcelable(loader);
-				if (parcelable == null) {
+         if (i < N) {
+            IBinder retriever = p.readStrongBinder();
 
-				} else {
-					verifySameType(listElementClass, parcelable.getClass());
-				}
-				mList.add(parcelable);
+            while(i < N) {
+               if (DEBUG) {
+                  Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gFAiZiICQ3Ki4uPX4xTVo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6KmgaMARjDjAuKAgtJQ==")) + retriever);
+               }
 
-				if (DEBUG)
-					Log.d(TAG, "Read extra #" + i + ": " + mList.get(mList.size() - 1));
-				i++;
-			}
-			reply.recycle();
-			data.recycle();
-		}
-	}
+               Parcel data = Parcel.obtain();
+               Parcel reply = Parcel.obtain();
+               data.writeInt(i);
 
-	private static void verifySameType(final Class<?> expected, final Class<?> actual) {
-		if (!actual.equals(expected)) {
-			throw new IllegalArgumentException(
-					"Can't unparcel type " + actual.getName() + " in list of type " + expected.getName());
-		}
-	}
+               try {
+                  retriever.transact(1, data, reply, 0);
+               } catch (RemoteException var10) {
+                  RemoteException e = var10;
+                  Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JT4+CWoKNARiCiQqKAg2KGwjGj5qARouPQg+CGEwPAZ7ICAeKRgiM3gaFj9rNygwID02I3kVSFo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N, e);
+                  return;
+               }
 
-	public List<T> getList() {
-		return mList;
-	}
+               for(; i < N && reply.readInt() != 0; ++i) {
+                  T parcelable = reply.readParcelable(loader);
+                  if (parcelable != null) {
+                     verifySameType(listElementClass, parcelable.getClass());
+                  }
 
-	@Override
-	public int describeContents() {
-		int contents = 0;
-		for (int i = 0; i < mList.size(); i++) {
-			contents |= mList.get(i).describeContents();
-		}
-		return contents;
-	}
+                  this.mList.add(parcelable);
+                  if (DEBUG) {
+                     Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uP2gJICtnEQoqLwMlPw==")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + this.mList.get(this.mList.size() - 1));
+                  }
+               }
 
-	/**
-	 * Write this to another Parcel. Note that this discards the internal Parcel
-	 * and should not be used anymore. This is so we can pass this to a Binder
-	 * where we won't have a chance to call recycle on this.
-	 */
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		final int N = mList.size();
-		final int callFlags = flags;
-		dest.writeInt(N);
-		if (DEBUG)
-			Log.d(TAG, "Writing " + N + " items");
-		if (N > 0) {
-			final Class<?> listElementClass = mList.get(0).getClass();
-			// dest.writeParcelableCreator(mList.get(0));
-			int i = 0;
-			while (i < N && dest.dataSize() < MAX_FIRST_IPC_SIZE) {
-				dest.writeInt(1);
+               reply.recycle();
+               data.recycle();
+            }
 
-				final T parcelable = mList.get(i);
-				if (parcelable == null) {
-					dest.writeString(null);
-				} else {
-					verifySameType(listElementClass, parcelable.getClass());
-					// parcelable.writeToParcel(dest, callFlags);
-					dest.writeParcelable(parcelable, callFlags);
-				}
-				if (DEBUG)
-					Log.d(TAG, "Wrote inline #" + i + ": " + mList.get(i));
-				i++;
-			}
-			if (i < N) {
-				dest.writeInt(0);
-				Binder retriever = new Binder() {
-					@Override
-					protected boolean onTransact(int code, Parcel data, Parcel reply, int flags)
-							throws RemoteException {
-						if (code != FIRST_CALL_TRANSACTION) {
-							return super.onTransact(code, data, reply, flags);
-						}
-						int i = data.readInt();
-						if (DEBUG)
-							Log.d(TAG, "Writing more @" + i + " of " + N);
-						while (i < N && reply.dataSize() < MAX_IPC_SIZE) {
-							reply.writeInt(1);
+         }
+      }
+   }
 
-							final T parcelable = mList.get(i);
-							verifySameType(listElementClass, parcelable.getClass());
-							// parcelable.writeToParcel(reply, callFlags);
-							reply.writeParcelable(parcelable, callFlags);
+   private static void verifySameType(Class<?> expected, Class<?> actual) {
+      if (!actual.equals(expected)) {
+         throw new IllegalArgumentException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4+CHgwMyhmDlksLwguP2kjOyhvHh47Ll86Vg==")) + actual.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYCHsFHi9hJw08Ki09OmUwLAJrDTxF")) + expected.getName());
+      }
+   }
 
-							if (DEBUG)
-								Log.d(TAG, "Wrote extra #" + i + ": " + mList.get(i));
-							i++;
-						}
-						if (i < N) {
-							if (DEBUG)
-								Log.d(TAG, "Breaking @" + i + " of " + N);
-							reply.writeInt(0);
-						}
-						return true;
-					}
-				};
-				if (DEBUG)
-					Log.d(TAG, "Breaking @" + i + " of " + N + ": retriever=" + retriever);
-				dest.writeStrongBinder(retriever);
-			}
-		}
-	}
+   public List<T> getList() {
+      return this.mList;
+   }
+
+   public int describeContents() {
+      int contents = 0;
+
+      for(int i = 0; i < this.mList.size(); ++i) {
+         contents |= ((Parcelable)this.mList.get(i)).describeContents();
+      }
+
+      return contents;
+   }
+
+   public void writeToParcel(Parcel dest, int flags) {
+      final int N = this.mList.size();
+      final int callFlags = flags;
+      dest.writeInt(N);
+      if (DEBUG) {
+         Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MCWwFAiZiICRF")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgYLGgVEgM=")));
+      }
+
+      if (N > 0) {
+         final Class<?> listElementClass = ((Parcelable)this.mList.get(0)).getClass();
+
+         int i;
+         for(i = 0; i < N && dest.dataSize() < 131072; ++i) {
+            dest.writeInt(1);
+            T parcelable = (Parcelable)this.mList.get(i);
+            if (parcelable == null) {
+               dest.writeString((String)null);
+            } else {
+               verifySameType(listElementClass, parcelable.getClass());
+               dest.writeParcelable(parcelable, callFlags);
+            }
+
+            if (DEBUG) {
+               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MD2wFNyhjDlkoKQcYPX43Alo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + this.mList.get(i));
+            }
+         }
+
+         if (i < N) {
+            dest.writeInt(0);
+            Binder retriever = new Binder() {
+               protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+                  if (code != 1) {
+                     return super.onTransact(code, data, reply, flags);
+                  } else {
+                     int i = data.readInt();
+                     if (VParceledListSlice.DEBUG) {
+                        Log.d(VParceledListSlice.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MCWwFAiZiICQ3Ki4uPX4xTVo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N);
+                     }
+
+                     for(; i < N && reply.dataSize() < 262144; ++i) {
+                        reply.writeInt(1);
+                        T parcelable = (Parcelable)VParceledListSlice.this.mList.get(i);
+                        VParceledListSlice.verifySameType(listElementClass, parcelable.getClass());
+                        reply.writeParcelable(parcelable, callFlags);
+                        if (VParceledListSlice.DEBUG) {
+                           Log.d(VParceledListSlice.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS0MD2wFNyhiARogIz0hOn4FSFo=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6Vg==")) + VParceledListSlice.this.mList.get(i));
+                        }
+                     }
+
+                     if (i < N) {
+                        if (VParceledListSlice.DEBUG) {
+                           Log.d(VParceledListSlice.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MM2sVQS9gNDs8JxhSVg==")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N);
+                        }
+
+                        reply.writeInt(0);
+                     }
+
+                     return true;
+                  }
+               }
+            };
+            if (DEBUG) {
+               Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jj0MM2sVQS9gNDs8JxhSVg==")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgAPnsFSFo=")) + N + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ODo6KmgaMARjDjAuKAgtJQ==")) + retriever);
+            }
+
+            dest.writeStrongBinder(retriever);
+         }
+      }
+
+   }
+
+   // $FF: synthetic method
+   VParceledListSlice(Parcel x0, ClassLoader x1, Object x2) {
+      this(x0, x1);
+   }
 }

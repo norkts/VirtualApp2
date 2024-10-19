@@ -2,52 +2,46 @@ package com.lody.virtual.remote;
 
 import android.annotation.TargetApi;
 import android.app.job.JobWorkItem;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-@TargetApi(Build.VERSION_CODES.O)
+@TargetApi(26)
 public class VJobWorkItem implements Parcelable {
-    private JobWorkItem item;
+   private JobWorkItem item;
+   public static final Parcelable.Creator<VJobWorkItem> CREATOR = new Parcelable.Creator<VJobWorkItem>() {
+      public VJobWorkItem createFromParcel(Parcel source) {
+         return new VJobWorkItem(source);
+      }
 
-    public JobWorkItem get() {
-        return item;
-    }
+      public VJobWorkItem[] newArray(int size) {
+         return new VJobWorkItem[size];
+      }
+   };
 
-    public void set(JobWorkItem item) {
-        this.item = item;
-    }
+   public JobWorkItem get() {
+      return this.item;
+   }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+   public void set(JobWorkItem item) {
+      this.item = item;
+   }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.item, flags);
-    }
+   public int describeContents() {
+      return 0;
+   }
 
-    public VJobWorkItem() {
-    }
+   public void writeToParcel(Parcel dest, int flags) {
+      dest.writeParcelable(this.item, flags);
+   }
 
-    public VJobWorkItem(JobWorkItem item) {
-        this.item = item;
-    }
+   public VJobWorkItem() {
+   }
 
-    protected VJobWorkItem(Parcel in) {
-        this.item = in.readParcelable(JobWorkItem.class.getClassLoader());
-    }
+   public VJobWorkItem(JobWorkItem item) {
+      this.item = item;
+   }
 
-    public static final Parcelable.Creator<VJobWorkItem> CREATOR = new Parcelable.Creator<VJobWorkItem>() {
-        @Override
-        public VJobWorkItem createFromParcel(Parcel source) {
-            return new VJobWorkItem(source);
-        }
-
-        @Override
-        public VJobWorkItem[] newArray(int size) {
-            return new VJobWorkItem[size];
-        }
-    };
+   protected VJobWorkItem(Parcel in) {
+      this.item = (JobWorkItem)in.readParcelable(JobWorkItem.class.getClassLoader());
+   }
 }

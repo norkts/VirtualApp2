@@ -1,61 +1,73 @@
 package com.lody.virtual.server.pm;
 
 import android.content.Intent;
-
-import com.lody.virtual.client.stub.StubManifest;
+import android.net.Uri;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.server.am.VActivityManagerService;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author Lody
- */
-
 public class PrivilegeAppOptimizer {
+   private static final PrivilegeAppOptimizer sInstance = new PrivilegeAppOptimizer();
+   private final List<String> privilegeApps = new ArrayList();
+   private final List<String> privilegeProcessNames = new ArrayList();
 
-    private static final PrivilegeAppOptimizer sInstance = new PrivilegeAppOptimizer();
-    private final List<String> privilegeApps = new ArrayList<>();
+   private PrivilegeAppOptimizer() {
+      this.privilegeApps.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojPCVgJDgoKAMYOW8VBgRlJx4vPC4mL2EjSFo=")));
+      this.privilegeApps.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojPCVgJDgoKAMYOW8VBgRlJx4vPC4mD2IzSFo=")));
+      this.privilegeProcessNames.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojPCVgJDgoKAMYOW8VBgRlJx4vPC4mL2EkRTNuASg8Ki0YCmsFBiA=")));
+      this.privilegeProcessNames.add(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ADXojPCVgJDgoKAMYKmoVNClrDjA6PC4mO2EVODY=")));
+   }
 
-    private PrivilegeAppOptimizer() {
-        Collections.addAll(privilegeApps, StubManifest.PRIVILEGE_APPS);
-    }
+   public static PrivilegeAppOptimizer get() {
+      return sInstance;
+   }
 
-    public static PrivilegeAppOptimizer get() {
-        return sInstance;
-    }
+   public List<String> getPrivilegeApps() {
+      return Collections.unmodifiableList(this.privilegeApps);
+   }
 
-    public List<String> getPrivilegeApps() {
-        return Collections.unmodifiableList(privilegeApps);
-    }
+   public void addPrivilegeApp(String packageName) {
+      this.privilegeApps.add(packageName);
+   }
 
-    public void addPrivilegeApp(String packageName) {
-        privilegeApps.add(packageName);
-    }
+   public void removePrivilegeApp(String packageName) {
+      this.privilegeApps.remove(packageName);
+   }
 
-    public void removePrivilegeApp(String packageName) {
-        privilegeApps.remove(packageName);
-    }
+   public boolean isPrivilegeApp(String packageName) {
+      return this.privilegeApps.contains(packageName);
+   }
 
-    public boolean isPrivilegeApp(String packageName) {
-        return privilegeApps.contains(packageName);
-    }
+   public boolean isPrivilegeProcess(String processName) {
+      return this.privilegeProcessNames.contains(processName);
+   }
 
-    public void performOptimizeAllApps() {
-        for (String pkg : privilegeApps) {
-            performOptimize(pkg, VUserHandle.USER_ALL);
-        }
-    }
+   public void performOptimizeAllApps() {
+      Iterator var1 = this.privilegeApps.iterator();
 
-    public boolean performOptimize(String packageName, int userId) {
-        if (!isPrivilegeApp(packageName)) {
-            return false;
-        }
-        VActivityManagerService.get().sendBroadcastAsUserWithPackage(
-                new Intent(Intent.ACTION_BOOT_COMPLETED, null), new VUserHandle(userId), packageName);
-        return true;
-    }
+      while(var1.hasNext()) {
+         String pkg = (String)var1.next();
+         this.performOptimize(pkg, -1);
+      }
 
+   }
+
+   public boolean performOptimize(String packageName, int userId) {
+      if (!this.isPrivilegeApp(packageName)) {
+         return false;
+      } else {
+         VActivityManagerService.get().sendBroadcastAsUser(this.specifyApp(new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42MBRkJTAOIAYuAWQbHlRkDygJ")), (Uri)null), packageName, userId), new VUserHandle(userId));
+         return true;
+      }
+   }
+
+   private Intent specifyApp(Intent intent, String packageName, int userId) {
+      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9hESwzLD0cCGkjEithJDwiLjsAVg==")), packageName);
+      intent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JysiEWYwHh9mASg/IzxfMWk2NFo=")), userId);
+      return intent;
+   }
 }

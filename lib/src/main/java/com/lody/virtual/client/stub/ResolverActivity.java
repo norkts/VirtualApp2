@@ -18,10 +18,10 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PatternMatcher;
+import android.os.Build.VERSION;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,20 +31,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.lody.virtual.R;
+import com.kook.librelease.R.id;
+import com.kook.librelease.R.integer;
+import com.kook.librelease.R.layout;
+import com.kook.librelease.R.string;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.VClient;
 import com.lody.virtual.client.core.VirtualCore;
-import com.lody.virtual.client.env.Constants;
 import com.lody.virtual.client.ipc.VActivityManager;
-import com.lody.virtual.client.ipc.VPackageManager;
 import com.lody.virtual.helper.utils.ComponentUtils;
 import com.lody.virtual.helper.utils.Reflect;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VUserHandle;
-import com.lody.virtual.remote.ClientConfig;
-import com.lody.virtual.server.am.VActivityManagerService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,751 +50,603 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
 public class ResolverActivity extends Activity implements AdapterView.OnItemClickListener {
-    protected static final String TAG = "ResolverActivity";
-    private static final boolean DEBUG = false;
-    protected Bundle mOptions;
-    protected String mResultWho;
-    protected IBinder mResultTo;
-    protected int mRequestCode;
-    private int mLaunchedFromUid;
-    private ResolveListAdapter mAdapter;
-    private PackageManager mPm;
-    private boolean mAlwaysUseOption;
-    private boolean mShowExtended;
-    private ListView mListView;
-    private Button mAlwaysButton;
-    private Button mOnceButton;
-    private int mIconDpi;
-    private int mIconSize;
-    private int mMaxColumns;
-    private int mLastSelected = ListView.INVALID_POSITION;
-    private AlertDialog dialog;
-    protected boolean mIgnoreDefault;
-    private boolean mRegistered;
-    private Context mContext;
+   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uKWozHj5iASwRLy42MWUVLAZuAVRF"));
+   private static final boolean DEBUG = false;
+   protected Bundle mOptions;
+   protected String mResultWho;
+   protected IBinder mResultTo;
+   protected int mRequestCode;
+   private int mLaunchedFromUid;
+   private ResolveListAdapter mAdapter;
+   private PackageManager mPm;
+   private boolean mAlwaysUseOption;
+   private boolean mShowExtended;
+   private ListView mListView;
+   private Button mAlwaysButton;
+   private Button mOnceButton;
+   private int mIconDpi;
+   private int mIconSize;
+   private int mMaxColumns;
+   private int mLastSelected = -1;
+   private AlertDialog dialog;
+   private boolean mRegistered;
 
-    private Intent makeMyIntent() {
-        Intent intent = new Intent(getIntent());
-        intent.setComponent(null);
-        intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        return intent;
-    }
+   private Intent makeMyIntent() {
+      Intent intent = new Intent(this.getIntent());
+      intent.setComponent((ComponentName)null);
+      intent.setFlags(intent.getFlags() & -8388609);
+      return intent;
+   }
 
-    protected void superOnCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-    }
+   @SuppressLint({"MissingSuperCall"})
+   protected void onCreate(Bundle savedInstanceState) {
+      Intent intent = this.makeMyIntent();
+      Set<String> categories = intent.getCategories();
+      int titleResource;
+      if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk42QQ5nDB5F")).equals(intent.getAction()) && categories != null && categories.size() == 1 && categories.contains(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlnHFlBJy5SVg==")))) {
+         titleResource = string.choose;
+      } else {
+         titleResource = string.choose;
+      }
 
-    @SuppressLint("MissingSuperCall")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        final int titleResource;
-        final Intent intent = makeMyIntent();
-        final Set<String> categories = intent.getCategories();
-        if (Intent.ACTION_MAIN.equals(intent.getAction())
-                && categories != null
-                && categories.size() == 1
-                && categories.contains(Intent.CATEGORY_HOME)) {
-            titleResource = R.string.choose;
-        } else {
-            titleResource = R.string.choose;
-        }
-        int userId = intent.getIntExtra(Constants.EXTRA_USER_HANDLE, VUserHandle.getCallingUserId());
-        onCreate(savedInstanceState, intent, getResources().getText(titleResource),
-                null, null, true, userId);
-    }
+      int userId = intent.getIntExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYFNCBlNVkhKC4qIGUVNFo=")), VUserHandle.getCallingUserId());
+      this.onCreate(savedInstanceState, intent, this.getResources().getText(titleResource), (Intent[])null, (List)null, true, userId);
+   }
 
-    protected void onCreate(Bundle savedInstanceState, Intent intent,
-                            CharSequence title, Intent[] initialIntents, List<ResolveInfo> rList,
-                            boolean alwaysUseOption, int userid) {
-        super.onCreate(savedInstanceState);
-        mLaunchedFromUid = userid;
-        mPm = getPackageManager();
-        mAlwaysUseOption = alwaysUseOption;
-        mMaxColumns = getResources().getInteger(R.integer.config_maxResolverActivityColumns);
-
-        mRegistered = true;
-
-        final ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        mIconDpi = am.getLauncherLargeIconDensity();
-        mIconSize = am.getLauncherLargeIconSize();
-
-        mAdapter = new ResolveListAdapter(this, intent, initialIntents, rList,
-                mLaunchedFromUid);
-        int count = mAdapter.getCount();
-        if (Build.VERSION.SDK_INT >= 17) {
-            if (mLaunchedFromUid < 0) {
-                // Gulp!
-                finish();
-                return;
-            }
-        }
-        if(count==0){
-            VLog.w(TAG, "not found app from intent %s", intent);
-            //禁止发现双域外部应用
-//            intent = ComponentUtils.processOutsideIntent(0, VirtualCore.get().isPluginEngine(), intent);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-//            startActivity(intent);
-            finish();
-            return;
-        }else if (count == 1) {
-            startSelected(0, false);
-            mRegistered = false;
-            finish();
-            return;
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        if (count > 1) {
-            mListView = new ListView(this);
-            mListView.setAdapter(mAdapter);
-            mListView.setOnItemClickListener(this);
-            mListView.setOnItemLongClickListener(new ItemLongClickListener());
-            builder.setView(mListView);
+   protected void onCreate(Bundle savedInstanceState, Intent intent, CharSequence title, Intent[] initialIntents, List<ResolveInfo> rList, boolean alwaysUseOption, int userid) {
+      super.onCreate(savedInstanceState);
+      this.mLaunchedFromUid = userid;
+      this.mPm = this.getPackageManager();
+      this.mAlwaysUseOption = alwaysUseOption;
+      this.mMaxColumns = this.getResources().getInteger(integer.config_maxResolverActivityColumns);
+      this.mRegistered = true;
+      ActivityManager am = (ActivityManager)this.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2LGUaOC9mEQZF")));
+      this.mIconDpi = am.getLauncherLargeIconDensity();
+      this.mIconSize = am.getLauncherLargeIconSize();
+      this.mAdapter = new ResolveListAdapter(this, intent, initialIntents, rList, this.mLaunchedFromUid);
+      int count = this.mAdapter.getCount();
+      if (VERSION.SDK_INT >= 17 && this.mLaunchedFromUid < 0) {
+         this.finish();
+      } else if (count == 1) {
+         this.startSelected(0, false);
+         this.mRegistered = false;
+         this.finish();
+      } else {
+         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+         builder.setTitle(title);
+         if (count > 1) {
+            this.mListView = new ListView(this);
+            this.mListView.setAdapter(this.mAdapter);
+            this.mListView.setOnItemClickListener(this);
+            this.mListView.setOnItemLongClickListener(new ItemLongClickListener());
+            builder.setView(this.mListView);
             if (alwaysUseOption) {
-                mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+               this.mListView.setChoiceMode(1);
             }
-        } else {
-            builder.setMessage(R.string.noApplications);
-        }
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
+         } else {
+            builder.setMessage(string.noApplications);
+         }
+
+         builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
-                finish();
+               ResolverActivity.this.finish();
             }
-        });
-        dialog = builder.show();
-//
-//        if (alwaysUseOption) {
-//            final ViewGroup buttonLayout = (ViewGroup) findViewById(R.id.button_bar);
-//            if (buttonLayout != null) {
-//                buttonLayout.setVisibility(View.VISIBLE);
-//                mAlwaysButton = (Button) buttonLayout.findViewById(R.id.button_always);
-//                mOnceButton = (Button) buttonLayout.findViewById(R.id.button_once);
-//            } else {
-//                mAlwaysUseOption = false;
-//            }
-//            // Set the initial highlight if there was a preferred or last used choice
-//            final int initialHighlight = mAdapter.getInitialHighlight();
-//            if (initialHighlight >= 0) {
-//                mListView.setItemChecked(initialHighlight, true);
-//                onItemClick(null, null, initialHighlight, 0); // Other entries are not used
-//            }
-//        }
-    }
+         });
+         this.dialog = builder.show();
+      }
+   }
 
-    @Override
-    protected void onDestroy() {
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
-        }
-        super.onDestroy();
-    }
+   protected void onDestroy() {
+      if (this.dialog != null && this.dialog.isShowing()) {
+         this.dialog.dismiss();
+      }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-    Drawable getIcon(Resources res, int resId) {
-        Drawable result;
-        try {
-            result = res.getDrawableForDensity(resId, mIconDpi);
-        } catch (Resources.NotFoundException e) {
-            result = null;
-        }
+      super.onDestroy();
+   }
 
-        return result;
-    }
+   @TargetApi(15)
+   Drawable getIcon(Resources res, int resId) {
+      Drawable result;
+      try {
+         result = res.getDrawableForDensity(resId, this.mIconDpi);
+      } catch (Resources.NotFoundException var5) {
+         result = null;
+      }
 
-    Drawable loadIconForResolveInfo(ResolveInfo ri) {
-        /*Drawable dr;
-        try {
-            if (ri.resolvePackageName != null && ri.icon != 0) {
-                dr = getIcon(mPm.getResourcesForApplication(ri.resolvePackageName), ri.icon);
-                if (dr != null) {
-                    return dr;
-                }
+      return result;
+   }
+
+   Drawable loadIconForResolveInfo(ResolveInfo ri) {
+      try {
+         Drawable dr;
+         if (ri.resolvePackageName != null && ri.icon != 0) {
+            dr = this.getIcon(this.mPm.getResourcesForApplication(ri.resolvePackageName), ri.icon);
+            if (dr != null) {
+               return dr;
             }
-            final int iconRes = ri.getIconResource();
-            if (iconRes != 0) {
-                dr = getIcon(mPm.getResourcesForApplication(ri.activityInfo.packageName), iconRes);
-                if (dr != null) {
-                    return dr;
-                }
+         }
+
+         int iconRes = ri.getIconResource();
+         if (iconRes != 0) {
+            dr = this.getIcon(this.mPm.getResourcesForApplication(ri.activityInfo.packageName), iconRes);
+            if (dr != null) {
+               return dr;
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            VLog.e(TAG, "Couldn't find resources for package\n" + VLog.getStackTraceString(e));
-        }*/
-        return ri.loadIcon(mPm);
-    }
+         }
+      } catch (PackageManager.NameNotFoundException var4) {
+         PackageManager.NameNotFoundException e = var4;
+         VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMCZIJw08KD0cDmk3TQRrDjAcKhcMJWIFNyNuNFk7OD1XO2gjQTNoNysT")) + VLog.getStackTraceString(e));
+      }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (!mRegistered) {
-            mRegistered = true;
-        }
-        mAdapter.handlePackagesChanged();
-    }
+      return ri.loadIcon(this.mPm);
+   }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mRegistered) {
-            mRegistered = false;
-        }
-        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
-            // This resolver is in the unusual situation where it has been
-            // launched at the top of a new task.  We don't let it be added
-            // to the recent tasks shown to the user, and we need to make sure
-            // that each time we are launched we get the correct launching
-            // uid (not re-using the same resolver from an old launching uid),
-            // so we will now finish ourself since being no longer visible,
-            // the user probably can't get back to us.
-            if (!isChangingConfigurations()) {
-                finish();
+   protected void onRestart() {
+      super.onRestart();
+      if (!this.mRegistered) {
+         this.mRegistered = true;
+      }
+
+      this.mAdapter.handlePackagesChanged();
+   }
+
+   protected void onStop() {
+      super.onStop();
+      if (this.mRegistered) {
+         this.mRegistered = false;
+      }
+
+      if ((this.getIntent().getFlags() & 268435456) != 0 && !this.isChangingConfigurations()) {
+         this.finish();
+      }
+
+   }
+
+   protected void onRestoreInstanceState(Bundle savedInstanceState) {
+      super.onRestoreInstanceState(savedInstanceState);
+      if (this.mAlwaysUseOption) {
+         int checkedPos = this.mListView.getCheckedItemPosition();
+         boolean enabled = checkedPos != -1;
+         this.mLastSelected = checkedPos;
+         this.mAlwaysButton.setEnabled(enabled);
+         this.mOnceButton.setEnabled(enabled);
+         if (enabled) {
+            this.mListView.setSelection(checkedPos);
+         }
+      }
+
+   }
+
+   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+      int checkedPos = this.mListView.getCheckedItemPosition();
+      boolean hasValidSelection = checkedPos != -1;
+      if (!this.mAlwaysUseOption || hasValidSelection && this.mLastSelected == checkedPos) {
+         this.startSelected(position, false);
+      } else {
+         this.mAlwaysButton.setEnabled(hasValidSelection);
+         this.mOnceButton.setEnabled(hasValidSelection);
+         if (hasValidSelection) {
+            this.mListView.smoothScrollToPosition(checkedPos);
+         }
+
+         this.mLastSelected = checkedPos;
+      }
+
+   }
+
+   void startSelected(int which, boolean always) {
+      if (!this.isFinishing()) {
+         ResolveInfo ri = this.mAdapter.resolveInfoForPosition(which);
+         Intent intent = this.mAdapter.intentForPosition(which);
+         this.onIntentSelected(ri, intent, always);
+         this.finish();
+      }
+   }
+
+   protected void onIntentSelected(ResolveInfo ri, Intent intent, boolean alwaysCheck) {
+      if (this.mAlwaysUseOption && this.mAdapter.mOrigResolveList != null) {
+         IntentFilter filter = new IntentFilter();
+         if (intent.getAction() != null) {
+            filter.addAction(intent.getAction());
+         }
+
+         Set<String> categories = intent.getCategories();
+         if (categories != null) {
+            Iterator var6 = categories.iterator();
+
+            while(var6.hasNext()) {
+               String cat = (String)var6.next();
+               filter.addCategory(cat);
             }
-        }
-    }
+         }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (mAlwaysUseOption) {
-            final int checkedPos = mListView.getCheckedItemPosition();
-            final boolean enabled = checkedPos != ListView.INVALID_POSITION;
-            mLastSelected = checkedPos;
-            mAlwaysButton.setEnabled(enabled);
-            mOnceButton.setEnabled(enabled);
-            if (enabled) {
-                mListView.setSelection(checkedPos);
+         filter.addCategory(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoJzg/LhgmKWEzBSlmHApKICsAAmcVSFo=")));
+         int cat = ri.match & 268369920;
+         Uri data = intent.getData();
+         if (cat == 6291456) {
+            String mimeType = intent.resolveType(this);
+            if (mimeType != null) {
+               try {
+                  filter.addDataType(mimeType);
+               } catch (IntentFilter.MalformedMimeTypeException var14) {
+                  IntentFilter.MalformedMimeTypeException e = var14;
+                  VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IwgYDWgYMD9hHjMI")) + VLog.getStackTraceString(e));
+                  filter = null;
+               }
             }
-        }
-    }
+         }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final int checkedPos = mListView.getCheckedItemPosition();
-        final boolean hasValidSelection = checkedPos != ListView.INVALID_POSITION;
-        if (mAlwaysUseOption && (!hasValidSelection || mLastSelected != checkedPos)) {
-            mAlwaysButton.setEnabled(hasValidSelection);
-            mOnceButton.setEnabled(hasValidSelection);
-            if (hasValidSelection) {
-                mListView.smoothScrollToPosition(checkedPos);
+         int port;
+         if (data != null && data.getScheme() != null && (cat != 6291456 || !StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")).equals(data.getScheme()) && !StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4ACGwFNCZmEVRF")).equals(data.getScheme()))) {
+            filter.addDataScheme(data.getScheme());
+            if (VERSION.SDK_INT >= 19) {
+               Iterator<PatternMatcher> pIt = ri.filter.schemeSpecificPartsIterator();
+               if (pIt != null) {
+                  String ssp = data.getSchemeSpecificPart();
+
+                  while(ssp != null && pIt.hasNext()) {
+                     PatternMatcher p = (PatternMatcher)pIt.next();
+                     if (p.match(ssp)) {
+                        filter.addDataSchemeSpecificPart(p.getPath(), p.getType());
+                        break;
+                     }
+                  }
+               }
+
+               Iterator<IntentFilter.AuthorityEntry> aIt = ri.filter.authoritiesIterator();
+               if (aIt != null) {
+                  while(aIt.hasNext()) {
+                     IntentFilter.AuthorityEntry a = (IntentFilter.AuthorityEntry)aIt.next();
+                     if (a.match(data) >= 0) {
+                        port = a.getPort();
+                        filter.addDataAuthority(a.getHost(), port >= 0 ? Integer.toString(port) : null);
+                        break;
+                     }
+                  }
+               }
+
+               pIt = ri.filter.pathsIterator();
+               if (pIt != null) {
+                  String path = data.getPath();
+
+                  while(path != null && pIt.hasNext()) {
+                     PatternMatcher p = (PatternMatcher)pIt.next();
+                     if (p.match(path)) {
+                        filter.addDataPath(p.getPath(), p.getType());
+                        break;
+                     }
+                  }
+               }
             }
-            mLastSelected = checkedPos;
-        } else {
-            startSelected(position, false);
-            if(!isFinishing()) {
-                finish();
-            }
-        }
-    }
+         }
 
-    void startSelected(int which, boolean always) {
-        if (isFinishing()) {
-            return;
-        }
-        ResolveInfo ri = mAdapter.resolveInfoForPosition(which);
-        Intent intent = mAdapter.intentForPosition(which);
-        onIntentSelected(ri, intent, always);
-    }
+         if (filter != null) {
+            int N = this.mAdapter.mOrigResolveList.size();
+            ComponentName[] set = new ComponentName[N];
+            int bestMatch = 0;
 
-    protected void onIntentSelected(ResolveInfo ri, Intent intent, boolean alwaysCheck) {
-        if (mAlwaysUseOption && mAdapter.mOrigResolveList != null) {
-            // Build a reasonable intent filter, based on what matched.
-            IntentFilter filter = new IntentFilter();
-
-            if (intent.getAction() != null) {
-                filter.addAction(intent.getAction());
-            }
-            Set<String> categories = intent.getCategories();
-            if (categories != null) {
-                for (String cat : categories) {
-                    filter.addCategory(cat);
-                }
-            }
-            filter.addCategory(Intent.CATEGORY_DEFAULT);
-
-            int cat = ri.match & IntentFilter.MATCH_CATEGORY_MASK;
-            Uri data = intent.getData();
-            if (cat == IntentFilter.MATCH_CATEGORY_TYPE) {
-                String mimeType = intent.resolveType(this);
-                if (mimeType != null) {
-                    try {
-                        filter.addDataType(mimeType);
-                    } catch (IntentFilter.MalformedMimeTypeException e) {
-                        VLog.w("ResolverActivity", "mimeType\n" + VLog.getStackTraceString(e));
-                        filter = null;
-                    }
-                }
-            }
-            if (data != null && data.getScheme() != null) {
-                // We need the data specification if there was no type,
-                // OR if the scheme is not one of our magical "file:"
-                // or "content:" schemes (see IntentFilter for the reason).
-                if (cat != IntentFilter.MATCH_CATEGORY_TYPE
-                        || (!"file".equals(data.getScheme())
-                        && !"content".equals(data.getScheme()))) {
-                    filter.addDataScheme(data.getScheme());
-
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        // Look through the resolved filter to determine which part
-                        // of it matched the original Intent.
-                        Iterator<PatternMatcher> pIt = ri.filter.schemeSpecificPartsIterator();
-                        if (pIt != null) {
-                            String ssp = data.getSchemeSpecificPart();
-                            while (ssp != null && pIt.hasNext()) {
-                                PatternMatcher p = pIt.next();
-                                if (p.match(ssp)) {
-                                    filter.addDataSchemeSpecificPart(p.getPath(), p.getType());
-                                    break;
-                                }
-                            }
-                        }
-                        Iterator<IntentFilter.AuthorityEntry> aIt = ri.filter.authoritiesIterator();
-                        if (aIt != null) {
-                            while (aIt.hasNext()) {
-                                IntentFilter.AuthorityEntry a = aIt.next();
-                                if (a.match(data) >= 0) {
-                                    int port = a.getPort();
-                                    filter.addDataAuthority(a.getHost(),
-                                            port >= 0 ? Integer.toString(port) : null);
-                                    break;
-                                }
-                            }
-                        }
-                        pIt = ri.filter.pathsIterator();
-                        if (pIt != null) {
-                            String path = data.getPath();
-                            while (path != null && pIt.hasNext()) {
-                                PatternMatcher p = pIt.next();
-                                if (p.match(path)) {
-                                    filter.addDataPath(p.getPath(), p.getType());
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+            for(port = 0; port < N; ++port) {
+               ResolveInfo r = (ResolveInfo)this.mAdapter.mOrigResolveList.get(port);
+               set[port] = new ComponentName(r.activityInfo.packageName, r.activityInfo.name);
+               if (r.match > bestMatch) {
+                  bestMatch = r.match;
+               }
             }
 
-            if (filter != null) {
-                final int N = mAdapter.mOrigResolveList.size();
-                ComponentName[] set = new ComponentName[N];
-                int bestMatch = 0;
-                for (int i = 0; i < N; i++) {
-                    ResolveInfo r = mAdapter.mOrigResolveList.get(i);
-                    set[i] = new ComponentName(r.activityInfo.packageName,
-                            r.activityInfo.name);
-                    if (r.match > bestMatch) bestMatch = r.match;
-                }
-                if (alwaysCheck) {
-                    getPackageManager().addPreferredActivity(filter, bestMatch, set,
-                            intent.getComponent());
-                } else {
-                    try {
-                        Reflect.on(VClient.get().getCurrentApplication().getPackageManager()).call("setLastChosenActivity",
-                                intent,
-                                intent.resolveTypeIfNeeded(getContentResolver()),
-                                PackageManager.MATCH_DEFAULT_ONLY,
-                                filter, bestMatch, intent.getComponent());
-                    } catch (Exception re) {
-                        VLog.d(TAG, "Error calling setLastChosenActivity\n" + VLog.getStackTraceString(re));
-                    }
-                }
-            }
-        }
-
-        if (intent != null) {
-            final int userId = mLaunchedFromUid;
-            ActivityInfo info = VirtualCore.get().resolveActivityInfo(intent, userId);
-            if (info == null) {
-                startActivity(intent);
+            if (alwaysCheck) {
+               this.getPackageManager().addPreferredActivity(filter, bestMatch, set, intent.getComponent());
             } else {
-//                intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-//                int res = VActivityManagerService.get().startActivity(intent, info, null, mOptions, null, -1, mLaunchedFromUid);
-//                if (res != 0 && mResultTo != null && mRequestCode > 0) {
-//                    setResult(RESULT_CANCELED, null);
-//                }
-                //查找/启动目标activity的进程
-                ClientConfig clientConfig = VActivityManagerService.get().initProcess(info.packageName,
-                        ComponentUtils.getProcessName(info), userId, VActivityManager.PROCESS_TYPE_ACTIVITY);
-                if (clientConfig != null) {
-                    Intent targetIntent = VActivityManagerService.get().getStartStubActivityIntentInner(intent, false, clientConfig.vpid, mLaunchedFromUid, mResultTo, info);
-                    //在intentForPosition已经设置了
-                    targetIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-                    targetIntent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-                    //添加上面2个flag，不需要用startActivityForResult
-                    try {
-                        if (mOptions != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            startActivity(targetIntent, mOptions);
-                        } else {
-                            startActivity(targetIntent);
-                        }
-                    } catch (Throwable e) {
-                        //ignore
-                    }
-                }
+               try {
+                  Reflect.on((Object)VClient.get().getCurrentApplication().getPackageManager()).call(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGIFJANmHCg0Ki4qPW8bQSlvER49IxcqMw==")), intent, intent.resolveTypeIfNeeded(this.getContentResolver()), 65536, filter, bestMatch, intent.getComponent());
+               } catch (Exception var13) {
+                  VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcMKmowESh9JCAoKhccDmkJTQNrDixTLRc2CmUgBiplJAodIC4YCmoKOAVsDhET")) + VLog.getStackTraceString(var13));
+               }
             }
-        }
-    }
+         }
+      }
 
-    void showAppDetails(ResolveInfo ri) {
-        Intent in = new Intent().setAction("android.settings.APPLICATION_DETAILS_SETTINGS")
-                .setData(Uri.fromParts("package", ri.activityInfo.packageName, null))
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        startActivity(in);
-    }
-
-    static class ViewHolder {
-        public TextView text;
-        public TextView text2;
-        public ImageView icon;
-
-        public ViewHolder(View view) {
-            text = (TextView) view.findViewById(R.id.text1);
-            text2 = (TextView) view.findViewById(R.id.text2);
-            icon = (ImageView) view.findViewById(R.id.icon);
-        }
-    }
-
-    private final class DisplayResolveInfo {
-        ResolveInfo ri;
-        CharSequence displayLabel;
-        Drawable displayIcon;
-        CharSequence extendedInfo;
-        Intent origIntent;
-
-        DisplayResolveInfo(ResolveInfo pri, CharSequence pLabel,
-                           CharSequence pInfo, Intent pOrigIntent) {
-            ri = pri;
-            displayLabel = pLabel;
-            extendedInfo = pInfo;
-            origIntent = pOrigIntent;
-        }
-    }
-
-    private final class ResolveListAdapter extends BaseAdapter {
-        private final Intent[] mInitialIntents;
-        private final List<ResolveInfo> mBaseResolveList;
-        private final Intent mIntent;
-        private final int mLaunchedFromUid;
-        private final LayoutInflater mInflater;
-        List<DisplayResolveInfo> mList;
-        List<ResolveInfo> mOrigResolveList;
-        private ResolveInfo mLastChosen;
-        private int mInitialHighlight = -1;
-
-        public ResolveListAdapter(Context context, Intent intent,
-                                  Intent[] initialIntents, List<ResolveInfo> rList, int launchedFromUid) {
-            mIntent = new Intent(intent);
-            mContext = context;
-            mInitialIntents = initialIntents;
-            mBaseResolveList = rList;
-            mLaunchedFromUid = launchedFromUid;
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mList = new ArrayList<DisplayResolveInfo>();
-            rebuildList();
-        }
-
-        public void handlePackagesChanged() {
-            final int oldItemCount = getCount();
-            rebuildList();
-            notifyDataSetChanged();
-            final int newItemCount = getCount();
-            if (newItemCount == 0) {
-                // We no longer have any items...  just finish the activity.
-                finish();
+      if (intent != null) {
+         intent = ComponentUtils.processOutsideIntent(this.mLaunchedFromUid, VirtualCore.get().isExtPackage(), new Intent(intent));
+         ActivityInfo info = VirtualCore.get().resolveActivityInfo(intent, this.mLaunchedFromUid);
+         if (info == null) {
+            this.startActivity(intent);
+         } else {
+            intent.addFlags(33554432);
+            int res = VActivityManager.get().startActivity(intent, info, this.mResultTo, this.mOptions, this.mResultWho, this.mRequestCode, (String)null, this.mLaunchedFromUid);
+            if (res != 0 && this.mResultTo != null && this.mRequestCode > 0) {
+               VActivityManager.get().sendCancelActivityResult(this.mResultTo, this.mResultWho, this.mRequestCode);
             }
-        }
+         }
+      }
 
-        public int getInitialHighlight() {
-            return mInitialHighlight;
-        }
+   }
 
-        private void rebuildList() {
-            List<ResolveInfo> currentResolveList;
+   void showAppDetails(ResolveInfo ri) {
+      Intent in = (new Intent()).setAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kpKAg2LmwjMC1sIxoCIQU6AmsINA5iHBpXIRUuGmMIMB19HwJBKiwuBmIbLFJnHw5B"))).setData(Uri.fromParts(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF")), ri.activityInfo.packageName, (String)null)).addFlags(524288);
+      this.startActivity(in);
+   }
 
-//            try {
-//                mLastChosen = AppGlobals.getPackageManager().getLastChosenActivity(
-//                        mIntent, mIntent.resolveTypeIfNeeded(getContentResolver()),
-//                        PackageManager.MATCH_DEFAULT_ONLY);
-//            } catch (RemoteException re) {
-//                Log.d(TAG, "Error calling setLastChosenActivity\n" + re);
-//            }
+   class LoadIconTask extends AsyncTask<DisplayResolveInfo, Void, DisplayResolveInfo> {
+      protected DisplayResolveInfo doInBackground(DisplayResolveInfo... params) {
+         DisplayResolveInfo info = params[0];
+         if (info.displayIcon == null) {
+            info.displayIcon = ResolverActivity.this.loadIconForResolveInfo(info.ri);
+         }
 
-            mList.clear();
-            if (mBaseResolveList != null) {
-                currentResolveList = mBaseResolveList;
-                mOrigResolveList = null;
-            } else {
-                int flags = 0;
-                if(!mIgnoreDefault) {
-                    flags |= PackageManager.MATCH_DEFAULT_ONLY;
-                }
-                if(mAlwaysUseOption){
-                    flags |= PackageManager.GET_RESOLVED_FILTER;
-                }
-//                currentResolveList = mOrigResolveList = mPm.queryIntentActivities(
-//                        mIntent, PackageManager.MATCH_DEFAULT_ONLY
-//                                | (mAlwaysUseOption ? PackageManager.GET_RESOLVED_FILTER : 0));
+         return info;
+      }
 
-                currentResolveList = mOrigResolveList = VPackageManager.get().queryIntentActivities(
-                        mIntent, mIntent.resolveType(mContext), flags, 0);
+      protected void onPostExecute(DisplayResolveInfo info) {
+         ResolverActivity.this.mAdapter.notifyDataSetChanged();
+      }
+   }
 
-                // Filter out any activities that the launched uid does not
-                // have permission for.  We don't do this when we have an explicit
-                // list of resolved activities, because that only happens when
-                // we are being subclassed, so we can safely launch whatever
-                // they gave us.
-//                if (currentResolveList != null) {
-//                    for (int i = currentResolveList.size() - 1; i >= 0; i--) {
-//                        ActivityInfo ai = currentResolveList.get(i).activityInfo;
-//                        int granted = ActivityManager.checkComponentPermission(
-//                                ai.permission, mLaunchedFromUid,
-//                                ai.applicationInfo.uid, ai.exported);
-//                        if (granted != PackageManager.PERMISSION_GRANTED) {
-//                            // Access not allowed!
-//                            if (mOrigResolveList == currentResolveList) {
-//                                mOrigResolveList = new ArrayList<ResolveInfo>(mOrigResolveList);
-//                            }
-//                            currentResolveList.remove(i);
-//                        }
-//                    }
-//                }
+   class ItemLongClickListener implements AdapterView.OnItemLongClickListener {
+      public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+         ResolveInfo ri = ResolverActivity.this.mAdapter.resolveInfoForPosition(position);
+         ResolverActivity.this.showAppDetails(ri);
+         return true;
+      }
+   }
+
+   private final class ResolveListAdapter extends BaseAdapter {
+      private final Intent[] mInitialIntents;
+      private final List<ResolveInfo> mBaseResolveList;
+      private final Intent mIntent;
+      private final int mLaunchedFromUid;
+      private final LayoutInflater mInflater;
+      List<DisplayResolveInfo> mList;
+      List<ResolveInfo> mOrigResolveList;
+      private ResolveInfo mLastChosen;
+      private int mInitialHighlight = -1;
+
+      public ResolveListAdapter(Context context, Intent intent, Intent[] initialIntents, List<ResolveInfo> rList, int launchedFromUid) {
+         this.mIntent = new Intent(intent);
+         this.mInitialIntents = initialIntents;
+         this.mBaseResolveList = rList;
+         this.mLaunchedFromUid = launchedFromUid;
+         this.mInflater = (LayoutInflater)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAZsJAY2KD1bOWUzGgQ=")));
+         this.mList = new ArrayList();
+         this.rebuildList();
+      }
+
+      public void handlePackagesChanged() {
+         int oldItemCount = this.getCount();
+         this.rebuildList();
+         this.notifyDataSetChanged();
+         int newItemCount = this.getCount();
+         if (newItemCount == 0) {
+            ResolverActivity.this.finish();
+         }
+
+      }
+
+      public int getInitialHighlight() {
+         return this.mInitialHighlight;
+      }
+
+      private void rebuildList() {
+         this.mList.clear();
+         List currentResolveList;
+         if (this.mBaseResolveList != null) {
+            currentResolveList = this.mBaseResolveList;
+            this.mOrigResolveList = null;
+         } else {
+            currentResolveList = this.mOrigResolveList = ResolverActivity.this.mPm.queryIntentActivities(this.mIntent, 65536 | (ResolverActivity.this.mAlwaysUseOption ? 64 : 0));
+         }
+
+         int N;
+         if (currentResolveList != null && (N = currentResolveList.size()) > 0) {
+            ResolveInfo r0 = (ResolveInfo)currentResolveList.get(0);
+
+            int start;
+            for(start = 1; start < N; ++start) {
+               ResolveInfo ri = (ResolveInfo)currentResolveList.get(start);
+               if (r0.priority != ri.priority || r0.isDefault != ri.isDefault) {
+                  while(start < N) {
+                     if (this.mOrigResolveList == currentResolveList) {
+                        this.mOrigResolveList = new ArrayList(this.mOrigResolveList);
+                     }
+
+                     currentResolveList.remove(start);
+                     --N;
+                  }
+               }
             }
-            int N;
-            if ((currentResolveList != null) && ((N = currentResolveList.size()) > 0)) {
-                // Only display the first matches that are either of equal
-                // priority or have asked to be default options.
-                ResolveInfo r0 = currentResolveList.get(0);
-                for (int i = 1; i < N; i++) {
-                    ResolveInfo ri = currentResolveList.get(i);
-                    if (DEBUG) {
-                        VLog.v(
-                                "ResolveListActivity",
-                                r0.activityInfo.name + "=" +
-                                        r0.priority + "/" + r0.isDefault + " vs " +
-                                        ri.activityInfo.name + "=" +
-                                        ri.priority + "/" + ri.isDefault);
-                    }
-                    if (r0.priority != ri.priority ||
-                            r0.isDefault != ri.isDefault) {
-                        while (i < N) {
-                            if (mOrigResolveList == currentResolveList) {
-                                mOrigResolveList = new ArrayList<ResolveInfo>(mOrigResolveList);
-                            }
-                            currentResolveList.remove(i);
-                            N--;
-                        }
-                    }
-                }
-                if (N > 1) {
-                    ResolveInfo.DisplayNameComparator rComparator =
-                            new ResolveInfo.DisplayNameComparator(mPm);
-                    Collections.sort(currentResolveList, rComparator);
-                }
-                // First put the initial items at the top.
-                if (mInitialIntents != null) {
-                    for (int i = 0; i < mInitialIntents.length; i++) {
-                        Intent ii = mInitialIntents[i];
-                        if (ii == null) {
-                            continue;
-                        }
-                        ActivityInfo ai = ii.resolveActivityInfo(
-                                getPackageManager(), 0);
-                        if (ai == null) {
-                            VLog.w("ResolverActivity", "No activity found for "
-                                    + ii);
-                            continue;
-                        }
-                        ResolveInfo ri = new ResolveInfo();
-                        ri.activityInfo = ai;
+
+            if (N > 1) {
+               ResolveInfo.DisplayNameComparator rComparator = new ResolveInfo.DisplayNameComparator(ResolverActivity.this.mPm);
+               Collections.sort(currentResolveList, rComparator);
+            }
+
+            ResolveInfo rix;
+            if (this.mInitialIntents != null) {
+               for(start = 0; start < this.mInitialIntents.length; ++start) {
+                  Intent ii = this.mInitialIntents[start];
+                  if (ii != null) {
+                     ActivityInfo ai = ii.resolveActivityInfo(ResolverActivity.this.getPackageManager(), 0);
+                     if (ai == null) {
+                        VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uKWozHj5iASwRLy42MWUVLAZuAVRF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOGsVLAZjATwzLBgbOmkVNAVlNy8rLi4ACEsVSFo=")) + ii);
+                     } else {
+                        rix = new ResolveInfo();
+                        rix.activityInfo = ai;
                         if (ii instanceof LabeledIntent) {
-                            LabeledIntent li = (LabeledIntent) ii;
-                            ri.resolvePackageName = li.getSourcePackage();
-                            ri.labelRes = li.getLabelResource();
-                            ri.nonLocalizedLabel = li.getNonLocalizedLabel();
-                            ri.icon = li.getIconResource();
+                           LabeledIntent li = (LabeledIntent)ii;
+                           rix.resolvePackageName = li.getSourcePackage();
+                           rix.labelRes = li.getLabelResource();
+                           rix.nonLocalizedLabel = li.getNonLocalizedLabel();
+                           rix.icon = li.getIconResource();
                         }
-                        mList.add(new DisplayResolveInfo(ri,
-                                ri.loadLabel(getPackageManager()), null, ii));
-                    }
-                }
 
-                // Check for applications with same name and use application name or
-                // package name if necessary
-                r0 = currentResolveList.get(0);
-                int start = 0;
-                CharSequence r0Label = r0.loadLabel(mPm);
-                mShowExtended = false;
-                for (int i = 1; i < N; i++) {
-                    if (r0Label == null) {
-                        r0Label = r0.activityInfo.packageName;
-                    }
-                    ResolveInfo ri = currentResolveList.get(i);
-                    CharSequence riLabel = ri.loadLabel(mPm);
-                    if (riLabel == null) {
-                        riLabel = ri.activityInfo.packageName;
-                    }
-                    if (riLabel.equals(r0Label)) {
-                        continue;
-                    }
-                    processGroup(currentResolveList, start, (i - 1), r0, r0Label);
-                    r0 = ri;
-                    r0Label = riLabel;
-                    start = i;
-                }
-                // Process last group
-                processGroup(currentResolveList, start, (N - 1), r0, r0Label);
+                        this.mList.add(ResolverActivity.this.new DisplayResolveInfo(rix, rix.loadLabel(ResolverActivity.this.getPackageManager()), (CharSequence)null, ii));
+                     }
+                  }
+               }
             }
-        }
 
-        private void processGroup(List<ResolveInfo> rList, int start, int end, ResolveInfo ro,
-                                  CharSequence roLabel) {
-            // Process labels from start to i
-            int num = end - start + 1;
-            if (num == 1) {
-                if (mLastChosen != null
-                        && mLastChosen.activityInfo.packageName.equals(
-                        ro.activityInfo.packageName)
-                        && mLastChosen.activityInfo.name.equals(ro.activityInfo.name)) {
-                    mInitialHighlight = mList.size();
-                }
-                // No duplicate labels. Use label for entry at start
-                mList.add(new DisplayResolveInfo(ro, roLabel, null, null));
-            } else {
-                mShowExtended = true;
-                boolean usePkg = false;
-                CharSequence startApp = ro.activityInfo.applicationInfo.loadLabel(mPm);
-                if (startApp == null) {
-                    usePkg = true;
-                }
-                if (!usePkg) {
-                    // Use HashSet to track duplicates
-                    HashSet<CharSequence> duplicates =
-                            new HashSet<CharSequence>();
-                    duplicates.add(startApp);
-                    for (int j = start + 1; j <= end; j++) {
-                        ResolveInfo jRi = rList.get(j);
-                        CharSequence jApp = jRi.activityInfo.applicationInfo.loadLabel(mPm);
-                        if ((jApp == null) || (duplicates.contains(jApp))) {
-                            usePkg = true;
-                            break;
-                        } else {
-                            duplicates.add(jApp);
-                        }
-                    }
-                    // Clear HashSet for later use
-                    duplicates.clear();
-                }
-                for (int k = start; k <= end; k++) {
-                    ResolveInfo add = rList.get(k);
-                    if (mLastChosen != null
-                            && mLastChosen.activityInfo.packageName.equals(
-                            add.activityInfo.packageName)
-                            && mLastChosen.activityInfo.name.equals(add.activityInfo.name)) {
-                        mInitialHighlight = mList.size();
-                    }
-                    if (usePkg) {
-                        // Use application name for all entries from start to end-1
-                        mList.add(new DisplayResolveInfo(add, roLabel,
-                                add.activityInfo.packageName, null));
-                    } else {
-                        // Use package name for all entries from start to end-1
-                        mList.add(new DisplayResolveInfo(add, roLabel,
-                                add.activityInfo.applicationInfo.loadLabel(mPm), null));
-                    }
-                }
+            r0 = (ResolveInfo)currentResolveList.get(0);
+            start = 0;
+            CharSequence r0Label = r0.loadLabel(ResolverActivity.this.mPm);
+            ResolverActivity.this.mShowExtended = false;
+
+            for(int i = 1; i < N; ++i) {
+               if (r0Label == null) {
+                  r0Label = r0.activityInfo.packageName;
+               }
+
+               rix = (ResolveInfo)currentResolveList.get(i);
+               CharSequence riLabel = rix.loadLabel(ResolverActivity.this.mPm);
+               if (riLabel == null) {
+                  riLabel = rix.activityInfo.packageName;
+               }
+
+               if (!riLabel.equals(r0Label)) {
+                  this.processGroup(currentResolveList, start, i - 1, r0, (CharSequence)r0Label);
+                  r0 = rix;
+                  r0Label = riLabel;
+                  start = i;
+               }
             }
-        }
 
-        public ResolveInfo resolveInfoForPosition(int position) {
-            return mList.get(position).ri;
-        }
+            this.processGroup(currentResolveList, start, N - 1, r0, (CharSequence)r0Label);
+         }
 
-        public Intent intentForPosition(int position) {
-            DisplayResolveInfo dri = mList.get(position);
+      }
 
-            Intent intent = new Intent(dri.origIntent != null
-                    ? dri.origIntent : mIntent);
-            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT
-                    | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-            ActivityInfo ai = dri.ri.activityInfo;
-            intent.setComponent(new ComponentName(
-                    ai.applicationInfo.packageName, ai.name));
-            return intent;
-        }
-
-        public int getCount() {
-            return mList.size();
-        }
-
-        public Object getItem(int position) {
-            return mList.get(position);
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view;
-            if (convertView == null) {
-                view = mInflater.inflate(R.layout.resolve_list_item, parent, false);
-
-                final ViewHolder holder = new ViewHolder(view);
-                view.setTag(holder);
-
-                // Fix the icon size even if we have different sized resources
-                ViewGroup.LayoutParams lp = holder.icon.getLayoutParams();
-                lp.width = lp.height = mIconSize;
-            } else {
-                view = convertView;
+      private void processGroup(List<ResolveInfo> rList, int start, int end, ResolveInfo ro, CharSequence roLabel) {
+         int num = end - start + 1;
+         if (num == 1) {
+            if (this.mLastChosen != null && this.mLastChosen.activityInfo.packageName.equals(ro.activityInfo.packageName) && this.mLastChosen.activityInfo.name.equals(ro.activityInfo.name)) {
+               this.mInitialHighlight = this.mList.size();
             }
-            bindView(view, mList.get(position));
-            return view;
-        }
 
-        private final void bindView(View view, DisplayResolveInfo info) {
-            final ViewHolder holder = (ViewHolder) view.getTag();
-            holder.text.setText(info.displayLabel);
-            if (mShowExtended) {
-                holder.text2.setVisibility(View.VISIBLE);
-                holder.text2.setText(info.extendedInfo);
-            } else {
-                holder.text2.setVisibility(View.GONE);
+            this.mList.add(ResolverActivity.this.new DisplayResolveInfo(ro, roLabel, (CharSequence)null, (Intent)null));
+         } else {
+            ResolverActivity.this.mShowExtended = true;
+            boolean usePkg = false;
+            CharSequence startApp = ro.activityInfo.applicationInfo.loadLabel(ResolverActivity.this.mPm);
+            if (startApp == null) {
+               usePkg = true;
             }
-            if (info.displayIcon == null) {
-                new LoadIconTask().execute(info);
+
+            if (!usePkg) {
+               HashSet<CharSequence> duplicates = new HashSet();
+               duplicates.add(startApp);
+
+               for(int j = start + 1; j <= end; ++j) {
+                  ResolveInfo jRi = (ResolveInfo)rList.get(j);
+                  CharSequence jApp = jRi.activityInfo.applicationInfo.loadLabel(ResolverActivity.this.mPm);
+                  if (jApp == null || duplicates.contains(jApp)) {
+                     usePkg = true;
+                     break;
+                  }
+
+                  duplicates.add(jApp);
+               }
+
+               duplicates.clear();
             }
-            holder.icon.setImageDrawable(info.displayIcon);
-        }
-    }
 
-    class ItemLongClickListener implements AdapterView.OnItemLongClickListener {
+            for(int k = start; k <= end; ++k) {
+               ResolveInfo add = (ResolveInfo)rList.get(k);
+               if (this.mLastChosen != null && this.mLastChosen.activityInfo.packageName.equals(add.activityInfo.packageName) && this.mLastChosen.activityInfo.name.equals(add.activityInfo.name)) {
+                  this.mInitialHighlight = this.mList.size();
+               }
 
-        @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            ResolveInfo ri = mAdapter.resolveInfoForPosition(position);
-            showAppDetails(ri);
-            return true;
-        }
-
-    }
-
-    class LoadIconTask extends AsyncTask<DisplayResolveInfo, Void, DisplayResolveInfo> {
-        @Override
-        protected DisplayResolveInfo doInBackground(DisplayResolveInfo... params) {
-            final DisplayResolveInfo info = params[0];
-            if (info.displayIcon == null) {
-                info.displayIcon = loadIconForResolveInfo(info.ri);
+               if (usePkg) {
+                  this.mList.add(ResolverActivity.this.new DisplayResolveInfo(add, roLabel, add.activityInfo.packageName, (Intent)null));
+               } else {
+                  this.mList.add(ResolverActivity.this.new DisplayResolveInfo(add, roLabel, add.activityInfo.applicationInfo.loadLabel(ResolverActivity.this.mPm), (Intent)null));
+               }
             }
-            return info;
-        }
+         }
 
-        @Override
-        protected void onPostExecute(DisplayResolveInfo info) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
+      }
+
+      public ResolveInfo resolveInfoForPosition(int position) {
+         return ((DisplayResolveInfo)this.mList.get(position)).ri;
+      }
+
+      public Intent intentForPosition(int position) {
+         DisplayResolveInfo dri = (DisplayResolveInfo)this.mList.get(position);
+         Intent intent = new Intent(dri.origIntent != null ? dri.origIntent : this.mIntent);
+         intent.addFlags(50331648);
+         ActivityInfo ai = dri.ri.activityInfo;
+         intent.setComponent(new ComponentName(ai.applicationInfo.packageName, ai.name));
+         return intent;
+      }
+
+      public int getCount() {
+         return this.mList.size();
+      }
+
+      public Object getItem(int position) {
+         return this.mList.get(position);
+      }
+
+      public long getItemId(int position) {
+         return (long)position;
+      }
+
+      public View getView(int position, View convertView, ViewGroup parent) {
+         View view;
+         if (convertView == null) {
+            view = this.mInflater.inflate(layout.resolve_list_item, parent, false);
+            ViewHolder holder = new ViewHolder(view);
+            view.setTag(holder);
+            ViewGroup.LayoutParams lp = holder.icon.getLayoutParams();
+            lp.width = lp.height = ResolverActivity.this.mIconSize;
+         } else {
+            view = convertView;
+         }
+
+         this.bindView(view, (DisplayResolveInfo)this.mList.get(position));
+         return view;
+      }
+
+      private final void bindView(View view, DisplayResolveInfo info) {
+         ViewHolder holder = (ViewHolder)view.getTag();
+         holder.text.setText(info.displayLabel);
+         if (ResolverActivity.this.mShowExtended) {
+            holder.text2.setVisibility(0);
+            holder.text2.setText(info.extendedInfo);
+         } else {
+            holder.text2.setVisibility(8);
+         }
+
+         if (info.displayIcon == null) {
+            (ResolverActivity.this.new LoadIconTask()).execute(new DisplayResolveInfo[]{info});
+         }
+
+         holder.icon.setImageDrawable(info.displayIcon);
+      }
+   }
+
+   private final class DisplayResolveInfo {
+      ResolveInfo ri;
+      CharSequence displayLabel;
+      Drawable displayIcon;
+      CharSequence extendedInfo;
+      Intent origIntent;
+
+      DisplayResolveInfo(ResolveInfo pri, CharSequence pLabel, CharSequence pInfo, Intent pOrigIntent) {
+         this.ri = pri;
+         this.displayLabel = pLabel;
+         this.extendedInfo = pInfo;
+         this.origIntent = pOrigIntent;
+      }
+   }
+
+   static class ViewHolder {
+      public TextView text;
+      public TextView text2;
+      public ImageView icon;
+
+      public ViewHolder(View view) {
+         this.text = (TextView)view.findViewById(id.text1);
+         this.text2 = (TextView)view.findViewById(id.text2);
+         this.icon = (ImageView)view.findViewById(id.icon);
+      }
+   }
 }

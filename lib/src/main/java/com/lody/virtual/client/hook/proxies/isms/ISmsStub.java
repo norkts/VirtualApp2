@@ -1,103 +1,53 @@
 package com.lody.virtual.client.hook.proxies.isms;
 
-import android.net.Uri;
-import android.os.Build;
-
+import android.os.Build.VERSION;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import com.lody.virtual.client.hook.base.ReplaceCallingPkgMethodProxy;
 import com.lody.virtual.client.hook.base.ReplaceSpecPkgMethodProxy;
-import com.lody.virtual.client.hook.utils.MethodParameterUtils;
-import com.lody.virtual.helper.utils.ComponentUtils;
-
-import java.lang.reflect.Method;
-
 import mirror.com.android.internal.telephony.ISms;
 
-/**
- * @author Lody
- */
-
 public class ISmsStub extends BinderInvocationProxy {
+   public ISmsStub() {
+      super(ISms.Stub.asInterface, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAc2DW8zSFo=")));
+   }
 
-    public ISmsStub() {
-        super(ISms.Stub.asInterface, "isms");
-    }
+   protected void onBindMethods() {
+      super.onBindMethods();
+      if (VERSION.SDK_INT >= 23) {
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRoDjApIy0iM2kgAghsNwYeOxg2JWoKIAtsJygSIy5fD2ggFgVrJygb")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtoDjApIy0iM2khNCZiATAqJhgiBGAjMBBqDig8KAdfI2gzNCY=")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AKGkbEithJyg7KC0MAG8LLCloJSgtJi4ACGkjLCVlJCw7Ki5fJ2wzSFo=")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLMDdmHiAUKi4uAWUjRQNoJAoaLS4uCA==")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLMDdmHiAUKi4uAWUjRQNoJAoaLS4uCG4gGj9vHywuKT4EQGsKFgFlHjAcJQcYJWUjSFo=")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgIMCtnEQoUKi4uAWUjRQNoJAoaLS4uCA==")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgIMCtnEQoUKi4uAWUjRQNoJAoaLS4uCG4gGj9vHywuKT4EQGsKFgFlHjAcJQcYJWUjSFo=")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLEgVgEQozIxciKGU2BituHixILD0MUmYKMDZpJygiKBgACA==")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgILAZgJyw/KBY2PWgwBlo=")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgILAZgJyw/KBVXLW8wBi9sETg5KgUqJ2cVFlo=")), 1));
+      } else if (VERSION.SDK_INT >= 21) {
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRoDjApIy0iM2kgAghsNwYeOxg2JWoKIFo="))));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRoDjApIy0iM2kgAghsNwYeOxg2JWoKIAtsJygSIy5fD2ggFgVrJygb")), 1));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtoDjApIy0iM2khNCZiATAqJhgiVg=="))));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtoDjApIy0iM2khNCZiATAqJhgiBGAjMBBqDig8KAdfI2gzNCY=")), 1));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AKGkbEithJyg7KC0MAG8LLCloJSgt"))));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AKGkbEithJyg7KC0MAG8LLCloJSgtJi4ACGkjLCVlJCw7Ki5fJ2wzSFo=")), 1));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLMDdmHiBF"))));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLMDdmHiAUKi4uAWUjRQNoJAoaLS4uCA==")), 1));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgIMCtnEQpF"))));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgIMCtnEQoUKi4uAWUjRQNoJAoaLS4uCA==")), 1));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLEgVgEQozIxciKGU2BituHixF"))));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLEgVgEQozIxciKGU2BituHixILD0MUmYKMDZpJygiKBgACA==")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgILAZgJyw/KBY2PWgwBlo=")), 1));
+         this.addMethodProxy(new ReplaceSpecPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgILAZgJyw/KBVXLW8wBi9sETg5KgUqJ2cVFlo=")), 1));
+      } else if (VERSION.SDK_INT >= 18) {
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGMVHiRoDjApIy0iM2kgAghsNwYeOxg2JWoKIFo="))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6PGsaMCtoDjApIy0iM2khNCZiATAqJhgiVg=="))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4AKGkbEithJyg7KC0MAG8LLCloJSgt"))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLMDdmHiBF"))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgIMCtnEQpF"))));
+         this.addMethodProxy(new ReplaceCallingPkgMethodProxy(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uCGgLEgVgEQozIxciKGU2BituHixF"))));
+      }
 
-    @Override
-    protected void onBindMethods() {
-        super.onBindMethods();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("getAllMessagesFromIccEfForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("updateMessageOnIccEfForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("copyMessageToIccEfForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendDataForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendDataForSubscriberWithSelfPermissions", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendTextForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendTextForSubscriberWithSelfPermissions", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendMultipartTextForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendStoredText", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendStoredMultipartText", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxy("createAppSpecificSmsToken", 1));
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("getAllMessagesFromIccEf"));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("getAllMessagesFromIccEfForSubscriber", 1));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("updateMessageOnIccEf"));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("updateMessageOnIccEfForSubscriber", 1));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("copyMessageToIccEf"));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("copyMessageToIccEfForSubscriber", 1));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("sendData"));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendDataForSubscriber", 1));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("sendText"));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendTextForSubscriber", 1));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("sendMultipartText"));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendMultipartTextForSubscriber", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendStoredText", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxyEx("sendStoredMultipartText", 1));
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("getAllMessagesFromIccEf"));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("updateMessageOnIccEf"));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("copyMessageToIccEf"));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("sendData"));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("sendText"));
-            addMethodProxy(new ReplaceCallingPkgMethodProxyEx("sendMultipartText"));
-        }
-
-        //9.0
-        if (Build.VERSION.SDK_INT >= 28) {
-            addMethodProxy(new ReplaceSpecPkgMethodProxy("sendTextForSubscriberWithOptions", 1));
-            addMethodProxy(new ReplaceSpecPkgMethodProxy("sendMultipartTextForSubscriberWithOptions", 1));
-        }
-    }
-
-    static class ReplaceCallingPkgMethodProxyEx extends ReplaceCallingPkgMethodProxy{
-        public ReplaceCallingPkgMethodProxyEx(String name) {
-            super(name);
-        }
-
-        @Override
-        public boolean beforeCall(Object who, Method method, Object... args) {
-            int index = MethodParameterUtils.getIndex(args, Uri.class);
-            if (index != -1) {
-                Uri uri = (Uri) args[index];
-                args[index] = ComponentUtils.processOutsideUri(getAppUserId(), false, uri);
-            }
-            return super.beforeCall(who, method, args);
-        }
-    }
-
-    static class ReplaceSpecPkgMethodProxyEx extends ReplaceSpecPkgMethodProxy {
-        public ReplaceSpecPkgMethodProxyEx(String name, int index) {
-            super(name, index);
-        }
-
-        @Override
-        public boolean beforeCall(Object who, Method method, Object... args) {
-            int index = MethodParameterUtils.getIndex(args, Uri.class);
-            if (index != -1) {
-                Uri uri = (Uri) args[index];
-                args[index] = ComponentUtils.processOutsideUri(getAppUserId(), false, uri);
-            }
-            return super.beforeCall(who, method, args);
-        }
-    }
+   }
 }

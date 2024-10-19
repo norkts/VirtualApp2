@@ -2,143 +2,144 @@ package com.lody.virtual.client.hook.base;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
-
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.core.ServiceLocalManager;
 import com.lody.virtual.client.core.VirtualCore;
-
+import com.lody.virtual.helper.utils.Reflect;
 import java.io.FileDescriptor;
 import java.lang.reflect.Method;
-
+import java.util.Map;
 import mirror.RefStaticMethod;
 import mirror.android.os.ServiceManager;
 
-/**
- * @author Lody
- */
-@SuppressWarnings("unchecked")
 public class BinderInvocationStub extends MethodInvocationStub<IInterface> implements IBinder {
+   private static final String TAG = BinderInvocationStub.class.getSimpleName();
+   private IBinder mBaseBinder;
 
-    private static final String TAG = BinderInvocationStub.class.getSimpleName();
-    private IBinder mBaseBinder;
+   public BinderInvocationStub(RefStaticMethod<IInterface> asInterfaceMethod, IBinder binder) {
+      this(asInterface(asInterfaceMethod, binder));
+   }
 
-    public BinderInvocationStub(RefStaticMethod<IInterface> asInterfaceMethod, IBinder binder) {
-        this(asInterface(asInterfaceMethod, binder));
-    }
+   public BinderInvocationStub(Class<?> stubClass, IBinder binder) {
+      this(asInterface(stubClass, binder));
+   }
 
-    public BinderInvocationStub(Class<?> stubClass, IBinder binder) {
-        this(asInterface(stubClass, binder));
-    }
+   public BinderInvocationStub(IInterface mBaseInterface) {
+      super(mBaseInterface);
+      this.mBaseBinder = this.getBaseInterface() != null ? ((IInterface)this.getBaseInterface()).asBinder() : null;
+      this.addMethodProxy(new AsBinder());
+   }
 
+   private static IInterface asInterface(RefStaticMethod<IInterface> asInterfaceMethod, IBinder binder) {
+      return asInterfaceMethod != null && binder != null ? (IInterface)asInterfaceMethod.call(binder) : null;
+   }
 
-    public BinderInvocationStub(IInterface mBaseInterface) {
-        super(mBaseInterface);
-        mBaseBinder = getBaseInterface() != null ? getBaseInterface().asBinder() : null;
-        addMethodProxy(new AsBinder());
-    }
-
-    private static IInterface asInterface(RefStaticMethod<IInterface> asInterfaceMethod, IBinder binder) {
-        if (asInterfaceMethod == null || binder == null) {
+   private static IInterface asInterface(Class<?> stubClass, IBinder binder) {
+      try {
+         if (stubClass == null) {
             return null;
-        }
-        return asInterfaceMethod.call(binder);
-    }
-
-    private static IInterface asInterface(Class<?> stubClass, IBinder binder) {
-        try {
-            if (stubClass == null) {
-                return null;
-            }
-            if (binder == null) {
-                Log.w(TAG, "Could not create stub because binder = null, stubClass=" + stubClass);
-                return null;
-            }
-            Method asInterface = stubClass.getMethod("asInterface", IBinder.class);
-            return (IInterface) asInterface.invoke(null, binder);
-        } catch (Exception e) {
-            Log.d(TAG, "Could not create stub " + stubClass.getName() + ". Cause: " + e);
+         } else if (binder == null) {
+            Log.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxcqKGkjQQZrDTw6KgcuJksaMCBpJCQ+LAgfJGgzAgRoASgbDV9aL2wzFgRvMyc3Ki0qI2shLCR9ASgpPghSVg==")) + stubClass);
             return null;
-        }
-    }
+         } else {
+            Method asInterface = stubClass.getMethod(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc2XGogMCthNDw7Ly0MVg==")), IBinder.class);
+            return (IInterface)asInterface.invoke((Object)null, binder);
+         }
+      } catch (Exception var3) {
+         Exception e = var3;
+         Log.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ji4AI2oFMyhgNB4gPxcqKGkjQQZrDTw6KgcuJksVSFo=")) + stubClass.getName() + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mzo6E2saNANiDQU8")) + e);
+         return null;
+      }
+   }
 
-    public void replaceService(String name) {
-        if (mBaseBinder != null) {
-            ServiceManager.sCache.get().put(name, this);
-            ServiceLocalManager.addService(name, this);
-        }
-    }
+   public void replaceService(String name) {
+      if (this.mBaseBinder != null) {
+         ((Map)ServiceManager.sCache.get()).put(name, this);
+         ServiceLocalManager.addService(name, this);
+      }
 
-    private final class AsBinder extends MethodProxy {
+   }
 
-        @Override
-        public String getMethodName() {
-            return "asBinder";
-        }
+   public String getInterfaceDescriptor() throws RemoteException {
+      return this.mBaseBinder.getInterfaceDescriptor();
+   }
 
-        @Override
-        public Object call(Object who, Method method, Object... args) throws Throwable {
-            return BinderInvocationStub.this;
-        }
-    }
+   public Context getContext() {
+      return VirtualCore.get().getContext();
+   }
 
+   public boolean pingBinder() {
+      return this.mBaseBinder.pingBinder();
+   }
 
-    @Override
-    public String getInterfaceDescriptor() throws RemoteException {
-        return mBaseBinder.getInterfaceDescriptor();
-    }
+   public boolean isBinderAlive() {
+      return this.mBaseBinder.isBinderAlive();
+   }
 
-    public Context getContext() {
-        return VirtualCore.get().getContext();
-    }
+   public IInterface queryLocalInterface(String descriptor) {
+      return (IInterface)this.getProxyInterface();
+   }
 
-    @Override
-    public boolean pingBinder() {
-        return mBaseBinder.pingBinder();
-    }
+   public void dump(FileDescriptor fd, String[] args) throws RemoteException {
+      this.mBaseBinder.dump(fd, args);
+   }
 
-    @Override
-    public boolean isBinderAlive() {
-        return mBaseBinder.isBinderAlive();
-    }
+   @TargetApi(13)
+   public void dumpAsync(FileDescriptor fd, String[] args) throws RemoteException {
+      this.mBaseBinder.dumpAsync(fd, args);
+   }
 
-    @Override
-    public IInterface queryLocalInterface(String descriptor) {
-        return getProxyInterface();
-    }
+   public boolean transact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+      return this.mBaseBinder.transact(code, data, reply, flags);
+   }
 
-    @Override
-    public void dump(FileDescriptor fd, String[] args) throws RemoteException {
-        mBaseBinder.dump(fd, args);
-    }
+   public void linkToDeath(IBinder.DeathRecipient recipient, int flags) throws RemoteException {
+      this.mBaseBinder.linkToDeath(recipient, flags);
+   }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    @Override
-    public void dumpAsync(FileDescriptor fd, String[] args) throws RemoteException {
-        mBaseBinder.dumpAsync(fd, args);
-    }
+   public boolean unlinkToDeath(IBinder.DeathRecipient recipient, int flags) {
+      return this.mBaseBinder.unlinkToDeath(recipient, flags);
+   }
 
-    @Override
-    public boolean transact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-        return mBaseBinder.transact(code, data, reply, flags);
-    }
+   public IBinder getBaseBinder() {
+      return this.mBaseBinder;
+   }
 
-    @Override
-    public void linkToDeath(DeathRecipient recipient, int flags) throws RemoteException {
-        mBaseBinder.linkToDeath(recipient, flags);
-    }
+   public IBinder getExtension() throws RemoteException {
+      try {
+         Object result = Reflect.on((Object)this.mBaseBinder).call(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGAaRQZiDlkpKQdfDg=="))).get();
+         return (IBinder)result;
+      } catch (Throwable var3) {
+         Throwable e = var3;
+         Throwable cause = e.getCause();
+         if (cause instanceof RemoteException) {
+            throw (RemoteException)cause;
+         } else {
+            throw new IllegalStateException(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcMWojGj1gMCQ/LRcqPWowBi9lJxpF")), cause);
+         }
+      }
+   }
 
-    @Override
-    public boolean unlinkToDeath(DeathRecipient recipient, int flags) {
-        return mBaseBinder.unlinkToDeath(recipient, flags);
-    }
+   private final class AsBinder extends MethodProxy {
+      private AsBinder() {
+      }
 
-    public IBinder getBaseBinder() {
-        return mBaseBinder;
-    }
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc2HGUVBixiASxF"));
+      }
 
+      public Object call(Object who, Method method, Object... args) throws Throwable {
+         return BinderInvocationStub.this;
+      }
+
+      // $FF: synthetic method
+      AsBinder(Object x1) {
+         this();
+      }
+   }
 }

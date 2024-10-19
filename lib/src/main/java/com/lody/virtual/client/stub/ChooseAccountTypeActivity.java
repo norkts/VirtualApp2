@@ -1,6 +1,5 @@
 package com.lody.virtual.client.stub;
 
-import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Context;
@@ -16,162 +15,168 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.lody.virtual.R;
+import com.kook.librelease.R.id;
+import com.kook.librelease.R.layout;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.ipc.VAccountManager;
 import com.lody.virtual.helper.utils.VLog;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @hide
- */
 public class ChooseAccountTypeActivity extends Activity {
-    private static final String TAG = "AccountChooser";
-    private static final boolean DEBUG = false;
-    private HashMap<String, AuthInfo> mTypeToAuthenticatorInfo = new HashMap<String, AuthInfo>();
-    private ArrayList<AuthInfo> mAuthenticatorInfosToDisplay;
+   public static final String KEY_USER_ID = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28hAiw="));
+   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jgg2OWowNCZmHCg0Ki1fL2kgRVo="));
+   private static final boolean DEBUG = false;
+   private HashMap<String, AuthInfo> mTypeToAuthenticatorInfo = new HashMap();
+   private ArrayList<AuthInfo> mAuthenticatorInfosToDisplay;
+   private int mCallingUid;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Read the validAccountTypes, if present, and add them to the setOfAllowableAccountTypes
-        Set<String> setOfAllowableAccountTypes = null;
-        String[] validAccountTypes = getIntent().getStringArrayExtra(
-                ChooseTypeAndAccountActivity.EXTRA_ALLOWABLE_ACCOUNT_TYPES_STRING_ARRAY);
-        if (validAccountTypes != null) {
-            setOfAllowableAccountTypes = new HashSet<>(validAccountTypes.length);
+   public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      this.mCallingUid = this.getIntent().getIntExtra(KEY_USER_ID, -1);
+      if (this.mCallingUid == -1) {
+         this.finish();
+      } else {
+         Set<String> setOfAllowableAccountTypes = null;
+         String[] validAccountTypes = this.getIntent().getStringArrayExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggEDmowPDd9NFE/JwcqP28KGiZvHCw0KQguDw==")));
+         if (validAccountTypes != null) {
+            setOfAllowableAccountTypes = new HashSet(validAccountTypes.length);
             Collections.addAll(setOfAllowableAccountTypes, validAccountTypes);
-        }
+         }
 
-        // create a map of account authenticators
-        buildTypeToAuthDescriptionMap();
+         this.buildTypeToAuthDescriptionMap();
+         this.mAuthenticatorInfosToDisplay = new ArrayList(this.mTypeToAuthenticatorInfo.size());
+         Iterator var4 = this.mTypeToAuthenticatorInfo.entrySet().iterator();
 
-        // Create a list of authenticators that are allowable. Filter out those that
-        // don't match the allowable account types, if provided.
-        mAuthenticatorInfosToDisplay = new ArrayList<>(mTypeToAuthenticatorInfo.size());
-        for (Map.Entry<String, AuthInfo> entry: mTypeToAuthenticatorInfo.entrySet()) {
-            final String type = entry.getKey();
-            final AuthInfo info = entry.getValue();
-            if (setOfAllowableAccountTypes != null
-                    && !setOfAllowableAccountTypes.contains(type)) {
-                continue;
-            }
-            mAuthenticatorInfosToDisplay.add(info);
-        }
+         while(true) {
+            String type;
+            AuthInfo info;
+            do {
+               if (!var4.hasNext()) {
+                  if (this.mAuthenticatorInfosToDisplay.isEmpty()) {
+                     Bundle bundle = new Bundle();
+                     bundle.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQcMKmowFg1iASgpLwc6PQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4fOGsVHiRgJzg7Lz1bPX4zQSloJwYwLC0pJGYVGjNuASxF")));
+                     this.setResult(-1, (new Intent()).putExtras(bundle));
+                     this.finish();
+                     return;
+                  }
 
-        if (mAuthenticatorInfosToDisplay.isEmpty()) {
-            Bundle bundle = new Bundle();
-            bundle.putString(AccountManager.KEY_ERROR_MESSAGE, "no allowable account types");
-            setResult(Activity.RESULT_OK, new Intent().putExtras(bundle));
-            finish();
-            return;
-        }
+                  if (this.mAuthenticatorInfosToDisplay.size() == 1) {
+                     this.setResultAndFinish(((AuthInfo)this.mAuthenticatorInfosToDisplay.get(0)).desc.type);
+                     return;
+                  }
 
-        if (mAuthenticatorInfosToDisplay.size() == 1) {
-            setResultAndFinish(mAuthenticatorInfosToDisplay.get(0).desc.type);
-            return;
-        }
+                  this.setContentView(layout.choose_account_type);
+                  ListView list = (ListView)this.findViewById(16908298);
+                  list.setAdapter(new AccountArrayAdapter(this, 17367043, this.mAuthenticatorInfosToDisplay));
+                  list.setChoiceMode(0);
+                  list.setTextFilterEnabled(false);
+                  list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                        ChooseAccountTypeActivity.this.setResultAndFinish(((AuthInfo)ChooseAccountTypeActivity.this.mAuthenticatorInfosToDisplay.get(position)).desc.type);
+                     }
+                  });
+                  return;
+               }
 
-        setContentView(R.layout.choose_account_type);
-        // Setup the list
-        ListView list = (ListView) findViewById(android.R.id.list);
-        // Use an existing ListAdapter that will map an array of strings to TextViews
-        list.setAdapter(new AccountArrayAdapter(this,
-                android.R.layout.simple_list_item_1, mAuthenticatorInfosToDisplay));
-        list.setChoiceMode(ListView.CHOICE_MODE_NONE);
-        list.setTextFilterEnabled(false);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                setResultAndFinish(mAuthenticatorInfosToDisplay.get(position).desc.type);
-            }
-        });
-    }
+               Map.Entry<String, AuthInfo> entry = (Map.Entry)var4.next();
+               type = (String)entry.getKey();
+               info = (AuthInfo)entry.getValue();
+            } while(setOfAllowableAccountTypes != null && !setOfAllowableAccountTypes.contains(type));
 
-    private void setResultAndFinish(final String type) {
-        Bundle bundle = new Bundle();
-        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, type);
-        setResult(Activity.RESULT_OK, new Intent().putExtras(bundle));
-        if(DEBUG){
-            VLog.v(TAG, "ChooseAccountTypeActivity.setResultAndFinish: "
-                    + "selected account type " + type);
-        }
-        finish();
-    }
+            this.mAuthenticatorInfosToDisplay.add(info);
+         }
+      }
+   }
 
-    private void buildTypeToAuthDescriptionMap() {
-        for(AuthenticatorDescription desc : VAccountManager.get().getAuthenticatorTypes()) {
-            String name = null;
-            Drawable icon = null;
-            try {
-                Resources res = VirtualCore.get().getResources(desc.packageName);
-                icon = res.getDrawable(desc.iconId);
-                final CharSequence sequence = res.getText(desc.labelId);
-                name = sequence.toString();
-                name = sequence.toString();
-            } catch (Resources.NotFoundException e) {
-                // Nothing we can do much here, just log
-                VLog.w(TAG, "No icon resource for account type " + desc.type);
-            }
-            AuthInfo authInfo = new AuthInfo(desc, name, icon);
-            mTypeToAuthenticatorInfo.put(desc.type, authInfo);
-        }
-    }
+   private void setResultAndFinish(String type) {
+      Bundle bundle = new Bundle();
+      bundle.putString(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgg2OWowNCZmHwoZIxcMVg==")), type);
+      this.setResult(-1, (new Intent()).putExtras(bundle));
+      this.finish();
+   }
 
-    private static class AuthInfo {
-        final AuthenticatorDescription desc;
-        final String name;
-        final Drawable drawable;
+   private void buildTypeToAuthDescriptionMap() {
+      AuthenticatorDescription[] var1 = VAccountManager.get().getAuthenticatorTypes(this.mCallingUid);
+      int var2 = var1.length;
 
-        AuthInfo(AuthenticatorDescription desc, String name, Drawable drawable) {
-            this.desc = desc;
-            this.name = name;
-            this.drawable = drawable;
-        }
-    }
+      for(int var3 = 0; var3 < var2; ++var3) {
+         AuthenticatorDescription desc = var1[var3];
+         String name = null;
+         Drawable icon = null;
 
-    private static class ViewHolder {
-        ImageView icon;
-        TextView text;
-    }
+         try {
+            Resources res = VirtualCore.get().getResources(desc.packageName);
+            icon = res.getDrawable(desc.iconId);
+            CharSequence sequence = res.getText(desc.labelId);
+            name = sequence.toString();
+            name = sequence.toString();
+         } catch (Resources.NotFoundException var9) {
+            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Oz4fOGUVLCVgMCQqKAgqDWUgRSlrDTwtLD0LJH0KNCZsJwodIzpXCm4KID97AVRF")) + desc.type);
+         }
 
-    private static class AccountArrayAdapter extends ArrayAdapter<AuthInfo> {
-        private LayoutInflater mLayoutInflater;
-        private ArrayList<AuthInfo> mInfos;
+         AuthInfo authInfo = new AuthInfo(desc, name, icon);
+         this.mTypeToAuthenticatorInfo.put(desc.type, authInfo);
+      }
 
-        AccountArrayAdapter(Context context, int textViewResourceId,
-                            ArrayList<AuthInfo> infos) {
-            super(context, textViewResourceId, infos);
-            mInfos = infos;
-            mLayoutInflater = (LayoutInflater) context.getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
-        }
+   }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+   private static class AccountArrayAdapter extends ArrayAdapter<AuthInfo> {
+      private LayoutInflater mLayoutInflater;
+      private ArrayList<AuthInfo> mInfos;
 
-            if (convertView == null) {
-                convertView = mLayoutInflater.inflate(R.layout.choose_account_row, null);
-                holder = new ViewHolder();
-                holder.text = (TextView) convertView.findViewById(R.id.account_row_text);
-                holder.icon = (ImageView) convertView.findViewById(R.id.account_row_icon);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+      AccountArrayAdapter(Context context, int textViewResourceId, ArrayList<AuthInfo> infos) {
+         super(context, textViewResourceId, infos);
+         this.mInfos = infos;
+         this.mLayoutInflater = (LayoutInflater)context.getSystemService(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+J2owNAZsJAY2KD1bOWUzGgQ=")));
+      }
 
-            holder.text.setText(mInfos.get(position).name);
-            holder.icon.setImageDrawable(mInfos.get(position).drawable);
+      public View getView(int position, View convertView, ViewGroup parent) {
+         ViewHolder holder;
+         if (convertView == null) {
+            convertView = this.mLayoutInflater.inflate(layout.choose_account_row, (ViewGroup)null);
+            holder = new ViewHolder();
+            holder.text = (TextView)convertView.findViewById(id.account_row_text);
+            holder.icon = (ImageView)convertView.findViewById(id.account_row_icon);
+            convertView.setTag(holder);
+         } else {
+            holder = (ViewHolder)convertView.getTag();
+         }
 
-            return convertView;
-        }
-    }
+         holder.text.setText(((AuthInfo)this.mInfos.get(position)).name);
+         holder.icon.setImageDrawable(((AuthInfo)this.mInfos.get(position)).drawable);
+         return convertView;
+      }
+   }
+
+   private static class ViewHolder {
+      ImageView icon;
+      TextView text;
+
+      private ViewHolder() {
+      }
+
+      // $FF: synthetic method
+      ViewHolder(Object x0) {
+         this();
+      }
+   }
+
+   private static class AuthInfo {
+      final AuthenticatorDescription desc;
+      final String name;
+      final Drawable drawable;
+
+      AuthInfo(AuthenticatorDescription desc, String name, Drawable drawable) {
+         this.desc = desc;
+         this.name = name;
+         this.drawable = drawable;
+      }
+   }
 }

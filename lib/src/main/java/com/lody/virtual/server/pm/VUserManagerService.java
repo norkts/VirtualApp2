@@ -1,21 +1,20 @@
 package com.lody.virtual.server.pm;
 
-import android.app.Activity;
 import android.app.IStopUserCallback;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.os.Binder;
+import android.os.Bundle;
+import android.os.Handler;
 import android.util.SparseArray;
 import android.util.Xml;
-
-import com.lody.virtual.GmsSupport;
-import com.lody.virtual.R;
-import com.lody.virtual.client.core.VirtualCore;
-import com.lody.virtual.client.env.Constants;
-import com.lody.virtual.helper.compat.ActivityManagerCompat;
+import com.kook.librelease.R.string;
+import com.lody.virtual.StringFog;
+import com.lody.virtual.client.env.SpecialComponentList;
 import com.lody.virtual.helper.utils.ArrayUtils;
 import com.lody.virtual.helper.utils.AtomicFile;
 import com.lody.virtual.helper.utils.FastXmlSerializer;
@@ -26,11 +25,6 @@ import com.lody.virtual.os.VUserInfo;
 import com.lody.virtual.os.VUserManager;
 import com.lody.virtual.server.am.VActivityManagerService;
 import com.lody.virtual.server.interfaces.IUserManager;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlSerializer;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,834 +33,777 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
 
-
-/**
- * @author Lody
- */
 public class VUserManagerService extends IUserManager.Stub {
+   private static final String LOG_TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITsuKWgaFg19Dlk7KC0MKGIFGgRvNx4qLhhSVg=="));
+   private static final boolean DBG = false;
+   private static final String TAG_NAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4+DWgVSFo="));
+   private static final String ATTR_FLAGS = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4EP2gwLFo="));
+   private static final String ATTR_ICON_PATH = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAg2D2ojSFo="));
+   private static final String ATTR_ID = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgqVg=="));
+   private static final String ATTR_CREATION_TIME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtiEVRF"));
+   private static final String ATTR_LAST_LOGGED_IN_TIME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ixg+KWwLHiViJDg/KBUcDg=="));
+   private static final String ATTR_SERIAL_NO = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmUVJCRoNzA3Lz0MKA=="));
+   private static final String ATTR_NEXT_SERIAL_NO = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4uIGwILCthNAY7KhUYLW8jRStsN1RF"));
+   private static final String ATTR_PARTIAL = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+KmwFAjdgEVRF"));
+   private static final String ATTR_USER_VERSION = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4uKm8zAiVgN1RF"));
+   private static final String TAG_USERS = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28gLFo="));
+   private static final String TAG_USER = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo="));
+   private static final String USER_INFO_DIR;
+   private static final String USER_LIST_FILENAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jHi9hJw02LRdXCA=="));
+   private static final String USER_PHOTO_FILENAME = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhfD2wFBSZhHlk9"));
+   private static final int MIN_USER_ID = 1;
+   private static final int USER_VERSION = 1;
+   private static final long EPOCH_PLUS_30_YEARS = 946080000000L;
+   private static VUserManagerService sInstance;
+   private final Context mContext;
+   private final VPackageManagerService mPm;
+   private final Object mInstallLock;
+   private final Object mPackagesLock;
+   private final File mUsersDir;
+   private final File mUserListFile;
+   private final File mBaseUserPath;
+   private SparseArray<VUserInfo> mUsers;
+   private HashSet<Integer> mRemovingUserIds;
+   private int[] mUserIds;
+   private boolean mGuestEnabled;
+   private int mNextSerialNumber;
+   private int mNextUserId;
+   private int mUserVersion;
 
-    private static final String LOG_TAG = "VUserManagerService";
+   VUserManagerService(Context context, VPackageManagerService pm, Object installLock, Object packagesLock) {
+      this(context, pm, installLock, packagesLock, VEnvironment.getDataDirectory(), new File(VEnvironment.getDataDirectory(), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jSFo="))));
+   }
 
-    private static final boolean DBG = false;
+   private VUserManagerService(Context context, VPackageManagerService pm, Object installLock, Object packagesLock, File dataDir, File baseUserPath) {
+      this.mUsers = new SparseArray();
+      this.mRemovingUserIds = new HashSet();
+      this.mNextUserId = 1;
+      this.mUserVersion = 0;
+      this.mContext = context;
+      this.mPm = pm;
+      this.mInstallLock = installLock;
+      this.mPackagesLock = packagesLock;
+      synchronized(this.mInstallLock) {
+         synchronized(this.mPackagesLock) {
+            this.mUsersDir = new File(dataDir, USER_INFO_DIR);
+            this.mUsersDir.mkdirs();
+            File userZeroDir = new File(this.mUsersDir, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("OhhSVg==")));
+            userZeroDir.mkdirs();
+            this.mBaseUserPath = baseUserPath;
+            this.mUserListFile = new File(this.mUsersDir, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28jHi9hJw02LRdXCA==")));
+            this.readUserListLocked();
+            ArrayList<VUserInfo> partials = new ArrayList();
 
-    private static final String TAG_NAME = "name";
-    private static final String ATTR_FLAGS = "flags";
-    private static final String ATTR_ICON_PATH = "icon";
-    private static final String ATTR_ID = "id";
-    private static final String ATTR_CREATION_TIME = "created";
-    private static final String ATTR_LAST_LOGGED_IN_TIME = "lastLoggedIn";
-    private static final String ATTR_SERIAL_NO = "serialNumber";
-    private static final String ATTR_NEXT_SERIAL_NO = "nextSerialNumber";
-    private static final String ATTR_PARTIAL = "partial";
-    private static final String ATTR_USER_VERSION = "version";
-    private static final String TAG_USERS = "users";
-    private static final String TAG_USER = "user";
-
-    private static final String USER_INFO_DIR = "system" + File.separator + "users";
-    private static final String USER_LIST_FILENAME = "userlist.xml";
-    private static final String USER_PHOTO_FILENAME = "photo.png";
-
-    private static final int MIN_USER_ID = 1;
-
-    private static final int USER_VERSION = 1;
-
-    private static final long EPOCH_PLUS_30_YEARS = 30L * 365 * 24 * 60 * 60 * 1000L; // ms
-    private static VUserManagerService sInstance;
-    private final Context mContext;
-    private final VPackageManagerService mPm;
-    private final Object mInstallLock;
-    private final Object mPackagesLock;
-    private final File mUsersDir;
-    private final File mUserListFile;
-    private final File mBaseUserPath;
-    private SparseArray<VUserInfo> mUsers = new SparseArray<VUserInfo>();
-    private HashSet<Integer> mRemovingUserIds = new HashSet<Integer>();
-    private int[] mUserIds;
-    private boolean mGuestEnabled;
-    private int mNextSerialNumber;
-    // This resets on a reboot. Otherwise it keeps incrementing so that user ids are
-    // not reused in quick succession
-    private int mNextUserId = MIN_USER_ID;
-    private int mUserVersion = 0;
-
-    /**
-     * Called by package manager to create the service.  This is closely
-     * associated with the package manager, and the given lock is the
-     * package manager's own lock.
-     */
-    VUserManagerService(Context context, VPackageManagerService pm,
-                        Object installLock, Object packagesLock) {
-        this(context, pm, installLock, packagesLock,
-                VEnvironment.getDataDirectory(),
-                new File(VEnvironment.getDataDirectory(), "user"));
-    }
-
-    /**
-     * Available for testing purposes.
-     */
-    private VUserManagerService(Context context, VPackageManagerService pm,
-                                Object installLock, Object packagesLock,
-                                File dataDir, File baseUserPath) {
-        mContext = context;
-        mPm = pm;
-        mInstallLock = installLock;
-        mPackagesLock = packagesLock;
-        synchronized (mInstallLock) {
-            synchronized (mPackagesLock) {
-                mUsersDir = new File(dataDir, USER_INFO_DIR);
-                mUsersDir.mkdirs();
-                // Make zeroth user directory, for services to migrate their files to that location
-                File userZeroDir = new File(mUsersDir, "0");
-                userZeroDir.mkdirs();
-                mBaseUserPath = baseUserPath;
-//                FileUtils.setPermissions(mUsersDir.toString(),
-//                        FileUtils.S_IRWXU|FileUtils.S_IRWXG
-//                        |FileUtils.S_IROTH|FileUtils.S_IXOTH,
-//                        -1, -1);
-                mUserListFile = new File(mUsersDir, USER_LIST_FILENAME);
-                readUserListLocked();
-                // Prune out any partially created/partially removed users.
-                ArrayList<VUserInfo> partials = new ArrayList<VUserInfo>();
-                for (int i = 0; i < mUsers.size(); i++) {
-                    VUserInfo ui = mUsers.valueAt(i);
-                    if (ui.partial && i != 0) {
-                        partials.add(ui);
-                    }
-                    //check systemui
-                    File path = new File(VEnvironment.getUserDataDirectory(ui.id), "build.prop");
-                    if (!path.exists()) {
-                        try {
-                            Runtime.getRuntime().exec("cat /system/build.prop > " + path.getAbsolutePath());
-                            //VDeviceManagerService.get().fillBuildProp(path);
-                        } catch (Throwable ex) {
-                            //VLog.e("VDeviceInfo", "cat build.prop fail\n%s", Log.getStackTraceString(ex));
-                        }
-                    }
-                }
-                for (int i = 0; i < partials.size(); i++) {
-                    VUserInfo ui = partials.get(i);
-                    VLog.w(LOG_TAG, "Removing partially created user #" + i
-                            + " (name=" + ui.name + ")");
-                    removeUserStateLocked(ui.id);
-                }
-                sInstance = this;
+            int i;
+            VUserInfo ui;
+            for(i = 0; i < this.mUsers.size(); ++i) {
+               ui = (VUserInfo)this.mUsers.valueAt(i);
+               if (ui.partial && i != 0) {
+                  partials.add(ui);
+               }
             }
-        }
-    }
 
-    public static VUserManagerService get() {
-        synchronized (VUserManagerService.class) {
-            return sInstance;
-        }
-    }
-
-    @Override
-    public List<VUserInfo> getUsers(boolean excludeDying) {
-        //checkManageUsersPermission("query users");
-        synchronized (mPackagesLock) {
-            ArrayList<VUserInfo> users = new ArrayList<VUserInfo>(mUsers.size());
-            for (int i = 0; i < mUsers.size(); i++) {
-                VUserInfo ui = mUsers.valueAt(i);
-                if (ui.partial) {
-                    continue;
-                }
-                if (!excludeDying || !mRemovingUserIds.contains(ui.id)) {
-                    users.add(ui);
-                }
+            for(i = 0; i < partials.size(); ++i) {
+               ui = (VUserInfo)partials.get(i);
+               VLog.w(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("ITsuKWgaFg19Dlk7KC0MKGIFGgRvNx4qLhhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uDWowOC9gNDs8IxciKGUzLDdlEQI0PQg2CGIKPD9uDjMpIy0YJ2w3IzU=")) + i + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl9fCGsVEit0AVRF")) + ui.name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAhSVg==")));
+               this.removeUserStateLocked(ui.id);
             }
-            return users;
-        }
-    }
 
-    @Override
-    public VUserInfo getUserInfo(int userId) {
-        //checkManageUsersPermission("query user");
-        synchronized (mPackagesLock) {
-            return getUserInfoLocked(userId);
-        }
-    }
+            sInstance = this;
+         }
+      }
+   }
 
-    /*
-     * Should be locked on mUsers before calling this.
-     */
-    private VUserInfo getUserInfoLocked(int userId) {
-        VUserInfo ui = mUsers.get(userId);
-        // If it is partial and not in the process of being removed, return as unknown user.
-        if (ui != null && ui.partial && !mRemovingUserIds.contains(userId)) {
-            VLog.w(LOG_TAG, "getUserInfo: unknown user #" + userId);
-            return null;
-        }
-        return ui;
-    }
+   public static VUserManagerService get() {
+      Class var0 = VUserManagerService.class;
+      synchronized(VUserManagerService.class) {
+         return sInstance;
+      }
+   }
 
-    public boolean exists(int userId) {
-        synchronized (mPackagesLock) {
-            return ArrayUtils.contains(mUserIds, userId);
-        }
-    }
+   public List<VUserInfo> getUsers(boolean excludeDying) {
+      synchronized(this.mPackagesLock) {
+         ArrayList<VUserInfo> users = new ArrayList(this.mUsers.size());
 
-    @Override
-    public void setUserName(int userId, String name) {
-        boolean changed = false;
-        synchronized (mPackagesLock) {
-            VUserInfo info = mUsers.get(userId);
-            if (info == null || info.partial) {
-                VLog.w(LOG_TAG, "setUserName: unknown user #" + userId);
-                return;
+         for(int i = 0; i < this.mUsers.size(); ++i) {
+            VUserInfo ui = (VUserInfo)this.mUsers.valueAt(i);
+            if (!ui.partial && (!excludeDying || !this.mRemovingUserIds.contains(ui.id))) {
+               users.add(ui);
             }
-            if (name != null && !name.equals(info.name)) {
-                info.name = name;
-                writeUserLocked(info);
-                changed = true;
-            }
-        }
-        if (changed) {
-            sendUserInfoChangedBroadcast(userId);
-        }
-    }
+         }
 
-    @Override
-    public void setUserIcon(int userId, Bitmap bitmap) {
-        synchronized (mPackagesLock) {
-            VUserInfo info = mUsers.get(userId);
-            if (info == null || info.partial) {
-                VLog.w(LOG_TAG, "setUserIcon: unknown user #" + userId);
-                return;
-            }
-            writeBitmapLocked(info, bitmap);
-            writeUserLocked(info);
-        }
-        sendUserInfoChangedBroadcast(userId);
-    }
+         return users;
+      }
+   }
 
-    private void sendUserInfoChangedBroadcast(int userId) {
-        Intent changedIntent = new Intent(VUserManager.ACTION_USER_INFO_CHANGED);
-        changedIntent.putExtra(Constants.EXTRA_USER_HANDLE, userId);
-        changedIntent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-        VActivityManagerService.get().sendBroadcastAsUser(changedIntent, new VUserHandle(userId));
-    }
+   public VUserInfo getUserInfo(int userId) {
+      synchronized(this.mPackagesLock) {
+         return this.getUserInfoLocked(userId);
+      }
+   }
 
-    @Override
-    public Bitmap getUserIcon(int userId) {
-        //checkManageUsersPermission("read users");
-        synchronized (mPackagesLock) {
-            VUserInfo info = mUsers.get(userId);
-            if (info == null || info.partial) {
-                VLog.w(LOG_TAG, "getUserIcon: unknown user #" + userId);
-                return null;
-            }
-            if (info.iconPath == null) {
-                return null;
-            }
-            return BitmapFactory.decodeFile(info.iconPath);
-        }
-    }
+   private VUserInfo getUserInfoLocked(int userId) {
+      VUserInfo ui = (VUserInfo)this.mUsers.get(userId);
+      if (ui != null && ui.partial && !this.mRemovingUserIds.contains(userId)) {
+         VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQaLCthMgY2KD1eIH4wGiZqJxocKj4bJGYFNCBlMCMs")) + userId);
+         return null;
+      } else {
+         return ui;
+      }
+   }
 
-    @Override
-    public boolean isGuestEnabled() {
-        synchronized (mPackagesLock) {
-            return mGuestEnabled;
-        }
-    }
+   public boolean exists(int userId) {
+      synchronized(this.mPackagesLock) {
+         return ArrayUtils.contains(this.mUserIds, userId);
+      }
+   }
 
-    @Override
-    public void setGuestEnabled(boolean enable) {
-        synchronized (mPackagesLock) {
-            if (mGuestEnabled != enable) {
-                mGuestEnabled = enable;
-                // Erase any guest user that currently exists
-                for (int i = 0; i < mUsers.size(); i++) {
-                    VUserInfo user = mUsers.valueAt(i);
-                    if (!user.partial && user.isGuest()) {
-                        if (!enable) {
-                            removeUser(user.id);
-                        }
-                        return;
-                    }
-                }
-                // No guest was found
-                if (enable) {
-                    createUser("Guest", VUserInfo.FLAG_GUEST);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void wipeUser(int userHandle) {
-        // TODO: implementation it
-    }
-
-    public void makeInitialized(int userId) {
-        synchronized (mPackagesLock) {
-            VUserInfo info = mUsers.get(userId);
-            if (info == null || info.partial) {
-                VLog.w(LOG_TAG, "makeInitialized: unknown user #" + userId);
-            }
-            if ((info.flags & VUserInfo.FLAG_INITIALIZED) == 0) {
-                info.flags |= VUserInfo.FLAG_INITIALIZED;
-                writeUserLocked(info);
-            }
-        }
-    }
-
-    /**
-     * Check if we've hit the limit of how many users can be created.
-     */
-    private boolean isUserLimitReachedLocked() {
-        int nUsers = mUsers.size();
-        return nUsers >= VUserManager.getMaxSupportedUsers();
-    }
-
-    private void writeBitmapLocked(VUserInfo info, Bitmap bitmap) {
-        try {
-            File dir = new File(mUsersDir, Integer.toString(info.id));
-            File file = new File(dir, USER_PHOTO_FILENAME);
-            if (!dir.exists()) {
-                dir.mkdir();
-//                FileUtils.setPermissions(
-//                        dir.getPath(),
-//                        FileUtils.S_IRWXU|FileUtils.S_IRWXG|FileUtils.S_IXOTH,
-//                        -1, -1);
-            }
-            FileOutputStream os;
-            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os = new FileOutputStream(file))) {
-                info.iconPath = file.getAbsolutePath();
-            }
-            try {
-                os.close();
-            } catch (IOException ioe) {
-                // What the ... !
-            }
-        } catch (FileNotFoundException e) {
-            VLog.w(LOG_TAG, "Error setting photo for user ", e);
-        }
-    }
-
-    /**
-     * Returns an array of user ids. This array is cached here for quick access, so do not modify or
-     * cache it elsewhere.
-     *
-     * @return the array of user ids.
-     */
-    public int[] getUserIds() {
-        synchronized (mPackagesLock) {
-            return mUserIds;
-        }
-    }
-
-    int[] getUserIdsLPr() {
-        return mUserIds;
-    }
-
-    private void readUserList() {
-        synchronized (mPackagesLock) {
-            readUserListLocked();
-        }
-    }
-
-    private void readUserListLocked() {
-        mGuestEnabled = false;
-        if (!mUserListFile.exists()) {
-            fallbackToSingleUserLocked();
+   public void setUserName(int userId, String name) {
+      boolean changed = false;
+      synchronized(this.mPackagesLock) {
+         VUserInfo info = (VUserInfo)this.mUsers.get(userId);
+         if (info == null || info.partial) {
+            VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQaLCthMlk7KgcLIH4wGiZqJxocKj4bJGYFNCBlMCMs")) + userId);
             return;
-        }
-        FileInputStream fis = null;
-        AtomicFile userListFile = new AtomicFile(mUserListFile);
-        try {
+         }
+
+         if (name != null && !name.equals(info.name)) {
+            info.name = name;
+            this.writeUserLocked(info);
+            changed = true;
+         }
+      }
+
+      if (changed) {
+         this.sendUserInfoChangedBroadcast(userId);
+      }
+
+   }
+
+   public void setUserIcon(int userId, Bitmap bitmap) {
+      synchronized(this.mPackagesLock) {
+         VUserInfo info = (VUserInfo)this.mUsers.get(userId);
+         if (info == null || info.partial) {
+            VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uLGQaLCthMgY5Ki0XIH4wGiZqJxocKj4bJGYFNCBlMCMs")) + userId);
+            return;
+         }
+
+         this.writeBitmapLocked(info, bitmap);
+         this.writeUserLocked(info);
+      }
+
+      this.sendUserInfoChangedBroadcast(userId);
+   }
+
+   private void sendUserInfoChangedBroadcast(int userId) {
+      Intent changedIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k7Kj02KG8FLCx1Nx4bKgguKmZTRSRpJzAiKQgpKmcILFRnIgYMLRUmH2YmFlc=")));
+      changedIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYFNCBlNVkhKC4qIGUVNFo=")), userId);
+      changedIntent.addFlags(1073741824);
+      VActivityManagerService.get().sendBroadcastAsUser(changedIntent, new VUserHandle(userId));
+   }
+
+   public Bitmap getUserIcon(int userId) {
+      synchronized(this.mPackagesLock) {
+         VUserInfo info = (VUserInfo)this.mUsers.get(userId);
+         if (info != null && !info.partial) {
+            return info.iconPath == null ? null : BitmapFactory.decodeFile(info.iconPath);
+         } else {
+            VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQaLCthMgY5Ki0XIH4wGiZqJxocKj4bJGYFNCBlMCMs")) + userId);
+            return null;
+         }
+      }
+   }
+
+   public boolean isGuestEnabled() {
+      synchronized(this.mPackagesLock) {
+         return this.mGuestEnabled;
+      }
+   }
+
+   public void setGuestEnabled(boolean enable) {
+      synchronized(this.mPackagesLock) {
+         if (this.mGuestEnabled != enable) {
+            this.mGuestEnabled = enable;
+
+            for(int i = 0; i < this.mUsers.size(); ++i) {
+               VUserInfo user = (VUserInfo)this.mUsers.valueAt(i);
+               if (!user.partial && user.isGuest()) {
+                  if (!enable) {
+                     this.removeUser(user.id);
+                  }
+
+                  return;
+               }
+            }
+
+            if (enable) {
+               this.createUser(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JS0uM28wMFo=")), 4);
+            }
+         }
+
+      }
+   }
+
+   public void wipeUser(int userHandle) {
+   }
+
+   public void makeInitialized(int userId) {
+      synchronized(this.mPackagesLock) {
+         VUserInfo info = (VUserInfo)this.mUsers.get(userId);
+         if (info == null || info.partial) {
+            VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iwg+MWgbAiZjAQozLwdbMWgVGix+MzwwLC5bKmAjJCl5EQo8Ly1eJHgjSFo=")) + userId);
+         }
+
+         if ((info.flags & 16) == 0) {
+            info.flags |= 16;
+            this.writeUserLocked(info);
+         }
+
+      }
+   }
+
+   private boolean isUserLimitReachedLocked() {
+      int nUsers = this.mUsers.size();
+      return nUsers >= VUserManager.getMaxSupportedUsers();
+   }
+
+   private void writeBitmapLocked(VUserInfo info, Bitmap bitmap) {
+      try {
+         File dir = new File(this.mUsersDir, Integer.toString(info.id));
+         File file = new File(dir, USER_PHOTO_FILENAME);
+         if (!dir.exists()) {
+            dir.mkdir();
+         }
+
+         FileOutputStream os;
+         if (bitmap.compress(CompressFormat.PNG, 100, os = new FileOutputStream(file))) {
+            info.iconPath = file.getAbsolutePath();
+         }
+
+         try {
+            os.close();
+         } catch (IOException var7) {
+         }
+      } catch (FileNotFoundException var8) {
+         FileNotFoundException e = var8;
+         VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcMKmowEShhJDAgLBccDmkJTQJqEQY/LDo6ImAjMyNqASwuLF9XVg==")), e);
+      }
+
+   }
+
+   public int[] getUserIds() {
+      synchronized(this.mPackagesLock) {
+         return this.mUserIds;
+      }
+   }
+
+   int[] getUserIdsLPr() {
+      return this.mUserIds;
+   }
+
+   private void readUserList() {
+      synchronized(this.mPackagesLock) {
+         this.readUserListLocked();
+      }
+   }
+
+   private void readUserListLocked() {
+      this.mGuestEnabled = false;
+      if (!this.mUserListFile.exists()) {
+         this.fallbackToSingleUserLocked();
+      } else {
+         FileInputStream fis = null;
+         AtomicFile userListFile = new AtomicFile(this.mUserListFile);
+
+         try {
             fis = userListFile.openRead();
             XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(fis, null);
+            parser.setInput(fis, (String)null);
+
             int type;
-            while ((type = parser.next()) != XmlPullParser.START_TAG
-                    && type != XmlPullParser.END_DOCUMENT) {
-                ;
+            while((type = parser.next()) != 2 && type != 1) {
             }
 
-            if (type != XmlPullParser.START_TAG) {
-                VLog.e(LOG_TAG, "Unable to read user list");
-                fallbackToSingleUserLocked();
-                return;
+            if (type == 2) {
+               this.mNextSerialNumber = -1;
+               String id;
+               if (parser.getName().equals(TAG_USERS)) {
+                  id = parser.getAttributeValue((String)null, ATTR_NEXT_SERIAL_NO);
+                  if (id != null) {
+                     this.mNextSerialNumber = Integer.parseInt(id);
+                  }
+
+                  String versionNumber = parser.getAttributeValue((String)null, ATTR_USER_VERSION);
+                  if (versionNumber != null) {
+                     this.mUserVersion = Integer.parseInt(versionNumber);
+                  }
+               }
+
+               while(true) {
+                  VUserInfo user;
+                  do {
+                     do {
+                        do {
+                           do {
+                              if ((type = parser.next()) == 1) {
+                                 this.updateUserIdsLocked();
+                                 this.upgradeIfNecessary();
+                                 return;
+                              }
+                           } while(type != 2);
+                        } while(!parser.getName().equals(TAG_USER));
+
+                        id = parser.getAttributeValue((String)null, ATTR_ID);
+                        user = this.readUser(Integer.parseInt(id));
+                     } while(user == null);
+
+                     this.mUsers.put(user.id, user);
+                     if (user.isGuest()) {
+                        this.mGuestEnabled = true;
+                     }
+                  } while(this.mNextSerialNumber >= 0 && this.mNextSerialNumber > user.id);
+
+                  this.mNextSerialNumber = user.id + 1;
+               }
             }
 
-            mNextSerialNumber = -1;
-            if (parser.getName().equals(TAG_USERS)) {
-                String lastSerialNumber = parser.getAttributeValue(null, ATTR_NEXT_SERIAL_NO);
-                if (lastSerialNumber != null) {
-                    mNextSerialNumber = Integer.parseInt(lastSerialNumber);
-                }
-                String versionNumber = parser.getAttributeValue(null, ATTR_USER_VERSION);
-                if (versionNumber != null) {
-                    mUserVersion = Integer.parseInt(versionNumber);
-                }
-            }
-
-            while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
-                if (type == XmlPullParser.START_TAG && parser.getName().equals(TAG_USER)) {
-                    String id = parser.getAttributeValue(null, ATTR_ID);
-                    VUserInfo user = readUser(Integer.parseInt(id));
-
-                    if (user != null) {
-                        mUsers.put(user.id, user);
-                        if (user.isGuest()) {
-                            mGuestEnabled = true;
-                        }
-                        if (mNextSerialNumber < 0 || mNextSerialNumber <= user.id) {
-                            mNextSerialNumber = user.id + 1;
-                        }
-                    }
-                }
-            }
-            updateUserIdsLocked();
-            upgradeIfNecessary();
-        } catch (IOException ioe) {
-            fallbackToSingleUserLocked();
-        } catch (XmlPullParserException pe) {
-            fallbackToSingleUserLocked();
-        } finally {
+            VLog.e(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxguPW4jAShvDjAgKSo6KGMFND8=")));
+            this.fallbackToSingleUserLocked();
+         } catch (IOException var18) {
+            this.fallbackToSingleUserLocked();
+            return;
+         } catch (XmlPullParserException var19) {
+            this.fallbackToSingleUserLocked();
+            return;
+         } finally {
             if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**
-     * This fixes an incorrect initialization of user name for the owner.
-     * TODO: Remove in the next release.
-     */
-    private void upgradeIfNecessary() {
-        int userVersion = mUserVersion;
-        if (userVersion < 1) {
-            // Assign a proper name for the owner, if not initialized correctly before
-            VUserInfo user = mUsers.get(VUserHandle.USER_OWNER);
-            if ("Primary".equals(user.name)) {
-                user.name = "Admin";
-                writeUserLocked(user);
-            }
-            userVersion = 1;
-        }
-
-        if (userVersion < USER_VERSION) {
-            VLog.w(LOG_TAG, "User version " + mUserVersion + " didn't upgrade as expected to "
-                    + USER_VERSION);
-        } else {
-            mUserVersion = userVersion;
-            writeUserListLocked();
-        }
-    }
-
-    private void fallbackToSingleUserLocked() {
-        // Create the primary user
-        VUserInfo primary = new VUserInfo(0,
-                mContext.getResources().getString(R.string.owner_name), null,
-                VUserInfo.FLAG_ADMIN | VUserInfo.FLAG_PRIMARY | VUserInfo.FLAG_INITIALIZED);
-        mUsers.put(0, primary);
-        mNextSerialNumber = MIN_USER_ID;
-        updateUserIdsLocked();
-
-        writeUserListLocked();
-        writeUserLocked(primary);
-    }
-
-    /*
-     * Writes the user file in this format:
-     *
-     * <user flags="20039023" id="0">
-     *   <name>Primary</name>
-     * </user>
-     */
-    private void writeUserLocked(VUserInfo userInfo) {
-        FileOutputStream fos = null;
-        AtomicFile userFile = new AtomicFile(new File(mUsersDir, userInfo.id + ".xml"));
-        try {
-            fos = userFile.startWrite();
-            final BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-            // XmlSerializer serializer = XmlUtils.serializerInstance();
-            final XmlSerializer serializer = new FastXmlSerializer();
-            serializer.setOutput(bos, "utf-8");
-            serializer.startDocument(null, true);
-            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-
-            serializer.startTag(null, TAG_USER);
-            serializer.attribute(null, ATTR_ID, Integer.toString(userInfo.id));
-            serializer.attribute(null, ATTR_SERIAL_NO, Integer.toString(userInfo.serialNumber));
-            serializer.attribute(null, ATTR_FLAGS, Integer.toString(userInfo.flags));
-            serializer.attribute(null, ATTR_CREATION_TIME, Long.toString(userInfo.creationTime));
-            serializer.attribute(null, ATTR_LAST_LOGGED_IN_TIME,
-                    Long.toString(userInfo.lastLoggedInTime));
-            if (userInfo.iconPath != null) {
-                serializer.attribute(null, ATTR_ICON_PATH, userInfo.iconPath);
-            }
-            if (userInfo.partial) {
-                serializer.attribute(null, ATTR_PARTIAL, "true");
+               try {
+                  fis.close();
+               } catch (IOException var17) {
+                  IOException e = var17;
+                  e.printStackTrace();
+               }
             }
 
-            serializer.startTag(null, TAG_NAME);
-            serializer.text(userInfo.name);
-            serializer.endTag(null, TAG_NAME);
+         }
 
-            serializer.endTag(null, TAG_USER);
+      }
+   }
 
-            serializer.endDocument();
-            userFile.finishWrite(fos);
-        } catch (Exception ioe) {
-            VLog.e(LOG_TAG, "Error writing user info " + userInfo.id + "\n" + ioe);
-            userFile.failWrite(fos);
-        }
-    }
+   private void upgradeIfNecessary() {
+      int userVersion = this.mUserVersion;
+      if (userVersion < 1) {
+         VUserInfo user = (VUserInfo)this.mUsers.get(0);
+         if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhcMCWoVJARnAVRF")).equals(user.name)) {
+            user.name = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JggqDWUVBlo="));
+            this.writeUserLocked(user);
+         }
 
-    /*
-     * Writes the user list file in this format:
-     *
-     * <users nextSerialNumber="3">
-     *   <user id="0"></user>
-     *   <user id="2"></user>
-     * </users>
-     */
-    private void writeUserListLocked() {
-        FileOutputStream fos = null;
-        AtomicFile userListFile = new AtomicFile(mUserListFile);
-        try {
-            fos = userListFile.startWrite();
-            final BufferedOutputStream bos = new BufferedOutputStream(fos);
+         userVersion = 1;
+      }
 
-            // XmlSerializer serializer = XmlUtils.serializerInstance();
-            final XmlSerializer serializer = new FastXmlSerializer();
-            serializer.setOutput(bos, "utf-8");
-            serializer.startDocument(null, true);
-            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+      if (userVersion < 1) {
+         VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc2M28nID5iASwpKQdfDn4zSFo=")) + this.mUserVersion + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhgqCWgFAS1mVyQvIxc6KG4jBit4ETg6PQguPGEaLCZqHgotOD0cKXgVSFo=")) + 1);
+      } else {
+         this.mUserVersion = userVersion;
+         this.writeUserListLocked();
+      }
 
-            serializer.startTag(null, TAG_USERS);
-            serializer.attribute(null, ATTR_NEXT_SERIAL_NO, Integer.toString(mNextSerialNumber));
-            serializer.attribute(null, ATTR_USER_VERSION, Integer.toString(mUserVersion));
+   }
 
-            for (int i = 0; i < mUsers.size(); i++) {
-                VUserInfo user = mUsers.valueAt(i);
-                serializer.startTag(null, TAG_USER);
-                serializer.attribute(null, ATTR_ID, Integer.toString(user.id));
-                serializer.endTag(null, TAG_USER);
-            }
+   private void fallbackToSingleUserLocked() {
+      VUserInfo primary = new VUserInfo(0, this.mContext.getResources().getString(string.owner_name), (String)null, 19);
+      this.mUsers.put(0, primary);
+      this.mNextSerialNumber = 1;
+      this.updateUserIdsLocked();
+      this.writeUserListLocked();
+      this.writeUserLocked(primary);
+   }
 
-            serializer.endTag(null, TAG_USERS);
+   private void writeUserLocked(VUserInfo userInfo) {
+      FileOutputStream fos = null;
+      AtomicFile userFile = new AtomicFile(new File(this.mUsersDir, userInfo.id + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1fDWoFSFo="))));
 
-            serializer.endDocument();
-            userListFile.finishWrite(fos);
-        } catch (Exception e) {
-            userListFile.failWrite(fos);
-            VLog.e(LOG_TAG, "Error writing user list");
-        }
-    }
+      try {
+         fos = userFile.startWrite();
+         BufferedOutputStream bos = new BufferedOutputStream(fos);
+         XmlSerializer serializer = new FastXmlSerializer();
+         serializer.setOutput(bos, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQcqPnpTRVo=")));
+         serializer.startDocument((String)null, true);
+         serializer.setFeature(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8OTCVOJxo3KhgmLW8zOyZlJAouPD0hDU4gFippIFkvLy5bCm8KFj9vMxo/IBdbO3kgBgJpNwY5KV8ID2waMAJmAQpF")), true);
+         serializer.startTag((String)null, TAG_USER);
+         serializer.attribute((String)null, ATTR_ID, Integer.toString(userInfo.id));
+         serializer.attribute((String)null, ATTR_SERIAL_NO, Integer.toString(userInfo.serialNumber));
+         serializer.attribute((String)null, ATTR_FLAGS, Integer.toString(userInfo.flags));
+         serializer.attribute((String)null, ATTR_CREATION_TIME, Long.toString(userInfo.creationTime));
+         serializer.attribute((String)null, ATTR_LAST_LOGGED_IN_TIME, Long.toString(userInfo.lastLoggedInTime));
+         if (userInfo.iconPath != null) {
+            serializer.attribute((String)null, ATTR_ICON_PATH, userInfo.iconPath);
+         }
 
-    private VUserInfo readUser(int id) {
-        int flags = 0;
-        int serialNumber = id;
-        String name = null;
-        String iconPath = null;
-        long creationTime = 0L;
-        long lastLoggedInTime = 0L;
-        boolean partial = false;
+         if (userInfo.partial) {
+            serializer.attribute((String)null, ATTR_PARTIAL, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMI2gVSFo=")));
+         }
 
-        FileInputStream fis = null;
-        try {
-            AtomicFile userFile =
-                    new AtomicFile(new File(mUsersDir, Integer.toString(id) + ".xml"));
-            fis = userFile.openRead();
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(fis, null);
-            int type;
-            while ((type = parser.next()) != XmlPullParser.START_TAG
-                    && type != XmlPullParser.END_DOCUMENT) {
-                ;
-            }
+         serializer.startTag((String)null, TAG_NAME);
+         serializer.text(userInfo.name);
+         serializer.endTag((String)null, TAG_NAME);
+         serializer.endTag((String)null, TAG_USER);
+         serializer.endDocument();
+         userFile.finishWrite(fos);
+      } catch (Exception var6) {
+         Exception ioe = var6;
+         VLog.e(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcMKmowEShmJywzLBccDmkJTQVsJyg5PQgYKmIwDSM=")) + userInfo.id + "\n" + ioe);
+         userFile.failWrite(fos);
+      }
 
-            if (type != XmlPullParser.START_TAG) {
-                VLog.e(LOG_TAG, "Unable to read user " + id);
-                return null;
-            }
+   }
 
+   private void writeUserListLocked() {
+      FileOutputStream fos = null;
+      AtomicFile userListFile = new AtomicFile(this.mUserListFile);
+
+      try {
+         fos = userListFile.startWrite();
+         BufferedOutputStream bos = new BufferedOutputStream(fos);
+         XmlSerializer serializer = new FastXmlSerializer();
+         serializer.setOutput(bos, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQcqPnpTRVo=")));
+         serializer.startDocument((String)null, true);
+         serializer.setFeature(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LBcqLG8OTCVOJxo3KhgmLW8zOyZlJAouPD0hDU4gFippIFkvLy5bCm8KFj9vMxo/IBdbO3kgBgJpNwY5KV8ID2waMAJmAQpF")), true);
+         serializer.startTag((String)null, TAG_USERS);
+         serializer.attribute((String)null, ATTR_NEXT_SERIAL_NO, Integer.toString(this.mNextSerialNumber));
+         serializer.attribute((String)null, ATTR_USER_VERSION, Integer.toString(this.mUserVersion));
+
+         for(int i = 0; i < this.mUsers.size(); ++i) {
+            VUserInfo user = (VUserInfo)this.mUsers.valueAt(i);
+            serializer.startTag((String)null, TAG_USER);
+            serializer.attribute((String)null, ATTR_ID, Integer.toString(user.id));
+            serializer.endTag((String)null, TAG_USER);
+         }
+
+         serializer.endTag((String)null, TAG_USERS);
+         serializer.endDocument();
+         userListFile.finishWrite(fos);
+      } catch (Exception var7) {
+         userListFile.failWrite(fos);
+         VLog.e(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JQcMKmowEShmJywzLBccDmkJTQVsJyg5PQgEI2EjFlo=")));
+      }
+
+   }
+
+   private VUserInfo readUser(int id) {
+      int flags = 0;
+      int serialNumber = id;
+      String name = null;
+      String iconPath = null;
+      long creationTime = 0L;
+      long lastLoggedInTime = 0L;
+      boolean partial = false;
+      FileInputStream fis = null;
+
+      try {
+         AtomicFile userFile = new AtomicFile(new File(this.mUsersDir, Integer.toString(id) + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1fDWoFSFo="))));
+         fis = userFile.openRead();
+         XmlPullParser parser = Xml.newPullParser();
+         parser.setInput(fis, (String)null);
+
+         int type;
+         while((type = parser.next()) != 2 && type != 1) {
+         }
+
+         VUserInfo userInfo;
+         if (type != 2) {
+            VLog.e(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQgcP2sjHitLEQo1PxguPW4jAShvDjAgKSo6Vg==")) + id);
+            userInfo = null;
+            return userInfo;
+         } else {
             if (parser.getName().equals(TAG_USER)) {
-                int storedId = readIntAttribute(parser, ATTR_ID, -1);
-                if (storedId != id) {
-                    VLog.e(LOG_TAG, "User id does not match the file name");
-                    return null;
-                }
-                serialNumber = readIntAttribute(parser, ATTR_SERIAL_NO, id);
-                flags = readIntAttribute(parser, ATTR_FLAGS, 0);
-                iconPath = parser.getAttributeValue(null, ATTR_ICON_PATH);
-                creationTime = readLongAttribute(parser, ATTR_CREATION_TIME, 0);
-                lastLoggedInTime = readLongAttribute(parser, ATTR_LAST_LOGGED_IN_TIME, 0);
-                String valueString = parser.getAttributeValue(null, ATTR_PARTIAL);
-                if ("true".equals(valueString)) {
-                    partial = true;
-                }
+               int storedId = this.readIntAttribute(parser, ATTR_ID, -1);
+               String valueString;
+               if (storedId != id) {
+                  VLog.e(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc2M28nIC9iVyQwKi0ML34zMCVvVjweLRcqJWNTOD9vHg0pLxg2KGsJIARrEQ40")));
+                  valueString = null;
+                  return valueString;
+               }
 
-                while ((type = parser.next()) != XmlPullParser.START_TAG
-                        && type != XmlPullParser.END_DOCUMENT) {
-                }
-                if (type == XmlPullParser.START_TAG && parser.getName().equals(TAG_NAME)) {
-                    type = parser.next();
-                    if (type == XmlPullParser.TEXT) {
-                        name = parser.getText();
-                    }
-                }
+               serialNumber = this.readIntAttribute(parser, ATTR_SERIAL_NO, id);
+               flags = this.readIntAttribute(parser, ATTR_FLAGS, 0);
+               iconPath = parser.getAttributeValue((String)null, ATTR_ICON_PATH);
+               creationTime = this.readLongAttribute(parser, ATTR_CREATION_TIME, 0L);
+               lastLoggedInTime = this.readLongAttribute(parser, ATTR_LAST_LOGGED_IN_TIME, 0L);
+               valueString = parser.getAttributeValue((String)null, ATTR_PARTIAL);
+               if (StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KRcMI2gVSFo=")).equals(valueString)) {
+                  partial = true;
+               }
+
+               while(true) {
+                  if ((type = parser.next()) == 2 || type == 1) {
+                     if (type == 2 && parser.getName().equals(TAG_NAME)) {
+                        type = parser.next();
+                        if (type == 4) {
+                           name = parser.getText();
+                        }
+                     }
+                     break;
+                  }
+               }
             }
 
-            VUserInfo userInfo = new VUserInfo(id, name, iconPath, flags);
+            userInfo = new VUserInfo(id, name, iconPath, flags);
             userInfo.serialNumber = serialNumber;
             userInfo.creationTime = creationTime;
             userInfo.lastLoggedInTime = lastLoggedInTime;
             userInfo.partial = partial;
-            return userInfo;
-
-        } catch (IOException ioe) {
-        } catch (XmlPullParserException pe) {
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                }
+            VUserInfo var34 = userInfo;
+            return var34;
+         }
+      } catch (IOException var30) {
+         return null;
+      } catch (XmlPullParserException var31) {
+         return null;
+      } finally {
+         if (fis != null) {
+            try {
+               fis.close();
+            } catch (IOException var29) {
             }
-        }
-        return null;
-    }
+         }
 
-    private int readIntAttribute(XmlPullParser parser, String attr, int defaultValue) {
-        String valueString = parser.getAttributeValue(null, attr);
-        if (valueString == null) return defaultValue;
-        try {
+      }
+   }
+
+   private int readIntAttribute(XmlPullParser parser, String attr, int defaultValue) {
+      String valueString = parser.getAttributeValue((String)null, attr);
+      if (valueString == null) {
+         return defaultValue;
+      } else {
+         try {
             return Integer.parseInt(valueString);
-        } catch (NumberFormatException nfe) {
+         } catch (NumberFormatException var6) {
             return defaultValue;
-        }
-    }
+         }
+      }
+   }
 
-    private long readLongAttribute(XmlPullParser parser, String attr, long defaultValue) {
-        String valueString = parser.getAttributeValue(null, attr);
-        if (valueString == null) return defaultValue;
-        try {
+   private long readLongAttribute(XmlPullParser parser, String attr, long defaultValue) {
+      String valueString = parser.getAttributeValue((String)null, attr);
+      if (valueString == null) {
+         return defaultValue;
+      } else {
+         try {
             return Long.parseLong(valueString);
-        } catch (NumberFormatException nfe) {
+         } catch (NumberFormatException var7) {
             return defaultValue;
-        }
-    }
+         }
+      }
+   }
 
-    @Override
-    public VUserInfo createUser(String name, int flags) {
-        final long ident = Binder.clearCallingIdentity();
-        final VUserInfo userInfo;
-        try {
-            synchronized (mInstallLock) {
-                synchronized (mPackagesLock) {
-                    if (isUserLimitReachedLocked()) return null;
-                    int userId = getNextAvailableIdLocked();
-                    userInfo = new VUserInfo(userId, name, null, flags);
-                    File userPath = new File(mBaseUserPath, Integer.toString(userId));
-                    userInfo.serialNumber = mNextSerialNumber++;
-                    long now = System.currentTimeMillis();
-                    userInfo.creationTime = (now > EPOCH_PLUS_30_YEARS) ? now : 0;
-                    userInfo.partial = true;
-                    VAppManagerService.get().onUserCreated(userInfo);
-                    mUsers.put(userId, userInfo);
-                    writeUserListLocked();
-                    writeUserLocked(userInfo);
-                    mPm.createNewUser(userId, userPath);
-                    userInfo.partial = false;
-                    writeUserLocked(userInfo);
-                    updateUserIdsLocked();
-                }
+   public VUserInfo createUser(String name, int flags) {
+      long ident = Binder.clearCallingIdentity();
+
+      final VUserInfo userInfo;
+      try {
+         synchronized(this.mInstallLock) {
+            synchronized(this.mPackagesLock) {
+               if (this.isUserLimitReachedLocked()) {
+                  Object var21 = null;
+                  return (VUserInfo)var21;
+               }
+
+               int userId = this.getNextAvailableIdLocked();
+               userInfo = new VUserInfo(userId, name, (String)null, flags);
+               File userPath = new File(this.mBaseUserPath, Integer.toString(userId));
+               userInfo.serialNumber = this.mNextSerialNumber++;
+               long now = System.currentTimeMillis();
+               userInfo.creationTime = now > 946080000000L ? now : 0L;
+               userInfo.partial = true;
+               VAppManagerService.get().onUserCreated(userInfo);
+               this.mUsers.put(userId, userInfo);
+               this.writeUserListLocked();
+               this.writeUserLocked(userInfo);
+               this.mPm.createNewUser(userId, userPath);
+               userInfo.partial = false;
+               this.writeUserLocked(userInfo);
+               this.updateUserIdsLocked();
             }
-            Intent addedIntent = new Intent(VUserManager.ACTION_USER_ADDED);
-            addedIntent.putExtra(Constants.EXTRA_USER_HANDLE, userInfo.id);
-            VActivityManagerService.get().sendBroadcastAsUser(addedIntent, VUserHandle.ALL);
-        } finally {
-            Binder.restoreCallingIdentity(ident);
-        }
-        return userInfo;
-    }
+         }
 
-    /**
-     * Removes a user and all data directories created for that user. This method should be called
-     * after the user's processes have been terminated.
-     *
-     * @param userHandle the user's id
-     */
-    public boolean removeUser(int userHandle) {
-        final VUserInfo user;
-        synchronized (mPackagesLock) {
-            user = mUsers.get(userHandle);
-            if (userHandle == 0 || user == null) {
-                return false;
+         Intent addedIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k7Kj02KG8FLCx1Nx4bKgguKmZTRSRpJzAiKQgpKmcILFRnIgYOLBUMBmYVSFo=")));
+         addedIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYFNCBlNVkhKC4qIGUVNFo=")), userInfo.id);
+         VActivityManagerService.get().sendBroadcastAsUser(addedIntent, VUserHandle.ALL, (String)null);
+      } finally {
+         Binder.restoreCallingIdentity(ident);
+      }
+
+      (new Thread(new Runnable() {
+         public void run() {
+            Iterator var1 = SpecialComponentList.getPreInstallPackages().iterator();
+
+            while(var1.hasNext()) {
+               String preInstallPkg = (String)var1.next();
+               if (userInfo.id != 0 && !VAppManagerService.get().isAppInstalledAsUser(userInfo.id, preInstallPkg)) {
+                  VAppManagerService.get().installPackageAsUser(userInfo.id, preInstallPkg);
+               }
             }
-            mRemovingUserIds.add(userHandle);
-            // Set this to a partially created user, so that the user will be purged
-            // on next startup, in case the runtime stops now before stopping and
-            // removing the user completely.
-            user.partial = true;
-            writeUserLocked(user);
-        }
-        if (DBG) VLog.i(LOG_TAG, "Stopping user " + userHandle);
-        int res = VActivityManagerService.get().stopUser(userHandle,
-                new IStopUserCallback.Stub() {
-                    @Override
-                    public void userStopped(int userId) {
-                        finishRemoveUser(userId);
-                    }
 
-                    @Override
-                    public void userStopAborted(int userId) {
-                    }
-                });
-        return res == ActivityManagerCompat.USER_OP_SUCCESS;
-    }
+         }
+      })).start();
+      return userInfo;
+   }
 
-    void finishRemoveUser(final int userHandle) {
-        if (DBG) VLog.i(LOG_TAG, "finishRemoveUser " + userHandle);
-        // Let other services shutdown any activity and clean up their state before completely
-        // wiping the user's system directory and removing from the user list
-        long identity = Binder.clearCallingIdentity();
-        try {
-            Intent addedIntent = new Intent(VUserManager.ACTION_USER_REMOVED);
-            addedIntent.putExtra(Constants.EXTRA_USER_HANDLE, userHandle);
-            VActivityManagerService.get().sendOrderedBroadcastAsUser(addedIntent, VUserHandle.ALL,
-                    null,
-                    new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (DBG) {
-                                VLog.i(LOG_TAG,
-                                        "USER_REMOVED broadcast sent, cleaning up user data "
-                                                + userHandle);
-                            }
-                            new Thread() {
-                                public void run() {
-                                    synchronized (mInstallLock) {
-                                        synchronized (mPackagesLock) {
-                                            removeUserStateLocked(userHandle);
-                                        }
-                                    }
-                                }
-                            }.start();
+   public boolean removeUser(int userHandle) {
+      synchronized(this.mPackagesLock) {
+         VUserInfo user = (VUserInfo)this.mUsers.get(userHandle);
+         if (userHandle == 0 || user == null) {
+            return false;
+         }
+
+         this.mRemovingUserIds.add(userHandle);
+         user.partial = true;
+         this.writeUserLocked(user);
+      }
+
+      int res = VActivityManagerService.get().stopUser(userHandle, new IStopUserCallback.Stub() {
+         public void userStopped(int userId) {
+            VUserManagerService.this.finishRemoveUser(userId);
+         }
+
+         public void userStopAborted(int userId) {
+         }
+      });
+      return res == 0;
+   }
+
+   void finishRemoveUser(final int userHandle) {
+      long identity = Binder.clearCallingIdentity();
+
+      try {
+         Intent addedIntent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KT4YKmwKNDdgV1k7Kj02KG8FLCx1Nx4bKgguKmZTRSRpJzAiKQgpKmcILFRnIgZALAVbGGI2Flc=")));
+         addedIntent.putExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmYFNCBlNVkhKC4qIGUVNFo=")), userHandle);
+         VActivityManagerService.get().sendOrderedBroadcastAsUser(addedIntent, VUserHandle.ALL, (String)null, new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+               (new Thread() {
+                  public void run() {
+                     synchronized(VUserManagerService.this.mInstallLock) {
+                        synchronized(VUserManagerService.this.mPackagesLock) {
+                           VUserManagerService.this.removeUserStateLocked(userHandle);
                         }
-                    },
-                    null, Activity.RESULT_OK, null, null);
-        } finally {
-            Binder.restoreCallingIdentity(identity);
-        }
-    }
 
-    private void removeUserStateLocked(int userHandle) {
-        // Cleanup package manager settings
-        mPm.cleanUpUser(userHandle);
-
-        // Remove this user from the list
-        mUsers.remove(userHandle);
-        mRemovingUserIds.remove(userHandle);
-        // Remove user file
-        AtomicFile userFile = new AtomicFile(new File(mUsersDir, userHandle + ".xml"));
-        userFile.delete();
-        // Update the user list
-        writeUserListLocked();
-        updateUserIdsLocked();
-        removeDirectoryRecursive(VEnvironment.getUserSystemDirectory(userHandle));
-    }
-
-    private void removeDirectoryRecursive(File parent) {
-        if (parent.isDirectory()) {
-            String[] files = parent.list();
-            for (String filename : files) {
-                File child = new File(parent, filename);
-                removeDirectoryRecursive(child);
+                     }
+                  }
+               }).start();
             }
-        }
-        parent.delete();
-    }
+         }, (Handler)null, -1, (String)null, (Bundle)null);
+      } finally {
+         Binder.restoreCallingIdentity(identity);
+      }
 
-    @Override
-    public int getUserSerialNumber(int userHandle) {
-        synchronized (mPackagesLock) {
-            if (!exists(userHandle)) return -1;
-            return getUserInfoLocked(userHandle).serialNumber;
-        }
-    }
+   }
 
-    @Override
-    public int getUserHandle(int userSerialNumber) {
-        synchronized (mPackagesLock) {
-            for (int userId : mUserIds) {
-                if (getUserInfoLocked(userId).serialNumber == userSerialNumber) return userId;
-            }
-            // Not found
-            return -1;
-        }
-    }
+   private void removeUserStateLocked(int userHandle) {
+      this.mPm.cleanUpUser(userHandle);
+      this.mUsers.remove(userHandle);
+      this.mRemovingUserIds.remove(userHandle);
+      AtomicFile userFile = new AtomicFile(new File(this.mUsersDir, userHandle + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Mz1fDWoFSFo="))));
+      userFile.delete();
+      this.writeUserListLocked();
+      this.updateUserIdsLocked();
+      this.removeDirectoryRecursive(VEnvironment.getDataUserDirectory(userHandle));
+   }
 
-    /**
-     * Caches the list of user ids in an array, adjusting the array size when necessary.
-     */
-    private void updateUserIdsLocked() {
-        int num = 0;
-        for (int i = 0; i < mUsers.size(); i++) {
-            if (!mUsers.valueAt(i).partial) {
-                num++;
-            }
-        }
-        final int[] newUsers = new int[num];
-        int n = 0;
-        for (int i = 0; i < mUsers.size(); i++) {
-            if (!mUsers.valueAt(i).partial) {
-                newUsers[n++] = mUsers.keyAt(i);
-            }
-        }
-        mUserIds = newUsers;
-    }
+   private void removeDirectoryRecursive(File parent) {
+      if (parent.isDirectory()) {
+         String[] files = parent.list();
+         String[] var3 = files;
+         int var4 = files.length;
 
-    /**
-     * Make a note of the last started time of a user.
-     *
-     * @param userId the user that was just foregrounded
-     */
-    public void userForeground(int userId) {
-        synchronized (mPackagesLock) {
-            VUserInfo user = mUsers.get(userId);
-            long now = System.currentTimeMillis();
-            if (user == null || user.partial) {
-                VLog.w(LOG_TAG, "userForeground: unknown user #" + userId);
-                return;
-            }
-            if (now > EPOCH_PLUS_30_YEARS) {
-                user.lastLoggedInTime = now;
-                writeUserLocked(user);
-            }
-        }
-    }
+         for(int var5 = 0; var5 < var4; ++var5) {
+            String filename = var3[var5];
+            File child = new File(parent, filename);
+            this.removeDirectoryRecursive(child);
+         }
+      }
 
-    /**
-     * Returns the next available user id, filling in any holes in the ids.
-     * TODO: May not be a good idea to recycle ids, in case it results in confusion
-     * for data and battery stats collection, or unexpected cross-talk.
-     *
-     * @return
-     */
-    private int getNextAvailableIdLocked() {
-        synchronized (mPackagesLock) {
-            int i = mNextUserId;
-            while (i < Integer.MAX_VALUE) {
-                if (mUsers.indexOfKey(i) < 0 && !mRemovingUserIds.contains(i)) {
-                    break;
-                }
-                i++;
-            }
-            mNextUserId = i + 1;
-            return i;
-        }
-    }
+      parent.delete();
+   }
 
+   public int getUserSerialNumber(int userHandle) {
+      synchronized(this.mPackagesLock) {
+         return !this.exists(userHandle) ? -1 : this.getUserInfoLocked(userHandle).serialNumber;
+      }
+   }
+
+   public int getUserHandle(int userSerialNumber) {
+      synchronized(this.mPackagesLock) {
+         int[] var3 = this.mUserIds;
+         int var4 = var3.length;
+
+         for(int var5 = 0; var5 < var4; ++var5) {
+            int userId = var3[var5];
+            if (this.getUserInfoLocked(userId).serialNumber == userSerialNumber) {
+               return userId;
+            }
+         }
+
+         return -1;
+      }
+   }
+
+   private void updateUserIdsLocked() {
+      int num = 0;
+
+      for(int i = 0; i < this.mUsers.size(); ++i) {
+         if (!((VUserInfo)this.mUsers.valueAt(i)).partial) {
+            ++num;
+         }
+      }
+
+      int[] newUsers = new int[num];
+      int n = 0;
+
+      for(int i = 0; i < this.mUsers.size(); ++i) {
+         if (!((VUserInfo)this.mUsers.valueAt(i)).partial) {
+            newUsers[n++] = this.mUsers.keyAt(i);
+         }
+      }
+
+      this.mUserIds = newUsers;
+   }
+
+   public void userForeground(int userId) {
+      synchronized(this.mPackagesLock) {
+         VUserInfo user = (VUserInfo)this.mUsers.get(userId);
+         long now = System.currentTimeMillis();
+         if (user != null && !user.partial) {
+            if (now > 946080000000L) {
+               user.lastLoggedInTime = now;
+               this.writeUserLocked(user);
+            }
+
+         } else {
+            VLog.w(LOG_TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28hOCVhNDA9Iz1fLW8VATJ4HigbIz4cKWYgRCNqASwuLF9WJQ==")) + userId);
+         }
+      }
+   }
+
+   private int getNextAvailableIdLocked() {
+      synchronized(this.mPackagesLock) {
+         int i;
+         for(i = this.mNextUserId; i < Integer.MAX_VALUE && (this.mUsers.indexOfKey(i) >= 0 || this.mRemovingUserIds.contains(i)); ++i) {
+         }
+
+         this.mNextUserId = i + 1;
+         return i;
+      }
+   }
+
+   static {
+      USER_INFO_DIR = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki0YKWwFNCM=")) + File.separator + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc2M28gLFo="));
+   }
 }

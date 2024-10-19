@@ -2,299 +2,201 @@ package com.lody.virtual.server.content;
 
 import android.accounts.Account;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import com.lody.virtual.StringFog;
+import java.util.Iterator;
 
-import com.lody.virtual.helper.compat.ContentResolverCompat;
-
-/**
- * Value type that represents a sync operation.
- * TODO: This is the class to flesh out with all the scheduling data - metered/unmetered,
- * transfer-size, etc.
- */
 public class SyncOperation implements Comparable {
-    public static final int REASON_BACKGROUND_DATA_SETTINGS_CHANGED = -1;
-    public static final int REASON_ACCOUNTS_UPDATED = -2;
-    public static final int REASON_SERVICE_CHANGED = -3;
-    public static final int REASON_PERIODIC = -4;
-    public static final int REASON_IS_SYNCABLE = -5;
-    /**
-     * Sync started because it has just been set to sync automatically.
-     */
-    public static final int REASON_SYNC_AUTO = -6;
-    /**
-     * Sync started because master sync automatically has been set to true.
-     */
-    public static final int REASON_MASTER_SYNC_AUTO = -7;
-    public static final int REASON_USER_START = -8;
+   public static final int REASON_BACKGROUND_DATA_SETTINGS_CHANGED = -1;
+   public static final int REASON_ACCOUNTS_UPDATED = -2;
+   public static final int REASON_SERVICE_CHANGED = -3;
+   public static final int REASON_PERIODIC = -4;
+   public static final int REASON_IS_SYNCABLE = -5;
+   public static final int REASON_SYNC_AUTO = -6;
+   public static final int REASON_MASTER_SYNC_AUTO = -7;
+   public static final int REASON_USER_START = -8;
+   private static String[] REASON_NAMES = new String[]{StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JRg+LGsYLCtmEQozKj06L2YFFjdlNyAgLghSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Jgg2OWowNCZmEShKIxc2OWUzGiw=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ii4uKmwjAiliDCg0LwcYM2kjBlo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IhguKmUVGixjDihF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JAc2A2kVBil9DiwoKAhSVg==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JgcuLGo2LD9gNChF")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Owg+KWwFNARpJwY2LysiLWUzNFo=")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc2M28mLAZ9ASwg"))};
+   public final Account account;
+   public final String authority;
+   public final ComponentName service;
+   public final int userId;
+   public final int reason;
+   public int syncSource;
+   public final boolean allowParallelSyncs;
+   public Bundle extras;
+   public final String key;
+   public boolean expedited;
+   public SyncStorageEngine.PendingOperation pendingOperation;
+   public long latestRunTime;
+   public Long backoff;
+   public long delayUntil;
+   public long effectiveRunTime;
+   public long flexTime;
 
-    private static String[] REASON_NAMES = new String[]{
-            "DataSettingsChanged",
-            "AccountsUpdated",
-            "ServiceChanged",
-            "Periodic",
-            "IsSyncable",
-            "AutoSync",
-            "MasterSyncAuto",
-            "UserStart",
-    };
+   public SyncOperation(Account account, int userId, int reason, int source, String authority, Bundle extras, long runTimeFromNow, long flexTime, long backoff, long delayUntil, boolean allowParallelSyncs) {
+      this.service = null;
+      this.account = account;
+      this.authority = authority;
+      this.userId = userId;
+      this.reason = reason;
+      this.syncSource = source;
+      this.allowParallelSyncs = allowParallelSyncs;
+      this.extras = new Bundle(extras);
+      this.cleanBundle(this.extras);
+      this.delayUntil = delayUntil;
+      this.backoff = backoff;
+      long now = SystemClock.elapsedRealtime();
+      if (runTimeFromNow >= 0L && !this.isExpedited()) {
+         this.expedited = false;
+         this.latestRunTime = now + runTimeFromNow;
+         this.flexTime = flexTime;
+      } else {
+         this.expedited = true;
+         this.latestRunTime = now;
+         this.flexTime = 0L;
+      }
 
-    /**
-     * Account info to identify a SyncAdapter registered with the system.
-     */
-    public final Account account;
-    /**
-     * Authority info to identify a SyncAdapter registered with the system.
-     */
-    public final String authority;
-    /**
-     * Service to which this operation will bind to perform the sync.
-     */
-    public final ComponentName service;
-    public final int userId;
-    public final int reason;
-    public int syncSource;
-    public final boolean allowParallelSyncs;
-    public Bundle extras;
-    public final String key;
-    public boolean expedited;
-    public SyncStorageEngine.PendingOperation pendingOperation;
-    /**
-     * Elapsed real time in millis at which to run this sync.
-     */
-    public long latestRunTime;
-    /**
-     * Set by the SyncManager in order to delay retries.
-     */
-    public Long backoff;
-    /**
-     * Specified by the adapter to delay subsequent sync operations.
-     */
-    public long delayUntil;
-    /**
-     * Elapsed real time in millis when this sync will be run.
-     * Depends on max(backoff, latestRunTime, and delayUntil).
-     */
-    public long effectiveRunTime;
-    /**
-     * Amount of time before effectiveRunTime from which this sync can run.
-     */
-    public long flexTime;
+      this.updateEffectiveRunTime();
+      this.key = this.toKey();
+   }
 
-    public SyncOperation(Account account, int userId, int reason, int source, String authority,
-                         Bundle extras, long runTimeFromNow, long flexTime, long backoff,
-                         long delayUntil, boolean allowParallelSyncs) {
-        this.service = null;
-        this.account = account;
-        this.authority = authority;
-        this.userId = userId;
-        this.reason = reason;
-        this.syncSource = source;
-        this.allowParallelSyncs = allowParallelSyncs;
-        this.extras = new Bundle(extras);
-        cleanBundle(this.extras);
-        this.delayUntil = delayUntil;
-        this.backoff = backoff;
-        final long now = SystemClock.elapsedRealtime();
-        // Checks the extras bundle. Must occur after we set the internal bundle.
-        if (runTimeFromNow < 0 || isExpedited()) {
-            this.expedited = true;
-            this.latestRunTime = now;
-            this.flexTime = 0;
-        } else {
-            this.expedited = false;
-            this.latestRunTime = now + runTimeFromNow;
-            this.flexTime = flexTime;
-        }
-        updateEffectiveRunTime();
-        this.key = toKey();
-    }
+   private void cleanBundle(Bundle bundle) {
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KQc6DmozJCw=")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4AKmszNFo=")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgmCGowFitsJyg/LBg2MW8VEgM=")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgmCGowFitsJCw7Ly0EDWkVHlo=")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgAH2ojGgZsJyw/LBguIQ==")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRgYKWszJARiHx4wKAdbPWUzLCVlNDBF")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfKGgVMC9mHjAw")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LRguDmgaMC9gJFkpJi1fLGkgRQRqASwg")));
+      this.removeFalseExtra(bundle, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggEDmowPB9gDjAgKAguPWkzSFo=")));
+      bundle.remove(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfKGgVLAZiDgpALAgmCG8FQSw=")));
+      bundle.remove(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfKGgVLAZiDgpAKBdfI28VOCVoASxF")));
+   }
 
-    /**
-     * Make sure the bundle attached to this SyncOperation doesn't have unnecessary
-     * flags set.
-     *
-     * @param bundle to clean.
-     */
-    private void cleanBundle(Bundle bundle) {
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_UPLOAD);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_MANUAL);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_DISCARD_LOCAL_DELETIONS);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_EXPEDITED);
-        removeFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_OVERRIDE_TOO_MANY_DELETIONS);
-        removeFalseExtra(bundle, ContentResolverCompat.SYNC_EXTRAS_DISALLOW_METERED);
+   private void removeFalseExtra(Bundle bundle, String extraName) {
+      if (!bundle.getBoolean(extraName, false)) {
+         bundle.remove(extraName);
+      }
 
-        // Remove Config data.
-        bundle.remove(ContentResolverCompat.SYNC_EXTRAS_EXPECTED_UPLOAD);
-        bundle.remove(ContentResolverCompat.SYNC_EXTRAS_EXPECTED_DOWNLOAD);
-    }
+   }
 
-    private void removeFalseExtra(Bundle bundle, String extraName) {
-        if (!bundle.getBoolean(extraName, false)) {
-            bundle.remove(extraName);
-        }
-    }
+   SyncOperation(SyncOperation other) {
+      this.service = other.service;
+      this.account = other.account;
+      this.authority = other.authority;
+      this.userId = other.userId;
+      this.reason = other.reason;
+      this.syncSource = other.syncSource;
+      this.extras = new Bundle(other.extras);
+      this.expedited = other.expedited;
+      this.latestRunTime = SystemClock.elapsedRealtime();
+      this.flexTime = 0L;
+      this.backoff = other.backoff;
+      this.allowParallelSyncs = other.allowParallelSyncs;
+      this.updateEffectiveRunTime();
+      this.key = this.toKey();
+   }
 
-    /**
-     * Only used to immediately reschedule a sync.
-     */
-    SyncOperation(SyncOperation other) {
-        this.service = other.service;
-        this.account = other.account;
-        this.authority = other.authority;
-        this.userId = other.userId;
-        this.reason = other.reason;
-        this.syncSource = other.syncSource;
-        this.extras = new Bundle(other.extras);
-        this.expedited = other.expedited;
-        this.latestRunTime = SystemClock.elapsedRealtime();
-        this.flexTime = 0L;
-        this.backoff = other.backoff;
-        this.allowParallelSyncs = other.allowParallelSyncs;
-        this.updateEffectiveRunTime();
-        this.key = toKey();
-    }
+   public String toString() {
+      return this.dump((PackageManager)null, true);
+   }
 
-    @Override
-    public String toString() {
-        return dump(null, true);
-    }
+   public String dump(PackageManager pm, boolean useOneLine) {
+      StringBuilder sb = (new StringBuilder()).append(this.account.name).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcuVg=="))).append(this.userId).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl9fVg=="))).append(this.account.type).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAhSVg=="))).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg=="))).append(this.authority).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186Vg=="))).append(SyncStorageEngine.SOURCES[this.syncSource]).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186DmsaMCthJwoALAcYAGwjPCt4EVRF"))).append(this.latestRunTime);
+      if (this.expedited) {
+         sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186WGEIIBVqHAZLIAU2Vg==")));
+      }
 
-    public String dump(PackageManager pm, boolean useOneLine) {
-        StringBuilder sb = new StringBuilder()
-                .append(account.name)
-                .append(" u")
-                .append(userId).append(" (")
-                .append(account.type)
-                .append(")")
-                .append(", ")
-                .append(authority)
-                .append(", ")
-                .append(SyncStorageEngine.SOURCES[syncSource])
-                .append(", latestRunTime ")
-                .append(latestRunTime);
-        if (expedited) {
-            sb.append(", EXPEDITED");
-        }
-        sb.append(", reason: ");
-        sb.append(reasonToString(pm, reason));
-        if (!useOneLine && !extras.keySet().isEmpty()) {
-            sb.append("\n    ");
-            extrasToStringBuilder(extras, sb);
-        }
-        return sb.toString();
-    }
+      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186KmgVJANgJFgiPxhSVg==")));
+      sb.append(reasonToString(pm, this.reason));
+      if (!useOneLine && !this.extras.keySet().isEmpty()) {
+         sb.append("\n    ");
+         extrasToStringBuilder(this.extras, sb);
+      }
 
-    public static String reasonToString(PackageManager pm, int reason) {
-        if (reason >= 0) {
-            if (pm != null) {
-                final String[] packages = pm.getPackagesForUid(reason);
-                if (packages != null && packages.length == 1) {
-                    return packages[0];
-                }
-                final String name = pm.getNameForUid(reason);
-                if (name != null) {
-                    return name;
-                }
-                return String.valueOf(reason);
+      return sb.toString();
+   }
+
+   public static String reasonToString(PackageManager pm, int reason) {
+      if (reason >= 0) {
+         if (pm != null) {
+            String[] packages = pm.getPackagesForUid(reason);
+            if (packages != null && packages.length == 1) {
+               return packages[0];
             } else {
-                return String.valueOf(reason);
+               String name = pm.getNameForUid(reason);
+               return name != null ? name : String.valueOf(reason);
             }
-        } else {
-            final int index = -reason - 1;
-            if (index >= REASON_NAMES.length) {
-                return String.valueOf(reason);
-            } else {
-                return REASON_NAMES[index];
-            }
-        }
-    }
+         } else {
+            return String.valueOf(reason);
+         }
+      } else {
+         int index = -reason - 1;
+         return index >= REASON_NAMES.length ? String.valueOf(reason) : REASON_NAMES[index];
+      }
+   }
 
-    public boolean isMeteredDisallowed() {
-        return extras.getBoolean(ContentResolverCompat.SYNC_EXTRAS_DISALLOW_METERED, false);
-    }
+   public boolean isMeteredDisallowed() {
+      return this.extras.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggEDmowPB9gDjAgKAguPWkzSFo=")), false);
+   }
 
-    public boolean isInitialization() {
-        return extras.getBoolean(ContentResolver.SYNC_EXTRAS_INITIALIZE, false);
-    }
+   public boolean isInitialization() {
+      return this.extras.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgcCWwFAjdgHgYiKAhSVg==")), false);
+   }
 
-    public boolean isExpedited() {
-        return extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false) || expedited;
-    }
+   public boolean isExpedited() {
+      return this.extras.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LQdfKGgVMC9mHjAw")), false) || this.expedited;
+   }
 
-    public boolean ignoreBackoff() {
-        return extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, false);
-    }
+   public boolean ignoreBackoff() {
+      return this.extras.getBoolean(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LAgmCGowFitsJCw7Ly0EDWkVHlo=")), false);
+   }
 
-    /**
-     * Changed in V3.
-     */
-    private String toKey() {
-        StringBuilder sb = new StringBuilder();
-        if (service == null) {
-            sb.append("authority: ").append(authority);
-            sb.append(" account {name=" + account.name + ", user=" + userId + ", type=" + account.type
-                    + "}");
-        } else {
-            sb.append("service {package=")
-                    .append(service.getPackageName())
-                    .append(" user=")
-                    .append(userId)
-                    .append(", class=")
-                    .append(service.getClassName())
-                    .append("}");
-        }
-        sb.append(" extras: ");
-        extrasToStringBuilder(extras, sb);
-        return sb.toString();
-    }
+   private String toKey() {
+      StringBuilder sb = new StringBuilder();
+      if (this.service == null) {
+         sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcuLGUFGgRjAQoZPTkmVg=="))).append(this.authority);
+         sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Phg+OWszGgVgNw08LS0YOW8jBTM=")) + this.account.name + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186I28zNAR0AVRF")) + this.userId + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186LGkaICt0AVRF")) + this.account.type + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LwhSVg==")));
+      } else {
+         sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki4uKmwjAiliCiQhIxciP2wFQS1rCg5F"))).append(this.service.getPackageName()).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhcuKWgaETM="))).append(this.userId).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("M186OWoFJANhI11F"))).append(this.service.getClassName()).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LwhSVg==")));
+      }
 
-    public static void extrasToStringBuilder(Bundle bundle, StringBuilder sb) {
-        sb.append("[");
-        for (String key : bundle.keySet()) {
-            sb.append(key).append("=").append(bundle.get(key)).append(" ");
-        }
-        sb.append("]");
-    }
+      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PhguIGwKFjdhIwU8")));
+      extrasToStringBuilder(this.extras, sb);
+      return sb.toString();
+   }
 
-    /**
-     * Update the effective run time of this Operation based on latestRunTime (specified at
-     * creation time of sync), delayUntil (specified by SyncAdapter), or backoff (specified by
-     * SyncManager on soft failures).
-     */
-    public void updateEffectiveRunTime() {
-        // Regardless of whether we're in backoff or honouring a delayUntil, we still incorporate
-        // the flex time provided by the developer.
-        effectiveRunTime = ignoreBackoff() ?
-                latestRunTime :
-                Math.max(Math.max(latestRunTime, delayUntil), backoff);
-    }
+   public static void extrasToStringBuilder(Bundle bundle, StringBuilder sb) {
+      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IC5SVg==")));
+      Iterator var2 = bundle.keySet().iterator();
 
-    /**
-     * SyncOperations are sorted based on their earliest effective run time.
-     * This comparator is used to sort the SyncOps at a given time when
-     * deciding which to run, so earliest run time is the best criteria.
-     */
-    @Override
-    public int compareTo(Object o) {
-        SyncOperation other = (SyncOperation) o;
-        if (expedited != other.expedited) {
-            return expedited ? -1 : 1;
-        }
-        long thisIntervalStart = Math.max(effectiveRunTime - flexTime, 0);
-        long otherIntervalStart = Math.max(
-                other.effectiveRunTime - other.flexTime, 0);
-        if (thisIntervalStart < otherIntervalStart) {
+      while(var2.hasNext()) {
+         String key = (String)var2.next();
+         sb.append(key).append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PwhSVg=="))).append(bundle.get(key)).append(" ");
+      }
+
+      sb.append(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JwhSVg==")));
+   }
+
+   public void updateEffectiveRunTime() {
+      this.effectiveRunTime = this.ignoreBackoff() ? this.latestRunTime : Math.max(Math.max(this.latestRunTime, this.delayUntil), this.backoff);
+   }
+
+   public int compareTo(Object o) {
+      SyncOperation other = (SyncOperation)o;
+      if (this.expedited != other.expedited) {
+         return this.expedited ? -1 : 1;
+      } else {
+         long thisIntervalStart = Math.max(this.effectiveRunTime - this.flexTime, 0L);
+         long otherIntervalStart = Math.max(other.effectiveRunTime - other.flexTime, 0L);
+         if (thisIntervalStart < otherIntervalStart) {
             return -1;
-        } else if (otherIntervalStart < thisIntervalStart) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
+         } else {
+            return otherIntervalStart < thisIntervalStart ? 1 : 0;
+         }
+      }
+   }
 }

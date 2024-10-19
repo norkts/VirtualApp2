@@ -1,27 +1,29 @@
 package com.lody.virtual.server.pm;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageParser;
+import android.content.pm.SharedLibraryInfo;
+import android.content.pm.VersionedPackage;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
-import android.os.ResultReceiver;
-import android.text.TextUtils;
-
-import com.lody.virtual.GmsSupport;
+import android.os.Build.VERSION;
+import com.lody.virtual.StringFog;
+import com.lody.virtual.client.core.SettingConfig;
 import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.client.env.HostPackageManager;
 import com.lody.virtual.client.env.SpecialComponentList;
 import com.lody.virtual.client.env.VirtualRuntime;
-import com.lody.virtual.client.stub.InstallerSetting;
 import com.lody.virtual.client.stub.StubManifest;
 import com.lody.virtual.helper.DexOptimizer;
+import com.lody.virtual.helper.PackageCleaner;
 import com.lody.virtual.helper.collection.IntArray;
 import com.lody.virtual.helper.compat.BuildCompat;
 import com.lody.virtual.helper.compat.NativeLibraryHelperCompat;
@@ -33,978 +35,1013 @@ import com.lody.virtual.os.VEnvironment;
 import com.lody.virtual.os.VUserHandle;
 import com.lody.virtual.os.VUserInfo;
 import com.lody.virtual.os.VUserManager;
-import com.lody.virtual.remote.InstallOptions;
-import com.lody.virtual.remote.InstallResult;
 import com.lody.virtual.remote.InstalledAppInfo;
+import com.lody.virtual.remote.VAppInstallerParams;
+import com.lody.virtual.remote.VAppInstallerResult;
+import com.lody.virtual.sandxposed.XposedModuleProfile;
 import com.lody.virtual.server.accounts.VAccountManagerService;
-import com.lody.virtual.server.am.AttributeCache;
-import com.lody.virtual.server.am.BroadcastSystem;
 import com.lody.virtual.server.am.UidSystem;
 import com.lody.virtual.server.am.VActivityManagerService;
-import com.lody.virtual.server.bit64.V64BitHelper;
+import com.lody.virtual.server.extension.VExtPackageAccessor;
 import com.lody.virtual.server.interfaces.IAppManager;
 import com.lody.virtual.server.interfaces.IPackageObserver;
-import com.lody.virtual.server.job.VJobSchedulerService;
 import com.lody.virtual.server.notification.VNotificationManagerService;
 import com.lody.virtual.server.pm.parser.PackageParserEx;
 import com.lody.virtual.server.pm.parser.VPackage;
-import com.xdja.zs.VServiceKeepAliveManager;
-import com.xdja.zs.VServiceKeepAliveService;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import mirror.android.content.pm.ApplicationInfoL;
+import mirror.android.content.pm.ApplicationInfoP;
 
-import static com.lody.virtual.remote.InstalledAppInfo.MODE_APP_COPY_APK;
-import static com.lody.virtual.remote.InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK;
-
-
-/**
- * @author Lody
- */
 public class VAppManagerService extends IAppManager.Stub {
-
-    private static final String TAG = VAppManagerService.class.getSimpleName();
-    private static final Singleton<VAppManagerService> sService = new Singleton<VAppManagerService>() {
-        @Override
-        protected VAppManagerService create() {
-            return new VAppManagerService();
-        }
-    };
-    private final UidSystem mUidSystem = new UidSystem();
-    private final PackagePersistenceLayer mPersistenceLayer = new PackagePersistenceLayer(this);
-    private final Set<String> mVisibleOutsidePackages = new HashSet<>();
-    private boolean mBooting;
-    private RemoteCallbackList<IPackageObserver> mRemoteCallbackList = new RemoteCallbackList<>();
-
-    /*
-        《A》
-        该广播接收器监听外部应用安装/卸载，内部随之做相应的动作（外面的卸载，内部也卸载；外部安装，内部随之更新）。
-        需要屏蔽掉。
-     */
-    private BroadcastReceiver appEventReciever = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mBooting) {
-                return;
-            }
-            PendingResult result = goAsync();
+   private final String ANDROID_TEST_BASE = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kgKAgqLn8VRTdsJyhF"));
+   private final String ANDROID_TEST_RUNNER = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kgKAgqLn8aRQVlNxogKS5SVg=="));
+   private final String ORG_APACHE_HTTP_LEGACY = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0MPXojJAJ9Dig0KAMYMmUwBgJ1NwIgLj4+JWcFSFo="));
+   private static final String TAG = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")) + VAppManagerService.class.getSimpleName();
+   private static final Singleton<VAppManagerService> sService = new Singleton<VAppManagerService>() {
+      protected VAppManagerService create() {
+         return new VAppManagerService();
+      }
+   };
+   private final UidSystem mUidSystem = new UidSystem();
+   private final SystemConfig mSystemConfig = new SystemConfig();
+   private final PackagePersistenceLayer mPersistenceLayer = new PackagePersistenceLayer(this);
+   private volatile boolean mScanning;
+   private RemoteCallbackList<IPackageObserver> mRemoteCallbackList = new RemoteCallbackList();
+   private BroadcastReceiver appEventReceiver = new BroadcastReceiver() {
+      public void onReceive(Context context, Intent intent) {
+         if (!VAppManagerService.this.mScanning) {
+            BroadcastReceiver.PendingResult result = this.goAsync();
             String action = intent.getAction();
-            if (action == null) {
-                return;
+            if (action != null) {
+               Uri data = intent.getData();
+               if (data != null) {
+                  String pkg = data.getSchemeSpecificPart();
+                  if (pkg != null) {
+                     if (pkg.equals(StubManifest.EXT_PACKAGE_NAME)) {
+                        VExtPackageAccessor.syncPackages();
+                     }
+
+                     PackageSetting ps = PackageCacheManager.getSetting(pkg);
+                     if (ps != null && ps.dynamic) {
+                        VActivityManagerService.get().killAppByPkg(pkg, -1);
+                        if (action.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNA5iDzgMLAUMVg==")))) {
+                           ApplicationInfo outInfo = null;
+
+                           try {
+                              outInfo = VirtualCore.getPM().getApplicationInfo(pkg, 0);
+                           } catch (PackageManager.NameNotFoundException var11) {
+                              PackageManager.NameNotFoundException e = var11;
+                              e.printStackTrace();
+                           }
+
+                           if (outInfo == null) {
+                              return;
+                           }
+
+                           VAppInstallerParams params = new VAppInstallerParams(2, 1);
+                           VAppInstallerResult res = VAppManagerService.this.installPackageInternal(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + pkg), params);
+                           VLog.e(VAppManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IQc6PGsaMCtLESQ7Ly0EOWkFBSh7DjMrKT0qO2YVLDZ7MCMuLz5SVg==")), res.packageName, res.status);
+                        } else if (action.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNEhiMiQKLBhSVg=="))) && intent.getBooleanExtra(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZrDlk/KS49KmoYPFRhD1kRJywmA2cxNFU=")), false)) {
+                           VLog.e(VAppManagerService.TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ij4uDWowOC9gNDs8IxciP2wFQS1rDT8gKT5SVg==")), ps.packageName);
+                           VAppManagerService.this.uninstallPackageFully(ps, true);
+                        }
+
+                        result.finish();
+                     }
+                  }
+               }
             }
-            Uri data = intent.getData();
-            if (data == null) {
-                return;
-            }
-            String pkg = data.getSchemeSpecificPart();
-            if (pkg == null) {
-                return;
-            }
-            PackageSetting ps = PackageCacheManager.getSetting(pkg);
-            if (ps == null || ps.appMode != InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK) {
-                return;
-            }
-            VActivityManagerService.get().killAppByPkg(pkg, VUserHandle.USER_ALL);
-            if (action.equals(Intent.ACTION_PACKAGE_REPLACED)) {
-                ApplicationInfo outInfo = null;
-                try {
-                    outInfo = VirtualCore.getPM().getApplicationInfo(pkg, 0);
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (outInfo == null) {
-                    return;
-                }
-                InstallOptions options = InstallOptions.makeOptions(true, false, InstallOptions.UpdateStrategy.FORCE_UPDATE);
-                InstallResult res = installPackageImpl(outInfo.publicSourceDir, options);
-                VLog.e(TAG, "Update package %s %s", res.packageName, res.isSuccess ? "success" : "failed");
-            } else if (action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
-                if (intent.getBooleanExtra(Intent.EXTRA_DATA_REMOVED, false)) {
-                    VLog.e(TAG, "Removing package %s...", ps.packageName);
-                    uninstallPackageFully(ps, true);
-                }
-            }
-            result.finish();
-        }
-    };
+         }
+      }
+   };
 
+   public static VAppManagerService get() {
+      return (VAppManagerService)sService.get();
+   }
 
-    public static VAppManagerService get() {
-        return sService.get();
-    }
+   public static void systemReady() {
+      VEnvironment.systemReady();
+      if (BuildCompat.isPie() && !BuildCompat.isQ()) {
+         get().extractApacheFrameworksForPie();
+      }
 
-    public static void systemReady() {
-        VEnvironment.systemReady();
-        if (!BuildCompat.isPie()) {
-            get().extractRequiredFrameworks();
-        }
-        get().startup();
-    }
+      get().startup();
+   }
 
-    private void startup() {
-        mVisibleOutsidePackages.add("com.android.providers.downloads");
-        mUidSystem.initUidList();
+   private void startup() {
+      this.mSystemConfig.load();
+      this.mUidSystem.initUidList();
+      IntentFilter filter = new IntentFilter();
+      filter.addAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNA5iDzgMLAUMVg==")));
+      filter.addAction(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNEhiMiQKLBhSVg==")));
+      filter.addDataScheme(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF")));
+      VirtualCore.get().getContext().registerReceiver(this.appEventReceiver, filter);
+   }
 
-        //见《A》
-        /*IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addDataScheme("package");
-        VirtualCore.get().getContext().registerReceiver(appEventReciever, filter);*/
-    }
+   private void extractApacheFrameworksForPie() {
+      String frameworkName = StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0MPXojJAJ9Dig0KAMYMmUwBgJ1NwIgLj4+JWcORSVsJFk9"));
+      File dex = VEnvironment.getOptimizedFrameworkFile(frameworkName);
+      if (!dex.exists()) {
+         try {
+            FileUtils.copyFileFromAssets(VirtualCore.get().getContext(), frameworkName, dex);
+         } catch (IOException var4) {
+            IOException e = var4;
+            e.printStackTrace();
+         }
+      }
 
-    public boolean isBooting() {
-        return mBooting;
-    }
+   }
 
-    private void extractRequiredFrameworks() {
-        for (String framework : StubManifest.REQUIRED_FRAMEWORK) {
-            File zipFile = VEnvironment.getFrameworkFile32(framework);
-            File odexFile = VEnvironment.getOptimizedFrameworkFile32(framework);
-            if (!odexFile.exists()) {
-                OatHelper.extractFrameworkFor32Bit(framework, zipFile, odexFile);
-            }
-        }
-    }
-
-    @Override
-    public void scanApps() {
-        if (mBooting) {
-            return;
-        }
-        synchronized (this) {
-            mBooting = true;
-
-            /*
-                这里将安装过的应用全部加载起来。
-             */
-            mPersistenceLayer.read();
-            if (mPersistenceLayer.changed) {
-                mPersistenceLayer.changed = false;
-                mPersistenceLayer.save();
-                VLog.w(TAG, "Package PersistenceLayer updated.");
+   public void scanApps() {
+      if (!this.mScanning) {
+         synchronized(this) {
+            this.mScanning = true;
+            this.mPersistenceLayer.read();
+            if (this.mPersistenceLayer.changed) {
+               this.mPersistenceLayer.changed = false;
+               this.mPersistenceLayer.save();
+               VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ihg+OWUzJC1iCiQCKAguL2wgAgZrARoqLhYEO2cKLDV5EQo5Lz5bCmsFMwQ=")));
             }
 
-            /*
-                预安装，目的不明。
-             */
-            for (String preInstallPkg : SpecialComponentList.getPreInstallPackages()) {
-                if (!isAppInstalled(preInstallPkg)) {
-                    try {
-                        ApplicationInfo outInfo = VirtualCore.get().getUnHookPackageManager().getApplicationInfo(preInstallPkg, 0);
-                        InstallOptions options = InstallOptions.makeOptions(true, false, InstallOptions.UpdateStrategy.FORCE_UPDATE);
-                        installPackageImpl(outInfo.publicSourceDir, options);
-                    } catch (PackageManager.NameNotFoundException e) {
-                        // ignore
-                    }
-                }
+            List<VUserInfo> userHandles = VUserManagerService.get().getUsers(true);
+            Iterator var3 = SpecialComponentList.getPreInstallPackages().iterator();
+
+            label51:
+            while(var3.hasNext()) {
+               String preInstallPkg = (String)var3.next();
+
+               try {
+                  VirtualCore.get().getHostPackageManager().getApplicationInfo(preInstallPkg, 0L);
+               } catch (PackageManager.NameNotFoundException var9) {
+                  continue;
+               }
+
+               Iterator var5 = userHandles.iterator();
+
+               while(true) {
+                  while(true) {
+                     if (!var5.hasNext()) {
+                        continue label51;
+                     }
+
+                     VUserInfo userInfo = (VUserInfo)var5.next();
+                     if (!this.isAppInstalled(preInstallPkg) && userInfo.id == 0) {
+                        VAppInstallerParams params = new VAppInstallerParams(10, 1);
+                        this.installPackageInternal(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + preInstallPkg), params);
+                     } else if (!this.isAppInstalledAsUser(userInfo.id, preInstallPkg)) {
+                        this.installPackageAsUser(userInfo.id, preInstallPkg);
+                     }
+                  }
+               }
             }
 
-            /*
-                这个不明白 ***
-             */
-            PrivilegeAppOptimizer.get().performOptimizeAllApps();
-            //适配旧版本va，或者系统升级
-            if(isAppInstalled(InstallerSetting.PROVIDER_TELEPHONY_PKG)){
-                supportTelephony(0);
-            }
+            VAccountManagerService.get().refreshAuthenticatorCache((String)null);
+            this.mScanning = false;
+         }
+      }
+   }
 
-            mBooting = false;
-        }
-    }
+   private void cleanUpResidualFiles(PackageSetting ps) {
+      VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li4EM2sVBgVhVyQqKAgqMWkwGjdlVjwtIxgEJ2EkOCFsJyspPl9WJ2wjSFo=")), ps.packageName);
+      this.uninstallPackageFully(ps, false);
+   }
 
-    private void cleanUpResidualFiles(PackageSetting ps) {
-        VLog.e(TAG, "cleanup residual files for : %s", ps.packageName);
-        uninstallPackageFully(ps, false);
-    }
+   public void onUserCreated(VUserInfo userInfo) {
+      FileUtils.ensureDirCreate(VEnvironment.getDataUserDirectory(userInfo.id));
+   }
 
+   synchronized boolean loadPackage(PackageSetting setting) {
+      if (!this.loadPackageInnerLocked(setting)) {
+         this.cleanUpResidualFiles(setting);
+         return false;
+      } else {
+         return true;
+      }
+   }
 
-    public void onUserCreated(VUserInfo userInfo) {
-        VEnvironment.getUserDataDirectory(userInfo.id).mkdirs();
-    }
+   private boolean loadPackageInnerLocked(PackageSetting ps) {
+      boolean dynamic = ps.dynamic;
+      if (dynamic && !VirtualCore.get().isOutsideInstalled(ps.packageName)) {
+         return false;
+      } else {
+         File cacheFile = VEnvironment.getPackageCacheFile(ps.packageName);
+         VPackage pkg = null;
 
-
-    synchronized boolean loadPackage(PackageSetting setting) {
-        if (!loadPackageInnerLocked(setting)) {
-            cleanUpResidualFiles(setting);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean loadPackageInnerLocked(PackageSetting ps) {
-        boolean modeUseOutsideApk = ps.appMode == InstalledAppInfo.MODE_APP_USE_OUTSIDE_APK;
-        if (modeUseOutsideApk) {
-            if (!VirtualCore.get().isOutsideInstalled(ps.packageName)) {
-                return false;
-            }
-        }
-        VPackage pkg = null;
-        try {
+         try {
             pkg = PackageParserEx.readPackageCache(ps.packageName);
-        } catch (Throwable e) {
+         } catch (Throwable var9) {
+            Throwable e = var9;
             e.printStackTrace();
-        }
-        if (pkg == null || pkg.packageName == null) {
-            //重新解析apk
-            File apkFile = VEnvironment.getPackageResourcePath(ps.packageName);
-            if (!apkFile.exists()) {
-                VLog.e(TAG, "parse failed 1:not found apk %s", ps.packageName);
-                return false;
+         }
+
+         if (pkg != null && pkg.packageName != null) {
+            VEnvironment.chmodPackageDictionary(cacheFile);
+            PackageCacheManager.put(pkg, ps);
+            if (dynamic) {
+               try {
+                  PackageInfo outInfo = VirtualCore.get().getHostPackageManager().getPackageInfo(ps.packageName, 0L);
+                  boolean isVersionCodeChange = pkg.mVersionCode != outInfo.versionCode;
+                  boolean isPathChange = !(new File(pkg.applicationInfo.publicSourceDir)).exists();
+                  if (isVersionCodeChange || isPathChange) {
+                     VLog.d(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Lgc6KHsJRVo=")) + ps.packageName + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("PAQ6CmsaLyh9JBo7Kj06PWk3TT5rDgo6IxgAKk5TODBlHjAqIz4fJGoKMwQ=")));
+                     VAppInstallerParams params = new VAppInstallerParams(10, 1);
+                     this.installPackageInternal(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + ps.packageName), params);
+                  }
+               } catch (PackageManager.NameNotFoundException var10) {
+                  PackageManager.NameNotFoundException e = var10;
+                  e.printStackTrace();
+                  return false;
+               }
             }
-            try {
-                //reparse apk
-                pkg = PackageParserEx.parsePackage(apkFile);
-                VLog.e(TAG, "reload parsePackage ok %s", ps.packageName);
-            } catch (Throwable e2) {
-                VLog.e(TAG, "parsePackage %s\n%s", ps.packageName, VLog.getStackTraceString(e2));
-                return false;
-            }
-            //save pkg
-            if (pkg == null || pkg.packageName == null) {
-                //parse failed.
-                return false;
-            }
-            //save cache
-            PackageParserEx.savePackageCache(pkg);
-        }
-        PackageCacheManager.put(pkg, ps);
-        if (modeUseOutsideApk) {
-            try {
-                PackageInfo outInfo = VirtualCore.get().getUnHookPackageManager().getPackageInfo(ps.packageName, 0);
-                if (pkg.mVersionCode != outInfo.versionCode) {
-                    VLog.d(TAG, "app (" + ps.packageName + ") has changed version, update it.");
-                    InstallOptions options = InstallOptions.makeOptions(true, false, InstallOptions.UpdateStrategy.FORCE_UPDATE);
-                    installPackageImpl(outInfo.applicationInfo.publicSourceDir, options, true);
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
-        } else {
-            VEnvironment.chmodPackageDictionary(new File(ps.getApkPath(ps.isRunPluginProcess())));
-        }
 
-        BroadcastSystem.get().startApp(pkg);
-
-        return true;
-    }
-
-    @Override
-    public boolean isOutsidePackageVisible(String pkg) {
-        return pkg != null && mVisibleOutsidePackages.contains(pkg);
-    }
-
-    @Override
-    public int getUidForSharedUser(String sharedUserName) {
-        if (sharedUserName == null) {
-            return -1;
-        }
-        return mUidSystem.getUid(sharedUserName);
-    }
-
-    @Override
-    public void addVisibleOutsidePackage(String pkg) {
-        if (pkg != null) {
-            mVisibleOutsidePackages.add(pkg);
-        }
-    }
-
-    @Override
-    public void removeVisibleOutsidePackage(String pkg) {
-        if (pkg != null) {
-            mVisibleOutsidePackages.remove(pkg);
-        }
-    }
-
-    @Override
-    public void installPackage(String path, InstallOptions options, ResultReceiver receiver) {
-        InstallResult res;
-        synchronized (this) {
-            res = installPackageImpl(path, options);
-        }
-        if (receiver != null) {
-            android.os.Bundle data = new Bundle();
-            data.putParcelable("result", res);
-            receiver.send(0, data);
-        }
-    }
-
-    @Override
-    public void requestCopyPackage64(String packageName) {
-        /**
-         * Lock VAMS avoid two process invoke this method Simultaneously.
-         */
-        synchronized (VActivityManagerService.get()) {
-            PackageSetting ps = PackageCacheManager.getSetting(packageName);
-            if (ps != null && ps.appMode == MODE_APP_USE_OUTSIDE_APK) {
-                V64BitHelper.copyPackage64(ps.getApkPath(false), packageName);
-            }
-        }
-    }
-
-    public InstallResult installPackage(String path, InstallOptions options) {
-        synchronized (this) {
-            return installPackageImpl(path, options);
-        }
-    }
-
-    private InstallResult installPackageImpl(String path, InstallOptions options){
-        return installPackageImpl(path, options, false);
-    }
-
-    private InstallResult installPackageImpl(String path, InstallOptions options, boolean loadingApp) {
-        long installTime = System.currentTimeMillis();
-        if (path == null) {
-            return InstallResult.makeFailure("path = NULL");
-        }
-        File packageFile = new File(path);
-        if (!packageFile.exists() || !packageFile.isFile()) {
-            return InstallResult.makeFailure("Package File is not exist.");
-        }
-        VPackage pkg = null;
-        try {
-            pkg = PackageParserEx.parsePackage(packageFile);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        if (pkg == null || pkg.packageName == null) {
-            return InstallResult.makeFailure("Unable to parse the package.");
-        }
-        if(!loadingApp) {
-            BroadcastSystem.get().stopApp(pkg.packageName);
-        }
-        AttributeCache.instance().removePackage(pkg.packageName);
-        VActivityManagerService.get().killAppByPkg(pkg.packageName, -1);
-        InstallResult res = new InstallResult();
-        res.packageName = pkg.packageName;
-        // PackageCache holds all packages, try to check if we need to update.
-        VPackage existOne = PackageCacheManager.get(pkg.packageName);
-        PackageSetting existSetting = existOne != null ? (PackageSetting) existOne.mExtras : null;
-        if (existOne != null) {
-            if (options.updateStrategy == InstallOptions.UpdateStrategy.IGNORE_NEW_VERSION) {
-                res.isUpdate = true;
-                return res;
-            }
-            if (!isAllowedUpdate(existOne, pkg, options.updateStrategy)) {
-                res.error = "Not allowed to update the package.";
-                return res;
-            }
-            res.isUpdate = true;
-            VServiceKeepAliveService.get().scheduleUpdateKeepAliveList(res.packageName, VServiceKeepAliveManager.ACTION_TEMP_DEL);
-            VActivityManagerService.get().killAppByPkg(res.packageName, VUserHandle.USER_ALL);
-        }
-        boolean useSourceLocationApk = options.useSourceLocationApk;
-        if (existOne != null) {
-            PackageCacheManager.remove(pkg.packageName);
-        }
-        PackageSetting ps;
-        if (existSetting != null) {
-            ps = existSetting;
-        } else {
-            ps = new PackageSetting();
-        }
-        boolean support64bit = false, support32bit = false;
-        boolean checkSupportAbi = true;
-        if (!GmsSupport.GMS_PKG.equals(pkg.packageName) && GmsSupport.isGoogleAppOrService(pkg.packageName)) {
-            PackageSetting gmsPs = PackageCacheManager.getSetting(GmsSupport.GMS_PKG);
-            if (gmsPs != null) {
-                ps.flag = gmsPs.flag;
-                support32bit = isPackageSupport32Bit(ps);
-                support64bit = isPackageSupport64Bit(ps);
-                checkSupportAbi = false;
-            }
-        }
-        Map<String, List<String>> soMap = null;
-
-        if (checkSupportAbi) {
-            soMap = NativeLibraryHelperCompat.getSoMapForApk(packageFile.getPath());
-            Set<String> abiList = soMap.keySet();
-            if (abiList.isEmpty()) {
-                support32bit = true;
-                support64bit = true;
-            } else {
-                if (NativeLibraryHelperCompat.contain64bitAbi(abiList)) {
-                    support64bit = true;
-                }
-                if (NativeLibraryHelperCompat.contain32bitAbi(abiList)) {
-                    support32bit = true;
-                }
-            }
-            if (support32bit) {
-                if (support64bit) {
-                    ps.flag = PackageSetting.FLAG_RUN_BOTH_32BIT_64BIT;
-                } else {
-                    ps.flag = PackageSetting.FLAG_RUN_32BIT;
-                }
-            } else {
-                ps.flag = PackageSetting.FLAG_RUN_64BIT;
-            }
-        }
-        if ((VirtualRuntime.is64bit() && ps.flag == PackageSetting.FLAG_RUN_32BIT)
-                || (!VirtualRuntime.is64bit() && ps.flag == PackageSetting.FLAG_RUN_64BIT)) {
-            if (!VirtualCore.get().is64BitEngineInstalled() || !V64BitHelper.has64BitEngineStartPermission()) {
-                return InstallResult.makeFailure("64bit engine not installed.");
-            }
-        }
-        NativeLibraryHelperCompat.copyNativeBinaries(packageFile, VEnvironment.getAppLibDirectory(pkg.packageName), soMap);
-
-        if (!useSourceLocationApk) {
-            //old apk
-            File oldPackageFile = VEnvironment.getPackageResourcePath(pkg.packageName);
-            //new apk
-            File privatePackageFile = VEnvironment.getPackageResourcePathNext(pkg.packageName);
-            //base.apk
-            File baseApkFile = VEnvironment.getPublicResourcePath(pkg.packageName);
-            try {
-                //delete old odex
-                FileUtils.deleteDir(VEnvironment.getOdexFile(pkg.packageName));
-                //delete old apk
-                FileUtils.deleteDir(oldPackageFile);
-                //copy apk -> new apk
-                FileUtils.copyFile(packageFile, privatePackageFile);
-                VLog.d(TAG, "copyFile:%s->%s", packageFile.getPath(), privatePackageFile.getPath());
-            } catch (Exception e) {
-                privatePackageFile.delete();
-                return InstallResult.makeFailure("Unable to copy the package file.");
-            }
-            try{
-                String realPath = privatePackageFile.getPath();
-                String linkPath = baseApkFile.getPath();
-                if(!TextUtils.equals(realPath, linkPath)) {
-                    //delete base.apk
-                    FileUtils.deleteDir(baseApkFile);
-                    //new apk->base.apk
-                    FileUtils.createSymlink(realPath, linkPath);
-                    VLog.d(TAG, "createSymlink:%s->%s", realPath, linkPath);
-                }else{
-                    VLog.d(TAG, "use base don't need link %s", realPath);
-                }
-            } catch (Exception e) {
-                try {
-                    //copy new apk->base.apk
-                    FileUtils.copyFile(privatePackageFile, baseApkFile);
-                } catch (IOException ex) {
-                    baseApkFile.delete();
-                    return InstallResult.makeFailure("Unable to copy the package file.");
-                }
-            }
-            packageFile = privatePackageFile;
-            VEnvironment.chmodPackageDictionary(packageFile);
-        }
-
-        if (support64bit && !useSourceLocationApk) {
-            V64BitHelper.copyPackage64(packageFile.getPath(), pkg.packageName);
-        }
-
-        ps.appMode = useSourceLocationApk ? MODE_APP_USE_OUTSIDE_APK : MODE_APP_COPY_APK;
-        ps.packageName = pkg.packageName;
-        ps.appId = VUserHandle.getAppId(mUidSystem.getOrCreateUid(pkg));
-        if (res.isUpdate) {
-            ps.lastUpdateTime = installTime;
-        } else {
-            ps.firstInstallTime = installTime;
-            ps.lastUpdateTime = installTime;
-            for (int userId : VUserManagerService.get().getUserIds()) {
-                boolean installed = userId == 0;
-                ps.setUserState(userId, false/*launched*/, false/*hidden*/, installed);
-            }
-        }
-        PackageParserEx.savePackageCache(pkg);
-        PackageCacheManager.put(pkg, ps);
-        mPersistenceLayer.save();
-        if (support32bit && !useSourceLocationApk) {
-            try {
-                DexOptimizer.optimizeDex(packageFile.getPath(), VEnvironment.getOdexFile(ps.packageName).getPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (options.notify) {
-            notifyAppInstalled(ps, -1);
-            if(res.isUpdate){
-                notifyAppUpdate(ps, -1);
-            }
-        }
-        //版本差异适配
-        if (InstallerSetting.PROVIDER_TELEPHONY_PKG.equals(pkg.packageName)) {
-            supportTelephony(0);
-        }
-        if(!loadingApp) {
-            BroadcastSystem.get().startApp(pkg);
-        }
-        res.isSuccess = true;
-        VServiceKeepAliveService.get().scheduleUpdateKeepAliveList(res.packageName, VServiceKeepAliveManager.ACTION_TEMP_ADD);
-        if(!res.isUpdate) {
-            VirtualCore.getConfig().onFirstInstall(ps.packageName, false);
-        }
-        return res;
-    }
-
-    private void supportTelephony(int userId) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            setDefaultComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.RcsProvider"), userId);
-        } else {
-            disableComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.RcsProvider"), userId);
-        }
-        if (Build.VERSION.SDK_INT < 28) {
-            disableComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.CarrierIdProvider"), userId);
-            disableComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.CarrierProvider"), userId);
-        } else {
-            setDefaultComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.CarrierIdProvider"), userId);
-            setDefaultComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.CarrierProvider"), userId);
-        }
-        if (Build.VERSION.SDK_INT < 26) {
-            disableComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.ServiceStateProvider"), userId);
-        } else {
-            setDefaultComponent(new ComponentName(InstallerSetting.PROVIDER_TELEPHONY_PKG, "com.android.providers.telephony.ServiceStateProvider"), userId);
-        }
-    }
-
-    private void disableComponent(ComponentName componentName, int userId){
-        VPackageManagerService.get().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP, userId);
-    }
-
-    private void setDefaultComponent(ComponentName componentName, int userId){
-        VPackageManagerService.get().setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP, userId);
-    }
-
-    @Override
-    public synchronized boolean installPackageAsUser(int userId, String packageName) {
-        if (VUserManagerService.get().exists(userId)) {
-            PackageSetting ps = PackageCacheManager.getSetting(packageName);
-            if (ps != null) {
-                if (!ps.isInstalled(userId)) {
-                    ps.setInstalled(userId, true);
-                    mkdirsForUser(packageName, userId);
-                    notifyAppInstalled(ps, userId);
-                    mPersistenceLayer.save();
-                    //版本差异适配
-                    if (InstallerSetting.PROVIDER_TELEPHONY_PKG.equals(packageName)) {
-                        supportTelephony(userId);
-                    }
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isAllowedUpdate(VPackage existOne, VPackage newOne, InstallOptions.UpdateStrategy strategy) {
-        switch (strategy) {
-            case FORCE_UPDATE:
-                return true;
-            case COMPARE_VERSION:
-                return existOne.mVersionCode <= newOne.mVersionCode;
-            case TERMINATE_IF_EXIST:
-                return false;
-        }
-        return true;
-    }
-
-
-    @Override
-    public synchronized boolean uninstallPackage(String packageName) {
-        PackageSetting ps = PackageCacheManager.getSetting(packageName);
-        if (ps != null) {
-            uninstallPackageFully(ps, true);
             return true;
-        }
-        return false;
-    }
-
-    @Override
-    public synchronized boolean uninstallPackageAsUser(String packageName, int userId) {
-        if (!VUserManagerService.get().exists(userId)) {
+         } else {
             return false;
-        }
-        PackageSetting ps = PackageCacheManager.getSetting(packageName);
-        if (ps != null) {
-            int[] userIds = getPackageInstalledUsers(packageName);
+         }
+      }
+   }
+
+   public int getUidForSharedUser(String sharedUserName) {
+      return sharedUserName == null ? -1 : this.mUidSystem.getUid(sharedUserName);
+   }
+
+   public VAppInstallerResult installPackage(Uri uri, VAppInstallerParams params) {
+      synchronized(this) {
+         VAppInstallerResult var10000;
+         try {
+            var10000 = this.installPackageInternal(uri, params);
+         } catch (Throwable var6) {
+            Throwable e = var6;
+            e.printStackTrace();
+            throw new RuntimeException(e);
+         }
+
+         return var10000;
+      }
+   }
+
+   private VAppInstallerResult installPackageInternal(Uri uri, VAppInstallerParams params) {
+      long installTime = System.currentTimeMillis();
+      int installFlags = params.getInstallFlags();
+      int resultFlags = 0;
+      if (uri != null && uri.getScheme() != null) {
+         String scheme = uri.getScheme();
+         if (!scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF"))) && !scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo=")))) {
+            return VAppInstallerResult.create(4);
+         } else if (scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF"))) && uri.getSchemeSpecificPart() == null) {
+            return VAppInstallerResult.create(4);
+         } else if (scheme.equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4YDmgVSFo="))) && uri.getPath() == null) {
+            return VAppInstallerResult.create(4);
+         } else {
+            ApplicationInfo outApplicationInfo = null;
+            File packageFile;
+            if (uri.getScheme().equals(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iAVRF")))) {
+               String packageName = uri.getSchemeSpecificPart();
+
+               try {
+                  outApplicationInfo = HostPackageManager.get().getApplicationInfo(packageName, 1024L);
+               } catch (PackageManager.NameNotFoundException var39) {
+                  PackageManager.NameNotFoundException e = var39;
+                  e.printStackTrace();
+               }
+
+               if (outApplicationInfo == null) {
+                  return VAppInstallerResult.create(packageName, 7);
+               }
+
+               packageFile = new File(outApplicationInfo.publicSourceDir);
+            } else {
+               packageFile = new File(uri.getPath());
+            }
+
+            VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDDwzKhcLIA==")) + packageFile);
+            if (packageFile.exists() && packageFile.isFile()) {
+               PackageParser.ApkLite apkLite;
+               try {
+                  apkLite = PackageParser.parseApkLite(packageFile, 0);
+               } catch (PackageParser.PackageParserException var38) {
+                  return VAppInstallerResult.create(4);
+               }
+
+               if (apkLite.splitName != null) {
+                  return this.installSplitPackageInternal(packageFile, apkLite, params);
+               } else {
+                  VPackage pkg = null;
+
+                  try {
+                     pkg = PackageParserEx.parsePackage(packageFile);
+                  } catch (Throwable var37) {
+                     Throwable e = var37;
+                     e.printStackTrace();
+                  }
+
+                  if (pkg != null && pkg.packageName != null) {
+                     VPackage existOne = PackageCacheManager.get(pkg.packageName);
+                     if (existOne != null) {
+                        if ((installFlags & 4) != 0) {
+                           return VAppInstallerResult.create(pkg.packageName, 3);
+                        }
+
+                        if ((installFlags & 2) == 0 && existOne.mVersionCode >= pkg.mVersionCode) {
+                           return VAppInstallerResult.create(pkg.packageName, 5);
+                        }
+
+                        resultFlags |= 2;
+                        if ((installFlags & 8) == 0) {
+                           VActivityManagerService.get().killAppByPkg(pkg.packageName, -1);
+                        }
+                     }
+
+                     VAppInstallerResult res = new VAppInstallerResult();
+                     res.packageName = pkg.packageName;
+                     res.flags = resultFlags;
+                     File appDir = VEnvironment.getDataAppPackageDirectory(pkg.packageName);
+                     VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Li0MM2saMCtLHiAsI14mPmwgRDJ4EVRF")) + appDir);
+                     if (!FileUtils.ensureDirCreate(appDir)) {
+                        VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwsKQc5JGIaGjV7MCBF")) + appDir);
+                        res.flags = 6;
+                        return res;
+                     } else {
+                        String cpuAbiOverride = params.getCpuAbiOverride();
+                        ArrayList<Object> sharedLibraryInfoList = new ArrayList();
+                        String primaryCpuAbi;
+                        String secondaryCpuAbi;
+                        File nativeLibraryRootDir;
+                        boolean nativeLibraryRootRequiresIsa;
+                        File nativeLibraryDir;
+                        File secondaryNativeLibraryDir;
+                        String scanSourcePath;
+                        String instructionSet;
+                        if (cpuAbiOverride != null) {
+                           primaryCpuAbi = cpuAbiOverride;
+                           secondaryCpuAbi = null;
+                           nativeLibraryRootRequiresIsa = true;
+                           nativeLibraryRootDir = VEnvironment.getDataAppLibDirectory(pkg.packageName);
+                           nativeLibraryDir = new File(nativeLibraryRootDir, VirtualRuntime.getInstructionSet(primaryCpuAbi));
+                           secondaryNativeLibraryDir = null;
+                        } else {
+                           String supported64bitAbi;
+                           if (outApplicationInfo != null) {
+                              primaryCpuAbi = (String)ApplicationInfoL.primaryCpuAbi.get(outApplicationInfo);
+                              secondaryCpuAbi = (String)ApplicationInfoL.secondaryCpuAbi.get(outApplicationInfo);
+                              scanSourcePath = outApplicationInfo.nativeLibraryDir;
+                              if (scanSourcePath != null) {
+                                 nativeLibraryDir = new File(scanSourcePath);
+                              } else {
+                                 nativeLibraryDir = null;
+                              }
+
+                              String secondaryNativeLibraryPath = (String)ApplicationInfoL.secondaryNativeLibraryDir.get(outApplicationInfo);
+                              if (secondaryNativeLibraryPath != null) {
+                                 secondaryNativeLibraryDir = new File(secondaryNativeLibraryPath);
+                              } else {
+                                 secondaryNativeLibraryDir = null;
+                              }
+
+                              supported64bitAbi = (String)ApplicationInfoL.nativeLibraryRootDir.get(outApplicationInfo);
+                              nativeLibraryRootDir = new File(supported64bitAbi);
+                              nativeLibraryRootRequiresIsa = ApplicationInfoL.nativeLibraryRootRequiresIsa.get(outApplicationInfo);
+                           } else {
+                              boolean isUse32bitAbi = false;
+                              if (VERSION.SDK_INT >= 24) {
+                                 try {
+                                    isUse32bitAbi = apkLite.use32bitAbi;
+                                 } catch (Throwable var36) {
+                                    var36.printStackTrace();
+                                 }
+                              }
+
+                              Set<String> abis = NativeLibraryHelperCompat.getPackageAbiList(packageFile.getPath());
+                              supported64bitAbi = NativeLibraryHelperCompat.findSupportedAbi(Build.SUPPORTED_64_BIT_ABIS, abis);
+                              instructionSet = NativeLibraryHelperCompat.findSupportedAbi(Build.SUPPORTED_32_BIT_ABIS, abis);
+                              String defaultAbi = Build.SUPPORTED_ABIS[0];
+                              if (!VirtualCore.get().isExtPackageInstalled()) {
+                                 isUse32bitAbi = false;
+                                 defaultAbi = isUse32bitAbi ? StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcMDWgVJCpjCl0uPC0iVg==")) : StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LgcMDXwkMyNmMxo7"));
+                              }
+
+                              if (instructionSet != null && (isUse32bitAbi || supported64bitAbi == null)) {
+                                 primaryCpuAbi = instructionSet;
+                                 secondaryCpuAbi = supported64bitAbi;
+                              } else if (supported64bitAbi == null || isUse32bitAbi && instructionSet != null) {
+                                 primaryCpuAbi = defaultAbi;
+                                 secondaryCpuAbi = null;
+                              } else {
+                                 primaryCpuAbi = supported64bitAbi;
+                                 secondaryCpuAbi = instructionSet;
+                              }
+
+                              Set<String> sharedLibraryFiles = new HashSet();
+                              if (pkg.usesLibraries == null) {
+                                 pkg.usesLibraries = new ArrayList();
+                              }
+
+                              if (pkg.usesOptionalLibraries == null) {
+                                 pkg.usesOptionalLibraries = new ArrayList();
+                              }
+
+                              if (pkg.applicationInfo.targetSdkVersion < 23 && !pkg.usesLibraries.contains(this.ORG_APACHE_HTTP_LEGACY) && !pkg.usesOptionalLibraries.contains(this.ORG_APACHE_HTTP_LEGACY)) {
+                                 pkg.usesLibraries.add(this.ORG_APACHE_HTTP_LEGACY);
+                              }
+
+                              boolean needCheckTestBaseLib = pkg.usesLibraries.contains(this.ANDROID_TEST_RUNNER) || pkg.usesOptionalLibraries.contains(this.ANDROID_TEST_RUNNER);
+                              if ((needCheckTestBaseLib || BuildCompat.isR() && pkg.applicationInfo.targetSdkVersion < 30) && !pkg.usesLibraries.contains(this.ANDROID_TEST_BASE) && !pkg.usesOptionalLibraries.contains(this.ANDROID_TEST_BASE)) {
+                                 pkg.usesLibraries.add(this.ANDROID_TEST_BASE);
+                              }
+
+                              Iterator var30 = pkg.usesOptionalLibraries.iterator();
+
+                              String name;
+                              SystemConfig.SharedLibraryEntry entry;
+                              SharedLibraryInfo sharedLibraryInfo;
+                              while(var30.hasNext()) {
+                                 name = (String)var30.next();
+                                 entry = this.mSystemConfig.getSharedLibrary(name);
+                                 if (entry == null) {
+                                    VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5bCW8JICVhEQozKi0YOW83TQNqETg5LhgpJGAaGiVlNCQ7Lik5JA==")) + name);
+                                 } else {
+                                    sharedLibraryFiles.add(entry.path);
+                                    if (BuildCompat.isS()) {
+                                       sharedLibraryInfo = new SharedLibraryInfo(entry.path, (String)null, (List)null, entry.name, -1L, 0, new VersionedPackage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iEVRF")), 0L), (List)null, (List)null, false);
+                                       sharedLibraryInfoList.add(sharedLibraryInfo);
+                                    }
+                                 }
+                              }
+
+                              var30 = pkg.usesLibraries.iterator();
+
+                              while(var30.hasNext()) {
+                                 name = (String)var30.next();
+                                 entry = this.mSystemConfig.getSharedLibrary(name);
+                                 if (entry == null) {
+                                    VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Ki5bCW8JIARiASAvKQguPWk3TQNqETg5LhgpJGAaGiVlNCQ7Lik5JA==")) + name);
+                                 } else {
+                                    sharedLibraryFiles.add(entry.path);
+                                    if (BuildCompat.isS()) {
+                                       sharedLibraryInfo = new SharedLibraryInfo(entry.path, (String)null, (List)null, entry.name, -1L, 0, new VersionedPackage(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iEVRF")), 0L), (List)null, (List)null, false);
+                                       sharedLibraryInfoList.add(sharedLibraryInfo);
+                                    }
+                                 }
+                              }
+
+                              if (!sharedLibraryFiles.isEmpty()) {
+                                 pkg.applicationInfo.sharedLibraryFiles = (String[])sharedLibraryFiles.toArray(new String[0]);
+                              }
+
+                              nativeLibraryRootRequiresIsa = true;
+                              nativeLibraryRootDir = VEnvironment.getDataAppLibDirectory(pkg.packageName);
+                              nativeLibraryDir = new File(nativeLibraryRootDir, VirtualRuntime.getInstructionSet(primaryCpuAbi));
+                              if (secondaryCpuAbi != null) {
+                                 secondaryNativeLibraryDir = new File(nativeLibraryRootDir, VirtualRuntime.getInstructionSet(secondaryCpuAbi));
+                              } else {
+                                 secondaryNativeLibraryDir = null;
+                              }
+                           }
+                        }
+
+                        ApplicationInfoL.primaryCpuAbi.set(pkg.applicationInfo, primaryCpuAbi);
+                        ApplicationInfoL.secondaryCpuAbi.set(pkg.applicationInfo, secondaryCpuAbi);
+                        if (nativeLibraryRootDir != null) {
+                           ApplicationInfoL.nativeLibraryRootDir.set(pkg.applicationInfo, nativeLibraryRootDir.getAbsolutePath());
+                        }
+
+                        ApplicationInfoL.nativeLibraryRootRequiresIsa.set(pkg.applicationInfo, nativeLibraryRootRequiresIsa);
+                        if (nativeLibraryDir != null) {
+                           pkg.applicationInfo.nativeLibraryDir = nativeLibraryDir.getAbsolutePath();
+                        }
+
+                        if (secondaryNativeLibraryDir != null) {
+                           ApplicationInfoL.secondaryNativeLibraryDir.set(pkg.applicationInfo, secondaryNativeLibraryDir.getAbsolutePath());
+                        }
+
+                        if (outApplicationInfo != null) {
+                           pkg.applicationInfo.publicSourceDir = outApplicationInfo.publicSourceDir;
+                           pkg.applicationInfo.sourceDir = outApplicationInfo.sourceDir;
+                           pkg.applicationInfo.sharedLibraryFiles = outApplicationInfo.sharedLibraryFiles;
+                           if (VERSION.SDK_INT >= 26) {
+                              pkg.applicationInfo.splitNames = outApplicationInfo.splitNames;
+                           }
+
+                           pkg.applicationInfo.splitSourceDirs = outApplicationInfo.splitSourceDirs;
+                           pkg.applicationInfo.splitPublicSourceDirs = outApplicationInfo.splitPublicSourceDirs;
+                           if (ApplicationInfoP.sharedLibraryInfos != null) {
+                              List sharedLibraryInfos = ApplicationInfoP.sharedLibraryInfos(outApplicationInfo);
+                              ApplicationInfoP.sharedLibraryInfos(pkg.applicationInfo, sharedLibraryInfos);
+                           }
+                        } else {
+                           SettingConfig config = VirtualCore.getConfig();
+                           if (config.isEnableIORedirect() && config.isUseRealApkPath(pkg.packageName)) {
+                              scanSourcePath = VEnvironment.getPackageFileStub(pkg.packageName);
+                           } else {
+                              scanSourcePath = VEnvironment.getPackageFile(pkg.packageName).getPath();
+                           }
+
+                           pkg.applicationInfo.publicSourceDir = scanSourcePath;
+                           pkg.applicationInfo.sourceDir = scanSourcePath;
+                           if (ApplicationInfoP.sharedLibraryInfos != null) {
+                              ApplicationInfoP.sharedLibraryInfos(pkg.applicationInfo, sharedLibraryInfoList);
+                           }
+                        }
+
+                        scanSourcePath = VEnvironment.getDataAppPackageDirectory(pkg.packageName).getAbsolutePath();
+                        ApplicationInfoL.scanSourceDir.set(pkg.applicationInfo, scanSourcePath);
+                        ApplicationInfoL.scanPublicSourceDir.set(pkg.applicationInfo, scanSourcePath);
+                        NativeLibraryHelperCompat nativeLibraryHelper = new NativeLibraryHelperCompat(packageFile);
+                        VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iz4+LGUaOCtoHgY6Iz0iKGgmRSVlJCxKIxcLPg==")) + nativeLibraryRootDir);
+                        if (outApplicationInfo == null) {
+                           if (!FileUtils.ensureDirCreate(nativeLibraryRootDir)) {
+                              VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwbLRcqI2YwLyNsHhorOD1fKWUgMzRoAR4bMTkiVg==")) + nativeLibraryRootDir);
+                           }
+
+                           if (FileUtils.ensureDirCreate(nativeLibraryDir)) {
+                              nativeLibraryHelper.copyNativeBinaries(nativeLibraryDir, primaryCpuAbi);
+                           } else {
+                              VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwbLRcqI2YwLyNsHhorOD4cI2w0TDQ=")) + nativeLibraryDir);
+                           }
+
+                           if (secondaryCpuAbi != null) {
+                              if (FileUtils.ensureDirCreate(secondaryNativeLibraryDir)) {
+                                 nativeLibraryHelper.copyNativeBinaries(secondaryNativeLibraryDir, secondaryCpuAbi);
+                              } else {
+                                 VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTw6Lhg2KWAwFiRlNx0pKRhbCmoKOD97AQIwOzkiI28FNyx+N1RF")) + secondaryNativeLibraryDir);
+                              }
+                           }
+                        }
+
+                        PackageSetting ps = existOne != null ? (PackageSetting)existOne.mExtras : new PackageSetting();
+                        ps.primaryCpuAbi = primaryCpuAbi;
+                        ps.secondaryCpuAbi = secondaryCpuAbi;
+                        ps.is64bitPackage = NativeLibraryHelperCompat.is64bitAbi(ps.primaryCpuAbi);
+                        VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Iy0uLGMaIAJgHgY5Lwg2MW8FMAllNyQcPQMhDk8kOz15EVRF")) + outApplicationInfo);
+                        if (outApplicationInfo == null) {
+                           File privatePackageFile = VEnvironment.getPackageFile(pkg.packageName);
+                           VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDDwzKhcLIH4zSFo=")) + packageFile + StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pl85OG8KFi9mNCAgKAYmOW4FJDdrJyhIIxgEJ3czSFo=")) + privatePackageFile);
+                           boolean copied = false;
+
+                           try {
+                              FileUtils.copyFile(packageFile, privatePackageFile);
+                              copied = true;
+                           } catch (IOException var35) {
+                              VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqDWowLyhrNx4dLl5WJA==")) + privatePackageFile);
+                              var35.printStackTrace();
+                           }
+
+                           if (!copied) {
+                              FileUtils.deleteDir(VEnvironment.getDataAppPackageDirectory(pkg.packageName));
+                              res.status = 6;
+                              return res;
+                           }
+
+                           packageFile = privatePackageFile;
+                           VEnvironment.chmodPackageDictionary(packageFile);
+                        }
+
+                        ps.dynamic = outApplicationInfo != null;
+                        ps.packageName = pkg.packageName;
+                        ps.libPath = nativeLibraryDir.getPath();
+                        ps.appId = VUserHandle.getAppId(this.mUidSystem.getOrCreateUid(pkg));
+                        if ((resultFlags & 2) != 0) {
+                           ps.lastUpdateTime = installTime;
+                        } else {
+                           ps.firstInstallTime = installTime;
+                           ps.lastUpdateTime = installTime;
+                           int[] var51 = VUserManagerService.get().getUserIds();
+                           int var55 = var51.length;
+
+                           for(int var54 = 0; var54 < var55; ++var54) {
+                              int userId = var51[var54];
+                              boolean installed = userId == 0;
+                              ps.setUserState(userId, false, false, installed);
+                           }
+                        }
+
+                        PackageParserEx.savePackageCache(pkg);
+                        PackageCacheManager.put(pkg, ps);
+                        if (!this.mScanning) {
+                           this.mPersistenceLayer.save();
+                        }
+
+                        if (outApplicationInfo == null && !ps.isRunInExtProcess()) {
+                           instructionSet = VirtualRuntime.getCurrentInstructionSet();
+                           File oatFile = VEnvironment.getOatFile(ps.packageName, instructionSet);
+                           if (!oatFile.exists() || (params.getInstallFlags() & 16) == 0) {
+                              try {
+                                 DexOptimizer.dex2oat(packageFile.getPath(), oatFile.getPath());
+                              } catch (Throwable var34) {
+                                 var34.printStackTrace();
+                              }
+                           }
+                        }
+
+                        VAccountManagerService.get().refreshAuthenticatorCache((String)null);
+                        if (!this.mScanning) {
+                           VExtPackageAccessor.syncPackages();
+                        }
+
+                        if ((installFlags & 1) != 0) {
+                           this.notifyAppInstalled(ps, -1);
+                        }
+
+                        res.status = 0;
+                        return res;
+                     }
+                  } else {
+                     return VAppInstallerResult.create(7);
+                  }
+               }
+            } else {
+               return VAppInstallerResult.create(4);
+            }
+         }
+      } else {
+         return VAppInstallerResult.create(4);
+      }
+   }
+
+   private VAppInstallerResult installSplitPackageInternal(File splitPackageFile, PackageParser.ApkLite apkLite, VAppInstallerParams params) {
+      int flags = 1;
+      VPackage basePackage = PackageCacheManager.get(apkLite.packageName);
+      if (basePackage == null) {
+         return VAppInstallerResult.create(apkLite.packageName, 8);
+      } else {
+         PackageSetting ps = (PackageSetting)basePackage.mExtras;
+         if (basePackage.splitNames == null) {
+            basePackage.splitNames = new ArrayList();
+         } else if (basePackage.splitNames.contains(apkLite.splitName)) {
+            if ((params.getInstallFlags() & 2) == 0) {
+               return VAppInstallerResult.create(apkLite.packageName, 5);
+            }
+
+            basePackage.splitNames.remove(apkLite.splitName);
+            flags |= 2;
+         }
+
+         if ((params.getInstallFlags() & 8) == 0) {
+            VActivityManagerService.get().killAppByPkg(apkLite.packageName, -1);
+         }
+
+         basePackage.splitNames.add(apkLite.splitName);
+         File privateSplitPackage = VEnvironment.getSplitPackageFile(apkLite.packageName, apkLite.splitName);
+
+         try {
+            FileUtils.copyFile(splitPackageFile, privateSplitPackage);
+         } catch (IOException var13) {
+            IOException e = var13;
+            e.printStackTrace();
+         }
+
+         String[] abis = (String[])NativeLibraryHelperCompat.getPackageAbiList(splitPackageFile.getPath()).toArray(new String[0]);
+         if (abis.length > 0) {
+            String primaryCpuAbi = abis[0];
+            File nativeLibraryRootDir = VEnvironment.getDataAppLibDirectory(basePackage.packageName);
+            File nativeLibraryDir = new File(nativeLibraryRootDir, VirtualRuntime.getInstructionSet(primaryCpuAbi));
+            ps.primaryCpuAbi = primaryCpuAbi;
+            ps.is64bitPackage = NativeLibraryHelperCompat.is64bitAbi(primaryCpuAbi);
+            NativeLibraryHelperCompat nativeLibraryHelper = new NativeLibraryHelperCompat(splitPackageFile);
+            if (FileUtils.ensureDirCreate(nativeLibraryDir)) {
+               nativeLibraryHelper.copyNativeBinaries(nativeLibraryDir, primaryCpuAbi);
+            } else {
+               VLog.e(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LT4+CWoFNCxLEQo1PxcqKGkjQQZrDTwbLRcqI2YwLyNsHhorOD4cI2w0TDQ=")) + nativeLibraryDir);
+            }
+         }
+
+         PackageParserEx.savePackageCache(basePackage);
+         if (!this.mScanning) {
+            VExtPackageAccessor.syncPackages();
+         }
+
+         return new VAppInstallerResult(apkLite.packageName, 0, flags);
+      }
+   }
+
+   public synchronized boolean installPackageAsUser(int userId, String packageName) {
+      if (VUserManagerService.get().exists(userId)) {
+         PackageSetting ps = PackageCacheManager.getSetting(packageName);
+         if (ps != null) {
+            if (!ps.isInstalled(userId)) {
+               ps.setInstalled(userId, true);
+               VExtPackageAccessor.syncPackages();
+               this.notifyAppInstalled(ps, userId);
+               this.mPersistenceLayer.save();
+               return true;
+            }
+
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public synchronized boolean uninstallPackage(String packageName) {
+      PackageSetting ps = PackageCacheManager.getSetting(packageName);
+      if (ps != null) {
+         this.uninstallPackageFully(ps, true);
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   public synchronized boolean uninstallPackageAsUser(String packageName, int userId) {
+      if (!VUserManagerService.get().exists(userId)) {
+         return false;
+      } else {
+         PackageSetting ps = PackageCacheManager.getSetting(packageName);
+         if (ps != null) {
+            int[] userIds = this.getPackageInstalledUsers(packageName);
             if (!ArrayUtils.contains(userIds, userId)) {
-                return false;
-            }
-            if (userIds.length == 1) {
-                uninstallPackageFully(ps, true);
+               return false;
             } else {
-                VServiceKeepAliveService.get().scheduleUpdateKeepAliveList(packageName, VServiceKeepAliveManager.ACTION_DEL);
-                // Just hidden it
-                VNotificationManagerService.get().cancelAllNotification(packageName, userId);
-                VJobSchedulerService.get().cancelAll(ps.appId, userId);
-                VActivityManagerService.get().killAppByPkg(packageName, userId);
-                ps.setInstalled(userId, false);
-                mPersistenceLayer.save();
-                deletePackageDataAsUser(userId, ps, false);
-                notifyAppUninstalled(ps, userId);
+               if (userIds.length <= 1) {
+                  this.uninstallPackageFully(ps, true);
+               } else {
+                  this.cleanPackageData(packageName, userId);
+                  ps.setInstalled(userId, false);
+                  this.mPersistenceLayer.save();
+                  this.notifyAppUninstalled(ps, userId);
+               }
+
+               return true;
             }
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isPackageSupport32Bit(PackageSetting ps) {
-        return ps.flag == PackageSetting.FLAG_RUN_32BIT
-                || ps.flag == PackageSetting.FLAG_RUN_BOTH_32BIT_64BIT;
-    }
-
-    private boolean isPackageSupport64Bit(PackageSetting ps) {
-        return ps.flag == PackageSetting.FLAG_RUN_64BIT
-                || ps.flag == PackageSetting.FLAG_RUN_BOTH_32BIT_64BIT;
-    }
-
-    private void deletePackageDataAsUser(int userId, PackageSetting ps, boolean linkLib) {
-        if (isPackageSupport32Bit(ps)) {
-            String libPath = VEnvironment.getAppLibDirectory(ps.packageName).getAbsolutePath();
-            if (userId == -1) {
-                List<VUserInfo> userInfos = VUserManager.get().getUsers();
-                if (userInfos != null) {
-                    for (VUserInfo info : userInfos) {
-                        FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(info.id, ps.packageName));
-                        if(linkLib) {
-                            File userLibDir = VEnvironment.getUserAppLibDirectory(userId, ps.packageName);
-                            if (!userLibDir.exists()) {
-                                try {
-                                    FileUtils.createSymlink(libPath, userLibDir.getPath());
-                                    VLog.d(TAG, "createSymlink %s@%d's lib", ps.packageName, userId);
-                                } catch (Exception e) {
-                                    //ignore
-                                }
-                            }
-                        }
-                        // add by lml@xdja.com
-                        {
-                            FileUtils.deleteDir(VEnvironment.getExternalStorageAppDataDir(info.id, ps.packageName));
-                        }
-                    }
-                }
-            } else {
-                FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(userId, ps.packageName));
-                if(linkLib) {
-                    File userLibDir = VEnvironment.getUserAppLibDirectory(userId, ps.packageName);
-                    if (!userLibDir.exists()) {
-                        try {
-                            FileUtils.createSymlink(libPath, userLibDir.getPath());
-                            VLog.d(TAG, "createSymlink %s@%d's lib", ps.packageName, userId);
-                        } catch (Exception e) {
-                            //ignore
-                        }
-                    }
-                }
-                // add by lml@xdja.com
-                {
-                    FileUtils.deleteDir(VEnvironment.getExternalStorageAppDataDir(userId, ps.packageName));
-                }
-            }
-        }
-        if (isPackageSupport64Bit(ps)) {
-            V64BitHelper.cleanPackageData64(userId, ps.packageName);
-        }
-        VNotificationManagerService.get().cancelAllNotification(ps.packageName, userId);
-        if(userId == 0 || userId == -1) {
-            VirtualCore.getConfig().onFirstInstall(ps.packageName, true);
-        }
-    }
-
-    public boolean cleanPackageData(String pkg, int userId) {
-        PackageSetting ps = PackageCacheManager.getSetting(pkg);
-        if (ps == null) {
+         } else {
             return false;
-        }
-        VActivityManagerService.get().killAppByPkg(pkg, userId);
-        deletePackageDataAsUser(userId, ps, true);
-        return true;
-    }
+         }
+      }
+   }
 
-    private void uninstallPackageFully(PackageSetting ps, boolean notify) {
-        String packageName = ps.packageName;
-        try {
-            AttributeCache.instance().removePackage(packageName);
-            BroadcastSystem.get().stopApp(packageName);
-            VServiceKeepAliveService.get().scheduleUpdateKeepAliveList(packageName, VServiceKeepAliveManager.ACTION_DEL);
-            VJobSchedulerService.get().cancelAll(ps.appId, VUserHandle.USER_ALL);
-            VNotificationManagerService.get().cancelAllNotification(packageName, VUserHandle.USER_ALL);
-            VActivityManagerService.get().killAppByPkg(packageName, VUserHandle.USER_ALL);
-            if (isPackageSupport32Bit(ps)) {
-                FileUtils.deleteDir(VEnvironment.getPackageResourcePath(packageName));
-                FileUtils.deleteDir(VEnvironment.getPublicResourcePath(packageName));
-                FileUtils.deleteDir(VEnvironment.getDataAppPackageDirectory(packageName));
-                VEnvironment.getOdexFile(packageName).delete();
-                for (int id : VUserManagerService.get().getUserIds()) {
-                    deletePackageDataAsUser(id, ps, false);
-                }
-            }
-            if (isPackageSupport64Bit(ps)) {
-                V64BitHelper.uninstallPackage64(-1, packageName);
-            }
-            PackageCacheManager.remove(packageName);
-            mPersistenceLayer.save();
-            File cacheFile = VEnvironment.getPackageCacheFile(packageName);
-            cacheFile.delete();
-            File signatureFile = VEnvironment.getSignatureFile(packageName);
-            signatureFile.delete();
-            FileUtils.deleteDir(VEnvironment.getDataAppPackageDirectory(packageName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (notify) {
-                notifyAppUninstalled(ps, -1);
-            }
-        }
-    }
+   public boolean cleanPackageData(String packageName, int userId) {
+      PackageSetting ps = PackageCacheManager.getSetting(packageName);
+      if (ps == null) {
+         return false;
+      } else {
+         VActivityManagerService.get().killAppByPkg(packageName, userId);
+         VNotificationManagerService.get().cancelAllNotification(ps.packageName, userId);
+         FileUtils.deleteDir(VEnvironment.getDataUserPackageDirectory(userId, packageName));
+         FileUtils.deleteDir(VEnvironment.getDeDataUserPackageDirectory(userId, packageName));
+         VExtPackageAccessor.cleanPackageData(new int[]{userId}, ps.packageName);
+         ComponentStateManager.user(userId).clear(packageName);
+         return true;
+      }
+   }
 
-    @Override
-    public int[] getPackageInstalledUsers(String packageName) {
-        PackageSetting ps = PackageCacheManager.getSetting(packageName);
-        if (ps != null) {
-            IntArray installedUsers = new IntArray(5);
-            int[] userIds = VUserManagerService.get().getUserIds();
-            for (int userId : userIds) {
-                if (ps.readUserState(userId).installed) {
-                    installedUsers.add(userId);
-                }
+   private void uninstallPackageFully(PackageSetting ps, boolean notify) {
+      String packageName = ps.packageName;
+      VActivityManagerService.get().killAppByPkg(packageName, -1);
+      PackageCacheManager.remove(packageName);
+      FileUtils.deleteDir(VEnvironment.getDataAppPackageDirectory(packageName));
+      FileUtils.deleteDir(VEnvironment.getOatDirectory(packageName));
+      PackageCleaner.cleanAllUserPackage(VEnvironment.getDataUserDirectory(), packageName);
+      Iterator var4 = VUserManager.get().getUsers().iterator();
+
+      while(var4.hasNext()) {
+         VUserInfo info = (VUserInfo)var4.next();
+         VNotificationManagerService.get().cancelAllNotification(ps.packageName, info.id);
+         ComponentStateManager.user(info.id).clear(packageName);
+      }
+
+      if (notify) {
+         this.notifyAppUninstalled(ps, -1);
+      }
+
+      if (!this.mScanning) {
+         VExtPackageAccessor.syncPackages();
+      }
+
+      VAccountManagerService.get().refreshAuthenticatorCache((String)null);
+   }
+
+   public int[] getPackageInstalledUsers(String packageName) {
+      PackageSetting ps = PackageCacheManager.getSetting(packageName);
+      if (ps != null) {
+         IntArray installedUsers = new IntArray(5);
+         int[] userIds = VUserManagerService.get().getUserIds();
+         int[] var5 = userIds;
+         int var6 = userIds.length;
+
+         for(int var7 = 0; var7 < var6; ++var7) {
+            int userId = var5[var7];
+            if (ps.readUserState(userId).installed) {
+               installedUsers.add(userId);
             }
-            return installedUsers.getAll();
-        }
-        return new int[0];
-    }
+         }
 
-    @Override
-    public List<InstalledAppInfo> getInstalledApps(int flags) {
-        List<InstalledAppInfo> infoList = new ArrayList<>(getInstalledAppCount());
-        for (VPackage p : PackageCacheManager.PACKAGE_CACHE.values()) {
-            PackageSetting setting = (PackageSetting) p.mExtras;
-            infoList.add(setting.getAppInfo());
-        }
-        return infoList;
-    }
+         return installedUsers.getAll();
+      } else {
+         return new int[0];
+      }
+   }
 
-    @Override
-    public List<InstalledAppInfo> getInstalledAppsAsUser(int userId, int flags) {
-        List<InstalledAppInfo> infoList = new ArrayList<>(getInstalledAppCount());
-        for (VPackage p : PackageCacheManager.PACKAGE_CACHE.values()) {
-            PackageSetting setting = (PackageSetting) p.mExtras;
+   public List<InstalledAppInfo> getInstalledApps(int flags) {
+      List<InstalledAppInfo> infoList = new ArrayList(this.getInstalledAppCount());
+      boolean filterXposedModules = (flags & 268435456) != 0;
+      boolean excludeXposedModules = (flags & 536870912) != 0;
+      boolean enabledXposedModules = (flags & 1073741824) != 0;
+      synchronized(PackageCacheManager.PACKAGE_CACHE) {
+         Iterator var7 = PackageCacheManager.PACKAGE_CACHE.values().iterator();
+
+         label55:
+         while(true) {
+            while(true) {
+               if (!var7.hasNext()) {
+                  break label55;
+               }
+
+               VPackage p = (VPackage)var7.next();
+               PackageSetting setting;
+               if (excludeXposedModules) {
+                  if (p.xposedModule == null) {
+                     setting = (PackageSetting)p.mExtras;
+                     infoList.add(setting.getAppInfo());
+                  }
+               } else if ((!filterXposedModules || p.xposedModule != null) && (!enabledXposedModules || XposedModuleProfile.isXposedEnable() && XposedModuleProfile.isModuleEnable(p.packageName))) {
+                  setting = (PackageSetting)p.mExtras;
+                  infoList.add(setting.getAppInfo());
+               }
+            }
+         }
+      }
+
+      VLog.d(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("JBUhDQ==")), StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Pls/Hx1WOR4cLAsdRCUJXhgrByYGCVoqU1sjWx9XLVUeUx9LXgREKVdNTVo=")) + infoList.size());
+      return infoList;
+   }
+
+   public List<InstalledAppInfo> getInstalledAppsAsUser(int userId, int flags) {
+      List<InstalledAppInfo> infoList = new ArrayList(this.getInstalledAppCount());
+      synchronized(PackageCacheManager.PACKAGE_CACHE) {
+         Iterator var5 = PackageCacheManager.PACKAGE_CACHE.values().iterator();
+
+         while(var5.hasNext()) {
+            VPackage p = (VPackage)var5.next();
+            PackageSetting setting = (PackageSetting)p.mExtras;
             boolean visible = setting.isInstalled(userId);
-            if ((flags & VirtualCore.GET_HIDDEN_APP) == 0 && setting.isHidden(userId)) {
-                visible = false;
+            if ((flags & 1) == 0 && setting.isHidden(userId)) {
+               visible = false;
             }
+
             if (visible) {
-                infoList.add(setting.getAppInfo());
+               infoList.add(setting.getAppInfo());
             }
-        }
-        return infoList;
-    }
+         }
 
-    @Override
-    public int getInstalledAppCount() {
-        return PackageCacheManager.PACKAGE_CACHE.size();
-    }
+         return infoList;
+      }
+   }
 
-    @Override
-    public boolean isAppInstalled(String packageName) {
-        return packageName != null && PackageCacheManager.PACKAGE_CACHE.containsKey(packageName);
-    }
-
-    @Override
-    public boolean isAppInstalledAsUser(int userId, String packageName) {
-        if (packageName == null || !VUserManagerService.get().exists(userId)) {
-            return false;
-        }
-        PackageSetting setting = PackageCacheManager.getSetting(packageName);
-        if (setting == null) {
-            return false;
-        }
-        return setting.isInstalled(userId);
-    }
-
-    private void notifyAppInstalled(PackageSetting setting, int userId) {
-        final String pkg = setting.packageName;
-        int N = mRemoteCallbackList.beginBroadcast();
-        while (N-- > 0) {
-            try {
-                if (userId == -1) {
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageInstalled(pkg);
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageInstalledAsUser(0, pkg);
-
-                } else {
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageInstalledAsUser(userId, pkg);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+   public List<String> getInstalledSplitNames(String packageName) {
+      Class var2 = PackageCacheManager.class;
+      synchronized(PackageCacheManager.class) {
+         if (packageName != null) {
+            VPackage pkg = PackageCacheManager.get(packageName);
+            if (pkg != null && pkg.splitNames != null) {
+               return pkg.splitNames;
             }
-        }
-        if(userId == -1){
-            userId = VUserHandle.USER_OWNER;
-        }
-        sendInstalledBroadcast(pkg, new VUserHandle(userId));
-        mRemoteCallbackList.finishBroadcast();
-        VAccountManagerService.get().refreshAuthenticatorCache(null);
-    }
+         }
 
-    private void notifyAppUpdate(PackageSetting setting, int userId) {
-        final String pkg = setting.packageName;
-        int N = mRemoteCallbackList.beginBroadcast();
-        while (N-- > 0) {
-            try {
-                if (userId == -1) {
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageUpdate(pkg);
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageUpdateAsUser(0, pkg);
+         return Collections.emptyList();
+      }
+   }
 
-                } else {
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageUpdateAsUser(userId, pkg);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+   public int getInstalledAppCount() {
+      return PackageCacheManager.size();
+   }
+
+   public boolean isAppInstalled(String packageName) {
+      return packageName != null && PackageCacheManager.contain(packageName);
+   }
+
+   public boolean isAppInstalledAsUser(int userId, String packageName) {
+      if (packageName != null && VUserManagerService.get().exists(userId)) {
+         PackageSetting setting = PackageCacheManager.getSetting(packageName);
+         return setting == null ? false : setting.isInstalled(userId);
+      } else {
+         return false;
+      }
+   }
+
+   private void notifyAppInstalled(PackageSetting setting, int userId) {
+      String pkg = setting.packageName;
+      int N = this.mRemoteCallbackList.beginBroadcast();
+
+      while(N-- > 0) {
+         try {
+            if (userId == -1) {
+               ((IPackageObserver)this.mRemoteCallbackList.getBroadcastItem(N)).onPackageInstalled(pkg);
+               ((IPackageObserver)this.mRemoteCallbackList.getBroadcastItem(N)).onPackageInstalledAsUser(0, pkg);
+            } else {
+               ((IPackageObserver)this.mRemoteCallbackList.getBroadcastItem(N)).onPackageInstalledAsUser(userId, pkg);
             }
-        }
-        if(userId == -1){
-            userId = VUserHandle.USER_OWNER;
-        }
-        sendUpdateBroadcast(pkg, new VUserHandle(userId));
-        mRemoteCallbackList.finishBroadcast();
-        VAccountManagerService.get().refreshAuthenticatorCache(null);
-    }
-
-    private void notifyAppUninstalled(PackageSetting setting, int userId) {
-        final String pkg = setting.packageName;
-        int N = mRemoteCallbackList.beginBroadcast();
-        while (N-- > 0) {
-            try {
-                if (userId == -1) {
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageUninstalled(pkg);
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageUninstalledAsUser(0, pkg);
-                } else {
-                    mRemoteCallbackList.getBroadcastItem(N).onPackageUninstalledAsUser(userId, pkg);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-        if(userId == -1){
-            userId = VUserHandle.USER_OWNER;
-        }
-        sendUninstalledBroadcast(pkg, new VUserHandle(userId));
-        mRemoteCallbackList.finishBroadcast();
-        VAccountManagerService.get().refreshAuthenticatorCache(null);
-    }
-
-
-    public void sendInstalledBroadcast(String packageName, VUserHandle user) {
-        Intent intent = new Intent(Intent.ACTION_PACKAGE_ADDED);
-        intent.setData(Uri.parse("package:" + packageName));
-        VActivityManagerService.get().sendBroadcastAsUser(intent, user);
-    }
-
-    public void sendUninstalledBroadcast(String packageName, VUserHandle user) {
-        Intent intent = new Intent(Intent.ACTION_PACKAGE_REMOVED);
-        intent.setData(Uri.parse("package:" + packageName));
-        VActivityManagerService.get().sendBroadcastAsUser(intent, user);
-    }
-
-    public void sendUpdateBroadcast(String packageName, VUserHandle user) {
-        Intent intent = new Intent(Intent.ACTION_PACKAGE_REPLACED);
-        intent.setData(Uri.parse("package:" + packageName));
-        VActivityManagerService.get().sendBroadcastAsUser(intent, user);
-    }
-
-    @Override
-    public void registerObserver(IPackageObserver observer) {
-        try {
-            mRemoteCallbackList.register(observer);
-        } catch (Throwable e) {
+         } catch (RemoteException var6) {
+            RemoteException e = var6;
             e.printStackTrace();
-        }
-    }
+         }
+      }
 
-    @Override
-    public void unregisterObserver(IPackageObserver observer) {
-        try {
-            mRemoteCallbackList.unregister(observer);
-        } catch (Throwable e) {
+      this.sendInstalledBroadcast(pkg, new VUserHandle(userId));
+      this.mRemoteCallbackList.finishBroadcast();
+   }
+
+   private void notifyAppUninstalled(PackageSetting setting, int userId) {
+      String pkg = setting.packageName;
+      int N = this.mRemoteCallbackList.beginBroadcast();
+
+      while(N-- > 0) {
+         try {
+            if (userId == -1) {
+               ((IPackageObserver)this.mRemoteCallbackList.getBroadcastItem(N)).onPackageUninstalled(pkg);
+               ((IPackageObserver)this.mRemoteCallbackList.getBroadcastItem(N)).onPackageUninstalledAsUser(0, pkg);
+            } else {
+               ((IPackageObserver)this.mRemoteCallbackList.getBroadcastItem(N)).onPackageUninstalledAsUser(userId, pkg);
+            }
+         } catch (RemoteException var6) {
+            RemoteException e = var6;
             e.printStackTrace();
-        }
-    }
+         }
+      }
 
-    @Override
-    public InstalledAppInfo getInstalledAppInfo(String packageName, int flags) {
-        synchronized (PackageCacheManager.class) {
-            if (packageName != null) {
-                PackageSetting setting = PackageCacheManager.getSetting(packageName);
-                if (setting != null) {
-                    return setting.getAppInfo();
-                }
+      this.sendUninstalledBroadcast(pkg, new VUserHandle(userId));
+      this.mRemoteCallbackList.finishBroadcast();
+   }
+
+   private void sendInstalledBroadcast(String packageName, VUserHandle user) {
+      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2ALMFVgHyxF")));
+      intent.setData(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + packageName));
+      VActivityManagerService.get().sendBroadcastAsUser(intent, user);
+   }
+
+   private void sendUninstalledBroadcast(String packageName, VUserHandle user) {
+      Intent intent = new Intent(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LggcPG8jGi9iV1kzKj42PW8aASZoATA/IxgAKk4xOA5hIgIAJwYAE2QxNEhiMiQKLBhSVg==")));
+      intent.setData(Uri.parse(StringFog.decrypt(com.kook.librelease.StringFog.decrypt("Khg+OWUzJC1iDQJF")) + packageName));
+      VActivityManagerService.get().sendBroadcastAsUser(intent, user);
+   }
+
+   public void registerObserver(IPackageObserver observer) {
+      try {
+         this.mRemoteCallbackList.register(observer);
+      } catch (Throwable var3) {
+         Throwable e = var3;
+         e.printStackTrace();
+      }
+
+   }
+
+   public void unregisterObserver(IPackageObserver observer) {
+      try {
+         this.mRemoteCallbackList.unregister(observer);
+      } catch (Throwable var3) {
+         Throwable e = var3;
+         e.printStackTrace();
+      }
+
+   }
+
+   public InstalledAppInfo getInstalledAppInfo(String packageName, int flags) {
+      Class var3 = PackageCacheManager.class;
+      synchronized(PackageCacheManager.class) {
+         if (packageName != null) {
+            PackageSetting setting = PackageCacheManager.getSetting(packageName);
+            if (setting != null) {
+               return setting.getAppInfo();
             }
-            return null;
-        }
-    }
+         }
 
-    @Override
-    public boolean isRun64BitProcess(String packageName) {
-        PackageSetting ps = PackageCacheManager.getSetting(packageName);
-        return ps != null && ps.isRunPluginProcess();
-    }
+         return null;
+      }
+   }
 
-    @Override
-    public synchronized boolean isIORelocateWork() {
-        return true;
-    }
+   public boolean isRunInExtProcess(String packageName) {
+      PackageSetting ps = PackageCacheManager.getSetting(packageName);
+      return ps != null && ps.isRunInExtProcess();
+   }
 
-    public boolean isPackageLaunched(int userId, String packageName) {
-        PackageSetting ps = PackageCacheManager.getSetting(packageName);
-        return ps != null && ps.isLaunched(userId);
-    }
+   public boolean isPackageLaunched(int userId, String packageName) {
+      PackageSetting ps = PackageCacheManager.getSetting(packageName);
+      return ps != null && ps.isLaunched(userId);
+   }
 
-    public void setPackageHidden(int userId, String packageName, boolean hidden) {
-        PackageSetting ps = PackageCacheManager.getSetting(packageName);
-        if (ps != null && VUserManagerService.get().exists(userId)) {
-            ps.setHidden(userId, hidden);
-            mPersistenceLayer.save();
-        }
-    }
+   public void setPackageHidden(int userId, String packageName, boolean hidden) {
+      PackageSetting ps = PackageCacheManager.getSetting(packageName);
+      if (ps != null && VUserManagerService.get().exists(userId)) {
+         ps.setHidden(userId, hidden);
+         this.mPersistenceLayer.save();
+      }
 
-    public int getAppId(String packageName) {
-        PackageSetting setting = PackageCacheManager.getSetting(packageName);
-        return setting != null ? setting.appId : -1;
-    }
+   }
 
-    void restoreFactoryState() {
-        VLog.w(TAG, "Warning: Restore the factory state...");
-        VEnvironment.getDalvikCacheDirectory().delete();
-        VEnvironment.getUserSystemDirectory().delete();
-        VEnvironment.getUserDeSystemDirectory().delete();
-        VEnvironment.getDataAppDirectory().delete();
-    }
+   void restoreFactoryState() {
+      VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS4+KmojAiZiIwU8Oz0ML2UzNARrDTw/IwgtJGIwPCZqHlk7LipXD28VJCBoVh05CD5SVg==")));
+      FileUtils.deleteDir(VEnvironment.getRoot());
+      VEnvironment.systemReady();
+   }
 
-    public void savePersistenceData() {
-        mPersistenceLayer.save();
-    }
-
-    public boolean is64BitUid(int uid) throws PackageManager.NameNotFoundException {
-        int appId = VUserHandle.getAppId(uid);
-        synchronized (PackageCacheManager.PACKAGE_CACHE) {
-            for (VPackage p : PackageCacheManager.PACKAGE_CACHE.values()) {
-                PackageSetting ps = (PackageSetting) p.mExtras;
-                if (ps.appId == appId) {
-                    return ps.isRunPluginProcess();
-                }
-            }
-        }
-        throw new PackageManager.NameNotFoundException();
-    }
-
-    private void mkdirsForUser(String packageName, int userId){
-        File dir = VEnvironment.getDataUserPackageDirectory(userId, packageName);
-        File files = new File(dir, "files");
-        File cache = new File(dir, "cache");
-        if(!files.exists()){
-            files.mkdirs();
-        }
-        if(!cache.exists()){
-            cache.mkdirs();
-        }
-    }
+   public void savePersistenceData() {
+      this.mPersistenceLayer.save();
+   }
 }

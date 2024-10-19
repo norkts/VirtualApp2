@@ -3,172 +3,171 @@ package android.content;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-
+import com.lody.virtual.StringFog;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class SyncStatusInfo implements Parcelable {
-    static final int VERSION = 2;
+   static final int VERSION = 2;
+   public final int authorityId;
+   public long totalElapsedTime;
+   public int numSyncs;
+   public int numSourcePoll;
+   public int numSourceServer;
+   public int numSourceLocal;
+   public int numSourceUser;
+   public int numSourcePeriodic;
+   public long lastSuccessTime;
+   public int lastSuccessSource;
+   public long lastFailureTime;
+   public int lastFailureSource;
+   public String lastFailureMesg;
+   public long initialFailureTime;
+   public boolean pending;
+   public boolean initialize;
+   private ArrayList<Long> periodicSyncTimes;
+   private static final String TAG = StringFog.decrypt("IBwcFQ==");
+   public static final Parcelable.Creator<SyncStatusInfo> CREATOR = new Parcelable.Creator<SyncStatusInfo>() {
+      public SyncStatusInfo createFromParcel(Parcel in) {
+         return new SyncStatusInfo(in);
+      }
 
-    public final int authorityId;
-    public long totalElapsedTime;
-    public int numSyncs;
-    public int numSourcePoll;
-    public int numSourceServer;
-    public int numSourceLocal;
-    public int numSourceUser;
-    public int numSourcePeriodic;
-    public long lastSuccessTime;
-    public int lastSuccessSource;
-    public long lastFailureTime;
-    public int lastFailureSource;
-    public String lastFailureMesg;
-    public long initialFailureTime;
-    public boolean pending;
-    public boolean initialize;
-    
-  // Warning: It is up to the external caller to ensure there are
-  // no race conditions when accessing this list
-  private ArrayList<Long> periodicSyncTimes;
+      public SyncStatusInfo[] newArray(int size) {
+         return new SyncStatusInfo[size];
+      }
+   };
 
-    private static final String TAG = "Sync";
+   public SyncStatusInfo(int authorityId) {
+      this.authorityId = authorityId;
+   }
 
-    public SyncStatusInfo(int authorityId) {
-        this.authorityId = authorityId;
-    }
+   public int getLastFailureMesgAsInt(int def) {
+      return 0;
+   }
 
-    public int getLastFailureMesgAsInt(int def) {
-        return 0;
-    }
+   public int describeContents() {
+      return 0;
+   }
 
-    public int describeContents() {
-        return 0;
-    }
+   public void writeToParcel(Parcel parcel, int flags) {
+      parcel.writeInt(2);
+      parcel.writeInt(this.authorityId);
+      parcel.writeLong(this.totalElapsedTime);
+      parcel.writeInt(this.numSyncs);
+      parcel.writeInt(this.numSourcePoll);
+      parcel.writeInt(this.numSourceServer);
+      parcel.writeInt(this.numSourceLocal);
+      parcel.writeInt(this.numSourceUser);
+      parcel.writeLong(this.lastSuccessTime);
+      parcel.writeInt(this.lastSuccessSource);
+      parcel.writeLong(this.lastFailureTime);
+      parcel.writeInt(this.lastFailureSource);
+      parcel.writeString(this.lastFailureMesg);
+      parcel.writeLong(this.initialFailureTime);
+      parcel.writeInt(this.pending ? 1 : 0);
+      parcel.writeInt(this.initialize ? 1 : 0);
+      if (this.periodicSyncTimes != null) {
+         parcel.writeInt(this.periodicSyncTimes.size());
+         Iterator var3 = this.periodicSyncTimes.iterator();
 
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(VERSION);
-        parcel.writeInt(authorityId);
-        parcel.writeLong(totalElapsedTime);
-        parcel.writeInt(numSyncs);
-        parcel.writeInt(numSourcePoll);
-        parcel.writeInt(numSourceServer);
-        parcel.writeInt(numSourceLocal);
-        parcel.writeInt(numSourceUser);
-        parcel.writeLong(lastSuccessTime);
-        parcel.writeInt(lastSuccessSource);
-        parcel.writeLong(lastFailureTime);
-        parcel.writeInt(lastFailureSource);
-        parcel.writeString(lastFailureMesg);
-        parcel.writeLong(initialFailureTime);
-        parcel.writeInt(pending ? 1 : 0);
-        parcel.writeInt(initialize ? 1 : 0);
-        if (periodicSyncTimes != null) {
-            parcel.writeInt(periodicSyncTimes.size());
-            for (long periodicSyncTime : periodicSyncTimes) {
-                parcel.writeLong(periodicSyncTime);
+         while(var3.hasNext()) {
+            long periodicSyncTime = (Long)var3.next();
+            parcel.writeLong(periodicSyncTime);
+         }
+      } else {
+         parcel.writeInt(-1);
+      }
+
+   }
+
+   public SyncStatusInfo(Parcel parcel) {
+      int version = parcel.readInt();
+      if (version != 2 && version != 1) {
+         Log.w(StringFog.decrypt("IBwcFTYaPgcWHDseDwA="), StringFog.decrypt("JgsZGAoZMVMVCgADAAAASUU=") + version);
+      }
+
+      this.authorityId = parcel.readInt();
+      this.totalElapsedTime = parcel.readLong();
+      this.numSyncs = parcel.readInt();
+      this.numSourcePoll = parcel.readInt();
+      this.numSourceServer = parcel.readInt();
+      this.numSourceLocal = parcel.readInt();
+      this.numSourceUser = parcel.readInt();
+      this.lastSuccessTime = parcel.readLong();
+      this.lastSuccessSource = parcel.readInt();
+      this.lastFailureTime = parcel.readLong();
+      this.lastFailureSource = parcel.readInt();
+      this.lastFailureMesg = parcel.readString();
+      this.initialFailureTime = parcel.readLong();
+      this.pending = parcel.readInt() != 0;
+      this.initialize = parcel.readInt() != 0;
+      if (version == 1) {
+         this.periodicSyncTimes = null;
+      } else {
+         int N = parcel.readInt();
+         if (N < 0) {
+            this.periodicSyncTimes = null;
+         } else {
+            this.periodicSyncTimes = new ArrayList();
+
+            for(int i = 0; i < N; ++i) {
+               this.periodicSyncTimes.add(parcel.readLong());
             }
-        } else {
-            parcel.writeInt(-1);
-        }
-    }
+         }
+      }
 
-    public SyncStatusInfo(Parcel parcel) {
-        int version = parcel.readInt();
-        if (version != VERSION && version != 1) {
-            Log.w("SyncStatusInfo", "Unknown version: " + version);
-        }
-        authorityId = parcel.readInt();
-        totalElapsedTime = parcel.readLong();
-        numSyncs = parcel.readInt();
-        numSourcePoll = parcel.readInt();
-        numSourceServer = parcel.readInt();
-        numSourceLocal = parcel.readInt();
-        numSourceUser = parcel.readInt();
-        lastSuccessTime = parcel.readLong();
-        lastSuccessSource = parcel.readInt();
-        lastFailureTime = parcel.readLong();
-        lastFailureSource = parcel.readInt();
-        lastFailureMesg = parcel.readString();
-        initialFailureTime = parcel.readLong();
-        pending = parcel.readInt() != 0;
-        initialize = parcel.readInt() != 0;
-        if (version == 1) {
-            periodicSyncTimes = null;
-        } else {
-            int N = parcel.readInt();
-            if (N < 0) {
-                periodicSyncTimes = null;
-            } else {
-                periodicSyncTimes = new ArrayList<Long>();
-                for (int i=0; i<N; i++) {
-                    periodicSyncTimes.add(parcel.readLong());
-                }
-            }
-        }
-    }
+   }
 
-    public SyncStatusInfo(SyncStatusInfo other) {
-        authorityId = other.authorityId;
-        totalElapsedTime = other.totalElapsedTime;
-        numSyncs = other.numSyncs;
-        numSourcePoll = other.numSourcePoll;
-        numSourceServer = other.numSourceServer;
-        numSourceLocal = other.numSourceLocal;
-        numSourceUser = other.numSourceUser;
-        numSourcePeriodic = other.numSourcePeriodic;
-        lastSuccessTime = other.lastSuccessTime;
-        lastSuccessSource = other.lastSuccessSource;
-        lastFailureTime = other.lastFailureTime;
-        lastFailureSource = other.lastFailureSource;
-        lastFailureMesg = other.lastFailureMesg;
-        initialFailureTime = other.initialFailureTime;
-        pending = other.pending;
-        initialize = other.initialize;
-        if (other.periodicSyncTimes != null) {
-            periodicSyncTimes = new ArrayList<Long>(other.periodicSyncTimes);
-        }
-    }
+   public SyncStatusInfo(SyncStatusInfo other) {
+      this.authorityId = other.authorityId;
+      this.totalElapsedTime = other.totalElapsedTime;
+      this.numSyncs = other.numSyncs;
+      this.numSourcePoll = other.numSourcePoll;
+      this.numSourceServer = other.numSourceServer;
+      this.numSourceLocal = other.numSourceLocal;
+      this.numSourceUser = other.numSourceUser;
+      this.numSourcePeriodic = other.numSourcePeriodic;
+      this.lastSuccessTime = other.lastSuccessTime;
+      this.lastSuccessSource = other.lastSuccessSource;
+      this.lastFailureTime = other.lastFailureTime;
+      this.lastFailureSource = other.lastFailureSource;
+      this.lastFailureMesg = other.lastFailureMesg;
+      this.initialFailureTime = other.initialFailureTime;
+      this.pending = other.pending;
+      this.initialize = other.initialize;
+      if (other.periodicSyncTimes != null) {
+         this.periodicSyncTimes = new ArrayList(other.periodicSyncTimes);
+      }
 
-    public void setPeriodicSyncTime(int index, long when) {
-        // The list is initialized lazily when scheduling occurs so we need to make sure
-        // we initialize elements < index to zero (zero is ignore for scheduling purposes)
-        ensurePeriodicSyncTimeSize(index);
-        periodicSyncTimes.set(index, when);
-    }
+   }
 
-    public long getPeriodicSyncTime(int index) {
-        if (periodicSyncTimes != null && index < periodicSyncTimes.size()) {
-            return periodicSyncTimes.get(index);
-        } else {
-            return 0;
-        }
-    }
+   public void setPeriodicSyncTime(int index, long when) {
+      this.ensurePeriodicSyncTimeSize(index);
+      this.periodicSyncTimes.set(index, when);
+   }
 
-    public void removePeriodicSyncTime(int index) {
-        if (periodicSyncTimes != null && index < periodicSyncTimes.size()) {
-            periodicSyncTimes.remove(index);
-        }
-    }
+   public long getPeriodicSyncTime(int index) {
+      return this.periodicSyncTimes != null && index < this.periodicSyncTimes.size() ? (Long)this.periodicSyncTimes.get(index) : 0L;
+   }
 
-    public static final Creator<SyncStatusInfo> CREATOR = new Creator<SyncStatusInfo>() {
-        public SyncStatusInfo createFromParcel(Parcel in) {
-            return new SyncStatusInfo(in);
-        }
+   public void removePeriodicSyncTime(int index) {
+      if (this.periodicSyncTimes != null && index < this.periodicSyncTimes.size()) {
+         this.periodicSyncTimes.remove(index);
+      }
 
-        public SyncStatusInfo[] newArray(int size) {
-            return new SyncStatusInfo[size];
-        }
-    };
+   }
 
-    private void ensurePeriodicSyncTimeSize(int index) {
-        if (periodicSyncTimes == null) {
-            periodicSyncTimes = new ArrayList<>(0);
-        }
+   private void ensurePeriodicSyncTimeSize(int index) {
+      if (this.periodicSyncTimes == null) {
+         this.periodicSyncTimes = new ArrayList(0);
+      }
 
-        final int requiredSize = index + 1;
-        if (periodicSyncTimes.size() < requiredSize) {
-            for (int i = periodicSyncTimes.size(); i < requiredSize; i++) {
-                periodicSyncTimes.add((long) 0);
-            }
-        }
-    }
+      int requiredSize = index + 1;
+      if (this.periodicSyncTimes.size() < requiredSize) {
+         for(int i = this.periodicSyncTimes.size(); i < requiredSize; ++i) {
+            this.periodicSyncTimes.add(0L);
+         }
+      }
+
+   }
 }

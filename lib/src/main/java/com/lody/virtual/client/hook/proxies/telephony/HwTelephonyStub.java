@@ -1,31 +1,31 @@
 package com.lody.virtual.client.hook.proxies.telephony;
 
-import com.lody.virtual.client.hook.base.BinderInvocationProxy;
+import com.lody.virtual.StringFog;
 import com.lody.virtual.client.hook.annotations.Inject;
-
+import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import mirror.com.android.internal.telephony.IHwTelephony;
 
-/**
- * @author Lody
- * @see android.telephony.TelephonyManager
- */
 @Inject(MethodProxies.class)
 public class HwTelephonyStub extends BinderInvocationProxy {
+   public HwTelephonyStub() {
+      super(IHwTelephony.Stub.TYPE, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("KhhfD2ojNB9jETA7LC0MMQ==")));
+   }
 
-	public HwTelephonyStub() {
-		super(IHwTelephony.Stub.TYPE, "phone_huawei");
-	}
+   protected void onBindMethods() {
+      this.addMethodProxy(new GetUniqueDeviceId());
+   }
 
-	@Override
-	protected void onBindMethods() {
-        addMethodProxy(new GetUniqueDeviceId());
-	}
+   private static class GetUniqueDeviceId extends MethodProxies.GetDeviceId {
+      private GetUniqueDeviceId() {
+      }
 
-    private static class GetUniqueDeviceId extends MethodProxies.GetDeviceId{
-        @Override
-        public String getMethodName() {
-            return "getUniqueDeviceId";
-        }
-    }
+      public String getMethodName() {
+         return StringFog.decrypt(com.kook.librelease.StringFog.decrypt("LS4uLGQVBi9hATA/IBcMLGwjAitiASxF"));
+      }
 
+      // $FF: synthetic method
+      GetUniqueDeviceId(Object x0) {
+         this();
+      }
+   }
 }

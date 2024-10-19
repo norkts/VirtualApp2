@@ -1,10 +1,11 @@
 package com.lody.virtual.server.am;
 
+import com.lody.virtual.StringFog;
+import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.helper.utils.FileUtils;
 import com.lody.virtual.helper.utils.VLog;
 import com.lody.virtual.os.VEnvironment;
 import com.lody.virtual.server.pm.parser.VPackage;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,93 +15,94 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.os.Process.FIRST_APPLICATION_UID;
-
-/**
- * @author Lody
- */
-
 public class UidSystem {
+   private static final String TAG = UidSystem.class.getSimpleName();
+   private final HashMap<String, Integer> mSharedUserIdMap = new HashMap();
+   private int mFreeUid = 10000;
 
-    private static final String TAG = UidSystem.class.getSimpleName();
+   public void initUidList() {
+      this.mSharedUserIdMap.clear();
+      File uidFile = VEnvironment.getUidListFile();
+      if (!this.loadUidList(uidFile)) {
+         File bakUidFile = VEnvironment.getBakUidListFile();
+         this.loadUidList(bakUidFile);
+      }
 
-    private final HashMap<String, Integer> mSharedUserIdMap = new HashMap<>();
-    private int mFreeUid = FIRST_APPLICATION_UID;
+   }
 
-
-    public void initUidList() {
-        mSharedUserIdMap.clear();
-        File uidFile = VEnvironment.getUidListFile();
-        if (!loadUidList(uidFile)) {
-            File bakUidFile = VEnvironment.getBakUidListFile();
-            loadUidList(bakUidFile);
-        }
-    }
-
-    private boolean loadUidList(File uidFile) {
-        if (!uidFile.exists()) {
-            return false;
-        }
-        try {
+   private boolean loadUidList(File uidFile) {
+      if (!uidFile.exists()) {
+         return false;
+      } else {
+         try {
             ObjectInputStream is = new ObjectInputStream(new FileInputStream(uidFile));
-            mFreeUid = is.readInt();
-            //noinspection unchecked
-            Map<String, Integer> map = (HashMap<String, Integer>) is.readObject();
-            mSharedUserIdMap.putAll(map);
+            this.mFreeUid = is.readInt();
+            Map<String, Integer> map = (HashMap)is.readObject();
+            this.mSharedUserIdMap.putAll(map);
             is.close();
-        } catch (Throwable e) {
+            return true;
+         } catch (Throwable var4) {
             return false;
-        }
-        return true;
-    }
+         }
+      }
+   }
 
-    private void save() {
-        File uidFile = VEnvironment.getUidListFile();
-        File bakUidFile = VEnvironment.getBakUidListFile();
-        if (uidFile.exists()) {
-            if (bakUidFile.exists() && !bakUidFile.delete()) {
-                VLog.w(TAG, "Warning: Unable to delete the expired file --\n " + bakUidFile.getPath());
-            }
-            try {
-                FileUtils.copyFile(uidFile, bakUidFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(uidFile));
-            os.writeInt(mFreeUid);
-            os.writeObject(mSharedUserIdMap);
-            os.close();
-        } catch (IOException e) {
+   private void save() {
+      File uidFile = VEnvironment.getUidListFile();
+      File bakUidFile = VEnvironment.getBakUidListFile();
+      IOException e;
+      if (uidFile.exists()) {
+         if (bakUidFile.exists() && !bakUidFile.delete()) {
+            VLog.w(TAG, StringFog.decrypt(com.kook.librelease.StringFog.decrypt("IS4+KmojAiZiIwU8JAcYOW4VOCt4HiwcPQgqJ2AaLD9uCiA9Kj4fJGsKRSRlHgo0JF4iLW8KQTF+MyM8Djo6Vg==")) + bakUidFile.getPath());
+         }
+
+         try {
+            FileUtils.copyFile(uidFile, bakUidFile);
+         } catch (IOException var5) {
+            e = var5;
             e.printStackTrace();
-        }
-    }
+         }
+      }
 
-    public int getOrCreateUid(VPackage pkg) {
-        synchronized (mSharedUserIdMap) {
-            String sharedUserId = pkg.mSharedUserId;
-            if (sharedUserId == null) {
-                sharedUserId = pkg.packageName;
+      try {
+         ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(uidFile));
+         os.writeInt(this.mFreeUid);
+         os.writeObject(this.mSharedUserIdMap);
+         os.close();
+      } catch (IOException var4) {
+         e = var4;
+         e.printStackTrace();
+      }
+
+   }
+
+   public int getOrCreateUid(VPackage pkg) {
+      synchronized(this.mSharedUserIdMap) {
+         String sharedUserId = pkg.mSharedUserId;
+         if (sharedUserId == null) {
+            sharedUserId = pkg.packageName;
+         }
+
+         Integer uid = (Integer)this.mSharedUserIdMap.get(sharedUserId);
+         if (uid != null) {
+            return uid;
+         } else {
+            int newUid = ++this.mFreeUid;
+            if (newUid == VirtualCore.get().myUid()) {
+               newUid = ++this.mFreeUid;
             }
-            Integer uid = mSharedUserIdMap.get(sharedUserId);
-            if (uid != null) {
-                return uid;
-            }
-            int newUid = ++mFreeUid;
-            mSharedUserIdMap.put(sharedUserId, newUid);
-            save();
+
+            this.mSharedUserIdMap.put(sharedUserId, newUid);
+            this.save();
             return newUid;
-        }
-    }
+         }
+      }
+   }
 
-    public int getUid(String sharedUserName) {
-        synchronized (mSharedUserIdMap) {
-            Integer uid = mSharedUserIdMap.get(sharedUserName);
-            if (uid != null) {
-                return uid;
-            }
-        }
-        return -1;
-    }
+   public int getUid(String sharedUserName) {
+      synchronized(this.mSharedUserIdMap) {
+         Integer uid = (Integer)this.mSharedUserIdMap.get(sharedUserName);
+         return uid != null ? uid : -1;
+      }
+   }
 }
